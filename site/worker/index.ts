@@ -9,6 +9,7 @@ import handler from "vinext/server/app-router-entry";
 
 interface ProductionEnv {
   ASSETS: Fetcher;
+  IMPACT_SITE_VERIFICATION?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -59,6 +60,38 @@ function withSecurityHeaders(response: Response): Response {
   });
 }
 
+async function withImpactVerificationMeta(
+  response: Response,
+  verificationValue: string | undefined,
+): Promise<Response> {
+  const value = verificationValue?.trim();
+  const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+  if (
+    response.status !== 200 ||
+    !contentType.includes("text/html") ||
+    !value ||
+    !/^[a-z0-9-]{16,128}$/i.test(value)
+  ) {
+    return response;
+  }
+
+  const body = await response.text();
+  const closingHead = body.search(/<\/head\s*>/i);
+  if (closingHead < 0) return response;
+
+  const meta = `<meta name="impact-site-verification" value="${value}">`;
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  return new Response(
+    `${body.slice(0, closingHead)}${meta}${body.slice(closingHead)}`,
+    {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    },
+  );
+}
+
 const worker = {
   async fetch(
     request: Request,
@@ -101,7 +134,13 @@ const worker = {
       return withSecurityHeaders(response);
     }
     if (PUBLIC_ROUTES.has(normalizePath(url.pathname))) {
-      return withSecurityHeaders(await handler.fetch(request, env, ctx));
+      const response = await handler.fetch(request, env, ctx);
+      return withSecurityHeaders(
+        await withImpactVerificationMeta(
+          response,
+          env.IMPACT_SITE_VERIFICATION,
+        ),
+      );
     }
     return new Response("Service Unavailable\n", {
       status: 503,

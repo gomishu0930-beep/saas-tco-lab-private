@@ -110,7 +110,18 @@ before(async () => {
   );
   serverProcess = spawn(
     process.execPath,
-    [wranglerCli, "dev", "--config", "dist/server/wrangler.json", "--port", String(port), "--ip", "127.0.0.1"],
+    [
+      wranglerCli,
+      "dev",
+      "--config",
+      "dist/server/wrangler.json",
+      "--port",
+      String(port),
+      "--ip",
+      "127.0.0.1",
+      "--var",
+      "IMPACT_SITE_VERIFICATION:test-impact-verification-value",
+    ],
     {
       cwd: siteRoot,
       env: { ...process.env, SAAS_RUNTIME_MODE: "production" },
@@ -164,6 +175,11 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     assert.equal(response.status, 200, path);
     const body = await response.text();
     assert.match(body, /SaaS TCO Lab/i, path);
+    assert.match(
+      body,
+      /<meta name="impact-site-verification" value="test-impact-verification-value">/i,
+      path,
+    );
     assert.doesNotMatch(body, /href=["']\/(?:comparison|learning|readiness|operator|pilot)\/?["']/i, path);
     assert.doesNotMatch(body, /href=["']https?:\/\//i, path);
     assert.equal(
