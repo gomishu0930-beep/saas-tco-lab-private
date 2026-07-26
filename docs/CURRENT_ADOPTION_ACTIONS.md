@@ -14,8 +14,8 @@ Google Ads・公開手順は`docs/HUMAN_ACTION_MANUAL.md`を優先する。
 |A-H01|完了|private GitHub repositoryと初回baselineを作成|2026-07-26完了|`saas-tco-lab-private`のprivate設定、`main`、500-file baseline、remote CI全3jobをread-back済み|PAT/SSH秘密鍵|
 |A-H02|完了|Google Drive pluginをinstall/connectし専用folderを選択|2026-07-26完了|`SaaS TCO Lab`と7分類を作成済み。safe-summaryだけを投入する|契約全文、PIIをchat・Driveへ貼らない|
 |A-H03|完了|Google Calendar pluginをconnectし専用calendarを選択|2026-07-26完了|非公開`SaaS TCO Lab`と5予定を作成・read-back済み|個人予定、calendar ID|
-|A-H04|Wave 1・property待ち|確定済みoriginをSearch Console propertyへ登録・所有確認|`gsc_property: done`|read-only query/page export contractを検証。旧FANZA URL-prefix propertyは転用しない|verification token|
-|A-H05|一部完了|確定済みoriginの専用GA4 streamを選択または作成する。任意data sharingは全OFF、event retentionは14か月に設定済み|`ga4_stream: done`|event taxonomy、DebugView、consent、内部traffic除外を設定・検証|measurement secret、測定ID|
+|A-H04|Wave 1・作成確認待ち|確定済みoriginをSearch Console propertyへ登録・所有確認。URL-prefix入力済みで`続行`直前|`gsc_property: done`|read-only query/page export contractを検証。旧FANZA URL-prefix propertyは転用しない|verification token|
+|A-H05|作成確認待ち|確定済みoriginの専用GA4 streamを作成する。URL・stream名入力済みで`作成して続行`直前。任意data sharingは全OFF、event retentionは14か月に設定済み|`ga4_stream: done`|event taxonomy、DebugView、consent、内部traffic除外を設定・検証|measurement secret、測定ID|
 |A-H06|月末後|OpenAI API project、budget cap、API keyを本人管理で作成|`openai_project: done`|env参照方法、gold-set benchmark、routerを実装|API key、billing情報|
 |A-H07|Affiliate承認後|各partnerからexportを本人取得可能にする|`affiliate_export_ready: <partner>`|safe summary、status mapping、settlement reconcile|tracking ID、税務/受取情報|
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
@@ -55,14 +55,15 @@ Google Ads／Keyword Plannerは2026-07-26のHuman判断でskipし、自動再試
 |会社|Affiliate現在地|rights回答|統合gateへの算入|次の本人操作|
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答|0|rights回答を待つ。紹介IDは共有しない|
-|HubSpot|Impact契約同意checkbox直前|未回答|0|契約を読み、本人が同意・申請する場合だけ送信|
+|HubSpot|2026-07-26 Impact申請送信済み・審査待ち|未回答|0|審査結果を待つ。申請中を承認済みと数えない|
 |Semrush|Impact契約同意checkbox直前|回答あり|0|契約を読み、本人が同意・申請する場合だけ送信|
 |SE Ranking|work email例外回答待ち|未回答|0|回答まで再登録しない|
-|Serpstat|未申請|回答あり・社内審査中|0|requested due-diligence情報は公開URL確定後に本人承認で返信|
+|Serpstat|未申請|回答あり・社内審査中。2026-07-26 due-diligence返信済み|0|authorized teamの8項目回答を待つ|
 
-HubSpotとSemrushのSafari tabは契約checkbox直前で停止済みです。checkboxの選択は契約同意に当たるため、
-Codexは操作しません。申請中も承認済みと数えず、Affiliate、data rights、対象site、payoutの全条件が
-揃った会社だけを1社と数えます。
+HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。現在は
+審査待ちで、追加表示されたImpact Marketplace設定、税務情報、受取情報は未操作です。Semrushは
+契約checkbox直前で停止済みです。申請中も承認済みと数えず、Affiliate、data rights、対象site、
+payoutの全条件が揃った会社だけを1社と数えます。
 
 ## Google Ads以外のJP/ja需要source
 
@@ -189,6 +190,17 @@ ga4_event_retention: 14_months / KEEP_2_months
 新origin専用stream、deny既定のconsent、`qualified_session`・`comparison_interaction`・
 `outbound_click`、DebugView、内部traffic除外、新Search Console property、GA4 linkの順で検証する。
 PII、affiliate URL、測定ID、verification token、個人メールはartifactやevent parameterに保存しない。
+
+2026-07-26、Search Consoleは新originのURL-prefix欄まで、GA4は同originと
+`SaaS TCO Lab — Public Web`のstream名まで入力し、どちらも作成ボタン直前で停止した。
+まだproperty・streamは作成されていない。次のaction-time承認だけで確定し、Semrush契約は
+同じ承認へ混ぜず個別に判定する。
+
+```text
+gsc_property_create: GO / STOP
+ga4_stream_create: GO / STOP
+semrush_contract: GO / STOP
+```
 
 ## 公開前originの現在地
 

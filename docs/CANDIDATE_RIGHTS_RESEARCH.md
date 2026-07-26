@@ -6,7 +6,7 @@
 
 ## 結論
 
-公開Affiliate Programは5社すべてで確認済みです。Mangoolsはaffiliate accessと紹介素材の発行まで到達し、HubSpotとSemrushはImpact上の契約同意checkbox直前まで準備しました。ただし、申請中や単なるaccount発行を「実利用可能な提携」と数えず、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがって統合gateは現時点で **0/3、STOP** です。
+公開Affiliate Programは5社すべてで確認済みです。Mangoolsはaffiliate accessと紹介素材の発行まで到達し、HubSpotは2026-07-26にImpact申請を送信して審査待ち、Semrushは契約同意checkbox直前まで準備しました。ただし、申請中や単なるaccount発行を「実利用可能な提携」と数えず、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがって統合gateは現時点で **0/3、STOP** です。
 
 これは各社の価格を人が一度閲覧できないという意味ではありません。Affiliateとして紹介できること、サービス内部のデータをAPI利用できること、各社自身の価格・利用上限を取得・保存・比較・履歴化できることは、それぞれ別の権利です。契約上の明示がない用途を、報酬の高さや一般的な比較記事の存在から推定承認しません。
 
@@ -29,7 +29,7 @@ Gmailをread-onlyで確認した。回答本文はrepositoryへ保存せず、�
 |会社|回答状態|権限判定|使える範囲|使えない／未審査の範囲|safe-summary SHA-256|
 |---|---|---|---|---|---|
 |Semrush|回答あり|Affiliate担当からの明示回答|独立した正確・最新の記事と、Program Terms・広告表示に従うaffiliate linkは条件付き可|website dataの自動取得、継続保存、履歴DB化は不可。12か月TCO派生、終了時処理は未審査|`f560bbbc5d4d902767efba421ae5190636cbd13404cb1e710dbdb7aed4651f8e`|
-|Serpstat|回答あり・社内審査中|Customer Supportの手続回答。最終許諾権限は未確認|承認後は公式APIを推奨し、出典linkと観測日の表示を求める方針|照会1–5、8は事前の明示書面同意が必要。item別のYesはまだ0件|`be46d37c0df2cb547ba1436948fb32c1d1ee2ed6513811d4639bfcca4aa615b2`|
+|Serpstat|回答あり・社内審査中。2026-07-26 requested due-diligence返信済み|Customer Supportの手続回答。最終許諾権限は未確認|承認後は公式APIを推奨し、出典linkと観測日の表示を求める方針|照会1–5、8は事前の明示書面同意が必要。item別のYesはまだ0件|`be46d37c0df2cb547ba1436948fb32c1d1ee2ed6513811d4639bfcca4aa615b2`|
 |Mangools|未回答|—|—|全fieldを`unreviewed`としてfail-closed|—|
 |HubSpot|未回答|—|—|全fieldを`unreviewed`としてfail-closed|—|
 |SE Ranking|未回答|—|—|全fieldを`unreviewed`としてfail-closed|—|
@@ -46,7 +46,7 @@ Humanがこの分類を承認しても、相手方が付与していない取得
 |SE Ranking|**unknown**: 公開価格pageのautomation許諾なし。Serviceはinternal use|**unknown**|**unknown**: Affiliate素材の限定licenseはあるが、SE Ranking contentの複製・派生は書面許諾が原則|**unknown**|**unknown**|**確認済み・Affiliate素材のみ条件付き**|**確認済み・公開契約あり**。現account/linkは未取得|優先照会、未承認|
 |Mangools|**unknown**: 公式pageは公開だが、IP利用はinternal businessに限定|**unknown**|**unknown**: Affiliate promotionは可能だが、IPの商用再利用は書面同意が原則|**unknown**|**unknown**|**推定**: 提供bannerは利用可能。ブランドのPPC/domain/social名利用は禁止|**確認済み・free accountで自動access**。現account/linkは未取得|最優先照会、未承認|
 |Serpstat|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**未回答**|**未申請**|社内審査中、全data field STOP|
-|HubSpot|**unknown**: 一般Site Contentは非商用利用に限定。Affiliateの個別許諾範囲は別途確認が必要|**unknown**|**推定**: software reviewer/content creatorを募集するが、Contentの複製・商用利用は包括許諾されない|**unknown**|**unknown**|**確認済み・採用後の提供素材のみ条件付き**|**確認済み・要審査**。現account/linkは未取得|優先照会、未承認|
+|HubSpot|**unknown**: 一般Site Contentは非商用利用に限定。Affiliateの個別許諾範囲は別途確認が必要|**unknown**|**推定**: software reviewer/content creatorを募集するが、Contentの複製・商用利用は包括許諾されない|**unknown**|**unknown**|**確認済み・採用後の提供素材のみ条件付き**|**2026-07-26申請済み・審査待ち**。tracking linkは未取得|優先照会、未承認|
 
 いずれも、比較ページに必要な7権利のうち1つでも`unknown`なら`source_policy=approved`にしません。低頻度であっても、robots遵守だけで契約上の保存・商用表示・履歴利用が許可されたことにはなりません。
 
@@ -161,8 +161,8 @@ Affiliate参加の速さから最初の照会先です。ただしprice/TCO data
 
 ### 結論
 
-requested due-diligence情報を返した後のauthorized team回答が必要です。現返信は手続案内であって
-書面許諾そのものではないため、全data fieldをSTOPし、3社gateにも数えません。
+requested due-diligence情報は2026-07-26に返信済みです。authorized teamの正式回答が必要であり、
+現返信は手続案内であって書面許諾そのものではないため、全data fieldをSTOPし、3社gateにも数えません。
 
 ## 5. HubSpot
 
@@ -207,7 +207,7 @@ Affiliate programとcomparison audienceの相性は強い一方、一般Website 
 |SE Ranking|確認済み|確認済み|未取得|未取得|未取得|0|
 |Mangools|確認済み|確認済み。ただし“lifetime”に条件差あり|有効|発行済み・値は非保存|未取得|0|
 |Serpstat|確認済み|書面同意が必要・社内審査中|未取得|未取得|item別許諾0|0|
-|HubSpot|確認済み|Impact契約同意直前まで表示確認|未取得|未取得|未取得|0|
+|HubSpot|確認済み|2026-07-26 Impact申請送信、審査待ち|申請accountのみ・提携未承認|未取得|未取得|0|
 |**合計**||||||**0/3**|
 
 公開programが5件あることを「提携5社」と数えません。現時点ではsourceをfetchせず、Human Approverの照会・申請判断へhandoffします。

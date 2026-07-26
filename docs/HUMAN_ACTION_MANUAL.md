@@ -22,11 +22,11 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |ID|時期|あなたが行うこと|所要目安|現在地|完了の合図|完了後にCodexが行うこと|
 |---|---|---|---:|---|---|---|
 |H1|完了|公開名義と公開予定URLを決める|0分|brand=`SaaS TCO Lab`、approver=`omishu`、恒久origin確定・外部readback済み|追加操作なし|GSC/GA4と申請先siteを同一originへそろえる|
-|H2|回答確認中|5社への利用許諾照会を承認する|2分|2026-07-23送信済み。SemrushとSerpstatは回答あり、他3社は未回答|field判定表へ`approve / revise`|Human承認済みのrights decisionだけを台帳化する|
+|H2|回答確認中|5社への利用許諾照会を承認する|2分|2026-07-23送信済み。Semrushは回答あり、Serpstatは2026-07-26 due-diligence返信済みで正式回答待ち、他3社は未回答|field判定表へ`approve / revise`|Human承認済みのrights decisionだけを台帳化する|
 |H3|見送り|Google Adsをカード要求前まで進める変更不能設定を承認する|0分|2026-07-26、日本・日本時間をread-back後、支払い方法の一時承認課金画面で未送信停止。同日Human判断でGoogle Ads／Keyword Planner経路をskip|追加操作なし|Google Adsへ再進入せず、承認済みの代替JP/ja需要exportを待つ|
 |H4|完了|MangoolsのcredentialとreCAPTCHAを本人操作する|5–8分|2026-07-26登録済み・Affiliate有効|追加操作なし|回答待ちのrightsと公開準備が整うまで紹介IDを非公開のまま保持する|
 |H5|完了|SE Rankingへwork emailなしの登録方法を問い合わせる|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を登録可否・必要証拠・条件へ分解する|
-|H6|本人確認待ち|HubSpot Impact契約への同意、credential、申請送信を本人操作する|10–15分|契約checkbox直前。法的同意は未操作|送信後に`hubspot_application: submitted`|審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
+|H6|申請完了・審査待ち|HubSpot Impact契約への同意、credential、申請送信を本人操作する|0分|2026-07-26に申請送信済み。JPY確定、追加Marketplace・税務・受取設定は未操作|追加操作なし|審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
 |H6-S|本人確認待ち|Semrush Impact契約への同意、credential、申請送信を本人操作する|10–15分|契約checkbox直前。法的同意は未操作|送信後に`semrush_application: submitted`|審査を追跡し、rights回答とAffiliate承認を分離記録する|
 |H7|回答到着時|各社回答の権限・scopeについて最終判断する|1社5分|未到着|Codexのfield別判定案に`approve`または`reject`|`SourcePolicy`へfield単位で反映し、許可済みsourceだけadapterを実装する|
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
@@ -112,16 +112,14 @@ Best regards,
 omishu
 ```
 
-### H6 — HubSpot Impact
+### H6 — HubSpot Impact（2026-07-26申請送信済み）
 
-1. 保存済み`HubSpot-Affiliate-Agreement-2024-09-18.pdf`を読みます。
-2. Impactの`Contract Terms for HubSpot`画面へ戻ります。
-3. 同意する場合だけcheckboxを選び、`Continue`を押します。
-4. credential、2FA、本人・事業情報、集客方法は本人が入力します。siteには
-   `https://saas-tco-lab-jp.shukun0930.chatgpt.site`を指定します。
-5. 申請内容を確認し、本人が送信します。
-6. `hubspot_application: submitted`と返信します。入力値やcredentialは共有しません。
-7. カード、有料契約、支払方法を要求された場合は送信せず停止します。
+1. Humanのaction-time承認後、ImpactのPartner Program Agreementへ同意し、申請を送信しました。
+2. siteは`https://saas-tco-lab-jp.shukun0930.chatgpt.site`、表示名は`SaaS TCO Lab`、
+   事業区分は`Search/Comparison`、通貨はJPYで確定しました。
+3. 申請後に表示されたImpact Marketplace参加、追加規約、税務情報、受取情報は別gateとして未操作です。
+4. HubSpotの審査結果が届くまで、Affiliate承認・CTA・収益計上へ進めません。
+5. 承認後もpublic pricingの取得・保存・TCO・履歴権は別回答として確認します。
 
 ### H6-S — Semrush Impact
 
@@ -145,14 +143,15 @@ omishu
 |作業|状態|
 |---|---|
 |5社の公式規約・Affiliate条件の分離調査|完了|
-|5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush・Serpstat回答確認済み、Mangools・HubSpot・SE Ranking待ち|
+|5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush回答確認済み。Serpstatは2026-07-26 requested due-diligence返信済み・正式回答待ち。Mangools・HubSpot・SE Ranking待ち|
 |SE Ranking公式窓口とAffiliate条件|確認済み|
 |SE Ranking通常登録|work email必須で停止。カード不要の公式問い合わせを2026-07-23送信済み、回答待ち|
-|HubSpot / Semrush Impact申請導線|双方とも契約同意直前まで準備済み。HubSpot用の外部閲覧可能URLも確定。checkbox・送信は本人操作|
+|HubSpot / Semrush Impact申請導線|HubSpotは2026-07-26申請済み・審査待ち。Semrushだけ契約checkbox直前で本人の法的同意待ち|
 |Google Ads / Keyword Planner|変更不能な初期設定の続行直前|
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|
 |公開前site|カード不要Sitesで公開済み。noindex、外部link 0、実価格0、Affiliate CTA 0、内部routeは503|
+|Search Console / GA4|新originを両画面へ入力済み。property作成の`続行`とstreamの`作成して続行`直前でaction-time承認待ち|
 |実価格取得・indexing・実Affiliate CTA|Gate A–C合格まで技術的にSTOP|
 
 ## 停止条件
