@@ -22,12 +22,12 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |ID|時期|あなたが行うこと|所要目安|現在地|完了の合図|完了後にCodexが行うこと|
 |---|---|---|---:|---|---|---|
 |H1|完了|公開名義と公開予定URLを決める|0分|brand=`SaaS TCO Lab`、approver=`omishu`、恒久origin確定・外部readback済み|追加操作なし|GSC/GA4と申請先siteを同一originへそろえる|
-|H2|回答確認中|5社への利用許諾照会を承認する|2分|2026-07-23送信済み。Semrushは回答あり、Serpstatは2026-07-26 due-diligence返信済みで正式回答待ち、他3社は未回答|field判定表へ`approve / revise`|Human承認済みのrights decisionだけを台帳化する|
+|H2|初回分類承認済み・追加回答待ち|5社への利用許諾照会を承認する|0分|Semrush/Serpstatの保守的分類は2026-07-26承認済み。Serpstat正式回答と他3社回答待ち|新回答時だけfield判定表へ`approve / revise`|Human承認済みのrights decisionだけを台帳化する|
 |H3|見送り|Google Adsをカード要求前まで進める変更不能設定を承認する|0分|2026-07-26、日本・日本時間をread-back後、支払い方法の一時承認課金画面で未送信停止。同日Human判断でGoogle Ads／Keyword Planner経路をskip|追加操作なし|Google Adsへ再進入せず、承認済みの代替JP/ja需要exportを待つ|
 |H4|完了|MangoolsのcredentialとreCAPTCHAを本人操作する|5–8分|2026-07-26登録済み・Affiliate有効|追加操作なし|回答待ちのrightsと公開準備が整うまで紹介IDを非公開のまま保持する|
 |H5|完了|SE Rankingへwork emailなしの登録方法を問い合わせる|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を登録可否・必要証拠・条件へ分解する|
 |H6|申請完了・審査待ち|HubSpot Impact契約への同意、credential、申請送信を本人操作する|0分|2026-07-26に申請送信済み。JPY確定、追加Marketplace・税務・受取設定は未操作|追加操作なし|審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
-|H6-S|本人確認待ち|Semrush Impact契約への同意、credential、申請送信を本人操作する|10–15分|契約checkbox直前。法的同意は未操作|送信後に`semrush_application: submitted`|審査を追跡し、rights回答とAffiliate承認を分離記録する|
+|H6-S|契約同意完了・login待ち|Semrush Impactへ既存accountでloginし、申請を確認する|2–5分|契約同意済み。macOS credential storeの本人解除待ちで申請未送信|解除後に`semrush_impact_login: done`|申請画面を進め、送信前の新条件だけを再確認する|
 |H7|回答到着時|各社回答の権限・scopeについて最終判断する|1社5分|未到着|Codexのfield別判定案に`approve`または`reject`|`SourcePolicy`へfield単位で反映し、許可済みsourceだけadapterを実装する|
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
@@ -36,15 +36,13 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 ## 今すぐ返信するテンプレート
 
 公開URL、名義、Google Ads見送り、Mangools登録、HubSpot申請は確定済みなので再入力しません。
-現在必要なのは、作成直前の外部3操作と、候補台帳3件のHuman判断だけです。
+直前の外部3操作と候補台帳3件は2026-07-26に一括承認され、実行・記録済みです。
+現在必要なのは、Semrush loginの本人解除と、新しい公開・analytics送信gateの判断です。
 
 ```text
-gsc_property_create: GO / STOP
-ga4_stream_create: GO / STOP
-semrush_contract: GO / STOP
-rights_decision_slate: approve / revise <ID:修正>
-gold_prelabel_slate: approve_all / revise <G-ID:修正> / reject <G-ID>
-pilot_structure_slate: approve_all / revise <P-ID:修正> / reject <P-ID>
+semrush_impact_login: done
+gsc_verification_deploy: GO / STOP
+ga4_tag_deploy: GO / STOP
 ```
 
 利用許諾照会の既定値は、取得頻度を`週1回以下`、履歴保持を`36か月（相手方がより短い期間を指定した場合はその期間）`とします。変更したい場合だけ返信へ追記してください。
@@ -122,10 +120,10 @@ omishu
 
 ### H6-S — Semrush Impact
 
-1. Safariで開いている`Contract Terms for Semrush`を読みます。
-2. 同意する場合だけ本人がcheckboxを選び、`Continue`を押します。
-3. credential、2FA、本人・事業情報、site、集客方法は本人が入力します。
-4. 内容を確認して本人が送信し、`semrush_application: submitted`とだけ知らせます。
+1. 2026-07-26、Humanのaction-time承認後に契約checkboxと`Continue`を完了しました。
+2. 既存Impact accountのloginでmacOS credential store解除が必要になったため停止しています。
+3. Humanが端末上で解除し、`semrush_impact_login: done`とだけ知らせます。credentialは共有しません。
+4. Codexがlogin後の申請内容を確認し、追加契約・課金・税務・受取情報がなければ送信直前まで進めます。
 5. カード、有料契約、支払方法を要求された場合は未送信で停止します。
 6. Affiliate承認を、禁止回答済みの自動取得・継続保存・履歴DB化の許可へ読み替えません。
 
@@ -145,12 +143,12 @@ omishu
 |5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush回答確認済み。Serpstatは2026-07-26 requested due-diligence返信済み・正式回答待ち。Mangools・HubSpot・SE Ranking待ち|
 |SE Ranking公式窓口とAffiliate条件|確認済み|
 |SE Ranking通常登録|work email必須で停止。カード不要の公式問い合わせを2026-07-23送信済み、回答待ち|
-|HubSpot / Semrush Impact申請導線|HubSpotは2026-07-26申請済み・審査待ち。Semrushだけ契約checkbox直前で本人の法的同意待ち|
+|HubSpot / Semrush Impact申請導線|HubSpotは申請済み・審査待ち。Semrushは契約同意済み・credential store解除待ち・申請未送信|
 |Google Ads / Keyword Planner|変更不能な初期設定の続行直前|
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|
 |公開前site|カード不要Sitesで公開済み。noindex、外部link 0、実価格0、Affiliate CTA 0、内部routeは503|
-|Search Console / GA4|新originを両画面へ入力済み。property作成の`続行`とstreamの`作成して続行`直前でaction-time承認待ち|
+|Search Console / GA4|新originのGSC propertyとGA4 streamを作成済み。GSC所有確認用deployとGA4 tag/送信は別gateで未実行|
 |実価格取得・indexing・実Affiliate CTA|Gate A–C合格まで技術的にSTOP|
 
 ## 停止条件
