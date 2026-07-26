@@ -6,7 +6,7 @@
 
 ## 結論
 
-公開Affiliate Programは5社すべてで確認済みです。Mangoolsはaffiliate accessと紹介素材の発行まで到達し、HubSpotは2026-07-26にImpact申請を送信して審査待ち、Semrushは同日に契約同意、SMS端末認証、既存Impact accountへのloginまで完了しました。ただし、Impact Marketplace参加に追加規約、税務情報、profile、media propertyの完了が必要と判明し、Semrush申請は未送信です。申請中や単なるaccount発行を「実利用可能な提携」と数えず、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがって統合gateは現時点で **0/3、STOP** です。
+公開Affiliate Programは5社すべてで確認済みです。Mangoolsはaffiliate accessと紹介素材の発行まで到達し、HubSpotは2026-07-26にImpact申請を送信して審査待ち、Semrushは同日に契約同意、SMS端末認証、既存Impact accountへのloginまで完了しました。Impact MarketplaceのPartner User AgreementとMaster Program AgreementもHumanのaction-time承認で同意済みですが、税務情報、profile、media propertyが未完了でSemrush申請は未送信です。申請中や単なるaccount発行を「実利用可能な提携」と数えず、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがって統合gateは現時点で **0/3、STOP** です。
 
 これは各社の価格を人が一度閲覧できないという意味ではありません。Affiliateとして紹介できること、サービス内部のデータをAPI利用できること、各社自身の価格・利用上限を取得・保存・比較・履歴化できることは、それぞれ別の権利です。契約上の明示がない用途を、報酬の高さや一般的な比較記事の存在から推定承認しません。
 
@@ -42,7 +42,7 @@ Humanがこの分類を承認しても、相手方が付与していない取得
 
 |会社|低頻度の自動取得|最小field保存|比較表示|派生12か月TCO|価格履歴|商標・素材|Affiliate参加|現判定|
 |---|---|---|---|---|---|---|---|---|
-|Semrush|**回答で禁止**: website dataの自動収集は不可。公式APIは別規約|**回答で禁止**: website pricing/featuresの継続保存は不可|**条件付き可**: 正確・最新の独立記事。系統的field転載は不可|**未回答**|**回答で禁止**: website dataの履歴DB化は不可|**条件付き可**: publication ruleとAffiliate Termsに従う|**契約・SMS認証・Impact login済み、Marketplace onboarding待ち・未申請**|data sourceはSTOP。手動検証記事だけ候補|
+|Semrush|**回答で禁止**: website dataの自動収集は不可。公式APIは別規約|**回答で禁止**: website pricing/featuresの継続保存は不可|**条件付き可**: 正確・最新の独立記事。系統的field転載は不可|**未回答**|**回答で禁止**: website dataの履歴DB化は不可|**条件付き可**: publication ruleとAffiliate Termsに従う|**Impact Marketplace規約同意済み、税務・profile・media待ち・未申請**|data sourceはSTOP。手動検証記事だけ候補|
 |SE Ranking|**unknown**: 公開価格pageのautomation許諾なし。Serviceはinternal use|**unknown**|**unknown**: Affiliate素材の限定licenseはあるが、SE Ranking contentの複製・派生は書面許諾が原則|**unknown**|**unknown**|**確認済み・Affiliate素材のみ条件付き**|**確認済み・公開契約あり**。現account/linkは未取得|優先照会、未承認|
 |Mangools|**unknown**: 公式pageは公開だが、IP利用はinternal businessに限定|**unknown**|**unknown**: Affiliate promotionは可能だが、IPの商用再利用は書面同意が原則|**unknown**|**unknown**|**推定**: 提供bannerは利用可能。ブランドのPPC/domain/social名利用は禁止|**確認済み・free accountで自動access**。現account/linkは未取得|最優先照会、未承認|
 |Serpstat|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**未回答**|**未申請**|社内審査中、全data field STOP|
@@ -74,7 +74,7 @@ Humanがこの分類を承認しても、相手方が付与していない取得
 |派生TCO|unknown|価格fieldから12か月TCOを生成・商用表示する権利の明示なし|
 |履歴|回答で禁止|website dataのhistorical databaseを作らない|
 |商標|確認済み・条件付き|publication ruleに従う。広告・domain・誤認表示は別制限。Affiliate条件を優先|
-|Affiliate|契約同意済み / 未申請|2026-07-26にHuman承認で契約同意。SMS verificationとImpact login済み。Marketplace追加規約・税務・profile・media property待ち|
+|Affiliate|契約同意済み / 未申請|2026-07-26にHuman承認でSemrush契約とImpact Marketplace規約へ同意。SMS verificationとImpact login済み。税務・profile・media property待ち|
 
 ### 結論
 
@@ -203,7 +203,7 @@ Affiliate programとcomparison audienceの相性は強い一方、一般Website 
 
 |会社|公開program|公開条件の把握|有効account|tracking link|データ/TCO/履歴の明示権利|gate count|
 |---|---|---|---|---|---|---:|
-|Semrush|確認済み|Impact契約・SMS端末認証・login済み、Marketplace onboarding待ち・申請未送信|未取得|未取得|自動取得・継続保存・履歴は明示不可|0|
+|Semrush|確認済み|Impact Marketplace規約同意済み、税務・profile・media property待ち・申請未送信|未取得|未取得|自動取得・継続保存・履歴は明示不可|0|
 |SE Ranking|確認済み|確認済み|未取得|未取得|未取得|0|
 |Mangools|確認済み|確認済み。ただし“lifetime”に条件差あり|有効|発行済み・値は非保存|未取得|0|
 |Serpstat|確認済み|書面同意が必要・社内審査中|未取得|未取得|item別許諾0|0|
