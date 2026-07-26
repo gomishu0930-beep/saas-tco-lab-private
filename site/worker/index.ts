@@ -76,14 +76,15 @@ async function withImpactVerificationMeta(
   }
 
   const body = await response.text();
-  const closingHead = body.search(/<\/head\s*>/i);
-  if (closingHead < 0) return response;
+  const openingHead = body.match(/<head(?:\s[^>]*)?>/i);
+  if (openingHead?.index === undefined) return response;
 
   const meta = `<meta name="impact-site-verification" value="${value}">`;
+  const insertionPoint = openingHead.index + openingHead[0].length;
   const headers = new Headers(response.headers);
   headers.delete("content-length");
   return new Response(
-    `${body.slice(0, closingHead)}${meta}${body.slice(closingHead)}`,
+    `${body.slice(0, insertionPoint)}${meta}${body.slice(insertionPoint)}`,
     {
       status: response.status,
       statusText: response.statusText,

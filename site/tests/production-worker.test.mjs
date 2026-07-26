@@ -180,6 +180,15 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       /<meta name="impact-site-verification" value="test-impact-verification-value">/i,
       path,
     );
+    const head = body.match(/<head(?:\s[^>]*)?>([\s\S]*?)<\/head>/i);
+    assert.ok(head, `${path}: head`);
+    const firstMeta = head[1].match(/<meta\b[^>]*>/i);
+    assert.ok(firstMeta, `${path}: first meta`);
+    assert.match(
+      firstMeta[0],
+      /name="impact-site-verification" value="test-impact-verification-value"/i,
+      `${path}: verification must be the first meta tag`,
+    );
     assert.doesNotMatch(body, /href=["']\/(?:comparison|learning|readiness|operator|pilot)\/?["']/i, path);
     assert.doesNotMatch(body, /href=["']https?:\/\//i, path);
     assert.equal(
