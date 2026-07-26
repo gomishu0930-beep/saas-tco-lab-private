@@ -10,7 +10,7 @@ cloud、hosting、有料trialを保留する。カード不要でも外部送信
 
 |ID|時期|本人が行うこと|完了の合図|Codexが続けること|共有禁止|
 |---|---|---|---|---|---|
-|A-H01|完了|private GitHub repositoryを作成|2026-07-26完了|`saas-tco-lab-private`がprivateかつ空であることをread-back済み。初回commit・pushは別GO待ち|PAT/SSH秘密鍵|
+|A-H01|完了|private GitHub repositoryと初回baselineを作成|2026-07-26完了|`saas-tco-lab-private`のprivate設定、`main`、500-file baseline、remote CI全3jobをread-back済み|PAT/SSH秘密鍵|
 |A-H02|完了|Google Drive pluginをinstall/connectし専用folderを選択|2026-07-26完了|`SaaS TCO Lab`と7分類を作成済み。safe-summaryだけを投入する|契約全文、PIIをchat・Driveへ貼らない|
 |A-H03|完了|Google Calendar pluginをconnectし専用calendarを選択|2026-07-26完了|非公開`SaaS TCO Lab`を作成済み。下記event案の承認待ち|個人予定、calendar ID|
 |A-H04|Wave 1|Search Console propertyを登録・所有確認|`gsc_property: done`|read-only query/page export contractを検証|verification token|

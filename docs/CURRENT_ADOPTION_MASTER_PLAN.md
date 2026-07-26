@@ -17,9 +17,9 @@ OpenAI API、外部AI課金、cloud、hosting、有料trialは順序を後ろへ
 
 |状態|件数|意味|
 |---|---:|---|
-|existing|6|既に利用可能。運用ルールだけ固定する|
-|ready_local|17|外部accountなしでlocal実装を開始できる|
-|ready_human|6|本人のaccount、OAuth、契約、remote等が必要|
+|existing|8|既に利用可能。運用ルールだけ固定する|
+|ready_local|16|外部accountなしでlocal実装を開始できる|
+|ready_human|5|本人のaccount、OAuth、契約、remote等が必要|
 |after_evidence|6|技術導入は可能だが実データ後に有効化する|
 |deferred_gate|2|規模条件まで導入しない|
 
@@ -52,9 +52,9 @@ flowchart LR
 
 |ID|項目|状態|Wave|owner|依存|完了条件|
 |---|---|---|---:|---|---|---|
-|F01|初回immutable Git baseline|ready_local|0|Codex + Human review|なし|対象tree、除外、検証結果を確認して初回commit候補完成|
+|F01|初回immutable Git baseline|existing|0|Codex + Human review|なし|2026-07-26にP18の500-file scopeをHuman確認後、初回commit済み|
 |F02|private GitHub remote|existing|1|Human|F01|2026-07-26に`saas-tco-lab-private`をprivate・空で作成しread-back済み。commit、remote追加、pushは別GO|
-|F03|GitHub Actions/Dependabot/Gitleaks実稼働|ready_human|1|Codex + Human|F02|remote CIのPython/Web/lock/schema/secret checks合格|
+|F03|GitHub Actions/Dependabot/Gitleaks実稼働|existing|1|Codex + Human|F02|2026-07-26にremote CIのPython/Web/lock/schema/secret checksを全合格read-back済み|
 |P01|Google Drive plugin/evidence vault|existing|1|Human + Codex|なし|2026-07-26に専用folderと7分類を作成。safe-summaryだけを受け入れる|
 |P02|Gmail rights/Affiliate inbox|existing|1|Human + Codex|なし|専用label/query、送信前Human GO、返信監視|
 |P03|Google Calendar expiry/renewal|existing|1|Human + Codex|P01|2026-07-26に非公開専用calendar作成。event案は別GO待ち|
@@ -112,7 +112,7 @@ flowchart LR
 
 ### Wave 1 — あなたの接続作業と並行
 
-1. F02、P01、P03を接続。
+1. F01–F03、P01、P03は接続・remote CIまで完了。
 2. D01–D04をread-onlyまたはmanual exportで開始。
 3. A01のAPI key/billing capを本人が設定し、keyはrepoへ入れない。
 4. F03 remote CIを初回実行する。

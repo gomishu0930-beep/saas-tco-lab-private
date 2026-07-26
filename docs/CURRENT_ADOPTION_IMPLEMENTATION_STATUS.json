@@ -10,9 +10,9 @@
     "deferred_gate_prepared"
   ],
   "items": [
-    {"id":"F01","state":"prepared_waiting_human","codex_work_complete":true,"evidence":["src/saas_preflight/repository_acceptance.py",".github/workflows/ci.yml","docs/P18_REPOSITORY_ACCEPTANCE.md"],"remaining_human":"Review the exact first-commit candidate before any commit"},
+    {"id":"F01","state":"implemented_verified","codex_work_complete":true,"evidence":["src/saas_preflight/repository_acceptance.py",".github/workflows/ci.yml","docs/P18_REPOSITORY_ACCEPTANCE.md","docs/CURRENT_ADOPTION_ACTIONS.md"],"remaining_human":null},
     {"id":"F02","state":"implemented_verified","codex_work_complete":true,"evidence":["docs/CURRENT_ADOPTION_ACTIONS.md","docs/CURRENT_ADOPTION_MASTER_PLAN.md"],"remaining_human":null},
-    {"id":"F03","state":"prepared_waiting_human","codex_work_complete":true,"evidence":[".github/workflows/ci.yml",".github/dependabot.yml",".gitleaks.toml"],"remaining_human":"Connect the private remote and allow the first remote CI run"},
+    {"id":"F03","state":"implemented_verified","codex_work_complete":true,"evidence":[".github/workflows/ci.yml",".github/dependabot.yml",".gitleaks.toml","docs/CURRENT_ADOPTION_ACTIONS.md"],"remaining_human":null},
     {"id":"P01","state":"implemented_verified","codex_work_complete":true,"evidence":["docs/CURRENT_ADOPTION_ACTIONS.md","docs/CURRENT_ADOPTION_MASTER_PLAN.md"],"remaining_human":null},
     {"id":"P02","state":"implemented_verified","codex_work_complete":true,"evidence":["docs/HUMAN_ACTION_MANUAL.md","docs/CURRENT_ADOPTION_ACTIONS.md"],"remaining_human":null},
     {"id":"P03","state":"implemented_verified","codex_work_complete":true,"evidence":["docs/CURRENT_ADOPTION_ACTIONS.md","docs/CURRENT_ADOPTION_MASTER_PLAN.md"],"remaining_human":null},
