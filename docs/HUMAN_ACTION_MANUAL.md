@@ -27,7 +27,7 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |H4|完了|MangoolsのcredentialとreCAPTCHAを本人操作する|5–8分|2026-07-26登録済み・Affiliate有効|追加操作なし|回答待ちのrightsと公開準備が整うまで紹介IDを非公開のまま保持する|
 |H5|完了|SE Rankingへwork emailなしの登録方法を問い合わせる|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を登録可否・必要証拠・条件へ分解する|
 |H6|申請完了・審査待ち|HubSpot Impact契約への同意、credential、申請送信を本人操作する|0分|2026-07-26に申請送信済み。JPY確定、追加Marketplace・税務・受取設定は未操作|追加操作なし|審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
-|H6-S|契約同意完了・login待ち|Semrush Impactへ既存accountでloginし、申請を確認する|2–5分|契約同意済み。macOS credential storeの本人解除待ちで申請未送信|解除後に`semrush_impact_login: done`|申請画面を進め、送信前の新条件だけを再確認する|
+|H6-S|契約・SMS認証・Impact login完了・Marketplace待ち|Impact Marketplace onboardingを別承認し、税務情報だけ本人入力する|5–10分|追加規約、税務情報、profile、media propertyが未完了。Semrush申請未送信|`impact_marketplace_onboarding: GO / STOP`|GO後に追加規約を確認し、機密値を保存せず送信前まで進める|
 |H7|回答到着時|各社回答の権限・scopeについて最終判断する|1社5分|未到着|Codexのfield別判定案に`approve`または`reject`|`SourcePolicy`へfield単位で反映し、許可済みsourceだけadapterを実装する|
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
@@ -37,10 +37,10 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 
 公開URL、名義、Google Ads見送り、Mangools登録、HubSpot申請は確定済みなので再入力しません。
 直前の外部3操作と候補台帳3件は2026-07-26に一括承認され、実行・記録済みです。
-現在必要なのは、Semrush loginの本人解除と、新しい公開・analytics送信gateの判断です。
+現在必要なのは、Impact Marketplace onboardingと、新しい公開・analytics送信gateの判断です。
 
 ```text
-semrush_impact_login: done
+impact_marketplace_onboarding: GO / STOP
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP
 ```
@@ -121,11 +121,12 @@ omishu
 ### H6-S — Semrush Impact
 
 1. 2026-07-26、Humanのaction-time承認後に契約checkboxと`Continue`を完了しました。
-2. 既存Impact accountのloginでmacOS credential store解除が必要になったため停止しています。
-3. Humanが端末上で解除し、`semrush_impact_login: done`とだけ知らせます。credentialは共有しません。
-4. Codexがlogin後の申請内容を確認し、追加契約・課金・税務・受取情報がなければ送信直前まで進めます。
-5. カード、有料契約、支払方法を要求された場合は未送信で停止します。
-6. Affiliate承認を、禁止回答済みの自動取得・継続保存・履歴DB化の許可へ読み替えません。
+2. macOS credential store解除、Impact credential受付、SMS端末認証、既存Impact accountへのloginは完了しました。
+3. Semrush接続にはImpact Marketplace onboardingが前提で、追加規約、税務情報、profile、media propertyの4項目が表示されました。Semrush申請は未送信です。
+4. Humanは`impact_marketplace_onboarding: GO / STOP`で別承認します。GO前に規約同意や税務情報入力を行いません。
+5. GO後、Codexが追加規約と非機密profile/media項目を確認します。税務情報はHumanが画面上で入力し、値をchat・repo・logへ共有しません。
+6. カード、有料契約、支払方法を要求された場合は未送信で停止します。Marketplace onboarding完了後もSemrush最終送信は別のaction-time確認まで行いません。
+7. Affiliate承認を、禁止回答済みの自動取得・継続保存・履歴DB化の許可へ読み替えません。
 
 ### H7 — 利用許諾回答
 
@@ -143,7 +144,7 @@ omishu
 |5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush回答確認済み。Serpstatは2026-07-26 requested due-diligence返信済み・正式回答待ち。Mangools・HubSpot・SE Ranking待ち|
 |SE Ranking公式窓口とAffiliate条件|確認済み|
 |SE Ranking通常登録|work email必須で停止。カード不要の公式問い合わせを2026-07-23送信済み、回答待ち|
-|HubSpot / Semrush Impact申請導線|HubSpotは申請済み・審査待ち。Semrushは契約同意済み・credential store解除待ち・申請未送信|
+|HubSpot / Semrush Impact申請導線|HubSpotは申請済み・審査待ち。Semrushは契約・SMS端末認証・Impact login済み、Marketplace onboarding待ち・申請未送信|
 |Google Ads / Keyword Planner|変更不能な初期設定の続行直前|
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|

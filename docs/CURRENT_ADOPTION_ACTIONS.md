@@ -56,13 +56,13 @@ Google Ads／Keyword Plannerは2026-07-26のHuman判断でskipし、自動再試
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答|0|rights回答を待つ。紹介IDは共有しない|
 |HubSpot|2026-07-26 Impact申請送信済み・審査待ち|未回答|0|審査結果を待つ。申請中を承認済みと数えない|
-|Semrush|Impact契約同意済み・既存Impact login待ち・申請未送信|回答あり|0|macOS credential storeを本人が解除し、login後の申請内容を確認する|
+|Semrush|Impact契約・SMS端末認証・既存Impact login済み。Marketplace onboarding待ち・申請未送信|回答あり|0|追加規約、税務情報、profile、media propertyを別gateで完了する|
 |SE Ranking|work email例外回答待ち|未回答|0|回答まで再登録しない|
 |Serpstat|未申請|回答あり・社内審査中。2026-07-26 due-diligence返信済み|0|authorized teamの8項目回答を待つ|
 
 HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。現在は
 審査待ちで、追加表示されたImpact Marketplace設定、税務情報、受取情報は未操作です。Semrushは
-2026-07-26に契約同意を完了しましたが、既存Impact loginのcredential store解除で停止し、申請は未送信です。申請中も承認済みと数えず、Affiliate、data rights、対象site、
+2026-07-26に契約同意、Impact credential受付、SMS端末認証、既存Impact accountへのloginまで完了しました。Impact Marketplaceへの参加には追加規約、税務情報、profile、media propertyの完了が必要と判明したため、Semrush申請は未送信です。申請中も承認済みと数えず、Affiliate、data rights、対象site、
 payoutの全条件が揃った会社だけを1社と数えます。
 
 ## Google Ads以外のJP/ja需要source
@@ -207,7 +207,7 @@ analytics送信も開始していない。次に必要なのは作成承認で�
 ```text
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP
-semrush_impact_login: done
+impact_marketplace_onboarding: GO / STOP
 ```
 
 ## 公開前originの現在地
