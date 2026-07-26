@@ -27,7 +27,7 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |H4|完了|MangoolsのcredentialとreCAPTCHAを本人操作する|5–8分|2026-07-26登録済み・Affiliate有効|追加操作なし|回答待ちのrightsと公開準備が整うまで紹介IDを非公開のまま保持する|
 |H5|完了|SE Rankingへwork emailなしの登録方法を問い合わせる|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を登録可否・必要証拠・条件へ分解する|
 |H6|申請完了・審査待ち|HubSpot Impact契約への同意、credential、申請送信を本人操作する|0分|2026-07-26に申請送信済み。JPY確定、dashboardは`In Review`|追加操作なし|審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
-|H6-S|完了・Marketplace審査待ち|Impact MarketplaceのSaaS TCO Lab media propertyを認証する|0分|税務workflow、公開profile、website認証、Marketplace申請が完了。Semrush個別申請は未送信|Semrushへ進む時だけ`semrush_submit: GO`|Marketplace結果を追跡し、Semrush最終申請は別GOまで停止する|
+|H6-S|完了・Marketplace審査待ち|Impact MarketplaceのSaaS TCO Lab media propertyを認証する|0分|税務workflow、公開profile、website認証、Marketplace申請が完了。Semrush個別申請は送信試行済みだが未受領|追加操作なし。Marketplace承認通知を待つ|`Discover`表示後にSemrushを再申請し、受付receiptをread-backする|
 |H7|回答到着時|各社回答の権限・scopeについて最終判断する|1社5分|未到着|Codexのfield別判定案に`approve`または`reject`|`SourcePolicy`へfield単位で反映し、許可済みsourceだけadapterを実装する|
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
@@ -37,10 +37,9 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 
 公開URL、名義、Google Ads見送り、Mangools登録、HubSpot申請は確定済みなので再入力しません。
 直前の外部3操作と候補台帳3件は2026-07-26に一括承認され、実行・記録済みです。
-現在必要なのは、Semrush最終申請と、新しいGSC・analytics送信gateの判断です。
+Semrush申請のGOは実行済みです。既存Impact accountへのsign-in後にHubSpot homeへ戻り、受付receiptが生成されなかったため、再認証を繰り返さずMarketplace承認を待ちます。現在Human判断が必要なのは、新しいGSC・analytics送信gateだけです。
 
 ```text
-semrush_submit: GO / STOP
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP
 ```
@@ -127,8 +126,9 @@ omishu
 5. 公開profileは`Search/Comparison`、SaaS TCO Labの説明・関心tag・中立logoで保存済みです。個人情報、配送先、追加link、media kitは追加していません。
 6. SaaS TCO Lab website media propertyは認証済みです。認証値はSitesのsecret設定へ分離し、repoには保存していません。
 7. Impact公式条件どおり認証metaを最初のmetaとするversion 3を公開し、HTTP 200、noindex header、Impact画面の`Verified`をread-backしました。FANZA・成人向けbrand/domain/contentは登録していません。
-8. Marketplace申請は受領済みです。カード、有料契約、支払方法を要求された場合は未送信で停止し、Semrush最終送信は`semrush_submit: GO`まで行いません。
-9. Affiliate承認を、禁止回答済みの自動取得・継続保存・履歴DB化の許可へ読み替えません。
+8. Marketplace申請は受領済みです。進捗は100%ですが、`Discover`は未表示で、承認済みとは数えません。
+9. Humanの`semrush_submit: GO`後に個別申請を再試行しましたが、既存Impact accountへのsign-in後はHubSpot homeへ戻りました。Semrushの受付画面・通知・受付メールがないため、申請送信済みとは記録しません。
+10. 再認証は完了済みであり、同じlogin操作は繰り返しません。Marketplace承認後に`Discover`からSemrushを再申請し、受付receiptを確認します。承認後も禁止回答済みの自動取得・継続保存・履歴DB化の許可へ読み替えません。
 
 ### H7 — 利用許諾回答
 
@@ -146,7 +146,7 @@ omishu
 |5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush回答確認済み。Serpstatは2026-07-26 requested due-diligence返信済み・正式回答待ち。Mangools・HubSpot・SE Ranking待ち|
 |SE Ranking公式窓口とAffiliate条件|確認済み|
 |SE Ranking通常登録|work email必須で停止。カード不要の公式問い合わせを2026-07-23送信済み、回答待ち|
-|HubSpot / Semrush Impact申請導線|HubSpotは`In Review`。Impact Marketplace申請とwebsite認証は完了。Semrush個別申請は未送信|
+|HubSpot / Semrush Impact申請導線|HubSpotは`In Review`。Impact Marketplace申請とwebsite認証は完了。Semrush個別申請は送信試行済みだが受付receiptなし。Marketplace承認後に再開|
 |Google Ads / Keyword Planner|変更不能な初期設定の続行直前|
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|

@@ -56,13 +56,13 @@ Google Ads／Keyword Plannerは2026-07-26のHuman判断でskipし、自動再試
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答|0|rights回答を待つ。紹介IDは共有しない|
 |HubSpot|2026-07-26 Impact申請送信済み・審査待ち|未回答|0|審査結果を待つ。申請中を承認済みと数えない|
-|Semrush|Impact Marketplace申請受領・website認証済み。Semrush個別申請は未送信|回答あり|0|Marketplace審査を待つ。Semrush最終申請は`semrush_submit: GO`まで停止する|
+|Semrush|Impact Marketplace申請受領・website認証済み。個別申請の送信を試行したが未受領|回答あり|0|Marketplace承認を待つ。`Discover`表示後にSemrushを再申請し、受付receiptを確認する|
 |SE Ranking|work email例外回答待ち|未回答|0|回答まで再登録しない|
 |Serpstat|未申請|回答あり・社内審査中。2026-07-26 due-diligence返信済み|0|authorized teamの8項目回答を待つ|
 
 HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。現在は
 審査待ちで、追加表示されたImpact Marketplace設定、税務情報、受取情報は未操作です。Semrushは
-2026-07-26に契約同意、Impact credential受付、SMS端末認証、既存Impact accountへのloginまで完了しました。同日、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User AgreementとMaster Program Agreementへ同意しました。税務workflowは値を記録せず完了し、SaaS TCO Lab限定の公開profileも保存済みです。media propertyはwebsite認証済みで、Impact Marketplace申請は受領済みです。Semrush個別申請は未送信です。申請中も承認済みと数えず、Affiliate、data rights、対象site、
+2026-07-26に契約同意、Impact credential受付、SMS端末認証、既存Impact accountへのloginまで完了しました。同日、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User AgreementとMaster Program Agreementへ同意しました。税務workflowは値を記録せず完了し、SaaS TCO Lab限定の公開profileも保存済みです。media propertyはwebsite認証済みで、Impact Marketplace申請は受領済みです。Humanの`semrush_submit: GO`後にSemrush個別申請の送信を再試行しましたが、既存Impact accountへのsign-in後はHubSpot homeへ遷移し、Semrushの受付画面・通知・受付メールはいずれも確認できませんでした。再認証の失敗ではなく、Marketplace承認前の導線または既存account callbackの停止と判定します。Marketplace承認後に`Discover`から再開し、受付receiptを確認します。申請中も承認済みと数えず、Affiliate、data rights、対象site、
 payoutの全条件が揃った会社だけを1社と数えます。
 
 ## Google Ads以外のJP/ja需要source
@@ -207,7 +207,6 @@ analytics送信も開始していない。次に必要なのは作成承認で�
 ```text
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP
-semrush_submit: GO / STOP
 ```
 
 ## 公開前originの現在地
@@ -224,7 +223,7 @@ semrush_submit: GO / STOP
 sourceはruntime secretが存在する時だけ`impact-site-verification` metaをHTMLへ挿入し、値そのものをrepoへ
 保存しない。Impact公式手順に合わせてmetaを`<head>`内の最初のmetaとするversion 3を再検証・公開し、
 外部readbackでHTTP 200、meta位置、従来のnoindex security headerを確認した。Impact画面ではwebsiteが
-`Verified`となり、Marketplace進捗100%、Marketplace application受領を確認した。Semrush個別申請は送信していない。
+`Verified`となり、Marketplace進捗100%、Marketplace application受領を確認した。Semrush個別申請は送信を試行したが、既存accountへのsign-in後にHubSpot homeへ戻り、受付receiptは生成されなかった。
 
 `ga4_property: done`は中立origin、consent、event taxonomy、DebugView、内部traffic除外の全条件を
 満たした時だけ許可する。`gsc_property: done`は中立originの所有確認とread-only export contractを
