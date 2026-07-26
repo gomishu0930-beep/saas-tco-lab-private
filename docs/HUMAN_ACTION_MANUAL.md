@@ -22,7 +22,7 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |ID|時期|あなたが行うこと|所要目安|現在地|完了の合図|完了後にCodexが行うこと|
 |---|---|---|---:|---|---|---|
 |H1|完了|公開名義と公開予定URLを決める|0分|brand=`SaaS TCO Lab`、approver=`omishu`、恒久origin確定・外部readback済み|追加操作なし|GSC/GA4と申請先siteを同一originへそろえる|
-|H2|初回分類承認済み・追加回答待ち|5社への利用許諾照会を承認する|0分|Semrush/Serpstatの保守的分類は2026-07-26承認済み。Serpstat正式回答と他3社回答待ち|新回答時だけfield判定表へ`approve / revise`|Human承認済みのrights decisionだけを台帳化する|
+|H2|初回分類承認済み・追加回答待ち|5社への利用許諾照会を承認する|0分|Semrush/Serpstatの保守的分類は2026-07-26承認済み。Mangools・HubSpot・SE Rankingへ同日追送済み。Serpstat正式回答と他3社回答待ち|新回答時だけfield判定表へ`approve / revise`|Human承認済みのrights decisionだけを台帳化する|
 |H3|見送り|Google Adsをカード要求前まで進める変更不能設定を承認する|0分|2026-07-26、日本・日本時間をread-back後、支払い方法の一時承認課金画面で未送信停止。同日Human判断でGoogle Ads／Keyword Planner経路をskip|追加操作なし|Google Adsへ再進入せず、承認済みの代替JP/ja需要exportを待つ|
 |H4|完了|MangoolsのcredentialとreCAPTCHAを本人操作する|5–8分|2026-07-26登録済み・Affiliate有効|追加操作なし|回答待ちのrightsと公開準備が整うまで紹介IDを非公開のまま保持する|
 |H5|完了|SE Rankingへwork emailなしの登録方法を問い合わせる|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を登録可否・必要証拠・条件へ分解する|
@@ -37,12 +37,15 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 
 公開URL、名義、Google Ads見送り、Mangools登録、HubSpot申請は確定済みなので再入力しません。
 直前の外部3操作と候補台帳3件は2026-07-26に一括承認され、実行・記録済みです。
-Semrush申請のGOは実行済みです。既存Impact accountへのsign-in後にHubSpot homeへ戻り、受付receiptが生成されなかったため、再認証を繰り返さずMarketplace承認を待ちます。現在Human判断が必要なのは、新しいGSC・analytics送信gateだけです。
+Semrush申請のGOは実行済みです。既存Impact accountへのsign-in後にHubSpot homeへ戻り、受付receiptが生成されなかったため、再認証を繰り返さずMarketplace承認を待ちます。GSC・analytics送信gateは2026-07-26にGO受領・実行済みで、現在すぐに必要なHuman操作はありません。
 
 ```text
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP
 ```
+
+上記2件は実行済みです。internal traffic filterをtestからactiveへ移す場合だけ、対象sourceを確認後に
+`ga4_internal_filter_activate: GO`を別途使用します。
 
 利用許諾照会の既定値は、取得頻度を`週1回以下`、履歴保持を`36か月（相手方がより短い期間を指定した場合はその期間）`とします。変更したい場合だけ返信へ追記してください。
 
@@ -143,7 +146,7 @@ omishu
 |作業|状態|
 |---|---|
 |5社の公式規約・Affiliate条件の分離調査|完了|
-|5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush回答確認済み。Serpstatは2026-07-26 requested due-diligence返信済み・正式回答待ち。Mangools・HubSpot・SE Ranking待ち|
+|5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush回答確認済み。Serpstatは2026-07-26 requested due-diligence返信済み。Mangools・HubSpot・SE Rankingは同日追送済み。4社とも正式回答待ち|
 |SE Ranking公式窓口とAffiliate条件|確認済み|
 |SE Ranking通常登録|work email必須で停止。カード不要の公式問い合わせを2026-07-23送信済み、回答待ち|
 |HubSpot / Semrush Impact申請導線|HubSpotは`In Review`。Impact Marketplace申請とwebsite認証は完了。Semrush個別申請は送信試行済みだが受付receiptなし。Marketplace承認後に再開|
@@ -151,7 +154,7 @@ omishu
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|
 |公開前site|カード不要Sitesで公開済み。noindex、外部link 0、実価格0、Affiliate CTA 0、内部routeは503|
-|Search Console / GA4|新originのGSC propertyとGA4 streamを作成済み。runtime GSC metaと同意前通信0のGA4 bootstrapはローカル検証済み。公開deploy・送信は別gateで未実行|
+|Search Console / GA4|新originのGSC所有確認済み。GA4は同意前・拒否後0通信、同意後Realtime `page_view`受信済み。初日GSC実測とinternal traffic filter active化だけ未完了|
 |実価格取得・indexing・実Affiliate CTA|Gate A–C合格まで技術的にSTOP|
 
 ## 停止条件

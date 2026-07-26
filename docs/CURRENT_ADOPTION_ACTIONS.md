@@ -14,8 +14,8 @@ Google Ads・公開手順は`docs/HUMAN_ACTION_MANUAL.md`を優先する。
 |A-H01|完了|private GitHub repositoryと初回baselineを作成|2026-07-26完了|`saas-tco-lab-private`のprivate設定、`main`、500-file baseline、remote CI全3jobをread-back済み|PAT/SSH秘密鍵|
 |A-H02|完了|Google Drive pluginをinstall/connectし専用folderを選択|2026-07-26完了|`SaaS TCO Lab`と7分類を作成済み。safe-summaryだけを投入する|契約全文、PIIをchat・Driveへ貼らない|
 |A-H03|完了|Google Calendar pluginをconnectし専用calendarを選択|2026-07-26完了|非公開`SaaS TCO Lab`と5予定を作成・read-back済み|個人予定、calendar ID|
-|A-H04|deploy-ready・所有確認待ち|確定済みoriginのSearch Console URL-prefix propertyは作成済み。runtime verification metaはローカル実装・テスト済み、公開site変更は未承認|`gsc_verification_deploy: GO`|値をrepoへ保存せずdeployし、所有確認とread-only query/page export contractを検証|verification token|
-|A-H05|deploy-ready・送信開始待ち|確定済みoriginの専用GA4 streamを作成済み。任意data sharingと拡張計測は全OFF、event retentionは14か月。同意前通信0のruntime bootstrapはローカル実装・テスト済み|`ga4_tag_deploy: GO`|runtime値を設定してdeployし、同意前/拒否後0件、同意後DebugView、内部traffic除外を検証|measurement secret、測定ID|
+|A-H04|完了|確定済みoriginのSearch Console URL-prefix propertyをHTML tagで所有確認済み。query/page/country/device/dateとexport UIをread-back済み|2026-07-26 `gsc_verification_deploy: GO`実行済み|初日の処理完了後に実測query/page exportを取得する|verification token|
+|A-H05|deploy・基本受信確認済み|専用GA4 streamへ同意制御tagをdeploy。任意data sharingと拡張計測は全OFF、retentionは14か月。同意前・拒否後0通信、同意後Realtime `page_view`を確認|2026-07-26 `ga4_tag_deploy: GO`実行済み|internal traffic filterは対象sourceを確認した別承認後だけtestからactiveへ移す|measurement secret、測定ID|
 |A-H06|月末後|OpenAI API project、budget cap、API keyを本人管理で作成|`openai_project: done`|env参照方法、gold-set benchmark、routerを実装|API key、billing情報|
 |A-H07|Affiliate承認後|各partnerからexportを本人取得可能にする|`affiliate_export_ready: <partner>`|safe summary、status mapping、settlement reconcile|tracking ID、税務/受取情報|
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
@@ -54,10 +54,10 @@ Google Ads／Keyword Plannerは2026-07-26のHuman判断でskipし、自動再試
 
 |会社|Affiliate現在地|rights回答|統合gateへの算入|次の本人操作|
 |---|---|---|---:|---|
-|Mangools|affiliate access有効、紹介素材発行済み|未回答|0|rights回答を待つ。紹介IDは共有しない|
-|HubSpot|2026-07-26 Impact申請送信済み・審査待ち|未回答|0|審査結果を待つ。申請中を承認済みと数えない|
+|Mangools|affiliate access有効、紹介素材発行済み|未回答。2026-07-26追送済み|0|rights回答を待つ。紹介IDは共有しない|
+|HubSpot|2026-07-26 Impact申請送信済み・審査待ち|未回答。2026-07-26追送済み|0|審査結果とrights回答を待つ。申請中を承認済みと数えない|
 |Semrush|Impact Marketplace申請受領・website認証済み。個別申請の送信を試行したが未受領|回答あり|0|Marketplace承認を待つ。`Discover`表示後にSemrushを再申請し、受付receiptを確認する|
-|SE Ranking|work email例外回答待ち|未回答|0|回答まで再登録しない|
+|SE Ranking|work email例外回答待ち|未回答。ticket 112501へ2026-07-26追送済み|0|回答まで再登録しない|
 |Serpstat|未申請|回答あり・社内審査中。2026-07-26 due-diligence返信済み|0|authorized teamの8項目回答を待つ|
 
 HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。現在は
@@ -77,7 +77,7 @@ CSV取得・repository取込・記事利用はすべてSTOPです。
 |---:|---|---|---|---|
 |1|Mangools KWFinder Human CSV|`selected_pending_rights`|公開前bootstrapのJP/ja volume|field-level書面回答がない|
 |2|Microsoft Advertising Keyword Planner|`contingency_unverified`|Mangools不許可時の代替|account作成GOなし、カード不要性未確認|
-|3|Search Console|`available_after_property`|公開後の自サイト実需要|origin確定済み、property・実測データは未作成|
+|3|Search Console|`available_waiting_data`|公開後の自サイト実需要|所有確認済み。初日データ処理中で実測queryは未生成|
 |4|Google Trends|`supporting_only`|季節性・相対比較|絶対需要やCVRへ換算禁止|
 
 `jp_ja_export: done`はMangoolsから8権利の書面回答を得て、HumanがCSVを正規exportし、locale、欠損、
@@ -182,9 +182,10 @@ SaaS用途へは転用しない。GA4内の旧web streamも同じlegacy origin�
 
 同日、Humanの明示指定に従い、任意のGoogle data sharing 4項目をすべてOFF、event data retentionを
 14か月へ変更し、保存後の画面でread-backした。ユーザーデータ保持は既存の14か月を維持した。
-その後、新originのSearch Console propertyと専用GA4 streamを作成した。現在の未完了項目は、
-公開versionへのGSC verification deploy、GA4 runtime値と同意制御tagのdeploy、DebugView実データ、
-内部traffic filterの最終検証である。
+その後、新originのSearch Console propertyと専用GA4 streamを作成した。2026-07-26の個別GO後、
+GSC verificationと同意制御GA4を公開し、Search Console所有確認、同意前・拒否後0通信、同意後の
+Realtime `page_view`受信まで確認した。未完了は初日のSearch Console実測生成と、別承認を要する
+internal traffic filterのactive化だけである。
 
 確定したoriginを変更する場合だけ、次の形式で新しいURLを返信する。新しいdeploy、DNS変更、
 credential作成をこの返信だけで承認するものではない。
@@ -200,18 +201,19 @@ ga4_event_retention: 14_months / KEEP_2_months
 `outbound_click`、DebugView、内部traffic除外、新Search Console property、GA4 linkの順で検証する。
 PII、affiliate URL、測定ID、verification token、個人メールはartifactやevent parameterに保存しない。
 
-2026-07-26、Search Consoleは新originのURL-prefix propertyを作成した。所有確認には公開siteの
-`<head>`へ確認tagを追加するか、確認fileを置く必要があり、新しいpublic deployは別gateのため停止した。
-GA4は同originの`SaaS TCO Lab — Public Web` streamを作成しread-backしたが、tagは設置せず、
-analytics送信も開始していない。次に必要なのは作成承認ではなく、公開site変更と送信開始の個別承認である。
-GSC verification metaとGA4 bootstrapは2026-07-26にローカル実装した。runtime値がない場合はmarkupと
-Google向けCSP許可を出さず、GA4を有効にしても訪問者の同意前はGoogle scriptを読み込まない。
-実行・検証・rollback手順は`docs/GSC_GA4_DEPLOYMENT_GATE.md`を正本とする。
+2026-07-26、Search Consoleは新originのURL-prefix propertyを作成し、個別GO後にruntime HTML tagを
+公開して所有確認した。query/page/country/device/dateとexport UIは利用可能で、初日の実測だけ処理中である。
+GA4は同originの`SaaS TCO Lab — Public Web`へ同意制御tagを公開した。runtime値がない場合はmarkupと
+Google向けCSP許可を出さず、有効時も訪問者の同意前と拒否後はGoogle scriptを読み込まない。
+同意後のRealtime `page_view`受信を確認済み。実行・検証・rollback手順は
+`docs/GSC_GA4_DEPLOYMENT_GATE.md`を正本とする。
 
 ```text
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP
 ```
+
+上記2件は2026-07-26に`GO`受領・実行済みで、再返信は不要である。
 
 ## 公開前originの現在地
 
@@ -228,6 +230,10 @@ sourceはruntime secretが存在する時だけ`impact-site-verification` meta�
 保存しない。Impact公式手順に合わせてmetaを`<head>`内の最初のmetaとするversion 3を再検証・公開し、
 外部readbackでHTTP 200、meta位置、従来のnoindex security headerを確認した。Impact画面ではwebsiteが
 `Verified`となり、Marketplace進捗100%、Marketplace application受領を確認した。Semrush個別申請は送信を試行したが、既存accountへのsign-in後にHubSpot homeへ戻り、受付receiptは生成されなかった。
+
+同日、HumanのGSC/GA4個別GO後にversion 5を公開した。verification値とmeasurement値はSites runtime
+secretだけへ保存し、repositoryへ保存していない。外部readbackでImpact meta first、GSC meta、noindex、
+同意前・拒否後0通信、同意後tag読込とRealtime `page_view`を確認した。
 
 `ga4_property: done`は中立origin、consent、event taxonomy、DebugView、内部traffic除外の全条件を
 満たした時だけ許可する。`gsc_property: done`は中立originの所有確認とread-only export contractを
