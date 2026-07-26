@@ -6,7 +6,7 @@
 
 ## 結論
 
-公開Affiliate Programは5社すべてで確認済みです。Mangoolsはaffiliate accessと紹介素材の発行まで到達し、HubSpotは2026-07-26にImpact申請を送信して審査待ち、Semrushは同日に契約同意、SMS端末認証、既存Impact accountへのloginまで完了しました。Impact MarketplaceのPartner User AgreementとMaster Program AgreementもHumanのaction-time承認で同意済みですが、税務情報、profile、media propertyが未完了でSemrush申請は未送信です。申請中や単なるaccount発行を「実利用可能な提携」と数えず、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがって統合gateは現時点で **0/3、STOP** です。
+公開Affiliate Programは5社すべてで確認済みです。Mangoolsはaffiliate accessと紹介素材の発行まで到達し、HubSpotは2026-07-26にImpact申請を送信して審査待ち、Semrushは同日に契約同意、SMS端末認証、既存Impact accountへのloginまで完了しました。Impact MarketplaceのPartner User AgreementとMaster Program AgreementもHumanのaction-time承認で同意済みで、税務workflowと公開profileは完了しました。media propertyはwebsite認証待ち、Semrush申請は未送信です。申請中や単なるaccount発行を「実利用可能な提携」と数えず、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがって統合gateは現時点で **0/3、STOP** です。
 
 これは各社の価格を人が一度閲覧できないという意味ではありません。Affiliateとして紹介できること、サービス内部のデータをAPI利用できること、各社自身の価格・利用上限を取得・保存・比較・履歴化できることは、それぞれ別の権利です。契約上の明示がない用途を、報酬の高さや一般的な比較記事の存在から推定承認しません。
 
@@ -74,7 +74,7 @@ Humanがこの分類を承認しても、相手方が付与していない取得
 |派生TCO|unknown|価格fieldから12か月TCOを生成・商用表示する権利の明示なし|
 |履歴|回答で禁止|website dataのhistorical databaseを作らない|
 |商標|確認済み・条件付き|publication ruleに従う。広告・domain・誤認表示は別制限。Affiliate条件を優先|
-|Affiliate|契約同意済み / 未申請|2026-07-26にHuman承認でSemrush契約とImpact Marketplace規約へ同意。SMS verificationとImpact login済み。税務・profile・media property待ち|
+|Affiliate|契約同意済み / 未申請|2026-07-26にHuman承認でSemrush契約とImpact Marketplace規約へ同意。SMS verification、Impact login、税務workflow、公開profileは完了。media propertyはwebsite認証待ち|
 
 ### 結論
 
@@ -203,7 +203,7 @@ Affiliate programとcomparison audienceの相性は強い一方、一般Website 
 
 |会社|公開program|公開条件の把握|有効account|tracking link|データ/TCO/履歴の明示権利|gate count|
 |---|---|---|---|---|---|---:|
-|Semrush|確認済み|Impact Marketplace規約同意済み、税務・profile・media property待ち・申請未送信|未取得|未取得|自動取得・継続保存・履歴は明示不可|0|
+|Semrush|確認済み|Impact Marketplace規約同意、税務workflow、公開profile完了。media propertyはwebsite認証待ち、申請未送信|未取得|未取得|自動取得・継続保存・履歴は明示不可|0|
 |SE Ranking|確認済み|確認済み|未取得|未取得|未取得|0|
 |Mangools|確認済み|確認済み。ただし“lifetime”に条件差あり|有効|発行済み・値は非保存|未取得|0|
 |Serpstat|確認済み|書面同意が必要・社内審査中|未取得|未取得|item別許諾0|0|
