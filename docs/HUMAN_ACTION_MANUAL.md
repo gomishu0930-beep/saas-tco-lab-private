@@ -20,12 +20,13 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 
 |ID|時期|あなたが行うこと|所要目安|現在地|完了の合図|完了後にCodexが行うこと|
 |---|---|---|---:|---|---|---|
-|H1|今|公開名義と公開予定URLを決める|3分|入力待ち|下の返信テンプレート3項目を返す|5社の許諾メールを同じscopeへ確定する|
-|H2|完了|5社への利用許諾照会を承認する|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を8項目へ分解し、Human最終判定へ回す|
-|H3|今|Google Adsをカード要求前まで進める変更不能設定を承認する|2分|日本／日本時間／日本円の「続行」直前|`google_ads: GO`と返す|無料範囲ならKeyword Plannerへ進み、カード要求時は停止する|
+|H1|一部完了|公開名義と公開予定URLを決める|3分|公開brand=`SaaS TCO Lab`、approver=`omishu`、URL未公開|中立な公開URLだけ後日指定|GSC/GA4と申請先siteを同一originへ確定する|
+|H2|回答確認中|5社への利用許諾照会を承認する|2分|2026-07-23送信済み。SemrushとSerpstatは回答あり、他3社は未回答|field判定表へ`approve / revise`|Human承認済みのrights decisionだけを台帳化する|
+|H3|見送り|Google Adsをカード要求前まで進める変更不能設定を承認する|0分|2026-07-26、日本・日本時間をread-back後、支払い方法の一時承認課金画面で未送信停止。同日Human判断でGoogle Ads／Keyword Planner経路をskip|追加操作なし|Google Adsへ再進入せず、承認済みの代替JP/ja需要exportを待つ|
 |H4|完了|MangoolsのcredentialとreCAPTCHAを本人操作する|5–8分|2026-07-26登録済み・Affiliate有効|追加操作なし|回答待ちのrightsと公開準備が整うまで紹介IDを非公開のまま保持する|
 |H5|完了|SE Rankingへwork emailなしの登録方法を問い合わせる|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を登録可否・必要証拠・条件へ分解する|
-|H6|H4と並行可|HubSpot Impact契約への同意、credential、申請送信を本人操作する|10–15分|契約checkbox直前。契約PDF保存済み|送信後に`hubspot_application: submitted`|2–3営業日の審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
+|H6|本人確認待ち|HubSpot Impact契約への同意、credential、申請送信を本人操作する|10–15分|契約checkbox直前。法的同意は未操作|送信後に`hubspot_application: submitted`|審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
+|H6-S|本人確認待ち|Semrush Impact契約への同意、credential、申請送信を本人操作する|10–15分|契約checkbox直前。法的同意は未操作|送信後に`semrush_application: submitted`|審査を追跡し、rights回答とAffiliate承認を分離記録する|
 |H7|回答到着時|各社回答の権限・scopeについて最終判断する|1社5分|未到着|Codexのfield別判定案に`approve`または`reject`|`SourcePolicy`へfield単位で反映し、許可済みsourceだけadapterを実装する|
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
@@ -58,6 +59,12 @@ hubspot_impact_contract: GO / STOP
 4. Codexが「続行」以後を進めます。支払情報、追加規約、2FA、本人確認が表示された場合だけあなたへ引き継ぎます。
 5. カードまたはPayments profileを要求された場合は入力せず、月末まで停止します。
 6. 無料範囲でKeyword Plannerへ入れた場合だけ、地域=`日本`、言語=`日本語`、150語の投入、CSV export、重複除去をCodexが実行します。
+
+2026-07-26の実行では、日本と日本時間を確認した後、既存の支払い方法を使う一時承認課金の
+説明と送信ボタンが表示されたため、カード不要条件に従って未送信で停止した。カード情報、
+支払いprofile識別子、Google Ads識別子は記録していない。同日Human判断でこの経路はskipし、
+月末後も自動再試行しない。JP/ja需要gateには、利用権が承認された別exportまたは公開後の
+Search Console実測を使用する。Google Trendsの相対指数だけでは需要gateを合格扱いにしない。
 
 ### H4 — Mangools
 
@@ -114,6 +121,15 @@ omishu
 6. `hubspot_application: submitted`と返信します。入力値やcredentialは共有しません。
 7. カード、有料契約、支払方法を要求された場合は送信せず停止します。
 
+### H6-S — Semrush Impact
+
+1. Safariで開いている`Contract Terms for Semrush`を読みます。
+2. 同意する場合だけ本人がcheckboxを選び、`Continue`を押します。
+3. credential、2FA、本人・事業情報、site、集客方法は本人が入力します。
+4. 内容を確認して本人が送信し、`semrush_application: submitted`とだけ知らせます。
+5. カード、有料契約、支払方法を要求された場合は未送信で停止します。
+6. Affiliate承認を、禁止回答済みの自動取得・継続保存・履歴DB化の許可へ読み替えません。
+
 ### H7 — 利用許諾回答
 
 1. 回答メールは削除・転送せずGmail内に残します。
@@ -127,10 +143,10 @@ omishu
 |作業|状態|
 |---|---|
 |5社の公式規約・Affiliate条件の分離調査|完了|
-|5社のfield-level利用許諾メール|2026-07-23送信済み、回答待ち|
+|5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush・Serpstat回答確認済み、Mangools・HubSpot・SE Ranking待ち|
 |SE Ranking公式窓口とAffiliate条件|確認済み|
 |SE Ranking通常登録|work email必須で停止。カード不要の公式問い合わせを2026-07-23送信済み、回答待ち|
-|HubSpot Impact申請導線|契約同意直前まで準備済み|
+|HubSpot / Semrush Impact申請導線|双方とも契約同意直前まで準備済み。checkbox・送信は本人操作|
 |Google Ads / Keyword Planner|変更不能な初期設定の続行直前|
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|

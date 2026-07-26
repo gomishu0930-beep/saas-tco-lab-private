@@ -1,12 +1,12 @@
 # SaaS比較候補5社：権利・Affiliate一次情報調査
 
-確認日: 2026-07-21（Asia/Tokyo）
+初回確認日: 2026-07-21、返信反映日: 2026-07-26（Asia/Tokyo）
 
 対象: Semrush、SE Ranking、Mangools、Serpstat、HubSpot
 
 ## 結論
 
-公開Affiliate Programは5社すべてで確認できましたが、現在利用可能な承認済みaffiliate account / tracking linkは0社です。また、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがって「提携3社」gateは現時点で **0/3、STOP** です。
+公開Affiliate Programは5社すべてで確認済みです。Mangoolsはaffiliate accessと紹介素材の発行まで到達し、HubSpotとSemrushはImpact上の契約同意checkbox直前まで準備しました。ただし、申請中や単なるaccount発行を「実利用可能な提携」と数えず、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがって統合gateは現時点で **0/3、STOP** です。
 
 これは各社の価格を人が一度閲覧できないという意味ではありません。Affiliateとして紹介できること、サービス内部のデータをAPI利用できること、各社自身の価格・利用上限を取得・保存・比較・履歴化できることは、それぞれ別の権利です。契約上の明示がない用途を、報酬の高さや一般的な比較記事の存在から推定承認しません。
 
@@ -21,14 +21,31 @@
 
 「確認済み」は「許可」の意味とは限りません。禁止・制限を確認できた場合も確認済みと表記し、内容を併記します。
 
+## 2026-07-26 rights回答のread-back
+
+Gmailをread-onlyで確認した。回答本文はrepositoryへ保存せず、送信者address、thread ID、全文、署名を
+転記しない。下記SHA-256はメール原文ではなく、field判定だけを正規化したsafe-summaryに対するhashである。
+
+|会社|回答状態|権限判定|使える範囲|使えない／未審査の範囲|safe-summary SHA-256|
+|---|---|---|---|---|---|
+|Semrush|回答あり|Affiliate担当からの明示回答|独立した正確・最新の記事と、Program Terms・広告表示に従うaffiliate linkは条件付き可|website dataの自動取得、継続保存、履歴DB化は不可。12か月TCO派生、終了時処理は未審査|`f560bbbc5d4d902767efba421ae5190636cbd13404cb1e710dbdb7aed4651f8e`|
+|Serpstat|回答あり・社内審査中|Customer Supportの手続回答。最終許諾権限は未確認|承認後は公式APIを推奨し、出典linkと観測日の表示を求める方針|照会1–5、8は事前の明示書面同意が必要。item別のYesはまだ0件|`be46d37c0df2cb547ba1436948fb32c1d1ee2ed6513811d4639bfcca4aa615b2`|
+|Mangools|未回答|—|—|全fieldを`unreviewed`としてfail-closed|—|
+|HubSpot|未回答|—|—|全fieldを`unreviewed`としてfail-closed|—|
+|SE Ranking|未回答|—|—|全fieldを`unreviewed`としてfail-closed|—|
+
+Semrushの「条件付き可」はcontent制作とaffiliate promotionの範囲だけであり、価格fieldを
+`FieldEvidence`へ採用する許可ではない。SerpstatのAPI推奨もAPI利用許諾そのものではない。
+Humanがこの分類を承認しても、相手方が付与していない取得・保存・派生・公開権は生じない。
+
 ## 5社rights matrix
 
 |会社|低頻度の自動取得|最小field保存|比較表示|派生12か月TCO|価格履歴|商標・素材|Affiliate参加|現判定|
 |---|---|---|---|---|---|---|---|---|
-|Semrush|**確認済み・禁止**: Serviceのscrape禁止。公式APIのみ別条件|**確認済み・制限**: API cacheは原則1か月まで。公開価格fieldの保存はunknown|**推定**: Affiliate FAQはcomparison pieceと標準価格のpromotionを想定。系統的転載はunknown|**unknown**|**確認済み・APIは不可**: 1か月超は書面同意。Web価格履歴はunknown|**確認済み・条件付き**: publication用の記述ルールあり。Affiliateはprogram termsも適用|**確認済み・要審査**。現account/linkは未取得|STOP、書面確認後|
+|Semrush|**回答で禁止**: website dataの自動収集は不可。公式APIは別規約|**回答で禁止**: website pricing/featuresの継続保存は不可|**条件付き可**: 正確・最新の独立記事。系統的field転載は不可|**未回答**|**回答で禁止**: website dataの履歴DB化は不可|**条件付き可**: publication ruleとAffiliate Termsに従う|**契約同意直前・未申請**|data sourceはSTOP。手動検証記事だけ候補|
 |SE Ranking|**unknown**: 公開価格pageのautomation許諾なし。Serviceはinternal use|**unknown**|**unknown**: Affiliate素材の限定licenseはあるが、SE Ranking contentの複製・派生は書面許諾が原則|**unknown**|**unknown**|**確認済み・Affiliate素材のみ条件付き**|**確認済み・公開契約あり**。現account/linkは未取得|優先照会、未承認|
 |Mangools|**unknown**: 公式pageは公開だが、IP利用はinternal businessに限定|**unknown**|**unknown**: Affiliate promotionは可能だが、IPの商用再利用は書面同意が原則|**unknown**|**unknown**|**推定**: 提供bannerは利用可能。ブランドのPPC/domain/social名利用は禁止|**確認済み・free accountで自動access**。現account/linkは未取得|最優先照会、未承認|
-|Serpstat|**確認済み・商用利用は書面同意が必要**|**unknown / 書面同意待ち**|**確認済み・書面同意が必要**|**unknown / 書面同意待ち**|**unknown / 書面同意待ち**|**unknown**: 公開Affiliate用素材licenseの詳細規約を確認できず|**推定**: 公開pageは最大30%を案内。詳細条件はunknown|STOP、詳細規約と書面確認後|
+|Serpstat|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**未回答**|**未申請**|社内審査中、全data field STOP|
 |HubSpot|**unknown**: 一般Site Contentは非商用利用に限定。Affiliateの個別許諾範囲は別途確認が必要|**unknown**|**推定**: software reviewer/content creatorを募集するが、Contentの複製・商用利用は包括許諾されない|**unknown**|**unknown**|**確認済み・採用後の提供素材のみ条件付き**|**確認済み・要審査**。現account/linkは未取得|優先照会、未承認|
 
 いずれも、比較ページに必要な7権利のうち1つでも`unknown`なら`source_policy=approved`にしません。低頻度であっても、robots遵守だけで契約上の保存・商用表示・履歴利用が許可されたことにはなりません。
@@ -37,6 +54,9 @@
 
 ### 公式確認
 
+- 2026-07-24のAffiliate担当回答は、website data（pricing/featuresを含む）のscraping等による
+  自動取得、継続保存、履歴database化を許可しないと明示した。独立した正確・最新のcontentと
+  Affiliate Terms・広告表示に従うlink利用は可能だが、12か月TCO派生と終了時処理は未回答だった。
 - [Terms of Service（2026-02-19更新）](https://www.semrush.com/company/legal/terms-of-service/)は、Website/Services/APIをinternal business purposeに限定し、Service contentのharvest/scrapeを禁止しています。
 - [Semrush API usage restrictions](https://developer.semrush.com/api/v4/introduction/api-usage-restrictions/)は、10 requests/second、10 concurrent requestsに加え、明示的な書面同意なしでAPI情報を1か月超cacheできないとしています。
 - [公式Pricing](https://www.semrush.com/pricing/seo-ai-search/)には現行plan、年/月価格、limits、add-onが掲載されています。ただし公開掲載は、第三者による自動保存・商用履歴化の許諾ではありません。
@@ -48,17 +68,18 @@
 
 |権利|判定|理由|
 |---|---|---|
-|取得|確認済み・Service scrapeは禁止|人による公式Pricing閲覧は可能。定常取得は専用の書面許諾または適用可能な公式interfaceが必要|
-|保存|確認済み・APIは1か月上限、Web価格fieldはunknown|長期のcanonical/historical DBは現条件で承認不可|
-|比較表示|推定|Affiliateがcomparison pieceを作ることは想定されるが、価格表・limitsの系統的複製範囲は明示されない|
+|取得|回答で禁止|website dataの定常自動取得は行わない。公式APIは別契約・別用途として再審査が必要|
+|保存|回答で禁止|website pricing/featuresの継続保存とcanonical DB採用は不可|
+|比較表示|条件付き可|正確・最新の独立記事は可能。価格fieldの系統的保存・転載権とは分離する|
 |派生TCO|unknown|価格fieldから12か月TCOを生成・商用表示する権利の明示なし|
-|履歴|確認済み・APIは1か月超不可、Webはunknown|監査用hash・過去価格の保持期間を別途確認する|
+|履歴|回答で禁止|website dataのhistorical databaseを作らない|
 |商標|確認済み・条件付き|publication ruleに従う。広告・domain・誤認表示は別制限。Affiliate条件を優先|
-|Affiliate|確認済み・要審査 / 未取得|現時点ではsite/audience実績がなく、応募前gateを満たす証拠なし|
+|Affiliate|契約同意直前 / 未申請|Impactの契約checkboxはHuman本人の確認・同意待ち|
 
 ### 結論
 
-Affiliate収益性は高い一方、現時点では自動取得も長期履歴も承認できません。公開siteとtrafficができる前に申請する候補ではなく、先に書面で価格fieldの低頻度取得・最小保存・TCO・履歴の可否を照会します。
+自動価格DBのsource候補からは外す。Affiliate承認後も、公式pageをHumanが都度確認し、保存を伴わない
+独立記事へ縮小できる場合だけ採用候補にする。派生TCOは未回答のため表示しない。
 
 ## 2. SE Ranking
 
@@ -118,6 +139,9 @@ Affiliate参加の速さから最初の照会先です。ただしprice/TCO data
 
 ### 公式確認
 
+- 2026-07-26までに確認したCustomer Support回答では、照会1–5と8はLicense Agreement 2.1に基づく
+  prior written express consentが必要で、現在はauthorized teamの社内審査中である。承認後の取得経路は
+  公式APIを推奨し、active official linkと観測日のattributionを求める方針が示されたが、item別許諾は0件である。
 - [License Agreement（2024-12-26更新）](https://serpstat.com/users/license-agreement/)はWebsiteを価格pageを含むtext/graphics等として定義し、personal useの限定licenseを付与します。Service/Websiteの全部または一部の商用exploitationは、prior written express consentなしでは認めないとしています。
 - [公式Pricing](https://serpstat.com/page/pricing-plans/)はplan、月額、limit、API、retention等を公開していますが、Agreement上の商用再利用制限を解除しません。
 - [公式API documentation](https://api-docs.serpstat.com/)は大量データ取得を可能とし、reselling data/custom volumeは専門teamへの相談を案内しています。標準API accessをprice comparison databaseの再販売・再公開許可とは扱いません。
@@ -127,17 +151,18 @@ Affiliate参加の速さから最初の照会先です。ただしprice/TCO data
 
 |権利|判定|理由|
 |---|---|---|
-|取得|確認済み・商用利用は書面同意が必要|比較事業用の定常取得は書面回答までSTOP|
-|保存|unknown / 書面同意待ち|Agreementは商用exploitationを広く制限|
-|比較表示|確認済み・書面同意が必要|一般的なAffiliate案内だけでは比較表の権利にならない|
-|派生TCO|unknown / 書面同意待ち|derivative/商用利用scopeを確認する|
-|履歴|unknown / 書面同意待ち|保持期間とtermination後の扱いが不明|
+|取得|unreviewed / 書面同意待ち|API推奨は利用許可ではなく、authorized teamのYesが必要|
+|保存|unreviewed / 書面同意待ち|Agreementは商用exploitationを広く制限|
+|比較表示|unreviewed / 書面同意待ち|一般的なAffiliate案内だけでは比較表の権利にならない|
+|派生TCO|unreviewed / 書面同意待ち|item別の明示回答なし|
+|履歴|unreviewed / 書面同意待ち|保持期間とtermination後の扱いが未回答|
 |商標|unknown|Affiliate提供素材、text mark、logoのlicense scopeを確認できない|
 |Affiliate|推定 / 未取得|programと最大30%は確認。契約詳細と実linkは未確認|
 
 ### 結論
 
-書面許諾が契約文上明確に必要です。Affiliate契約全文も不足しているため、回答が得られるまで3社gate候補として数えません。
+requested due-diligence情報を返した後のauthorized team回答が必要です。現返信は手続案内であって
+書面許諾そのものではないため、全data fieldをSTOPし、3社gateにも数えません。
 
 ## 5. HubSpot
 
@@ -178,11 +203,11 @@ Affiliate programとcomparison audienceの相性は強い一方、一般Website 
 
 |会社|公開program|公開条件の把握|有効account|tracking link|データ/TCO/履歴の明示権利|gate count|
 |---|---|---|---|---|---|---:|
-|Semrush|確認済み|一部。Impact契約全文は未確認|未取得|未取得|未取得|0|
+|Semrush|確認済み|Impact契約同意直前まで表示確認|未取得|未取得|自動取得・継続保存・履歴は明示不可|0|
 |SE Ranking|確認済み|確認済み|未取得|未取得|未取得|0|
-|Mangools|確認済み|確認済み。ただし“lifetime”に条件差あり|未取得|未取得|未取得|0|
-|Serpstat|確認済み|不十分|未取得|未取得|書面同意が必要|0|
-|HubSpot|確認済み|確認済み|未取得|未取得|未取得|0|
+|Mangools|確認済み|確認済み。ただし“lifetime”に条件差あり|有効|発行済み・値は非保存|未取得|0|
+|Serpstat|確認済み|書面同意が必要・社内審査中|未取得|未取得|item別許諾0|0|
+|HubSpot|確認済み|Impact契約同意直前まで表示確認|未取得|未取得|未取得|0|
 |**合計**||||||**0/3**|
 
 公開programが5件あることを「提携5社」と数えません。現時点ではsourceをfetchせず、Human Approverの照会・申請判断へhandoffします。
@@ -255,7 +280,8 @@ Thank you,
 
 ## source policyへの反映
 
-書面回答が届くまで、5社すべてを次の状態にします。
+明示回答がないfieldは次の状態にする。Semrushの禁止回答は`prohibited`、記事・Affiliateに
+関する条件付き回答は用途限定のHuman decision候補として別管理し、価格`FieldEvidence`へ流用しない。
 
 ```text
 fetch = pending
