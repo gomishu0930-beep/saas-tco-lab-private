@@ -1,0 +1,59 @@
+{
+  "additionalProperties": false,
+  "description": "One frozen partner's original and amended settled contribution.",
+  "properties": {
+    "amended_settled_amount": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Amended Settled Amount"
+    },
+    "original_settled_amount": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Original Settled Amount"
+    },
+    "partner_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Partner Id",
+      "type": "string"
+    },
+    "settled_delta": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Settled Delta"
+    }
+  },
+  "required": [
+    "partner_id",
+    "original_settled_amount",
+    "amended_settled_amount",
+    "settled_delta"
+  ],
+  "title": "PartnerSettlementAmount",
+  "type": "object"
+}

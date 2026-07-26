@@ -1,0 +1,68 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "anchor_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Anchor Sha256",
+      "type": "string"
+    },
+    "epoch": {
+      "minimum": 0,
+      "title": "Epoch",
+      "type": "integer"
+    },
+    "head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Head Sha256",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "revision": {
+      "minimum": 0,
+      "title": "Revision",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "stop_reason_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Stop Reason Sha256",
+      "type": "string"
+    },
+    "stopped": {
+      "title": "Stopped",
+      "type": "boolean"
+    },
+    "stopped_at": {
+      "format": "date-time",
+      "title": "Stopped At",
+      "type": "string"
+    },
+    "store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Id Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "store_id_sha256",
+    "policy_sha256",
+    "stopped",
+    "epoch",
+    "revision",
+    "head_sha256",
+    "stop_reason_sha256",
+    "stopped_at",
+    "anchor_sha256"
+  ],
+  "title": "GlobalStopSnapshot",
+  "type": "object"
+}

@@ -1,0 +1,29 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "public_key_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{43}$",
+      "title": "Public Key Base64Url",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "key_id_sha256",
+    "public_key_base64url"
+  ],
+  "title": "InitialLearningVerificationKey",
+  "type": "object"
+}

@@ -1,0 +1,171 @@
+{
+  "$defs": {
+    "ActivationKind": {
+      "enum": [
+        "notion_editorial_ui",
+        "challenger_model",
+        "llm_observability",
+        "durable_scheduler",
+        "telemetry",
+        "cloud_runtime",
+        "public_hosting"
+      ],
+      "title": "ActivationKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Authority-free facts for tools deliberately deferred until evidence exists.",
+  "properties": {
+    "activation_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Activation Id Sha256",
+      "type": "string"
+    },
+    "approval_receipt_sha256s": {
+      "default": [],
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Approval Receipt Sha256S",
+      "type": "array"
+    },
+    "approved_sources": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Approved Sources",
+      "type": "integer"
+    },
+    "budget_approved": {
+      "default": false,
+      "title": "Budget Approved",
+      "type": "boolean"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "cost_or_latency_gain_percent": {
+      "anyOf": [
+        {
+          "maximum": 100.0,
+          "minimum": -100.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Cost Or Latency Gain Percent"
+    },
+    "evaluated_runs": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Evaluated Runs",
+      "type": "integer"
+    },
+    "evidence_artifact_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Evidence Artifact Sha256S",
+      "type": "array"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "hosting_approved": {
+      "default": false,
+      "title": "Hosting Approved",
+      "type": "boolean"
+    },
+    "kind": {
+      "$ref": "#/$defs/ActivationKind"
+    },
+    "meaningful_monthly_runs": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Meaningful Monthly Runs",
+      "type": "integer"
+    },
+    "observed_days": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Observed Days",
+      "type": "integer"
+    },
+    "operational_need_demonstrated": {
+      "default": false,
+      "title": "Operational Need Demonstrated",
+      "type": "boolean"
+    },
+    "public_go_approved": {
+      "default": false,
+      "title": "Public Go Approved",
+      "type": "boolean"
+    },
+    "quality_gain_percent": {
+      "anyOf": [
+        {
+          "maximum": 1000.0,
+          "minimum": -100.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Quality Gain Percent"
+    },
+    "quality_regression": {
+      "default": false,
+      "title": "Quality Regression",
+      "type": "boolean"
+    },
+    "retention_approved": {
+      "default": false,
+      "title": "Retention Approved",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "single_provider_candidate": {
+      "default": false,
+      "title": "Single Provider Candidate",
+      "type": "boolean"
+    },
+    "tool_choice_approved": {
+      "default": false,
+      "title": "Tool Choice Approved",
+      "type": "boolean"
+    },
+    "upstream_ready": {
+      "default": false,
+      "title": "Upstream Ready",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "activation_id_sha256",
+    "kind",
+    "captured_at",
+    "expires_at",
+    "evidence_artifact_sha256s"
+  ],
+  "title": "ConditionalActivationInput",
+  "type": "object"
+}

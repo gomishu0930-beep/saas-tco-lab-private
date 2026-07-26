@@ -1,0 +1,42 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attempt_receipt_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Attempt Receipt Sha256S",
+      "type": "array"
+    },
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "run_key_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Run Key Sha256",
+      "type": "string"
+    },
+    "scheduled_for": {
+      "format": "date-time",
+      "title": "Scheduled For",
+      "type": "string"
+    },
+    "succeeded": {
+      "title": "Succeeded",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "run_key_sha256",
+    "scheduled_for",
+    "attempt_receipt_sha256s",
+    "succeeded",
+    "completed_at"
+  ],
+  "title": "LogicalJobRun",
+  "type": "object"
+}

@@ -1,0 +1,58 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_current_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Current Receipt Sha256",
+      "type": "string"
+    },
+    "expected_current_revision": {
+      "maximum": 1000000000,
+      "minimum": 1,
+      "title": "Expected Current Revision",
+      "type": "integer"
+    },
+    "expected_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Manifest Sha256",
+      "type": "string"
+    },
+    "expected_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Policy Sha256",
+      "type": "string"
+    },
+    "expected_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Trust Store Sha256",
+      "type": "string"
+    },
+    "expected_verification_authority_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Verification Authority Sha256",
+      "type": "string"
+    },
+    "expected_verified_runner_authority_sha256": {
+      "default": "0000000000000000000000000000000000000000000000000000000000000000",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Verified Runner Authority Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "expected_manifest_sha256",
+    "expected_policy_sha256",
+    "expected_trust_store_sha256",
+    "expected_verification_authority_sha256",
+    "expected_current_receipt_sha256",
+    "expected_current_revision"
+  ],
+  "title": "RepositoryAcceptanceAuthorityPins",
+  "type": "object"
+}

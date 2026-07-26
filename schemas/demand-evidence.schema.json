@@ -1,0 +1,155 @@
+{
+  "$defs": {
+    "DemandInput": {
+      "additionalProperties": false,
+      "properties": {
+        "deduplicated_search_volume": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Deduplicated Search Volume"
+        },
+        "organic_visibility": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Organic Visibility"
+        },
+        "outbound_click_rate": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Outbound Click Rate"
+        },
+        "qualified_rate": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Qualified Rate"
+        },
+        "rank_ctr": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Rank Ctr"
+        },
+        "volume_is_deduplicated": {
+          "title": "Volume Is Deduplicated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "deduplicated_search_volume",
+        "organic_visibility",
+        "rank_ctr",
+        "qualified_rate",
+        "outbound_click_rate",
+        "volume_is_deduplicated"
+      ],
+      "title": "DemandInput",
+      "type": "object"
+    },
+    "ScenarioInputs": {
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/DemandInput"
+        },
+        "bear": {
+          "$ref": "#/$defs/DemandInput"
+        },
+        "bull": {
+          "$ref": "#/$defs/DemandInput"
+        }
+      },
+      "required": [
+        "bear",
+        "base",
+        "bull"
+      ],
+      "title": "ScenarioInputs",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "evidence_version": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Evidence Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "scenarios": {
+      "$ref": "#/$defs/ScenarioInputs"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence_version",
+    "source_sha256",
+    "captured_at",
+    "expires_at",
+    "scenarios"
+  ],
+  "title": "DemandEvidence",
+  "type": "object"
+}

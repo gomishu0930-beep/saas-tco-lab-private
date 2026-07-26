@@ -1,0 +1,134 @@
+{
+  "$defs": {
+    "AcquisitionClass": {
+      "enum": [
+        "new",
+        "existing",
+        "unknown"
+      ],
+      "title": "AcquisitionClass",
+      "type": "string"
+    },
+    "TransactionStatus": {
+      "enum": [
+        "pending",
+        "rejected",
+        "confirmed",
+        "paid",
+        "refunded",
+        "charged_back"
+      ],
+      "title": "TransactionStatus",
+      "type": "string"
+    },
+    "TransactionStatusEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "effective_at": {
+          "format": "date-time",
+          "title": "Effective At",
+          "type": "string"
+        },
+        "source_row_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Row Sha256",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/TransactionStatus"
+        }
+      },
+      "required": [
+        "status",
+        "effective_at",
+        "source_row_sha256"
+      ],
+      "title": "TransactionStatusEvent",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "acquisition_class": {
+      "$ref": "#/$defs/AcquisitionClass"
+    },
+    "acquisition_evidence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Acquisition Evidence Sha256",
+      "type": "string"
+    },
+    "affiliate_click_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Affiliate Click Id Sha256",
+      "type": "string"
+    },
+    "amount": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Amount"
+    },
+    "attributed_at": {
+      "format": "date-time",
+      "title": "Attributed At",
+      "type": "string"
+    },
+    "cohort_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Cohort Id",
+      "type": "string"
+    },
+    "currency": {
+      "pattern": "^[A-Z]{3}$",
+      "title": "Currency",
+      "type": "string"
+    },
+    "current_status": {
+      "$ref": "#/$defs/TransactionStatus"
+    },
+    "partner_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Partner Id",
+      "type": "string"
+    },
+    "status_events": {
+      "items": {
+        "$ref": "#/$defs/TransactionStatusEvent"
+      },
+      "minItems": 1,
+      "title": "Status Events",
+      "type": "array"
+    },
+    "transaction_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Transaction Id Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "transaction_id_sha256",
+    "affiliate_click_id_sha256",
+    "partner_id",
+    "cohort_id",
+    "currency",
+    "amount",
+    "acquisition_class",
+    "acquisition_evidence_sha256",
+    "attributed_at",
+    "current_status",
+    "status_events"
+  ],
+  "title": "CurrentTransaction",
+  "type": "object"
+}

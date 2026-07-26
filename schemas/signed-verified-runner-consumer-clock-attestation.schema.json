@@ -1,0 +1,89 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Attestation Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "observed_evidence_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Observed Evidence Head Sha256",
+      "type": "string"
+    },
+    "observed_sequence": {
+      "maximum": 1000000000,
+      "minimum": 0,
+      "title": "Observed Sequence",
+      "type": "integer"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Signer Issuer",
+      "type": "string"
+    },
+    "signer_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Signer Key Id Sha256",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "time_auditor",
+      "default": "time_auditor",
+      "title": "Signer Role",
+      "type": "string"
+    },
+    "store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Id Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "request_sha256",
+    "store_id_sha256",
+    "observed_sequence",
+    "observed_evidence_head_sha256",
+    "observed_at",
+    "issued_at",
+    "expires_at",
+    "signer_issuer",
+    "signer_key_id_sha256",
+    "attestation_sha256",
+    "signature_base64url"
+  ],
+  "title": "SignedVerifiedRunnerConsumerClockAttestation",
+  "type": "object"
+}

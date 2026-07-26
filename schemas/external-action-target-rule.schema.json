@@ -1,0 +1,76 @@
+{
+  "$defs": {
+    "ActionEnvironment": {
+      "enum": [
+        "vendor_contact",
+        "production"
+      ],
+      "title": "ActionEnvironment",
+      "type": "string"
+    },
+    "ExternalAction": {
+      "enum": [
+        "send_rights_inquiry",
+        "submit_affiliate_application",
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ExternalAction",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "$ref": "#/$defs/ExternalAction"
+    },
+    "environment": {
+      "$ref": "#/$defs/ActionEnvironment"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "target_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Sha256",
+      "type": "string"
+    },
+    "vendor_slug": {
+      "anyOf": [
+        {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Vendor Slug"
+    }
+  },
+  "required": [
+    "action",
+    "environment",
+    "environment_sha256",
+    "property_record_sha256",
+    "target_sha256"
+  ],
+  "title": "ExternalActionTargetRule",
+  "type": "object"
+}

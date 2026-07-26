@@ -1,0 +1,181 @@
+{
+  "$defs": {
+    "VerifiedRunnerCheck": {
+      "enum": [
+        "python_base",
+        "python_traction",
+        "python_production_consumer",
+        "schema_determinism",
+        "blocked_fixture_determinism",
+        "uv_lock",
+        "compileall",
+        "secret_scan",
+        "web_tests",
+        "web_lint",
+        "dependency_audit",
+        "workflow_verifier",
+        "contract_storage_audit",
+        "tco_qa_audit"
+      ],
+      "title": "VerifiedRunnerCheck",
+      "type": "string"
+    },
+    "VerifiedRunnerRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "$ref": "#/$defs/VerifiedRunnerCheck"
+        },
+        "minimum_assertions": {
+          "maximum": 100000000,
+          "minimum": 1,
+          "title": "Minimum Assertions",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "spec_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Spec Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "check",
+        "spec_sha256",
+        "minimum_assertions"
+      ],
+      "title": "VerifiedRunnerRequirement",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "advisory_snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Advisory Snapshot Sha256",
+      "type": "string"
+    },
+    "challenge_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Challenge Sha256",
+      "type": "string"
+    },
+    "clock_response_timeout_seconds": {
+      "maximum": 60,
+      "minimum": 1,
+      "title": "Clock Response Timeout Seconds",
+      "type": "integer"
+    },
+    "image_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Image Identity Sha256",
+      "type": "string"
+    },
+    "maximum_advisory_age_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Advisory Age Seconds",
+      "type": "integer"
+    },
+    "maximum_advisory_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Advisory Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_attestation_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Attestation Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_challenge_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Challenge Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_clock_attestation_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Clock Attestation Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_clock_observation_lag_seconds": {
+      "maximum": 300,
+      "minimum": 0,
+      "title": "Maximum Clock Observation Lag Seconds",
+      "type": "integer"
+    },
+    "maximum_image_attestation_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Image Attestation Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_result_age_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Result Age Seconds",
+      "type": "integer"
+    },
+    "maximum_result_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Result Ttl Seconds",
+      "type": "integer"
+    },
+    "policy_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "requirements": {
+      "items": {
+        "$ref": "#/$defs/VerifiedRunnerRequirement"
+      },
+      "maxItems": 14,
+      "minItems": 14,
+      "title": "Requirements",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "policy_id",
+    "trust_store_sha256",
+    "challenge_sha256",
+    "image_identity_sha256",
+    "advisory_snapshot_sha256",
+    "requirements",
+    "maximum_advisory_age_seconds",
+    "maximum_advisory_ttl_seconds",
+    "maximum_result_age_seconds",
+    "maximum_result_ttl_seconds",
+    "maximum_attestation_ttl_seconds",
+    "maximum_challenge_ttl_seconds",
+    "maximum_clock_attestation_ttl_seconds",
+    "maximum_clock_observation_lag_seconds",
+    "clock_response_timeout_seconds",
+    "maximum_image_attestation_ttl_seconds"
+  ],
+  "title": "VerifiedRunnerPolicy",
+  "type": "object"
+}

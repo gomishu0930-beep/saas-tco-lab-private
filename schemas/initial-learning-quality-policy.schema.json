@@ -1,0 +1,152 @@
+{
+  "$defs": {
+    "InitialLearningSourceKind": {
+      "enum": [
+        "field_evidence",
+        "keyword_demand",
+        "search_console",
+        "analytics",
+        "affiliate",
+        "operations"
+      ],
+      "title": "InitialLearningSourceKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "join_required_kinds": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/InitialLearningSourceKind"
+      },
+      "title": "Join Required Kinds",
+      "type": "array"
+    },
+    "maximum_attestation_age_seconds": {
+      "default": 86400,
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Attestation Age Seconds",
+      "type": "integer"
+    },
+    "maximum_capture_age_seconds": {
+      "default": 604800,
+      "maximum": 31536000,
+      "minimum": 1,
+      "title": "Maximum Capture Age Seconds",
+      "type": "integer"
+    },
+    "maximum_duplicate_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Maximum Duplicate Rate"
+    },
+    "maximum_missing_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Maximum Missing Rate"
+    },
+    "maximum_quarantine_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0",
+      "title": "Maximum Quarantine Rate"
+    },
+    "maximum_reporting_lag_seconds": {
+      "default": 86400,
+      "maximum": 2592000,
+      "minimum": 0,
+      "title": "Maximum Reporting Lag Seconds",
+      "type": "integer"
+    },
+    "minimum_cases_per_domain": {
+      "default": 3,
+      "maximum": 1000,
+      "minimum": 1,
+      "title": "Minimum Cases Per Domain",
+      "type": "integer"
+    },
+    "minimum_join_coverage": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0.99",
+      "title": "Minimum Join Coverage"
+    },
+    "policy_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Id Sha256",
+      "type": "string"
+    },
+    "required_source_kinds": {
+      "items": {
+        "$ref": "#/$defs/InitialLearningSourceKind"
+      },
+      "minItems": 1,
+      "title": "Required Source Kinds",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "policy_id_sha256",
+    "created_at",
+    "expires_at",
+    "required_source_kinds"
+  ],
+  "title": "InitialLearningQualityPolicy",
+  "type": "object"
+}

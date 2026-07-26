@@ -1,0 +1,70 @@
+{
+  "$defs": {
+    "VerifiedRunnerCheck": {
+      "enum": [
+        "python_base",
+        "python_traction",
+        "python_production_consumer",
+        "schema_determinism",
+        "blocked_fixture_determinism",
+        "uv_lock",
+        "compileall",
+        "secret_scan",
+        "web_tests",
+        "web_lint",
+        "dependency_audit",
+        "workflow_verifier",
+        "contract_storage_audit",
+        "tco_qa_audit"
+      ],
+      "title": "VerifiedRunnerCheck",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "check": {
+      "$ref": "#/$defs/VerifiedRunnerCheck"
+    },
+    "command_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Command Sha256",
+      "type": "string"
+    },
+    "minimum_assertions": {
+      "maximum": 100000000,
+      "minimum": 1,
+      "title": "Minimum Assertions",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "tool_name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Tool Name",
+      "type": "string"
+    },
+    "tool_version": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+      "title": "Tool Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "check",
+    "command_sha256",
+    "tool_name",
+    "tool_version",
+    "minimum_assertions"
+  ],
+  "title": "RepositoryVerificationRequirement",
+  "type": "object"
+}

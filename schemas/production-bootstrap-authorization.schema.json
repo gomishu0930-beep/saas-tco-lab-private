@@ -1,0 +1,113 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "controller_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Controller Key Id Sha256",
+      "type": "string"
+    },
+    "deployment_candidate_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Deployment Candidate Sha256",
+      "type": "string"
+    },
+    "environment_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Identity Sha256",
+      "type": "string"
+    },
+    "evidence_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Bundle Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "human_approval_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Human Approval Sha256",
+      "type": "string"
+    },
+    "integration_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Integration Policy Sha256",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "const": "production_adapter_bootstrap",
+      "default": "production_adapter_bootstrap",
+      "title": "Scope",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "controller",
+      "default": "controller",
+      "title": "Signer Role",
+      "type": "string"
+    },
+    "tco_qa_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Tco Qa Attestation Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "controller_key_id_sha256",
+    "report_sha256",
+    "evidence_bundle_sha256",
+    "tco_qa_attestation_sha256",
+    "human_approval_sha256",
+    "plan_sha256",
+    "integration_policy_sha256",
+    "environment_identity_sha256",
+    "deployment_candidate_sha256",
+    "issued_at",
+    "expires_at",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "ProductionBootstrapAuthorization",
+  "type": "object"
+}

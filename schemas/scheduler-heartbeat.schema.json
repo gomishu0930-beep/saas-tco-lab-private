@@ -1,0 +1,39 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "next_run_at": {
+      "format": "date-time",
+      "title": "Next Run At",
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "run_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Run Receipt Sha256",
+      "type": "string"
+    },
+    "scheduler_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Scheduler Id Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "scheduler_id_sha256",
+    "run_receipt_sha256",
+    "observed_at",
+    "next_run_at"
+  ],
+  "title": "SchedulerHeartbeat",
+  "type": "object"
+}

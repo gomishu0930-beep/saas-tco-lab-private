@@ -1,0 +1,80 @@
+{
+  "$defs": {
+    "CoveragePartitionKind": {
+      "enum": [
+        "demand_cluster",
+        "qualified_session",
+        "valid_outbound_click",
+        "affiliate_accepted_click",
+        "transaction",
+        "status_event",
+        "payout_row",
+        "payout_adjustment",
+        "operation_day",
+        "logical_job_run",
+        "fault_exercise"
+      ],
+      "title": "CoveragePartitionKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "accepted_records": {
+      "minimum": 0,
+      "title": "Accepted Records",
+      "type": "integer"
+    },
+    "conflict_records": {
+      "minimum": 0,
+      "title": "Conflict Records",
+      "type": "integer"
+    },
+    "duplicate_records": {
+      "minimum": 0,
+      "title": "Duplicate Records",
+      "type": "integer"
+    },
+    "identity_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Identity Set Sha256",
+      "type": "string"
+    },
+    "input_records": {
+      "minimum": 0,
+      "title": "Input Records",
+      "type": "integer"
+    },
+    "kind": {
+      "$ref": "#/$defs/CoveragePartitionKind"
+    },
+    "output_records": {
+      "minimum": 0,
+      "title": "Output Records",
+      "type": "integer"
+    },
+    "rejected_records": {
+      "minimum": 0,
+      "title": "Rejected Records",
+      "type": "integer"
+    },
+    "unknown_records": {
+      "minimum": 0,
+      "title": "Unknown Records",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "kind",
+    "input_records",
+    "accepted_records",
+    "rejected_records",
+    "duplicate_records",
+    "conflict_records",
+    "unknown_records",
+    "output_records",
+    "identity_set_sha256"
+  ],
+  "title": "CoveragePartition",
+  "type": "object"
+}

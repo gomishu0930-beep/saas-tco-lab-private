@@ -1,0 +1,126 @@
+{
+  "$defs": {
+    "JournalEventKind": {
+      "enum": [
+        "grant",
+        "claim",
+        "revocation",
+        "receipt"
+      ],
+      "title": "JournalEventKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "entry_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Entry Sha256",
+      "type": "string"
+    },
+    "event_kind": {
+      "$ref": "#/$defs/JournalEventKind"
+    },
+    "event_payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Event Payload Sha256",
+      "type": "string"
+    },
+    "grant_payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grant Payload Sha256",
+      "type": "string"
+    },
+    "idempotency_key_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Idempotency Key Sha256",
+      "type": "string"
+    },
+    "issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "journal_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Journal Id",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "previous_entry_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Previous Entry Sha256"
+    },
+    "recorded_at": {
+      "format": "date-time",
+      "title": "Recorded At",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "const": "controller_journal_entry",
+      "default": "controller_journal_entry",
+      "title": "Scope",
+      "type": "string"
+    },
+    "sequence": {
+      "minimum": 1,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "controller",
+      "default": "controller",
+      "title": "Signer Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "key_id_sha256",
+    "journal_id",
+    "sequence",
+    "previous_entry_sha256",
+    "event_kind",
+    "event_payload_sha256",
+    "request_sha256",
+    "grant_payload_sha256",
+    "idempotency_key_sha256",
+    "recorded_at",
+    "entry_sha256",
+    "signature_base64url"
+  ],
+  "title": "ActionJournalEntry",
+  "type": "object"
+}

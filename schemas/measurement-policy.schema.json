@@ -1,0 +1,135 @@
+{
+  "$defs": {
+    "FaultId": {
+      "enum": [
+        "fi-01-price-change",
+        "fi-02-plan-rename",
+        "fi-03-billing-period-change",
+        "fi-04-currency-change",
+        "fi-05-quota-overage-change",
+        "fi-06-source-conflict",
+        "fi-07-affiliate-expiry",
+        "fi-08-fetch-failure-duplicate-delivery"
+      ],
+      "title": "FaultId",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "approved_fault_requirements_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Approved Fault Requirements Sha256",
+      "type": "string"
+    },
+    "approved_rule_pins_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Approved Rule Pins Sha256",
+      "type": "string"
+    },
+    "approved_source_authorities_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Approved Source Authorities Sha256",
+      "type": "string"
+    },
+    "business_timezone": {
+      "const": "Asia/Tokyo",
+      "default": "Asia/Tokyo",
+      "title": "Business Timezone",
+      "type": "string"
+    },
+    "country": {
+      "const": "JP",
+      "default": "JP",
+      "title": "Country",
+      "type": "string"
+    },
+    "currency": {
+      "const": "JPY",
+      "default": "JPY",
+      "title": "Currency",
+      "type": "string"
+    },
+    "language": {
+      "const": "ja",
+      "default": "ja",
+      "title": "Language",
+      "type": "string"
+    },
+    "maximum_index_ttl_seconds": {
+      "maximum": 2678400,
+      "minimum": 1,
+      "title": "Maximum Index Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_plan_ttl_seconds": {
+      "maximum": 7776000,
+      "minimum": 1,
+      "title": "Maximum Plan Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_producer_ttl_seconds": {
+      "maximum": 2678400,
+      "minimum": 1,
+      "title": "Maximum Producer Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_report_ttl_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Report Ttl Seconds",
+      "type": "integer"
+    },
+    "observation_days": {
+      "const": 30,
+      "default": 30,
+      "title": "Observation Days",
+      "type": "integer"
+    },
+    "property_domain_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Domain Sha256",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "required_fault_ids": {
+      "items": {
+        "$ref": "#/$defs/FaultId"
+      },
+      "maxItems": 8,
+      "minItems": 8,
+      "title": "Required Fault Ids",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trust_store_sha256",
+    "property_record_sha256",
+    "property_domain_sha256",
+    "approved_rule_pins_sha256",
+    "approved_source_authorities_sha256",
+    "approved_fault_requirements_sha256",
+    "required_fault_ids",
+    "maximum_plan_ttl_seconds",
+    "maximum_producer_ttl_seconds",
+    "maximum_index_ttl_seconds",
+    "maximum_report_ttl_seconds"
+  ],
+  "title": "MeasurementPolicy",
+  "type": "object"
+}

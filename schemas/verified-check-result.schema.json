@@ -1,0 +1,292 @@
+{
+  "$defs": {
+    "VerifiedRunnerCheck": {
+      "enum": [
+        "python_base",
+        "python_traction",
+        "python_production_consumer",
+        "schema_determinism",
+        "blocked_fixture_determinism",
+        "uv_lock",
+        "compileall",
+        "secret_scan",
+        "web_tests",
+        "web_lint",
+        "dependency_audit",
+        "workflow_verifier",
+        "contract_storage_audit",
+        "tco_qa_audit"
+      ],
+      "title": "VerifiedRunnerCheck",
+      "type": "string"
+    },
+    "VerifiedTerminationReason": {
+      "enum": [
+        "exited",
+        "signalled",
+        "timeout",
+        "output_limit",
+        "launch_error"
+      ],
+      "title": "VerifiedTerminationReason",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "advisory_bytes_read": {
+      "default": 0,
+      "maximum": 4000000000,
+      "minimum": 0,
+      "title": "Advisory Bytes Read",
+      "type": "integer"
+    },
+    "advisory_database_sha256": {
+      "default": "0000000000000000000000000000000000000000000000000000000000000000",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Advisory Database Sha256",
+      "type": "string"
+    },
+    "advisory_file_identity_sha256": {
+      "default": "0000000000000000000000000000000000000000000000000000000000000000",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Advisory File Identity Sha256",
+      "type": "string"
+    },
+    "advisory_input_complete": {
+      "default": false,
+      "title": "Advisory Input Complete",
+      "type": "boolean"
+    },
+    "advisory_snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Advisory Snapshot Sha256",
+      "type": "string"
+    },
+    "assertions_executed": {
+      "maximum": 100000000,
+      "minimum": 1,
+      "title": "Assertions Executed",
+      "type": "integer"
+    },
+    "challenge_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Challenge Sha256",
+      "type": "string"
+    },
+    "check": {
+      "$ref": "#/$defs/VerifiedRunnerCheck"
+    },
+    "duration_milliseconds": {
+      "maximum": 3600000,
+      "minimum": 0,
+      "title": "Duration Milliseconds",
+      "type": "integer"
+    },
+    "ended_at": {
+      "format": "date-time",
+      "title": "Ended At",
+      "type": "string"
+    },
+    "exit_code": {
+      "anyOf": [
+        {
+          "maximum": 255,
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Exit Code"
+    },
+    "failures": {
+      "maximum": 100000000,
+      "minimum": 0,
+      "title": "Failures",
+      "type": "integer"
+    },
+    "image_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Image Identity Sha256",
+      "type": "string"
+    },
+    "monotonic_duration_nanoseconds": {
+      "maximum": 3600000000000,
+      "minimum": 0,
+      "title": "Monotonic Duration Nanoseconds",
+      "type": "integer"
+    },
+    "node_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Node Id Sha256",
+      "type": "string"
+    },
+    "not_after": {
+      "format": "date-time",
+      "title": "Not After",
+      "type": "string"
+    },
+    "parser_binary_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Parser Binary Sha256",
+      "type": "string"
+    },
+    "parser_name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Parser Name",
+      "type": "string"
+    },
+    "parser_output_bytes": {
+      "maximum": 67108864,
+      "minimum": 1,
+      "title": "Parser Output Bytes",
+      "type": "integer"
+    },
+    "parser_output_complete": {
+      "const": true,
+      "default": true,
+      "title": "Parser Output Complete",
+      "type": "boolean"
+    },
+    "parser_output_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Parser Output Sha256",
+      "type": "string"
+    },
+    "parser_version": {
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+      "title": "Parser Version",
+      "type": "string"
+    },
+    "result_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signal_number": {
+      "anyOf": [
+        {
+          "maximum": 64,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Signal Number"
+    },
+    "skipped": {
+      "maximum": 100000000,
+      "minimum": 0,
+      "title": "Skipped",
+      "type": "integer"
+    },
+    "spec_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Spec Sha256",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    },
+    "stderr_bytes": {
+      "maximum": 67108864,
+      "minimum": 0,
+      "title": "Stderr Bytes",
+      "type": "integer"
+    },
+    "stderr_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Stderr Sha256",
+      "type": "string"
+    },
+    "stderr_truncated": {
+      "title": "Stderr Truncated",
+      "type": "boolean"
+    },
+    "stdout_bytes": {
+      "maximum": 67108864,
+      "minimum": 0,
+      "title": "Stdout Bytes",
+      "type": "integer"
+    },
+    "stdout_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Stdout Sha256",
+      "type": "string"
+    },
+    "stdout_truncated": {
+      "title": "Stdout Truncated",
+      "type": "boolean"
+    },
+    "subject_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Tree Sha256",
+      "type": "string"
+    },
+    "termination_reason": {
+      "$ref": "#/$defs/VerifiedTerminationReason"
+    },
+    "tool_name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Tool Name",
+      "type": "string"
+    },
+    "tool_version": {
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+      "title": "Tool Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "check",
+    "challenge_sha256",
+    "spec_sha256",
+    "subject_tree_sha256",
+    "image_identity_sha256",
+    "advisory_snapshot_sha256",
+    "node_id_sha256",
+    "started_at",
+    "ended_at",
+    "not_after",
+    "duration_milliseconds",
+    "monotonic_duration_nanoseconds",
+    "termination_reason",
+    "stdout_sha256",
+    "stdout_bytes",
+    "stdout_truncated",
+    "stderr_sha256",
+    "stderr_bytes",
+    "stderr_truncated",
+    "parser_name",
+    "parser_version",
+    "parser_binary_sha256",
+    "parser_output_sha256",
+    "parser_output_bytes",
+    "tool_name",
+    "tool_version",
+    "assertions_executed",
+    "failures",
+    "skipped",
+    "result_sha256"
+  ],
+  "title": "VerifiedCheckResult",
+  "type": "object"
+}

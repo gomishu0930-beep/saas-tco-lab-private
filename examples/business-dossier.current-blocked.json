@@ -1,0 +1,69 @@
+{
+  "schema_version": "3.0",
+  "evidence_version": "current-state-2026-07-21-no-production-evidence",
+  "provenance": {
+    "builder_version": "2.0",
+    "property_domain": "unconfigured.example",
+    "rights_bundle_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "affiliate_bundle_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "demand_source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "cohort_source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "operations_source_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+    "assembled_at": "2026-07-21T12:00:00Z"
+  },
+  "as_of": "2026-07-21T12:00:00Z",
+  "expires_at": {
+    "rights": "2026-08-20T12:00:00Z",
+    "affiliate": "2026-08-20T12:00:00Z",
+    "demand": "2026-08-20T12:00:00Z",
+    "operations": "2026-08-20T12:00:00Z",
+    "cohort": "2026-08-20T12:00:00Z"
+  },
+  "approved_affiliate_ids": [],
+  "rights_approved": false,
+  "scenarios": {
+    "bear": {
+      "deduplicated_search_volume": "0",
+      "organic_visibility": "0",
+      "rank_ctr": "0",
+      "qualified_rate": "0",
+      "outbound_click_rate": "0",
+      "volume_is_deduplicated": true
+    },
+    "base": {
+      "deduplicated_search_volume": "0",
+      "organic_visibility": "0",
+      "rank_ctr": "0",
+      "qualified_rate": "0",
+      "outbound_click_rate": "0",
+      "volume_is_deduplicated": true
+    },
+    "bull": {
+      "deduplicated_search_volume": "0",
+      "organic_visibility": "0",
+      "rank_ctr": "0",
+      "qualified_rate": "0",
+      "outbound_click_rate": "0",
+      "volume_is_deduplicated": true
+    }
+  },
+  "cohort": {
+    "currency": "JPY",
+    "valid_clicks": 0,
+    "age_days": 0,
+    "commissions": {
+      "pending": "0",
+      "rejected": "0",
+      "confirmed": "0",
+      "paid": "0"
+    }
+  },
+  "human_hours_per_month": "0",
+  "automation_rate": "0",
+  "major_misstatements": 0,
+  "shadow_observation_days": 0,
+  "job_runs_total": 0,
+  "job_runs_succeeded": 0,
+  "exceptions_total": 0,
+  "rollback_test_status": "not_run"
+}

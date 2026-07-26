@@ -1,0 +1,106 @@
+{
+  "$defs": {
+    "ActionEnvironment": {
+      "enum": [
+        "vendor_contact",
+        "production"
+      ],
+      "title": "ActionEnvironment",
+      "type": "string"
+    },
+    "ExternalAction": {
+      "enum": [
+        "send_rights_inquiry",
+        "submit_affiliate_application",
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ExternalAction",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Authenticated local one-shot claim emitted by the execution guard.",
+  "properties": {
+    "action": {
+      "$ref": "#/$defs/ExternalAction"
+    },
+    "claim_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Id Sha256",
+      "type": "string"
+    },
+    "claim_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Sha256",
+      "type": "string"
+    },
+    "claimed_at": {
+      "format": "date-time",
+      "title": "Claimed At",
+      "type": "string"
+    },
+    "environment": {
+      "$ref": "#/$defs/ActionEnvironment"
+    },
+    "external_action_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "External Action Policy Sha256",
+      "type": "string"
+    },
+    "grant_payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Grant Payload Sha256",
+      "type": "string"
+    },
+    "human_approval_payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Human Approval Payload Sha256",
+      "type": "string"
+    },
+    "idempotency_key_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Idempotency Key Sha256",
+      "type": "string"
+    },
+    "observed_pre_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Observed Pre State Sha256",
+      "type": "string"
+    },
+    "request_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "claim_id_sha256",
+    "request_id",
+    "request_sha256",
+    "human_approval_payload_sha256",
+    "grant_payload_sha256",
+    "external_action_policy_sha256",
+    "action",
+    "environment",
+    "idempotency_key_sha256",
+    "observed_pre_state_sha256",
+    "claimed_at",
+    "claim_sha256"
+  ],
+  "title": "ActionExecutionClaim",
+  "type": "object"
+}

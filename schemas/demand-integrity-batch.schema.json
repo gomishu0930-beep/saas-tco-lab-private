@@ -1,0 +1,288 @@
+{
+  "$defs": {
+    "DemandClusterSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "cluster_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Cluster Id",
+          "type": "string"
+        },
+        "cluster_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cluster Receipt Sha256",
+          "type": "string"
+        },
+        "deduplicated_monthly_volume": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Deduplicated Monthly Volume"
+        }
+      },
+      "required": [
+        "cluster_id",
+        "cluster_receipt_sha256",
+        "deduplicated_monthly_volume"
+      ],
+      "title": "DemandClusterSummary",
+      "type": "object"
+    },
+    "DemandSummaryBatch": {
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/ScenarioRates"
+        },
+        "bear": {
+          "$ref": "#/$defs/ScenarioRates"
+        },
+        "bull": {
+          "$ref": "#/$defs/ScenarioRates"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "clusters": {
+          "items": {
+            "$ref": "#/$defs/DemandClusterSummary"
+          },
+          "minItems": 1,
+          "title": "Clusters",
+          "type": "array"
+        },
+        "country": {
+          "const": "JP",
+          "default": "JP",
+          "title": "Country",
+          "type": "string"
+        },
+        "deduplication_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Deduplication Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "language": {
+          "const": "ja",
+          "default": "ja",
+          "title": "Language",
+          "type": "string"
+        },
+        "measurement_version": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Measurement Version",
+          "type": "string"
+        },
+        "period_unit": {
+          "const": "monthly",
+          "default": "monthly",
+          "title": "Period Unit",
+          "type": "string"
+        },
+        "receipt": {
+          "$ref": "#/$defs/EvidenceReceipt"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_month": {
+          "title": "Source Month",
+          "type": "string"
+        },
+        "source_timezone": {
+          "const": "Asia/Tokyo",
+          "default": "Asia/Tokyo",
+          "title": "Source Timezone",
+          "type": "string"
+        },
+        "volume_is_deduplicated": {
+          "const": true,
+          "title": "Volume Is Deduplicated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "measurement_version",
+        "receipt",
+        "source_month",
+        "deduplication_sha256",
+        "volume_is_deduplicated",
+        "captured_at",
+        "expires_at",
+        "clusters",
+        "bear",
+        "base",
+        "bull"
+      ],
+      "title": "DemandSummaryBatch",
+      "type": "object"
+    },
+    "EvidenceReceipt": {
+      "additionalProperties": false,
+      "description": "Shared hash-only provenance for an already-sanitized L2 summary.",
+      "properties": {
+        "authority": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Authority",
+          "type": "string"
+        },
+        "authority_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authority Record Sha256",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "source_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "authority",
+        "authority_record_sha256",
+        "source_receipt_sha256",
+        "retrieved_at"
+      ],
+      "title": "EvidenceReceipt",
+      "type": "object"
+    },
+    "ScenarioRates": {
+      "additionalProperties": false,
+      "properties": {
+        "organic_visibility": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Organic Visibility"
+        },
+        "outbound_click_rate": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Outbound Click Rate"
+        },
+        "qualified_rate": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Qualified Rate"
+        },
+        "rank_ctr": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Rank Ctr"
+        }
+      },
+      "required": [
+        "organic_visibility",
+        "rank_ctr",
+        "qualified_rate",
+        "outbound_click_rate"
+      ],
+      "title": "ScenarioRates",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "privacy_minimization_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Privacy Minimization Sha256",
+      "type": "string"
+    },
+    "qualification_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Qualification Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Session Identity Sha256",
+      "type": "string"
+    },
+    "summary": {
+      "$ref": "#/$defs/DemandSummaryBatch"
+    },
+    "valid_outbound_filter_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Valid Outbound Filter Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "summary",
+    "qualification_sha256",
+    "session_identity_sha256",
+    "valid_outbound_filter_sha256",
+    "privacy_minimization_sha256"
+  ],
+  "title": "DemandIntegrityBatch",
+  "type": "object"
+}

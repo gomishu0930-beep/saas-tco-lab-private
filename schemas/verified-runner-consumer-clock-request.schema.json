@@ -1,0 +1,64 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "authority_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authority Sha256",
+      "type": "string"
+    },
+    "challenge_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Challenge Sha256",
+      "type": "string"
+    },
+    "evidence_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Bundle Sha256",
+      "type": "string"
+    },
+    "expected_previous_evidence_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Previous Evidence Head Sha256",
+      "type": "string"
+    },
+    "expected_sequence": {
+      "maximum": 1000000000,
+      "minimum": 1,
+      "title": "Expected Sequence",
+      "type": "integer"
+    },
+    "request_nonce_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Nonce Sha256",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Id Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "store_id_sha256",
+    "expected_sequence",
+    "expected_previous_evidence_head_sha256",
+    "challenge_sha256",
+    "evidence_bundle_sha256",
+    "authority_sha256",
+    "request_nonce_sha256",
+    "request_sha256"
+  ],
+  "title": "VerifiedRunnerConsumerClockRequest",
+  "type": "object"
+}

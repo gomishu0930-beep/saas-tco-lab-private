@@ -1,0 +1,141 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "attribution_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Attribution Sha256",
+      "type": "string"
+    },
+    "coverage_completeness_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Coverage Completeness Sha256",
+      "type": "string"
+    },
+    "demand_deduplication_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Demand Deduplication Sha256",
+      "type": "string"
+    },
+    "event_deduplication_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Event Deduplication Sha256",
+      "type": "string"
+    },
+    "exception_deduplication_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Exception Deduplication Sha256",
+      "type": "string"
+    },
+    "fault_catalog_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Fault Catalog Sha256",
+      "type": "string"
+    },
+    "human_time_union_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Human Time Union Sha256",
+      "type": "string"
+    },
+    "job_schedule_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Schedule Sha256",
+      "type": "string"
+    },
+    "job_status_mapping_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Status Mapping Sha256",
+      "type": "string"
+    },
+    "new_acquisition_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "New Acquisition Sha256",
+      "type": "string"
+    },
+    "payout_reconciliation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payout Reconciliation Sha256",
+      "type": "string"
+    },
+    "privacy_minimization_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Privacy Minimization Sha256",
+      "type": "string"
+    },
+    "qa_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Qa Policy Sha256",
+      "type": "string"
+    },
+    "qualification_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Qualification Sha256",
+      "type": "string"
+    },
+    "refund_chargeback_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Refund Chargeback Sha256",
+      "type": "string"
+    },
+    "retry_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Retry Identity Sha256",
+      "type": "string"
+    },
+    "routine_inventory_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Routine Inventory Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Session Identity Sha256",
+      "type": "string"
+    },
+    "status_transition_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Status Transition Sha256",
+      "type": "string"
+    },
+    "transaction_deduplication_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Transaction Deduplication Sha256",
+      "type": "string"
+    },
+    "valid_outbound_filter_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Valid Outbound Filter Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "qualification_sha256",
+    "session_identity_sha256",
+    "demand_deduplication_sha256",
+    "valid_outbound_filter_sha256",
+    "event_deduplication_sha256",
+    "attribution_sha256",
+    "transaction_deduplication_sha256",
+    "status_transition_sha256",
+    "refund_chargeback_sha256",
+    "new_acquisition_sha256",
+    "payout_reconciliation_sha256",
+    "routine_inventory_sha256",
+    "job_schedule_sha256",
+    "job_status_mapping_sha256",
+    "retry_identity_sha256",
+    "exception_deduplication_sha256",
+    "human_time_union_sha256",
+    "qa_policy_sha256",
+    "fault_catalog_sha256",
+    "privacy_minimization_sha256",
+    "coverage_completeness_sha256"
+  ],
+  "title": "MeasurementRulePins",
+  "type": "object"
+}

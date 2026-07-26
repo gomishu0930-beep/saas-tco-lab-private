@@ -1,0 +1,167 @@
+{
+  "$defs": {
+    "AssuranceCheck": {
+      "enum": [
+        "python_tests",
+        "web_local_tests",
+        "web_production_tests",
+        "schema_determinism",
+        "lock_integrity",
+        "sbom_current",
+        "secret_scan",
+        "dependency_audit",
+        "threat_model_review",
+        "accessibility",
+        "mobile_reflow",
+        "seo_policy",
+        "rollback_faults"
+      ],
+      "title": "AssuranceCheck",
+      "type": "string"
+    },
+    "AssuranceRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "$ref": "#/$defs/AssuranceCheck"
+        },
+        "command_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Command Sha256",
+          "type": "string"
+        },
+        "facts_kind": {
+          "$ref": "#/$defs/EvidenceFactsKind"
+        },
+        "subject_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Sha256",
+          "type": "string"
+        },
+        "tool_name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Tool Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "check",
+        "facts_kind",
+        "tool_name",
+        "tool_version",
+        "command_sha256",
+        "subject_sha256"
+      ],
+      "title": "AssuranceRequirement",
+      "type": "object"
+    },
+    "EvidenceFactsKind": {
+      "enum": [
+        "test_suite",
+        "determinism",
+        "integrity",
+        "scan",
+        "review",
+        "route_assurance"
+      ],
+      "title": "EvidenceFactsKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "assurance_runner_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Assurance Runner Key Id Sha256",
+      "type": "string"
+    },
+    "human_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Human Key Id Sha256",
+      "type": "string"
+    },
+    "maximum_attestation_ttl_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Attestation Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_evidence_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Evidence Ttl Seconds",
+      "type": "integer"
+    },
+    "policy_id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "required_local_checks": {
+      "default": [
+        "accessibility",
+        "dependency_audit",
+        "lock_integrity",
+        "mobile_reflow",
+        "python_tests",
+        "rollback_faults",
+        "sbom_current",
+        "schema_determinism",
+        "secret_scan",
+        "seo_policy",
+        "threat_model_review",
+        "web_local_tests",
+        "web_production_tests"
+      ],
+      "items": {
+        "$ref": "#/$defs/AssuranceCheck"
+      },
+      "title": "Required Local Checks",
+      "type": "array"
+    },
+    "requirements": {
+      "items": {
+        "$ref": "#/$defs/AssuranceRequirement"
+      },
+      "title": "Requirements",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "tco_qa_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Tco Qa Key Id Sha256",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "policy_id",
+    "trust_store_sha256",
+    "tco_qa_key_id_sha256",
+    "human_key_id_sha256",
+    "assurance_runner_key_id_sha256",
+    "requirements",
+    "maximum_evidence_ttl_seconds",
+    "maximum_attestation_ttl_seconds"
+  ],
+  "title": "AssurancePolicy",
+  "type": "object"
+}

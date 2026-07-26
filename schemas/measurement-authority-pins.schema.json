@@ -1,0 +1,42 @@
+{
+  "additionalProperties": false,
+  "description": "Consumer-owned bootstrap values; never derive these from an input bundle.",
+  "properties": {
+    "expected_bundle_index_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Bundle Index Sha256",
+      "type": "string"
+    },
+    "expected_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Policy Sha256",
+      "type": "string"
+    },
+    "expected_run_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Expected Run Id",
+      "type": "string"
+    },
+    "expected_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Trust Store Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "expected_policy_sha256",
+    "expected_trust_store_sha256",
+    "expected_run_id",
+    "expected_bundle_index_sha256"
+  ],
+  "title": "MeasurementAuthorityPins",
+  "type": "object"
+}

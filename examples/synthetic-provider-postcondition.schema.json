@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:saas-preflight:synthetic-provider-postcondition:1.0",
+  "title": "Synthetic provider postcondition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "target_sha256",
+    "observed_post_state_sha256"
+  ],
+  "properties": {
+    "schema_version": {"const": "1.0"},
+    "target_sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "observed_post_state_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "schema_version": "1.0"
+}

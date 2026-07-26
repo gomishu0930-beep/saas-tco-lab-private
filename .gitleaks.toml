@@ -1,0 +1,8 @@
+[extend]
+useDefault = true
+
+[[allowlists]]
+description = "Generated web build and local runtime artifacts"
+paths = [
+  '''^site/(?:dist|\.next|\.wrangler|node_modules)/''',
+]

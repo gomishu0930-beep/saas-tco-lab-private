@@ -1,0 +1,72 @@
+{
+  "$defs": {
+    "ActivationDecision": {
+      "enum": [
+        "ready_for_human_gate",
+        "stop"
+      ],
+      "title": "ActivationDecision",
+      "type": "string"
+    },
+    "ActivationKind": {
+      "enum": [
+        "notion_editorial_ui",
+        "challenger_model",
+        "llm_observability",
+        "durable_scheduler",
+        "telemetry",
+        "cloud_runtime",
+        "public_hosting"
+      ],
+      "title": "ActivationKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "activation_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Activation Id Sha256",
+      "type": "string"
+    },
+    "authority": {
+      "const": "none",
+      "default": "none",
+      "title": "Authority",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/ActivationDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/ActivationKind"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "activation_id_sha256",
+    "kind",
+    "evaluated_at",
+    "decision",
+    "reasons"
+  ],
+  "title": "ConditionalActivationEvaluation",
+  "type": "object"
+}

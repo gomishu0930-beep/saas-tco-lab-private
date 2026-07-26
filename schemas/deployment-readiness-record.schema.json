@@ -1,0 +1,188 @@
+{
+  "$defs": {
+    "DeploymentReadinessFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "deployment_candidate_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Deployment Candidate Sha256",
+          "type": "string"
+        },
+        "environment_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Environment Identity Sha256",
+          "type": "string"
+        },
+        "expected_pre_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Pre State Sha256",
+          "type": "string"
+        },
+        "independent_readback_evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Independent Readback Evidence Sha256",
+          "type": "string"
+        },
+        "production_integration_plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Production Integration Plan Sha256",
+          "type": "string"
+        },
+        "property_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Property Record Sha256",
+          "type": "string"
+        },
+        "provider_target_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Provider Target Sha256",
+          "type": "string"
+        },
+        "release_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Release Artifact Sha256",
+          "type": "string"
+        },
+        "release_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Release Identity Sha256",
+          "type": "string"
+        },
+        "release_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Release Manifest Sha256",
+          "type": "string"
+        },
+        "rollback_active_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rollback Active State Sha256",
+          "type": "string"
+        },
+        "rollback_disable_evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rollback Disable Evidence Sha256",
+          "type": "string"
+        },
+        "rollback_expected_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rollback Expected State Sha256",
+          "type": "string"
+        },
+        "rollback_observed_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rollback Observed State Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "staged_expected_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Staged Expected State Sha256",
+          "type": "string"
+        },
+        "staged_observed_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Staged Observed State Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "property_record_sha256",
+        "environment_identity_sha256",
+        "release_identity_sha256",
+        "release_manifest_sha256",
+        "release_artifact_sha256",
+        "deployment_candidate_sha256",
+        "production_integration_plan_sha256",
+        "provider_target_sha256",
+        "expected_pre_state_sha256",
+        "independent_readback_evidence_sha256",
+        "rollback_disable_evidence_sha256",
+        "staged_expected_state_sha256",
+        "staged_observed_state_sha256",
+        "rollback_active_state_sha256",
+        "rollback_expected_state_sha256",
+        "rollback_observed_state_sha256"
+      ],
+      "title": "DeploymentReadinessFacts",
+      "type": "object"
+    },
+    "ProductionEvidenceProvenance": {
+      "enum": [
+        "production_environment",
+        "synthetic_contract"
+      ],
+      "title": "ProductionEvidenceProvenance",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "facts": {
+      "$ref": "#/$defs/DeploymentReadinessFacts"
+    },
+    "issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ProductionEvidenceProvenance"
+    },
+    "record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Record Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "provider_probe",
+      "default": "provider_probe",
+      "title": "Signer Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "facts",
+    "provenance",
+    "observed_at",
+    "expires_at",
+    "issuer",
+    "key_id_sha256",
+    "record_sha256",
+    "signature_base64url"
+  ],
+  "title": "DeploymentReadinessRecord",
+  "type": "object"
+}

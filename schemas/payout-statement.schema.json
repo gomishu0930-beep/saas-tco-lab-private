@@ -1,0 +1,107 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "currency": {
+      "pattern": "^[A-Z]{3}$",
+      "title": "Currency",
+      "type": "string"
+    },
+    "fees_tax_withholding": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Fees Tax Withholding"
+    },
+    "gross_amount": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Gross Amount"
+    },
+    "net_amount": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Net Amount"
+    },
+    "paid_transaction_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Paid Transaction Set Sha256",
+      "type": "string"
+    },
+    "payout_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payout Id Sha256",
+      "type": "string"
+    },
+    "period_ended_at": {
+      "format": "date-time",
+      "title": "Period Ended At",
+      "type": "string"
+    },
+    "period_started_at": {
+      "format": "date-time",
+      "title": "Period Started At",
+      "type": "string"
+    },
+    "reversal_amount": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Reversal Amount"
+    },
+    "snapshot_as_of": {
+      "format": "date-time",
+      "title": "Snapshot As Of",
+      "type": "string"
+    },
+    "statement_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Statement Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "statement_sha256",
+    "payout_id_sha256",
+    "currency",
+    "gross_amount",
+    "reversal_amount",
+    "fees_tax_withholding",
+    "net_amount",
+    "paid_transaction_set_sha256",
+    "period_started_at",
+    "period_ended_at",
+    "snapshot_as_of"
+  ],
+  "title": "PayoutStatement",
+  "type": "object"
+}

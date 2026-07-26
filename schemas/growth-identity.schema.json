@@ -1,0 +1,45 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "campaign_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Campaign Id Sha256",
+      "type": "string"
+    },
+    "cohort_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Cohort Id Sha256",
+      "type": "string"
+    },
+    "content_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Id Sha256",
+      "type": "string"
+    },
+    "cta_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Cta Id Sha256",
+      "type": "string"
+    },
+    "property_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Id Sha256",
+      "type": "string"
+    },
+    "query_cluster_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Query Cluster Id Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "property_id_sha256",
+    "content_id_sha256",
+    "query_cluster_id_sha256",
+    "campaign_id_sha256",
+    "cta_id_sha256",
+    "cohort_id_sha256"
+  ],
+  "title": "GrowthIdentity",
+  "type": "object"
+}

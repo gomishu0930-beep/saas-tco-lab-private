@@ -1,0 +1,213 @@
+{
+  "$defs": {
+    "ActionEnvironment": {
+      "enum": [
+        "vendor_contact",
+        "production"
+      ],
+      "title": "ActionEnvironment",
+      "type": "string"
+    },
+    "ExternalAction": {
+      "enum": [
+        "send_rights_inquiry",
+        "submit_affiliate_application",
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ExternalAction",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "$ref": "#/$defs/ExternalAction"
+    },
+    "artifact_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Artifact Sha256"
+    },
+    "environment": {
+      "$ref": "#/$defs/ActionEnvironment"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "expected_post_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Post State Sha256",
+      "type": "string"
+    },
+    "expected_pre_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Pre State Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "external_action_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "External Action Policy Sha256",
+      "type": "string"
+    },
+    "idempotency_key_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Idempotency Key Sha256",
+      "type": "string"
+    },
+    "manifest_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Manifest Sha256"
+    },
+    "not_before": {
+      "format": "date-time",
+      "title": "Not Before",
+      "type": "string"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "public_release_authorization_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Public Release Authorization Sha256"
+    },
+    "public_release_report_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Public Release Report Sha256"
+    },
+    "release_id": {
+      "anyOf": [
+        {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Release Id"
+    },
+    "request_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "requested_at": {
+      "format": "date-time",
+      "title": "Requested At",
+      "type": "string"
+    },
+    "requester_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Requester Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "target_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Sha256",
+      "type": "string"
+    },
+    "vendor_slug": {
+      "anyOf": [
+        {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Vendor Slug"
+    }
+  },
+  "required": [
+    "request_id",
+    "requester_id",
+    "action",
+    "environment",
+    "environment_sha256",
+    "external_action_policy_sha256",
+    "property_record_sha256",
+    "target_sha256",
+    "payload_sha256",
+    "idempotency_key_sha256",
+    "expected_pre_state_sha256",
+    "expected_post_state_sha256",
+    "requested_at",
+    "not_before",
+    "expires_at",
+    "request_sha256"
+  ],
+  "title": "ExternalActionRequest",
+  "type": "object"
+}

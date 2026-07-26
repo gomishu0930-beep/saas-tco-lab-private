@@ -1,0 +1,95 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "controller_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Controller Identity Sha256",
+      "type": "string"
+    },
+    "controller_permission_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Controller Permission Profile Sha256",
+      "type": "string"
+    },
+    "export_policy": {
+      "const": "non_exportable",
+      "default": "non_exportable",
+      "title": "Export Policy",
+      "type": "string"
+    },
+    "key_policy_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Policy Artifact Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "kms_identity_separation",
+      "default": "kms_identity_separation",
+      "title": "Kind",
+      "type": "string"
+    },
+    "pairwise_assertions_checked": {
+      "maximum": 6,
+      "minimum": 0,
+      "title": "Pairwise Assertions Checked",
+      "type": "integer"
+    },
+    "pairwise_assertions_expected": {
+      "const": 6,
+      "default": 6,
+      "title": "Pairwise Assertions Expected",
+      "type": "integer"
+    },
+    "probe_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Probe Identity Sha256",
+      "type": "string"
+    },
+    "probe_permission_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Probe Permission Profile Sha256",
+      "type": "string"
+    },
+    "provider_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Provider Identity Sha256",
+      "type": "string"
+    },
+    "provider_permission_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Provider Permission Profile Sha256",
+      "type": "string"
+    },
+    "runner_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Runner Identity Sha256",
+      "type": "string"
+    },
+    "runner_permission_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Runner Permission Profile Sha256",
+      "type": "string"
+    },
+    "separation_violations": {
+      "maximum": 6,
+      "minimum": 0,
+      "title": "Separation Violations",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "provider_identity_sha256",
+    "probe_identity_sha256",
+    "controller_identity_sha256",
+    "runner_identity_sha256",
+    "pairwise_assertions_checked",
+    "separation_violations",
+    "provider_permission_profile_sha256",
+    "probe_permission_profile_sha256",
+    "controller_permission_profile_sha256",
+    "runner_permission_profile_sha256",
+    "key_policy_artifact_sha256"
+  ],
+  "title": "KmsIdentitySeparationFacts",
+  "type": "object"
+}

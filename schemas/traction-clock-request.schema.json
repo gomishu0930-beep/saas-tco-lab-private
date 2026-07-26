@@ -1,0 +1,67 @@
+{
+  "$defs": {
+    "TractionClockPurpose": {
+      "enum": [
+        "append_observation",
+        "append_settlement",
+        "evaluate",
+        "finalize_event"
+      ],
+      "title": "TractionClockPurpose",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "event_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Event Head Sha256",
+      "type": "string"
+    },
+    "event_revision": {
+      "minimum": 0,
+      "title": "Event Revision",
+      "type": "integer"
+    },
+    "ledger_store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Ledger Store Id Sha256",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "purpose": {
+      "$ref": "#/$defs/TractionClockPurpose"
+    },
+    "request_nonce_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Nonce Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "subject_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "purpose",
+    "ledger_store_id_sha256",
+    "plan_sha256",
+    "event_revision",
+    "event_head_sha256",
+    "subject_sha256",
+    "request_nonce_sha256"
+  ],
+  "title": "TractionClockRequest",
+  "type": "object"
+}

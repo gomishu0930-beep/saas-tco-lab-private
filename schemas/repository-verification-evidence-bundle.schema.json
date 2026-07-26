@@ -1,0 +1,492 @@
+{
+  "$defs": {
+    "RepositoryVerificationFact": {
+      "additionalProperties": false,
+      "properties": {
+        "assertions_executed": {
+          "maximum": 100000000,
+          "minimum": 1,
+          "title": "Assertions Executed",
+          "type": "integer"
+        },
+        "check": {
+          "$ref": "#/$defs/VerifiedRunnerCheck"
+        },
+        "command_argv": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 40,
+          "minItems": 1,
+          "title": "Command Argv",
+          "type": "array"
+        },
+        "command_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Command Sha256",
+          "type": "string"
+        },
+        "environment_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Environment Sha256",
+          "type": "string"
+        },
+        "executed_at": {
+          "format": "date-time",
+          "title": "Executed At",
+          "type": "string"
+        },
+        "exit_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "failures": {
+          "maximum": 100000000,
+          "minimum": 0,
+          "title": "Failures",
+          "type": "integer"
+        },
+        "import_closure_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Import Closure Sha256",
+          "type": "string"
+        },
+        "interpreter_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Interpreter Sha256",
+          "type": "string"
+        },
+        "network_mode": {
+          "$ref": "#/$defs/VerifiedRunnerNetworkMode"
+        },
+        "not_after": {
+          "format": "date-time",
+          "title": "Not After",
+          "type": "string"
+        },
+        "output_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Sha256",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/RepositoryVerificationProvenance"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "skipped": {
+          "maximum": 100000000,
+          "minimum": 0,
+          "title": "Skipped",
+          "type": "integer"
+        },
+        "subject_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Tree Sha256",
+          "type": "string"
+        },
+        "tool_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+          "title": "Tool Version",
+          "type": "string"
+        },
+        "working_directory": {
+          "const": "repository-root",
+          "default": "repository-root",
+          "title": "Working Directory",
+          "type": "string"
+        }
+      },
+      "required": [
+        "check",
+        "subject_tree_sha256",
+        "command_argv",
+        "environment_sha256",
+        "network_mode",
+        "interpreter_sha256",
+        "import_closure_sha256",
+        "command_sha256",
+        "tool_name",
+        "tool_version",
+        "provenance",
+        "executed_at",
+        "not_after",
+        "assertions_executed",
+        "failures",
+        "skipped",
+        "exit_code",
+        "output_sha256"
+      ],
+      "title": "RepositoryVerificationFact",
+      "type": "object"
+    },
+    "RepositoryVerificationProvenance": {
+      "enum": [
+        "verified_local_run",
+        "verified_immutable_run_v2",
+        "local_diagnostic_run",
+        "synthetic_contract"
+      ],
+      "title": "RepositoryVerificationProvenance",
+      "type": "string"
+    },
+    "SignedVerifiedRunnerConsumerClockAttestation": {
+      "additionalProperties": false,
+      "properties": {
+        "attestation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Attestation Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "observed_evidence_head_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observed Evidence Head Sha256",
+          "type": "string"
+        },
+        "observed_sequence": {
+          "maximum": 1000000000,
+          "minimum": 0,
+          "title": "Observed Sequence",
+          "type": "integer"
+        },
+        "request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "signer_issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Signer Issuer",
+          "type": "string"
+        },
+        "signer_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Signer Key Id Sha256",
+          "type": "string"
+        },
+        "signer_role": {
+          "const": "time_auditor",
+          "default": "time_auditor",
+          "title": "Signer Role",
+          "type": "string"
+        },
+        "store_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Store Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_sha256",
+        "store_id_sha256",
+        "observed_sequence",
+        "observed_evidence_head_sha256",
+        "observed_at",
+        "issued_at",
+        "expires_at",
+        "signer_issuer",
+        "signer_key_id_sha256",
+        "attestation_sha256",
+        "signature_base64url"
+      ],
+      "title": "SignedVerifiedRunnerConsumerClockAttestation",
+      "type": "object"
+    },
+    "VerifiedRunnerCheck": {
+      "enum": [
+        "python_base",
+        "python_traction",
+        "python_production_consumer",
+        "schema_determinism",
+        "blocked_fixture_determinism",
+        "uv_lock",
+        "compileall",
+        "secret_scan",
+        "web_tests",
+        "web_lint",
+        "dependency_audit",
+        "workflow_verifier",
+        "contract_storage_audit",
+        "tco_qa_audit"
+      ],
+      "title": "VerifiedRunnerCheck",
+      "type": "string"
+    },
+    "VerifiedRunnerConsumerClockRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authority Sha256",
+          "type": "string"
+        },
+        "challenge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Sha256",
+          "type": "string"
+        },
+        "evidence_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Bundle Sha256",
+          "type": "string"
+        },
+        "expected_previous_evidence_head_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Previous Evidence Head Sha256",
+          "type": "string"
+        },
+        "expected_sequence": {
+          "maximum": 1000000000,
+          "minimum": 1,
+          "title": "Expected Sequence",
+          "type": "integer"
+        },
+        "request_nonce_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Nonce Sha256",
+          "type": "string"
+        },
+        "request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "store_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Store Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "store_id_sha256",
+        "expected_sequence",
+        "expected_previous_evidence_head_sha256",
+        "challenge_sha256",
+        "evidence_bundle_sha256",
+        "authority_sha256",
+        "request_nonce_sha256",
+        "request_sha256"
+      ],
+      "title": "VerifiedRunnerConsumerClockRequest",
+      "type": "object"
+    },
+    "VerifiedRunnerConsumptionReceipt": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authority Sha256",
+          "type": "string"
+        },
+        "challenge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Sha256",
+          "type": "string"
+        },
+        "clock_attestation": {
+          "$ref": "#/$defs/SignedVerifiedRunnerConsumerClockAttestation"
+        },
+        "clock_attestation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Clock Attestation Sha256",
+          "type": "string"
+        },
+        "clock_request": {
+          "$ref": "#/$defs/VerifiedRunnerConsumerClockRequest"
+        },
+        "clock_request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Clock Request Sha256",
+          "type": "string"
+        },
+        "consumed_at": {
+          "format": "date-time",
+          "title": "Consumed At",
+          "type": "string"
+        },
+        "evidence_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Bundle Sha256",
+          "type": "string"
+        },
+        "evidence_head_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Head Sha256",
+          "type": "string"
+        },
+        "previous_evidence_head_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Previous Evidence Head Sha256",
+          "type": "string"
+        },
+        "receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Receipt Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sequence": {
+          "maximum": 1000000000,
+          "minimum": 1,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "signer_issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Signer Issuer",
+          "type": "string"
+        },
+        "signer_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Signer Key Id Sha256",
+          "type": "string"
+        },
+        "signer_role": {
+          "const": "storage_auditor",
+          "default": "storage_auditor",
+          "title": "Signer Role",
+          "type": "string"
+        },
+        "store_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Store Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "store_id_sha256",
+        "sequence",
+        "previous_evidence_head_sha256",
+        "evidence_head_sha256",
+        "challenge_sha256",
+        "evidence_bundle_sha256",
+        "authority_sha256",
+        "clock_request",
+        "clock_attestation",
+        "clock_request_sha256",
+        "clock_attestation_sha256",
+        "consumed_at",
+        "signer_issuer",
+        "signer_key_id_sha256",
+        "receipt_sha256",
+        "signature_base64url"
+      ],
+      "title": "VerifiedRunnerConsumptionReceipt",
+      "type": "object"
+    },
+    "VerifiedRunnerNetworkMode": {
+      "enum": [
+        "disabled",
+        "loopback_only",
+        "not_applicable"
+      ],
+      "title": "VerifiedRunnerNetworkMode",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Bundle Sha256",
+      "type": "string"
+    },
+    "facts": {
+      "items": {
+        "$ref": "#/$defs/RepositoryVerificationFact"
+      },
+      "maxItems": 14,
+      "minItems": 14,
+      "title": "Facts",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "subject_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Tree Sha256",
+      "type": "string"
+    },
+    "verified_runner_consumption_receipt": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/VerifiedRunnerConsumptionReceipt"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    }
+  },
+  "required": [
+    "subject_tree_sha256",
+    "facts",
+    "bundle_sha256"
+  ],
+  "title": "RepositoryVerificationEvidenceBundle",
+  "type": "object"
+}

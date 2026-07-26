@@ -1,0 +1,31 @@
+{
+  "title": "合成データによるSaaS比較プレビュー",
+  "methodology": "実在価格ではありません。canonical Python TCOから受け取る表示境界の検証用fixtureです。",
+  "rendered_at": "2026-07-21T12:00:00Z",
+  "plans": [
+    {
+      "vendor_slug": "sample-vendor-a",
+      "vendor_name": "Sample Vendor A",
+      "plan_slug": "basic",
+      "plan_name": "Basic",
+      "scenario_name": "合成条件: 1 seat / 12 months",
+      "region": "JP",
+      "tax_note": "税込（合成条件）",
+      "currency": "JPY",
+      "billing_period": "monthly",
+      "commitment_months": 12,
+      "minor_unit_digits": 0,
+      "total_minor": 13200,
+      "fit_status": "fit",
+      "fit_reason": "合成scenarioのseat数と契約期間を満たすため。",
+      "evidence_url": "https://example.com/synthetic-pricing-a",
+      "evidence_retrieved_at": "2026-07-21T11:00:00Z",
+      "data_expires_at": "2026-07-28T12:00:00Z",
+      "rights_expires_at": "2026-08-20T12:00:00Z",
+      "affiliate_expires_at": null,
+      "affiliate_url": null,
+      "affiliate_active": false
+    }
+  ],
+  "affiliate_disclosure": "この合成fixtureには実Affiliate linkを含みません。"
+}

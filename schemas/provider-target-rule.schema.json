@@ -1,0 +1,111 @@
+{
+  "$defs": {
+    "ExternalAction": {
+      "enum": [
+        "send_rights_inquiry",
+        "submit_affiliate_application",
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ExternalAction",
+      "type": "string"
+    },
+    "ProviderOperation": {
+      "enum": [
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ProviderOperation",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "adapter_dependency_closure_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Adapter Dependency Closure Sha256",
+      "type": "string"
+    },
+    "adapter_executable_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Adapter Executable Sha256",
+      "type": "string"
+    },
+    "adapter_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Adapter Id",
+      "type": "string"
+    },
+    "expected_post_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Post State Sha256",
+      "type": "string"
+    },
+    "expected_pre_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Pre State Sha256",
+      "type": "string"
+    },
+    "external_action": {
+      "$ref": "#/$defs/ExternalAction"
+    },
+    "operation": {
+      "$ref": "#/$defs/ProviderOperation"
+    },
+    "postcondition_schema_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Postcondition Schema Sha256",
+      "type": "string"
+    },
+    "probe_executable_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Probe Executable Sha256",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "provider_allowlist_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Provider Allowlist Sha256",
+      "type": "string"
+    },
+    "python_executable_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Python Executable Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "target_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "operation",
+    "external_action",
+    "property_record_sha256",
+    "target_sha256",
+    "expected_pre_state_sha256",
+    "expected_post_state_sha256",
+    "adapter_id",
+    "adapter_executable_sha256",
+    "probe_executable_sha256",
+    "python_executable_sha256",
+    "adapter_dependency_closure_sha256",
+    "provider_allowlist_sha256",
+    "postcondition_schema_sha256"
+  ],
+  "title": "ProviderTargetRule",
+  "type": "object"
+}

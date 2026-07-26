@@ -1,0 +1,117 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "conflict_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Conflict Case Sha256",
+      "type": "string"
+    },
+    "conflicting_request_rejections": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Conflicting Request Rejections",
+      "type": "integer"
+    },
+    "conflicting_request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Conflicting Request Sha256",
+      "type": "string"
+    },
+    "conflicting_request_side_effects": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Conflicting Request Side Effects",
+      "type": "integer"
+    },
+    "duplicate_side_effects": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Duplicate Side Effects",
+      "type": "integer"
+    },
+    "idempotency_key_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Idempotency Key Sha256",
+      "type": "string"
+    },
+    "initial_audit_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Initial Audit Sha256",
+      "type": "string"
+    },
+    "initial_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Initial Receipt Sha256",
+      "type": "string"
+    },
+    "initial_request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Initial Request Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "provider_idempotency_retention",
+      "default": "provider_idempotency_retention",
+      "title": "Kind",
+      "type": "string"
+    },
+    "matching_receipts": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Matching Receipts",
+      "type": "integer"
+    },
+    "observed_retention_seconds": {
+      "maximum": 31536000,
+      "minimum": 0,
+      "title": "Observed Retention Seconds",
+      "type": "integer"
+    },
+    "replay_attempts": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Replay Attempts",
+      "type": "integer"
+    },
+    "replay_audit_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Replay Audit Sha256",
+      "type": "string"
+    },
+    "replay_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Replay Receipt Sha256",
+      "type": "string"
+    },
+    "replay_request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Replay Request Sha256",
+      "type": "string"
+    },
+    "result_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Artifact Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "idempotency_key_sha256",
+    "initial_request_sha256",
+    "replay_request_sha256",
+    "conflicting_request_sha256",
+    "conflict_case_sha256",
+    "initial_receipt_sha256",
+    "replay_receipt_sha256",
+    "initial_audit_sha256",
+    "replay_audit_sha256",
+    "observed_retention_seconds",
+    "replay_attempts",
+    "matching_receipts",
+    "duplicate_side_effects",
+    "conflicting_request_rejections",
+    "conflicting_request_side_effects",
+    "result_artifact_sha256"
+  ],
+  "title": "ProviderIdempotencyRetentionFacts",
+  "type": "object"
+}

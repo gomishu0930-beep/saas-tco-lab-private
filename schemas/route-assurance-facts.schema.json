@@ -1,0 +1,55 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "assertions_executed": {
+      "maximum": 1000000,
+      "minimum": 1,
+      "title": "Assertions Executed",
+      "type": "integer"
+    },
+    "exit_code": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "route_assurance",
+      "default": "route_assurance",
+      "title": "Kind",
+      "type": "string"
+    },
+    "output_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Output Sha256",
+      "type": "string"
+    },
+    "routes_checked": {
+      "maximum": 5,
+      "minimum": 0,
+      "title": "Routes Checked",
+      "type": "integer"
+    },
+    "routes_expected": {
+      "const": 5,
+      "default": 5,
+      "title": "Routes Expected",
+      "type": "integer"
+    },
+    "violations": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Violations",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "routes_checked",
+    "assertions_executed",
+    "violations",
+    "output_sha256",
+    "exit_code"
+  ],
+  "title": "RouteAssuranceFacts",
+  "type": "object"
+}

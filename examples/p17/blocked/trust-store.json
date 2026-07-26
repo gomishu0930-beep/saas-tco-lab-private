@@ -1,0 +1,24 @@
+{
+  "clock_auditor": {
+    "issuer": "fixture-traction-clock",
+    "key_id_sha256": "8a382c2a33e42c4f39c93a210ff0cbab5c33ea480f28be614b9da208ae63f634",
+    "public_key_base64url": "dPhc2jTRwnxGIUhHMekVecPZxs_A2UsoGqEekWIFiqk",
+    "role": "time_auditor",
+    "schema_version": "1.0"
+  },
+  "observation_tco_qa": {
+    "issuer": "fixture-traction-tco",
+    "key_id_sha256": "c6107c1842c20449a2e69adba9606b0780be1d0c9cdca5fd2fb771b388d2eadb",
+    "public_key_base64url": "TtMvY7818O7vyyXyii4fvchzrig1ZxsMlGD18S5FVqg",
+    "role": "tco_qa",
+    "schema_version": "1.0"
+  },
+  "plan_human": {
+    "issuer": "fixture-traction-human",
+    "key_id_sha256": "1f5fe64ec2f8c901be3aad94a41d70c12d2f3a8f43755f902e665c96f41c87e3",
+    "public_key_base64url": "QwRr_kCSs-lJlOraFdzCDYqqB7ZY_TlU644O-4vcpd4",
+    "role": "human_approver",
+    "schema_version": "1.0"
+  },
+  "schema_version": "1.0"
+}

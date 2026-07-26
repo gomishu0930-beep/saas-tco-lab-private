@@ -1,0 +1,100 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "accepted_writes": {
+      "maximum": 4,
+      "minimum": 0,
+      "title": "Accepted Writes",
+      "type": "integer"
+    },
+    "concurrent_precondition_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Concurrent Precondition Case Sha256",
+      "type": "string"
+    },
+    "concurrent_winners": {
+      "maximum": 4,
+      "minimum": 0,
+      "title": "Concurrent Winners",
+      "type": "integer"
+    },
+    "duplicate_side_effects": {
+      "maximum": 4,
+      "minimum": 0,
+      "title": "Duplicate Side Effects",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "provider_conditional_mutation",
+      "default": "provider_conditional_mutation",
+      "title": "Kind",
+      "type": "string"
+    },
+    "lower_fence_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Lower Fence Case Sha256",
+      "type": "string"
+    },
+    "lower_fence_rejections": {
+      "maximum": 4,
+      "minimum": 0,
+      "title": "Lower Fence Rejections",
+      "type": "integer"
+    },
+    "matching_precondition_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Matching Precondition Case Sha256",
+      "type": "string"
+    },
+    "replay_receipt_matches": {
+      "maximum": 4,
+      "minimum": 0,
+      "title": "Replay Receipt Matches",
+      "type": "integer"
+    },
+    "result_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Artifact Sha256",
+      "type": "string"
+    },
+    "scenarios_executed": {
+      "maximum": 4,
+      "minimum": 0,
+      "title": "Scenarios Executed",
+      "type": "integer"
+    },
+    "scenarios_expected": {
+      "const": 4,
+      "default": 4,
+      "title": "Scenarios Expected",
+      "type": "integer"
+    },
+    "stale_precondition_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Stale Precondition Case Sha256",
+      "type": "string"
+    },
+    "stale_precondition_rejections": {
+      "maximum": 4,
+      "minimum": 0,
+      "title": "Stale Precondition Rejections",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "matching_precondition_case_sha256",
+    "stale_precondition_case_sha256",
+    "lower_fence_case_sha256",
+    "concurrent_precondition_case_sha256",
+    "scenarios_executed",
+    "accepted_writes",
+    "stale_precondition_rejections",
+    "lower_fence_rejections",
+    "concurrent_winners",
+    "replay_receipt_matches",
+    "duplicate_side_effects",
+    "result_artifact_sha256"
+  ],
+  "title": "ProviderConditionalMutationFacts",
+  "type": "object"
+}

@@ -1,0 +1,106 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "advisory_snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Advisory Snapshot Sha256",
+      "type": "string"
+    },
+    "attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Attestation Sha256",
+      "type": "string"
+    },
+    "challenge_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Challenge Sha256",
+      "type": "string"
+    },
+    "clock_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Clock Attestation Sha256",
+      "type": "string"
+    },
+    "evidence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "image_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Image Identity Sha256",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Signer Issuer",
+      "type": "string"
+    },
+    "signer_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Signer Key Id Sha256",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "integration_evidence_runner",
+      "default": "integration_evidence_runner",
+      "title": "Signer Role",
+      "type": "string"
+    },
+    "subject_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Tree Sha256",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence_sha256",
+    "challenge_sha256",
+    "clock_attestation_sha256",
+    "subject_tree_sha256",
+    "image_identity_sha256",
+    "advisory_snapshot_sha256",
+    "policy_sha256",
+    "trust_store_sha256",
+    "signer_issuer",
+    "signer_key_id_sha256",
+    "issued_at",
+    "expires_at",
+    "attestation_sha256",
+    "signature_base64url"
+  ],
+  "title": "VerifiedRunnerAttestation",
+  "type": "object"
+}

@@ -1,0 +1,659 @@
+{
+  "$defs": {
+    "AcquisitionClass": {
+      "enum": [
+        "new",
+        "existing",
+        "unknown"
+      ],
+      "title": "AcquisitionClass",
+      "type": "string"
+    },
+    "AffiliateAcceptedClick": {
+      "additionalProperties": false,
+      "properties": {
+        "accepted_at": {
+          "format": "date-time",
+          "title": "Accepted At",
+          "type": "string"
+        },
+        "affiliate_click_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Affiliate Click Id Sha256",
+          "type": "string"
+        },
+        "outbound_click_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Outbound Click Id Sha256",
+          "type": "string"
+        },
+        "partner_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Partner Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "affiliate_click_id_sha256",
+        "outbound_click_id_sha256",
+        "partner_id",
+        "accepted_at"
+      ],
+      "title": "AffiliateAcceptedClick",
+      "type": "object"
+    },
+    "CurrentTransaction": {
+      "additionalProperties": false,
+      "properties": {
+        "acquisition_class": {
+          "$ref": "#/$defs/AcquisitionClass"
+        },
+        "acquisition_evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Acquisition Evidence Sha256",
+          "type": "string"
+        },
+        "affiliate_click_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Affiliate Click Id Sha256",
+          "type": "string"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Amount"
+        },
+        "attributed_at": {
+          "format": "date-time",
+          "title": "Attributed At",
+          "type": "string"
+        },
+        "cohort_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Cohort Id",
+          "type": "string"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "current_status": {
+          "$ref": "#/$defs/TransactionStatus"
+        },
+        "partner_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Partner Id",
+          "type": "string"
+        },
+        "status_events": {
+          "items": {
+            "$ref": "#/$defs/TransactionStatusEvent"
+          },
+          "minItems": 1,
+          "title": "Status Events",
+          "type": "array"
+        },
+        "transaction_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Transaction Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "transaction_id_sha256",
+        "affiliate_click_id_sha256",
+        "partner_id",
+        "cohort_id",
+        "currency",
+        "amount",
+        "acquisition_class",
+        "acquisition_evidence_sha256",
+        "attributed_at",
+        "current_status",
+        "status_events"
+      ],
+      "title": "CurrentTransaction",
+      "type": "object"
+    },
+    "PayoutAdjustment": {
+      "additionalProperties": false,
+      "properties": {
+        "adjusted_at": {
+          "format": "date-time",
+          "title": "Adjusted At",
+          "type": "string"
+        },
+        "adjustment_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Adjustment Id Sha256",
+          "type": "string"
+        },
+        "amount": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Amount"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/PayoutAdjustmentKind"
+        },
+        "source_row_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Row Sha256",
+          "type": "string"
+        },
+        "transaction_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Transaction Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "adjustment_id_sha256",
+        "transaction_id_sha256",
+        "kind",
+        "amount",
+        "currency",
+        "source_row_sha256",
+        "adjusted_at"
+      ],
+      "title": "PayoutAdjustment",
+      "type": "object"
+    },
+    "PayoutAdjustmentKind": {
+      "enum": [
+        "refund",
+        "chargeback"
+      ],
+      "title": "PayoutAdjustmentKind",
+      "type": "string"
+    },
+    "PayoutRow": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Amount"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "paid_at": {
+          "format": "date-time",
+          "title": "Paid At",
+          "type": "string"
+        },
+        "payout_row_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Payout Row Sha256",
+          "type": "string"
+        },
+        "transaction_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Transaction Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "payout_row_sha256",
+        "transaction_id_sha256",
+        "amount",
+        "currency",
+        "paid_at"
+      ],
+      "title": "PayoutRow",
+      "type": "object"
+    },
+    "PayoutStatement": {
+      "additionalProperties": false,
+      "properties": {
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "fees_tax_withholding": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Fees Tax Withholding"
+        },
+        "gross_amount": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Gross Amount"
+        },
+        "net_amount": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Net Amount"
+        },
+        "paid_transaction_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Paid Transaction Set Sha256",
+          "type": "string"
+        },
+        "payout_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Payout Id Sha256",
+          "type": "string"
+        },
+        "period_ended_at": {
+          "format": "date-time",
+          "title": "Period Ended At",
+          "type": "string"
+        },
+        "period_started_at": {
+          "format": "date-time",
+          "title": "Period Started At",
+          "type": "string"
+        },
+        "reversal_amount": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Reversal Amount"
+        },
+        "snapshot_as_of": {
+          "format": "date-time",
+          "title": "Snapshot As Of",
+          "type": "string"
+        },
+        "statement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Statement Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "statement_sha256",
+        "payout_id_sha256",
+        "currency",
+        "gross_amount",
+        "reversal_amount",
+        "fees_tax_withholding",
+        "net_amount",
+        "paid_transaction_set_sha256",
+        "period_started_at",
+        "period_ended_at",
+        "snapshot_as_of"
+      ],
+      "title": "PayoutStatement",
+      "type": "object"
+    },
+    "QualifiedSession": {
+      "additionalProperties": false,
+      "properties": {
+        "qualified_at": {
+          "format": "date-time",
+          "title": "Qualified At",
+          "type": "string"
+        },
+        "session_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Session Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "session_id_sha256",
+        "qualified_at"
+      ],
+      "title": "QualifiedSession",
+      "type": "object"
+    },
+    "TransactionStatus": {
+      "enum": [
+        "pending",
+        "rejected",
+        "confirmed",
+        "paid",
+        "refunded",
+        "charged_back"
+      ],
+      "title": "TransactionStatus",
+      "type": "string"
+    },
+    "TransactionStatusEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "effective_at": {
+          "format": "date-time",
+          "title": "Effective At",
+          "type": "string"
+        },
+        "source_row_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Row Sha256",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/TransactionStatus"
+        }
+      },
+      "required": [
+        "status",
+        "effective_at",
+        "source_row_sha256"
+      ],
+      "title": "TransactionStatusEvent",
+      "type": "object"
+    },
+    "ValidOutboundClick": {
+      "additionalProperties": false,
+      "properties": {
+        "click_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Click Id Sha256",
+          "type": "string"
+        },
+        "clicked_at": {
+          "format": "date-time",
+          "title": "Clicked At",
+          "type": "string"
+        },
+        "partner_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Partner Id",
+          "type": "string"
+        },
+        "session_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Session Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "click_id_sha256",
+        "session_id_sha256",
+        "partner_id",
+        "clicked_at"
+      ],
+      "title": "ValidOutboundClick",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "acquisition_mapping_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Acquisition Mapping Sha256",
+      "type": "string"
+    },
+    "affiliate_accepted_clicks": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/AffiliateAcceptedClick"
+      },
+      "title": "Affiliate Accepted Clicks",
+      "type": "array"
+    },
+    "attribution_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Attribution Sha256",
+      "type": "string"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "click_deduplication_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Click Deduplication Sha256",
+      "type": "string"
+    },
+    "cohort_ended_at": {
+      "format": "date-time",
+      "title": "Cohort Ended At",
+      "type": "string"
+    },
+    "cohort_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Cohort Id",
+      "type": "string"
+    },
+    "cohort_started_at": {
+      "format": "date-time",
+      "title": "Cohort Started At",
+      "type": "string"
+    },
+    "currency": {
+      "const": "JPY",
+      "default": "JPY",
+      "title": "Currency",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "measurement_version": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Measurement Version",
+      "type": "string"
+    },
+    "partner_ids": {
+      "items": {
+        "maxLength": 80,
+        "minLength": 1,
+        "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Partner Ids",
+      "type": "array"
+    },
+    "payout_adjustments": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/PayoutAdjustment"
+      },
+      "title": "Payout Adjustments",
+      "type": "array"
+    },
+    "payout_mapping_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payout Mapping Sha256",
+      "type": "string"
+    },
+    "payout_rows": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/PayoutRow"
+      },
+      "title": "Payout Rows",
+      "type": "array"
+    },
+    "payout_statement": {
+      "$ref": "#/$defs/PayoutStatement"
+    },
+    "privacy_minimization_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Privacy Minimization Sha256",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "qualification_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Qualification Sha256",
+      "type": "string"
+    },
+    "qualified_sessions": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/QualifiedSession"
+      },
+      "title": "Qualified Sessions",
+      "type": "array"
+    },
+    "refund_chargeback_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Refund Chargeback Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "session_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Session Identity Sha256",
+      "type": "string"
+    },
+    "snapshot_as_of": {
+      "format": "date-time",
+      "title": "Snapshot As Of",
+      "type": "string"
+    },
+    "source_authority_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Authority Record Sha256",
+      "type": "string"
+    },
+    "source_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Receipt Sha256",
+      "type": "string"
+    },
+    "status_mapping_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Status Mapping Sha256",
+      "type": "string"
+    },
+    "transaction_deduplication_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Transaction Deduplication Sha256",
+      "type": "string"
+    },
+    "transactions": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/CurrentTransaction"
+      },
+      "title": "Transactions",
+      "type": "array"
+    },
+    "valid_outbound_clicks": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ValidOutboundClick"
+      },
+      "title": "Valid Outbound Clicks",
+      "type": "array"
+    },
+    "valid_outbound_filter_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Valid Outbound Filter Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "measurement_version",
+    "property_record_sha256",
+    "source_authority_record_sha256",
+    "source_receipt_sha256",
+    "cohort_id",
+    "cohort_started_at",
+    "cohort_ended_at",
+    "snapshot_as_of",
+    "captured_at",
+    "expires_at",
+    "partner_ids",
+    "click_deduplication_sha256",
+    "status_mapping_sha256",
+    "transaction_deduplication_sha256",
+    "acquisition_mapping_sha256",
+    "payout_mapping_sha256",
+    "qualification_sha256",
+    "session_identity_sha256",
+    "valid_outbound_filter_sha256",
+    "attribution_sha256",
+    "refund_chargeback_sha256",
+    "privacy_minimization_sha256",
+    "payout_statement"
+  ],
+  "title": "CohortIntegrityBatch",
+  "type": "object"
+}

@@ -1,0 +1,179 @@
+{
+  "$defs": {
+    "AcquisitionMethod": {
+      "enum": [
+        "official_api",
+        "vendor_feed",
+        "direct_http",
+        "browser",
+        "manual"
+      ],
+      "title": "AcquisitionMethod",
+      "type": "string"
+    },
+    "PolicyDecision": {
+      "description": "An explicit decision.  Missing review is never equivalent to approval.",
+      "enum": [
+        "approved",
+        "prohibited",
+        "unreviewed"
+      ],
+      "title": "PolicyDecision",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Field-level permission record for one source and one review window.\n\nEvery capability defaults to ``unreviewed``.  Callers must use ``permits``\ninstead of testing enum truthiness; enum members are intentionally never\nbooleans.",
+  "properties": {
+    "acquisition_method": {
+      "$ref": "#/$defs/AcquisitionMethod"
+    },
+    "attribution_required": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Attribution Required"
+    },
+    "attribution_text": {
+      "anyOf": [
+        {
+          "maxLength": 500,
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Attribution Text"
+    },
+    "basis": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Basis",
+      "type": "string"
+    },
+    "basis_url": {
+      "anyOf": [
+        {
+          "format": "uri",
+          "minLength": 1,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Basis Url"
+    },
+    "derive": {
+      "$ref": "#/$defs/PolicyDecision",
+      "default": "unreviewed"
+    },
+    "fetch": {
+      "$ref": "#/$defs/PolicyDecision",
+      "default": "unreviewed"
+    },
+    "field": {
+      "maxLength": 160,
+      "minLength": 1,
+      "pattern": "^[a-z][a-z0-9_.-]*$",
+      "title": "Field",
+      "type": "string"
+    },
+    "max_quote_chars": {
+      "anyOf": [
+        {
+          "maximum": 500,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Max Quote Chars"
+    },
+    "policy_id": {
+      "format": "uuid",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "publish": {
+      "$ref": "#/$defs/PolicyDecision",
+      "default": "unreviewed"
+    },
+    "quote": {
+      "$ref": "#/$defs/PolicyDecision",
+      "default": "unreviewed"
+    },
+    "retain_history": {
+      "$ref": "#/$defs/PolicyDecision",
+      "default": "unreviewed"
+    },
+    "retention_days": {
+      "anyOf": [
+        {
+          "maximum": 3650,
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Retention Days"
+    },
+    "review_due_at": {
+      "format": "date-time",
+      "title": "Review Due At",
+      "type": "string"
+    },
+    "reviewed_at": {
+      "format": "date-time",
+      "title": "Reviewed At",
+      "type": "string"
+    },
+    "reviewed_by": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Reviewed By",
+      "type": "string"
+    },
+    "send_to_ai": {
+      "$ref": "#/$defs/PolicyDecision",
+      "default": "unreviewed"
+    },
+    "source_url": {
+      "format": "uri",
+      "minLength": 1,
+      "title": "Source Url",
+      "type": "string"
+    },
+    "store_raw": {
+      "$ref": "#/$defs/PolicyDecision",
+      "default": "unreviewed"
+    }
+  },
+  "required": [
+    "field",
+    "source_url",
+    "acquisition_method",
+    "reviewed_at",
+    "review_due_at",
+    "reviewed_by",
+    "basis"
+  ],
+  "title": "SourcePolicy",
+  "type": "object"
+}

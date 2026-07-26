@@ -1,0 +1,106 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "allowlist_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Allowlist Policy Sha256",
+      "type": "string"
+    },
+    "approved_attempts": {
+      "maximum": 100000,
+      "minimum": 1,
+      "title": "Approved Attempts",
+      "type": "integer"
+    },
+    "approved_destination_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Approved Destination Sha256S",
+      "type": "array"
+    },
+    "blocked_unapproved_attempts": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Blocked Unapproved Attempts",
+      "type": "integer"
+    },
+    "deny_dns_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Deny Dns Case Sha256",
+      "type": "string"
+    },
+    "deny_metadata_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Deny Metadata Case Sha256",
+      "type": "string"
+    },
+    "deny_private_range_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Deny Private Range Case Sha256",
+      "type": "string"
+    },
+    "deny_wildcard_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Deny Wildcard Case Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "egress_allowlist",
+      "default": "egress_allowlist",
+      "title": "Kind",
+      "type": "string"
+    },
+    "method_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Method Policy Sha256",
+      "type": "string"
+    },
+    "observed_destination_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Observed Destination Sha256S",
+      "type": "array"
+    },
+    "result_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Artifact Sha256",
+      "type": "string"
+    },
+    "successful_unapproved_attempts": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Successful Unapproved Attempts",
+      "type": "integer"
+    },
+    "tls_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Tls Profile Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "allowlist_policy_sha256",
+    "approved_destination_sha256s",
+    "observed_destination_sha256s",
+    "method_policy_sha256",
+    "tls_profile_sha256",
+    "deny_dns_case_sha256",
+    "deny_private_range_case_sha256",
+    "deny_metadata_case_sha256",
+    "deny_wildcard_case_sha256",
+    "approved_attempts",
+    "blocked_unapproved_attempts",
+    "successful_unapproved_attempts",
+    "result_artifact_sha256"
+  ],
+  "title": "EgressAllowlistFacts",
+  "type": "object"
+}

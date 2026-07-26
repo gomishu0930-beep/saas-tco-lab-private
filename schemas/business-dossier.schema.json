@@ -1,0 +1,435 @@
+{
+  "$defs": {
+    "ArtifactExpiries": {
+      "additionalProperties": false,
+      "properties": {
+        "affiliate": {
+          "format": "date-time",
+          "title": "Affiliate",
+          "type": "string"
+        },
+        "cohort": {
+          "format": "date-time",
+          "title": "Cohort",
+          "type": "string"
+        },
+        "demand": {
+          "format": "date-time",
+          "title": "Demand",
+          "type": "string"
+        },
+        "operations": {
+          "format": "date-time",
+          "title": "Operations",
+          "type": "string"
+        },
+        "rights": {
+          "format": "date-time",
+          "title": "Rights",
+          "type": "string"
+        }
+      },
+      "required": [
+        "rights",
+        "affiliate",
+        "demand",
+        "operations",
+        "cohort"
+      ],
+      "title": "ArtifactExpiries",
+      "type": "object"
+    },
+    "CohortInput": {
+      "additionalProperties": false,
+      "properties": {
+        "age_days": {
+          "minimum": 0,
+          "title": "Age Days",
+          "type": "integer"
+        },
+        "commissions": {
+          "$ref": "#/$defs/CommissionInput"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "valid_clicks": {
+          "minimum": 0,
+          "title": "Valid Clicks",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "currency",
+        "valid_clicks",
+        "age_days",
+        "commissions"
+      ],
+      "title": "CohortInput",
+      "type": "object"
+    },
+    "CommissionInput": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmed": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Confirmed"
+        },
+        "paid": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Paid"
+        },
+        "pending": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Pending"
+        },
+        "rejected": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Rejected"
+        }
+      },
+      "required": [
+        "pending",
+        "rejected",
+        "confirmed",
+        "paid"
+      ],
+      "title": "CommissionInput",
+      "type": "object"
+    },
+    "DemandInput": {
+      "additionalProperties": false,
+      "properties": {
+        "deduplicated_search_volume": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Deduplicated Search Volume"
+        },
+        "organic_visibility": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Organic Visibility"
+        },
+        "outbound_click_rate": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Outbound Click Rate"
+        },
+        "qualified_rate": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Qualified Rate"
+        },
+        "rank_ctr": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Rank Ctr"
+        },
+        "volume_is_deduplicated": {
+          "title": "Volume Is Deduplicated",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "deduplicated_search_volume",
+        "organic_visibility",
+        "rank_ctr",
+        "qualified_rate",
+        "outbound_click_rate",
+        "volume_is_deduplicated"
+      ],
+      "title": "DemandInput",
+      "type": "object"
+    },
+    "DossierProvenance": {
+      "additionalProperties": false,
+      "description": "Hash-only receipts for the inputs used by the production assembler.",
+      "properties": {
+        "affiliate_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Affiliate Bundle Sha256",
+          "type": "string"
+        },
+        "assembled_at": {
+          "format": "date-time",
+          "title": "Assembled At",
+          "type": "string"
+        },
+        "builder_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Builder Version",
+          "type": "string"
+        },
+        "cohort_source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cohort Source Sha256",
+          "type": "string"
+        },
+        "demand_source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Demand Source Sha256",
+          "type": "string"
+        },
+        "operations_source_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Operations Source Sha256",
+          "type": "string"
+        },
+        "property_domain": {
+          "maxLength": 253,
+          "minLength": 1,
+          "title": "Property Domain",
+          "type": "string"
+        },
+        "rights_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rights Bundle Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "property_domain",
+        "rights_bundle_sha256",
+        "affiliate_bundle_sha256",
+        "demand_source_sha256",
+        "cohort_source_sha256",
+        "operations_source_sha256",
+        "assembled_at"
+      ],
+      "title": "DossierProvenance",
+      "type": "object"
+    },
+    "RollbackTestStatus": {
+      "enum": [
+        "not_run",
+        "passed",
+        "failed"
+      ],
+      "title": "RollbackTestStatus",
+      "type": "string"
+    },
+    "ScenarioInputs": {
+      "additionalProperties": false,
+      "properties": {
+        "base": {
+          "$ref": "#/$defs/DemandInput"
+        },
+        "bear": {
+          "$ref": "#/$defs/DemandInput"
+        },
+        "bull": {
+          "$ref": "#/$defs/DemandInput"
+        }
+      },
+      "required": [
+        "bear",
+        "base",
+        "bull"
+      ],
+      "title": "ScenarioInputs",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "All evidence-backed inputs needed for one reproducible decision.",
+  "properties": {
+    "approved_affiliate_ids": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Approved Affiliate Ids",
+      "type": "array"
+    },
+    "as_of": {
+      "format": "date-time",
+      "title": "As Of",
+      "type": "string"
+    },
+    "automation_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Automation Rate"
+    },
+    "cohort": {
+      "$ref": "#/$defs/CohortInput"
+    },
+    "evidence_version": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Evidence Version",
+      "type": "string"
+    },
+    "exceptions_total": {
+      "minimum": 0,
+      "title": "Exceptions Total",
+      "type": "integer"
+    },
+    "expires_at": {
+      "$ref": "#/$defs/ArtifactExpiries"
+    },
+    "human_hours_per_month": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Human Hours Per Month"
+    },
+    "job_runs_succeeded": {
+      "minimum": 0,
+      "title": "Job Runs Succeeded",
+      "type": "integer"
+    },
+    "job_runs_total": {
+      "minimum": 0,
+      "title": "Job Runs Total",
+      "type": "integer"
+    },
+    "major_misstatements": {
+      "minimum": 0,
+      "title": "Major Misstatements",
+      "type": "integer"
+    },
+    "provenance": {
+      "$ref": "#/$defs/DossierProvenance"
+    },
+    "rights_approved": {
+      "title": "Rights Approved",
+      "type": "boolean"
+    },
+    "rollback_test_status": {
+      "$ref": "#/$defs/RollbackTestStatus"
+    },
+    "scenarios": {
+      "$ref": "#/$defs/ScenarioInputs"
+    },
+    "schema_version": {
+      "const": "3.0",
+      "default": "3.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "shadow_observation_days": {
+      "minimum": 0,
+      "title": "Shadow Observation Days",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "evidence_version",
+    "provenance",
+    "as_of",
+    "expires_at",
+    "approved_affiliate_ids",
+    "rights_approved",
+    "scenarios",
+    "cohort",
+    "human_hours_per_month",
+    "automation_rate",
+    "major_misstatements",
+    "shadow_observation_days",
+    "job_runs_total",
+    "job_runs_succeeded",
+    "exceptions_total",
+    "rollback_test_status"
+  ],
+  "title": "BusinessDossier",
+  "type": "object"
+}

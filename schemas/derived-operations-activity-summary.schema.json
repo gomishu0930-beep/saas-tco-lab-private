@@ -1,0 +1,305 @@
+{
+  "$defs": {
+    "DailyDerivedOperations": {
+      "additionalProperties": false,
+      "properties": {
+        "exceptions_total": {
+          "minimum": 0,
+          "title": "Exceptions Total",
+          "type": "integer"
+        },
+        "human_minutes": {
+          "minimum": 0,
+          "title": "Human Minutes",
+          "type": "integer"
+        },
+        "job_runs_succeeded": {
+          "minimum": 0,
+          "title": "Job Runs Succeeded",
+          "type": "integer"
+        },
+        "job_runs_total": {
+          "minimum": 0,
+          "title": "Job Runs Total",
+          "type": "integer"
+        },
+        "local_date": {
+          "format": "date",
+          "title": "Local Date",
+          "type": "string"
+        },
+        "major_misstatements": {
+          "minimum": 0,
+          "title": "Major Misstatements",
+          "type": "integer"
+        },
+        "routine_tasks_automated": {
+          "minimum": 0,
+          "title": "Routine Tasks Automated",
+          "type": "integer"
+        },
+        "routine_tasks_total": {
+          "minimum": 0,
+          "title": "Routine Tasks Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "local_date",
+        "human_minutes",
+        "routine_tasks_total",
+        "routine_tasks_automated",
+        "job_runs_total",
+        "job_runs_succeeded",
+        "exceptions_total",
+        "major_misstatements"
+      ],
+      "title": "DailyDerivedOperations",
+      "type": "object"
+    },
+    "MonthlyOperatingTco": {
+      "additionalProperties": false,
+      "properties": {
+        "gross_settled_revenue_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Gross Settled Revenue Jpy"
+        },
+        "human_minutes": {
+          "minimum": 0,
+          "title": "Human Minutes",
+          "type": "integer"
+        },
+        "labor_cost_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Labor Cost Jpy"
+        },
+        "net_operating_profit_jpy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Net Operating Profit Jpy"
+        },
+        "objective_basis": {
+          "const": "net_operating_profit",
+          "default": "net_operating_profit",
+          "title": "Objective Basis",
+          "type": "string"
+        },
+        "resource_cost_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Resource Cost Jpy"
+        },
+        "target_achieved": {
+          "title": "Target Achieved",
+          "type": "boolean"
+        },
+        "target_monthly_net_profit_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Target Monthly Net Profit Jpy"
+        },
+        "total_operating_tco_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Total Operating Tco Jpy"
+        }
+      },
+      "required": [
+        "target_monthly_net_profit_jpy",
+        "gross_settled_revenue_jpy",
+        "human_minutes",
+        "labor_cost_jpy",
+        "resource_cost_jpy",
+        "total_operating_tco_jpy",
+        "net_operating_profit_jpy",
+        "target_achieved"
+      ],
+      "title": "MonthlyOperatingTco",
+      "type": "object"
+    },
+    "TaskActivityCoverage": {
+      "additionalProperties": false,
+      "properties": {
+        "complete": {
+          "title": "Complete",
+          "type": "boolean"
+        },
+        "executed_occurrences": {
+          "minimum": 0,
+          "title": "Executed Occurrences",
+          "type": "integer"
+        },
+        "execution_receipts": {
+          "minimum": 0,
+          "title": "Execution Receipts",
+          "type": "integer"
+        },
+        "human_activity_receipts": {
+          "minimum": 0,
+          "title": "Human Activity Receipts",
+          "type": "integer"
+        },
+        "manual_occurrences": {
+          "minimum": 0,
+          "title": "Manual Occurrences",
+          "type": "integer"
+        },
+        "manual_occurrences_with_activity": {
+          "minimum": 0,
+          "title": "Manual Occurrences With Activity",
+          "type": "integer"
+        },
+        "resource_usage_receipts": {
+          "minimum": 0,
+          "title": "Resource Usage Receipts",
+          "type": "integer"
+        },
+        "scheduled_occurrences": {
+          "minimum": 0,
+          "title": "Scheduled Occurrences",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "scheduled_occurrences",
+        "executed_occurrences",
+        "execution_receipts",
+        "manual_occurrences",
+        "manual_occurrences_with_activity",
+        "human_activity_receipts",
+        "resource_usage_receipts",
+        "complete"
+      ],
+      "title": "TaskActivityCoverage",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "coverage": {
+      "$ref": "#/$defs/TaskActivityCoverage"
+    },
+    "daily": {
+      "items": {
+        "$ref": "#/$defs/DailyDerivedOperations"
+      },
+      "maxItems": 30,
+      "minItems": 30,
+      "title": "Daily",
+      "type": "array"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "observation_ended_at": {
+      "format": "date-time",
+      "title": "Observation Ended At",
+      "type": "string"
+    },
+    "observation_started_at": {
+      "format": "date-time",
+      "title": "Observation Started At",
+      "type": "string"
+    },
+    "operating_tco": {
+      "$ref": "#/$defs/MonthlyOperatingTco"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Batch Sha256",
+      "type": "string"
+    },
+    "source_operations_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Operations Batch Sha256",
+      "type": "string"
+    },
+    "summary_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Summary Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_batch_sha256",
+    "source_operations_batch_sha256",
+    "policy_sha256",
+    "observation_started_at",
+    "observation_ended_at",
+    "captured_at",
+    "expires_at",
+    "daily",
+    "coverage",
+    "operating_tco",
+    "summary_sha256"
+  ],
+  "title": "DerivedOperationsActivitySummary",
+  "type": "object"
+}

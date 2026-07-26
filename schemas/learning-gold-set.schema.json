@@ -1,0 +1,109 @@
+{
+  "$defs": {
+    "GoldDomain": {
+      "enum": [
+        "field_accuracy",
+        "policy_decision",
+        "content_brief",
+        "claim_citation",
+        "cta_conversion"
+      ],
+      "title": "GoldDomain",
+      "type": "string"
+    },
+    "LearningGoldCase": {
+      "additionalProperties": false,
+      "properties": {
+        "case_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Case Id Sha256",
+          "type": "string"
+        },
+        "domain": {
+          "$ref": "#/$defs/GoldDomain"
+        },
+        "expected_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Artifact Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "human_label_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Human Label Receipt Sha256",
+          "type": "string"
+        },
+        "input_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Input Artifact Sha256",
+          "type": "string"
+        },
+        "labeled_at": {
+          "format": "date-time",
+          "title": "Labeled At",
+          "type": "string"
+        },
+        "synthetic": {
+          "title": "Synthetic",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "case_id_sha256",
+        "domain",
+        "input_artifact_sha256",
+        "expected_artifact_sha256",
+        "human_label_receipt_sha256",
+        "synthetic",
+        "labeled_at",
+        "expires_at"
+      ],
+      "title": "LearningGoldCase",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "cases": {
+      "items": {
+        "$ref": "#/$defs/LearningGoldCase"
+      },
+      "minItems": 5,
+      "title": "Cases",
+      "type": "array"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "goldset_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Goldset Id Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "goldset_id_sha256",
+    "created_at",
+    "expires_at",
+    "cases"
+  ],
+  "title": "LearningGoldSet",
+  "type": "object"
+}

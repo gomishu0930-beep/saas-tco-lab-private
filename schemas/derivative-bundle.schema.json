@@ -1,0 +1,95 @@
+{
+  "$defs": {
+    "ContentDerivative": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Canonical Content Sha256",
+          "type": "string"
+        },
+        "channel": {
+          "$ref": "#/$defs/DerivativeChannel"
+        },
+        "claim_id_sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "title": "Claim Id Sha256S",
+          "type": "array"
+        },
+        "derivative_content_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Derivative Content Sha256",
+          "type": "string"
+        },
+        "derivative_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Derivative Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "derivative_id_sha256",
+        "channel",
+        "canonical_content_sha256",
+        "derivative_content_sha256",
+        "claim_id_sha256s"
+      ],
+      "title": "ContentDerivative",
+      "type": "object"
+    },
+    "DerivativeChannel": {
+      "enum": [
+        "x",
+        "email",
+        "chart"
+      ],
+      "title": "DerivativeChannel",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "canonical_claim_id_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Canonical Claim Id Sha256S",
+      "type": "array"
+    },
+    "canonical_content_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Canonical Content Sha256",
+      "type": "string"
+    },
+    "derivatives": {
+      "items": {
+        "$ref": "#/$defs/ContentDerivative"
+      },
+      "title": "Derivatives",
+      "type": "array"
+    },
+    "editorial_evaluation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Editorial Evaluation Sha256",
+      "type": "string"
+    },
+    "package_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Package Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "package_sha256",
+    "editorial_evaluation_sha256",
+    "canonical_content_sha256",
+    "canonical_claim_id_sha256s",
+    "derivatives"
+  ],
+  "title": "DerivativeBundle",
+  "type": "object"
+}

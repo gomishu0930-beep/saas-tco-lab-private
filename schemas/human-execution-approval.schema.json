@@ -1,0 +1,132 @@
+{
+  "$defs": {
+    "ActionEnvironment": {
+      "enum": [
+        "vendor_contact",
+        "production"
+      ],
+      "title": "ActionEnvironment",
+      "type": "string"
+    },
+    "ApprovalDecision": {
+      "enum": [
+        "go",
+        "stop",
+        "conditional"
+      ],
+      "title": "ApprovalDecision",
+      "type": "string"
+    },
+    "ExternalAction": {
+      "enum": [
+        "send_rights_inquiry",
+        "submit_affiliate_application",
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ExternalAction",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "$ref": "#/$defs/ExternalAction"
+    },
+    "decision": {
+      "$ref": "#/$defs/ApprovalDecision"
+    },
+    "decision_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Decision Record Sha256",
+      "type": "string"
+    },
+    "environment": {
+      "$ref": "#/$defs/ActionEnvironment"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "external_action_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "External Action Policy Sha256",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "request_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Request Id",
+      "type": "string"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "const": "human_execution_approval",
+      "default": "human_execution_approval",
+      "title": "Scope",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "human_approver",
+      "default": "human_approver",
+      "title": "Signer Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "key_id_sha256",
+    "request_id",
+    "request_sha256",
+    "external_action_policy_sha256",
+    "action",
+    "environment",
+    "decision",
+    "decision_record_sha256",
+    "issued_at",
+    "expires_at",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "HumanExecutionApproval",
+  "type": "object"
+}

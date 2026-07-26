@@ -1,0 +1,137 @@
+{
+  "$defs": {
+    "ProposalLane": {
+      "enum": [
+        "automation",
+        "human",
+        "shared"
+      ],
+      "title": "ProposalLane",
+      "type": "string"
+    },
+    "StrategyPosture": {
+      "enum": [
+        "conservative",
+        "balanced",
+        "aggressive"
+      ],
+      "title": "StrategyPosture",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "confidence": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Confidence"
+    },
+    "cost_minor": {
+      "exclusiveMinimum": 0,
+      "title": "Cost Minor",
+      "type": "integer"
+    },
+    "evidence_artifact_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Evidence Artifact Sha256S",
+      "type": "array"
+    },
+    "expected_impact_high_minor": {
+      "minimum": 0,
+      "title": "Expected Impact High Minor",
+      "type": "integer"
+    },
+    "expected_impact_low_minor": {
+      "minimum": 0,
+      "title": "Expected Impact Low Minor",
+      "type": "integer"
+    },
+    "kill_condition": {
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Kill Condition",
+      "type": "string"
+    },
+    "legal_gate_passed": {
+      "title": "Legal Gate Passed",
+      "type": "boolean"
+    },
+    "owner_lane": {
+      "$ref": "#/$defs/ProposalLane"
+    },
+    "posture": {
+      "$ref": "#/$defs/StrategyPosture"
+    },
+    "proposal_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Proposal Id Sha256",
+      "type": "string"
+    },
+    "reversibility": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "maximum": 1.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Reversibility"
+    },
+    "rights_gate_passed": {
+      "title": "Rights Gate Passed",
+      "type": "boolean"
+    },
+    "security_gate_passed": {
+      "title": "Security Gate Passed",
+      "type": "boolean"
+    },
+    "time_to_signal_days": {
+      "exclusiveMinimum": 0,
+      "maximum": 365,
+      "title": "Time To Signal Days",
+      "type": "integer"
+    },
+    "title": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "proposal_id_sha256",
+    "posture",
+    "title",
+    "evidence_artifact_sha256s",
+    "expected_impact_low_minor",
+    "expected_impact_high_minor",
+    "confidence",
+    "cost_minor",
+    "time_to_signal_days",
+    "reversibility",
+    "kill_condition",
+    "owner_lane",
+    "rights_gate_passed",
+    "legal_gate_passed",
+    "security_gate_passed"
+  ],
+  "title": "InitiativeProposal",
+  "type": "object"
+}

@@ -1,0 +1,83 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "candidate_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Batch Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "gold_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Gold Report Sha256",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "rights_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rights Bundle Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "const": "gold_report_acceptance",
+      "default": "gold_report_acceptance",
+      "title": "Scope",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "tco_qa",
+      "default": "tco_qa",
+      "title": "Signer Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "key_id_sha256",
+    "gold_report_sha256",
+    "rights_bundle_sha256",
+    "candidate_batch_sha256",
+    "issued_at",
+    "expires_at",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "GoldReportAttestation",
+  "type": "object"
+}

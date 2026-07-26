@@ -1,0 +1,128 @@
+{
+  "additionalProperties": false,
+  "description": "Canonical commitment to the complete original P12 cohort evidence set.",
+  "properties": {
+    "cohort_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Cohort Id",
+      "type": "string"
+    },
+    "currency": {
+      "pattern": "^[A-Z]{3}$",
+      "title": "Currency",
+      "type": "string"
+    },
+    "original_payout_adjustment_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Original Payout Adjustment Set Sha256",
+      "type": "string"
+    },
+    "original_transaction_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Original Transaction Set Sha256",
+      "type": "string"
+    },
+    "original_verified_at": {
+      "format": "date-time",
+      "title": "Original Verified At",
+      "type": "string"
+    },
+    "p12_authority_pins_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Authority Pins Sha256",
+      "type": "string"
+    },
+    "p12_bundle_index_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Bundle Index Sha256",
+      "type": "string"
+    },
+    "p12_cohort_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Cohort Attestation Sha256",
+      "type": "string"
+    },
+    "p12_cohort_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Cohort Batch Sha256",
+      "type": "string"
+    },
+    "p12_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Plan Sha256",
+      "type": "string"
+    },
+    "p12_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Policy Sha256",
+      "type": "string"
+    },
+    "p12_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Report Sha256",
+      "type": "string"
+    },
+    "p12_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Trust Store Sha256",
+      "type": "string"
+    },
+    "partner_ids": {
+      "items": {
+        "maxLength": 80,
+        "minLength": 1,
+        "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Partner Ids",
+      "type": "array"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "run_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "snapshot_as_of": {
+      "format": "date-time",
+      "title": "Snapshot As Of",
+      "type": "string"
+    }
+  },
+  "required": [
+    "p12_report_sha256",
+    "p12_policy_sha256",
+    "p12_trust_store_sha256",
+    "p12_authority_pins_sha256",
+    "p12_plan_sha256",
+    "p12_bundle_index_sha256",
+    "p12_cohort_batch_sha256",
+    "p12_cohort_attestation_sha256",
+    "run_id",
+    "cohort_id",
+    "property_record_sha256",
+    "partner_ids",
+    "currency",
+    "snapshot_as_of",
+    "original_verified_at",
+    "original_transaction_set_sha256",
+    "original_payout_adjustment_set_sha256"
+  ],
+  "title": "OriginalSettlementBinding",
+  "type": "object"
+}

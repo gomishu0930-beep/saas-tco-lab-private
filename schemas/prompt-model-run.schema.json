@@ -1,0 +1,114 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "completed_at": {
+      "format": "date-time",
+      "title": "Completed At",
+      "type": "string"
+    },
+    "contains_sensitive_data": {
+      "const": false,
+      "default": false,
+      "title": "Contains Sensitive Data",
+      "type": "boolean"
+    },
+    "cost_currency": {
+      "pattern": "^[A-Z]{3}$",
+      "title": "Cost Currency",
+      "type": "string"
+    },
+    "cost_minor": {
+      "minimum": 0,
+      "title": "Cost Minor",
+      "type": "integer"
+    },
+    "evaluation_case_ids": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Evaluation Case Ids",
+      "type": "array"
+    },
+    "evaluation_passed": {
+      "title": "Evaluation Passed",
+      "type": "boolean"
+    },
+    "input_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Artifact Sha256",
+      "type": "string"
+    },
+    "input_tokens": {
+      "minimum": 0,
+      "title": "Input Tokens",
+      "type": "integer"
+    },
+    "model": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Model",
+      "type": "string"
+    },
+    "model_snapshot": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+      "title": "Model Snapshot",
+      "type": "string"
+    },
+    "output_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Output Artifact Sha256",
+      "type": "string"
+    },
+    "output_tokens": {
+      "minimum": 0,
+      "title": "Output Tokens",
+      "type": "integer"
+    },
+    "prompt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Prompt Sha256",
+      "type": "string"
+    },
+    "provider": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Provider",
+      "type": "string"
+    },
+    "run_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Run Id Sha256",
+      "type": "string"
+    },
+    "started_at": {
+      "format": "date-time",
+      "title": "Started At",
+      "type": "string"
+    }
+  },
+  "required": [
+    "run_id_sha256",
+    "provider",
+    "model",
+    "model_snapshot",
+    "prompt_sha256",
+    "input_artifact_sha256",
+    "output_artifact_sha256",
+    "started_at",
+    "completed_at",
+    "input_tokens",
+    "output_tokens",
+    "cost_minor",
+    "cost_currency",
+    "evaluation_case_ids",
+    "evaluation_passed"
+  ],
+  "title": "PromptModelRun",
+  "type": "object"
+}

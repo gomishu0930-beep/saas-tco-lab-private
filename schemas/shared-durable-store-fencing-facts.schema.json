@@ -1,0 +1,102 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "claim_contenders": {
+      "maximum": 100000,
+      "minimum": 1,
+      "title": "Claim Contenders",
+      "type": "integer"
+    },
+    "concurrent_workers": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Concurrent Workers",
+      "type": "integer"
+    },
+    "failure_domain_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "maxItems": 20,
+      "minItems": 2,
+      "title": "Failure Domain Sha256S",
+      "type": "array"
+    },
+    "kind": {
+      "const": "shared_durable_store_fencing",
+      "default": "shared_durable_store_fencing",
+      "title": "Kind",
+      "type": "string"
+    },
+    "lower_fence_reject_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Lower Fence Reject Case Sha256",
+      "type": "string"
+    },
+    "old_owner_reject_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Old Owner Reject Case Sha256",
+      "type": "string"
+    },
+    "owner_death_reopen_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Owner Death Reopen Case Sha256",
+      "type": "string"
+    },
+    "result_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Artifact Sha256",
+      "type": "string"
+    },
+    "stale_writer_rejections": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Stale Writer Rejections",
+      "type": "integer"
+    },
+    "store_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Identity Sha256",
+      "type": "string"
+    },
+    "unfenced_successful_writes": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Unfenced Successful Writes",
+      "type": "integer"
+    },
+    "winning_claims": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Winning Claims",
+      "type": "integer"
+    },
+    "worker_identity_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "maxItems": 100,
+      "minItems": 2,
+      "title": "Worker Identity Sha256S",
+      "type": "array"
+    }
+  },
+  "required": [
+    "store_identity_sha256",
+    "worker_identity_sha256s",
+    "failure_domain_sha256s",
+    "lower_fence_reject_case_sha256",
+    "old_owner_reject_case_sha256",
+    "owner_death_reopen_case_sha256",
+    "concurrent_workers",
+    "claim_contenders",
+    "winning_claims",
+    "stale_writer_rejections",
+    "unfenced_successful_writes",
+    "result_artifact_sha256"
+  ],
+  "title": "SharedDurableStoreFencingFacts",
+  "type": "object"
+}

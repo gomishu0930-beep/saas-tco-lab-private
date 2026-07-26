@@ -1,0 +1,17 @@
+{
+  "amendment_producer": {
+    "issuer": "fixture-settlement-producer",
+    "key_id_sha256": "48cca97f8993ffaebcac9728d7f94f7144f18090d329d9370a7dfc42db38d14d",
+    "public_key_base64url": "iEuIV_TqoWE8YVBNs01L6vNGUXoOMd483dTZtCAdnQs",
+    "role": "cohort_producer",
+    "schema_version": "1.0"
+  },
+  "completeness_verifier": {
+    "issuer": "fixture-settlement-tco",
+    "key_id_sha256": "1325b850c2871916eae203f0efc3c8987f64e5e3cdb27679e6d1fa97808357e6",
+    "public_key_base64url": "oJql9HpnWYAv-VX43C0qFKXJnSO-l_hkEn_5ODRVpPA",
+    "role": "tco_qa",
+    "schema_version": "1.0"
+  },
+  "schema_version": "1.0"
+}

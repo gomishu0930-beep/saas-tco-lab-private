@@ -1,0 +1,31 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "hourly_cost_jpy": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Hourly Cost Jpy"
+    },
+    "role_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Role Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "role_id",
+    "hourly_cost_jpy"
+  ],
+  "title": "RoleLaborRate",
+  "type": "object"
+}

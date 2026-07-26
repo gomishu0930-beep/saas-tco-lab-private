@@ -1,0 +1,39 @@
+{
+  "$defs": {
+    "DraftVoice": {
+      "enum": [
+        "analyst",
+        "editor",
+        "skeptical_buyer"
+      ],
+      "title": "DraftVoice",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "claim_id_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Claim Id Sha256S",
+      "type": "array"
+    },
+    "content_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Content Sha256",
+      "type": "string"
+    },
+    "voice": {
+      "$ref": "#/$defs/DraftVoice"
+    }
+  },
+  "required": [
+    "voice",
+    "content_sha256",
+    "claim_id_sha256s"
+  ],
+  "title": "EditorialDraft",
+  "type": "object"
+}

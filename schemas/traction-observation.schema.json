@@ -1,0 +1,1186 @@
+{
+  "$defs": {
+    "DailyDerivedOperations": {
+      "additionalProperties": false,
+      "properties": {
+        "exceptions_total": {
+          "minimum": 0,
+          "title": "Exceptions Total",
+          "type": "integer"
+        },
+        "human_minutes": {
+          "minimum": 0,
+          "title": "Human Minutes",
+          "type": "integer"
+        },
+        "job_runs_succeeded": {
+          "minimum": 0,
+          "title": "Job Runs Succeeded",
+          "type": "integer"
+        },
+        "job_runs_total": {
+          "minimum": 0,
+          "title": "Job Runs Total",
+          "type": "integer"
+        },
+        "local_date": {
+          "format": "date",
+          "title": "Local Date",
+          "type": "string"
+        },
+        "major_misstatements": {
+          "minimum": 0,
+          "title": "Major Misstatements",
+          "type": "integer"
+        },
+        "routine_tasks_automated": {
+          "minimum": 0,
+          "title": "Routine Tasks Automated",
+          "type": "integer"
+        },
+        "routine_tasks_total": {
+          "minimum": 0,
+          "title": "Routine Tasks Total",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "local_date",
+        "human_minutes",
+        "routine_tasks_total",
+        "routine_tasks_automated",
+        "job_runs_total",
+        "job_runs_succeeded",
+        "exceptions_total",
+        "major_misstatements"
+      ],
+      "title": "DailyDerivedOperations",
+      "type": "object"
+    },
+    "DerivedOperationsActivitySummary": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "coverage": {
+          "$ref": "#/$defs/TaskActivityCoverage"
+        },
+        "daily": {
+          "items": {
+            "$ref": "#/$defs/DailyDerivedOperations"
+          },
+          "maxItems": 30,
+          "minItems": 30,
+          "title": "Daily",
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "observation_ended_at": {
+          "format": "date-time",
+          "title": "Observation Ended At",
+          "type": "string"
+        },
+        "observation_started_at": {
+          "format": "date-time",
+          "title": "Observation Started At",
+          "type": "string"
+        },
+        "operating_tco": {
+          "$ref": "#/$defs/MonthlyOperatingTco"
+        },
+        "policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_batch_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Batch Sha256",
+          "type": "string"
+        },
+        "source_operations_batch_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Operations Batch Sha256",
+          "type": "string"
+        },
+        "summary_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Summary Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_batch_sha256",
+        "source_operations_batch_sha256",
+        "policy_sha256",
+        "observation_started_at",
+        "observation_ended_at",
+        "captured_at",
+        "expires_at",
+        "daily",
+        "coverage",
+        "operating_tco",
+        "summary_sha256"
+      ],
+      "title": "DerivedOperationsActivitySummary",
+      "type": "object"
+    },
+    "HumanActivityEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "activity_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Activity Id Sha256",
+          "type": "string"
+        },
+        "actor_identity_token_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Actor Identity Token Sha256",
+          "type": "string"
+        },
+        "ended_at": {
+          "format": "date-time",
+          "title": "Ended At",
+          "type": "string"
+        },
+        "occurrence_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Occurrence Id Sha256",
+          "type": "string"
+        },
+        "role_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Role Id",
+          "type": "string"
+        },
+        "source_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Sha256",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "activity_id_sha256",
+        "actor_identity_token_sha256",
+        "role_id",
+        "occurrence_id_sha256",
+        "source_receipt_sha256",
+        "started_at",
+        "ended_at"
+      ],
+      "title": "HumanActivityEvent",
+      "type": "object"
+    },
+    "MonthlyOperatingTco": {
+      "additionalProperties": false,
+      "properties": {
+        "gross_settled_revenue_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Gross Settled Revenue Jpy"
+        },
+        "human_minutes": {
+          "minimum": 0,
+          "title": "Human Minutes",
+          "type": "integer"
+        },
+        "labor_cost_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Labor Cost Jpy"
+        },
+        "net_operating_profit_jpy": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Net Operating Profit Jpy"
+        },
+        "objective_basis": {
+          "const": "net_operating_profit",
+          "default": "net_operating_profit",
+          "title": "Objective Basis",
+          "type": "string"
+        },
+        "resource_cost_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Resource Cost Jpy"
+        },
+        "target_achieved": {
+          "title": "Target Achieved",
+          "type": "boolean"
+        },
+        "target_monthly_net_profit_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Target Monthly Net Profit Jpy"
+        },
+        "total_operating_tco_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Total Operating Tco Jpy"
+        }
+      },
+      "required": [
+        "target_monthly_net_profit_jpy",
+        "gross_settled_revenue_jpy",
+        "human_minutes",
+        "labor_cost_jpy",
+        "resource_cost_jpy",
+        "total_operating_tco_jpy",
+        "net_operating_profit_jpy",
+        "target_achieved"
+      ],
+      "title": "MonthlyOperatingTco",
+      "type": "object"
+    },
+    "OperationalCostPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "maximum_evidence_ttl_seconds": {
+          "maximum": 2678400,
+          "minimum": 1,
+          "title": "Maximum Evidence Ttl Seconds",
+          "type": "integer"
+        },
+        "objective_basis": {
+          "const": "net_operating_profit",
+          "default": "net_operating_profit",
+          "title": "Objective Basis",
+          "type": "string"
+        },
+        "policy_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        },
+        "role_labor_rates": {
+          "items": {
+            "$ref": "#/$defs/RoleLaborRate"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Role Labor Rates",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "target_monthly_net_profit_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "default": "200000",
+          "title": "Target Monthly Net Profit Jpy"
+        }
+      },
+      "required": [
+        "policy_id",
+        "role_labor_rates",
+        "maximum_evidence_ttl_seconds",
+        "policy_sha256"
+      ],
+      "title": "OperationalCostPolicy",
+      "type": "object"
+    },
+    "OperationsActivityBatch": {
+      "additionalProperties": false,
+      "properties": {
+        "batch_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Batch Id",
+          "type": "string"
+        },
+        "batch_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Batch Sha256",
+          "type": "string"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "definitions": {
+          "items": {
+            "$ref": "#/$defs/RoutineTaskDefinition"
+          },
+          "maxItems": 1000,
+          "minItems": 1,
+          "title": "Definitions",
+          "type": "array"
+        },
+        "executions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/RoutineTaskExecution"
+          },
+          "maxItems": 1000000,
+          "title": "Executions",
+          "type": "array"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "human_activities": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/HumanActivityEvent"
+          },
+          "maxItems": 1000000,
+          "title": "Human Activities",
+          "type": "array"
+        },
+        "observation_ended_at": {
+          "format": "date-time",
+          "title": "Observation Ended At",
+          "type": "string"
+        },
+        "observation_started_at": {
+          "format": "date-time",
+          "title": "Observation Started At",
+          "type": "string"
+        },
+        "resource_usage": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ResourceUsageEvent"
+          },
+          "maxItems": 1000000,
+          "title": "Resource Usage",
+          "type": "array"
+        },
+        "schedules": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/ScheduledRoutineTask"
+          },
+          "maxItems": 1000000,
+          "title": "Schedules",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_operations_batch_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Operations Batch Sha256",
+          "type": "string"
+        },
+        "source_timezone": {
+          "const": "Asia/Tokyo",
+          "default": "Asia/Tokyo",
+          "title": "Source Timezone",
+          "type": "string"
+        }
+      },
+      "required": [
+        "batch_id",
+        "source_operations_batch_sha256",
+        "observation_started_at",
+        "observation_ended_at",
+        "captured_at",
+        "expires_at",
+        "definitions",
+        "batch_sha256"
+      ],
+      "title": "OperationsActivityBatch",
+      "type": "object"
+    },
+    "PartnerTractionFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "partner_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Partner Id",
+          "type": "string"
+        },
+        "settled_amount": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Settled Amount"
+        }
+      },
+      "required": [
+        "partner_id",
+        "settled_amount"
+      ],
+      "title": "PartnerTractionFacts",
+      "type": "object"
+    },
+    "ResourceUsageEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "quantity": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Quantity"
+        },
+        "resource_class": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Resource Class",
+          "type": "string"
+        },
+        "source_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Sha256",
+          "type": "string"
+        },
+        "unit_cost_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Unit Cost Jpy"
+        },
+        "usage_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Usage Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "usage_id_sha256",
+        "resource_class",
+        "source_receipt_sha256",
+        "occurred_at",
+        "quantity",
+        "unit_cost_jpy"
+      ],
+      "title": "ResourceUsageEvent",
+      "type": "object"
+    },
+    "RoleLaborRate": {
+      "additionalProperties": false,
+      "properties": {
+        "hourly_cost_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Hourly Cost Jpy"
+        },
+        "role_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Role Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role_id",
+        "hourly_cost_jpy"
+      ],
+      "title": "RoleLaborRate",
+      "type": "object"
+    },
+    "RoutineExecutionOutcome": {
+      "enum": [
+        "succeeded",
+        "failed"
+      ],
+      "title": "RoutineExecutionOutcome",
+      "type": "string"
+    },
+    "RoutineTaskDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "definition_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Definition Sha256",
+          "type": "string"
+        },
+        "mode": {
+          "$ref": "#/$defs/RoutineTaskMode"
+        },
+        "task_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "definition_sha256",
+        "mode"
+      ],
+      "title": "RoutineTaskDefinition",
+      "type": "object"
+    },
+    "RoutineTaskExecution": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "exception_count": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Exception Count",
+          "type": "integer"
+        },
+        "execution_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Execution Receipt Sha256",
+          "type": "string"
+        },
+        "major_misstatement_count": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Major Misstatement Count",
+          "type": "integer"
+        },
+        "mode": {
+          "$ref": "#/$defs/RoutineTaskMode"
+        },
+        "occurrence_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Occurrence Id Sha256",
+          "type": "string"
+        },
+        "outcome": {
+          "$ref": "#/$defs/RoutineExecutionOutcome"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "occurrence_id_sha256",
+        "execution_receipt_sha256",
+        "mode",
+        "started_at",
+        "completed_at",
+        "outcome",
+        "exception_count",
+        "major_misstatement_count"
+      ],
+      "title": "RoutineTaskExecution",
+      "type": "object"
+    },
+    "RoutineTaskMode": {
+      "enum": [
+        "automated",
+        "manual"
+      ],
+      "title": "RoutineTaskMode",
+      "type": "string"
+    },
+    "ScheduledRoutineTask": {
+      "additionalProperties": false,
+      "properties": {
+        "definition_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Definition Sha256",
+          "type": "string"
+        },
+        "local_date": {
+          "format": "date",
+          "title": "Local Date",
+          "type": "string"
+        },
+        "occurrence_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Occurrence Id Sha256",
+          "type": "string"
+        },
+        "scheduled_for": {
+          "format": "date-time",
+          "title": "Scheduled For",
+          "type": "string"
+        },
+        "task_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "occurrence_id_sha256",
+        "task_id",
+        "definition_sha256",
+        "local_date",
+        "scheduled_for"
+      ],
+      "title": "ScheduledRoutineTask",
+      "type": "object"
+    },
+    "TaskActivityCoverage": {
+      "additionalProperties": false,
+      "properties": {
+        "complete": {
+          "title": "Complete",
+          "type": "boolean"
+        },
+        "executed_occurrences": {
+          "minimum": 0,
+          "title": "Executed Occurrences",
+          "type": "integer"
+        },
+        "execution_receipts": {
+          "minimum": 0,
+          "title": "Execution Receipts",
+          "type": "integer"
+        },
+        "human_activity_receipts": {
+          "minimum": 0,
+          "title": "Human Activity Receipts",
+          "type": "integer"
+        },
+        "manual_occurrences": {
+          "minimum": 0,
+          "title": "Manual Occurrences",
+          "type": "integer"
+        },
+        "manual_occurrences_with_activity": {
+          "minimum": 0,
+          "title": "Manual Occurrences With Activity",
+          "type": "integer"
+        },
+        "resource_usage_receipts": {
+          "minimum": 0,
+          "title": "Resource Usage Receipts",
+          "type": "integer"
+        },
+        "scheduled_occurrences": {
+          "minimum": 0,
+          "title": "Scheduled Occurrences",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "scheduled_occurrences",
+        "executed_occurrences",
+        "execution_receipts",
+        "manual_occurrences",
+        "manual_occurrences_with_activity",
+        "human_activity_receipts",
+        "resource_usage_receipts",
+        "complete"
+      ],
+      "title": "TaskActivityCoverage",
+      "type": "object"
+    },
+    "TractionProvenance": {
+      "enum": [
+        "verified_p12",
+        "synthetic_contract"
+      ],
+      "title": "TractionProvenance",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bear_outbound_click_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Bear Outbound Click Rate"
+    },
+    "bear_qualified_sessions": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Bear Qualified Sessions"
+    },
+    "click_identity_tokens": {
+      "default": [],
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Click Identity Tokens",
+      "type": "array"
+    },
+    "cohort_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Cohort Id",
+      "type": "string"
+    },
+    "exact_faults_passed": {
+      "maximum": 8,
+      "minimum": 0,
+      "title": "Exact Faults Passed",
+      "type": "integer"
+    },
+    "exceptions_total": {
+      "minimum": 0,
+      "title": "Exceptions Total",
+      "type": "integer"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "human_minutes": {
+      "minimum": 0,
+      "title": "Human Minutes",
+      "type": "integer"
+    },
+    "ingested_at": {
+      "format": "date-time",
+      "title": "Ingested At",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "job_runs_succeeded": {
+      "minimum": 0,
+      "title": "Job Runs Succeeded",
+      "type": "integer"
+    },
+    "job_runs_total": {
+      "minimum": 0,
+      "title": "Job Runs Total",
+      "type": "integer"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "ledger_store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Ledger Store Id Sha256",
+      "type": "string"
+    },
+    "major_misstatements": {
+      "minimum": 0,
+      "title": "Major Misstatements",
+      "type": "integer"
+    },
+    "measured_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Measured Artifact Sha256",
+      "type": "string"
+    },
+    "measured_release_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Measured Release Sha256",
+      "type": "string"
+    },
+    "measured_schema_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Measured Schema Sha256",
+      "type": "string"
+    },
+    "observation_ended_at": {
+      "format": "date-time",
+      "title": "Observation Ended At",
+      "type": "string"
+    },
+    "observation_started_at": {
+      "format": "date-time",
+      "title": "Observation Started At",
+      "type": "string"
+    },
+    "operational_cost_policy": {
+      "$ref": "#/$defs/OperationalCostPolicy"
+    },
+    "operations_activity": {
+      "$ref": "#/$defs/DerivedOperationsActivitySummary"
+    },
+    "operations_activity_batch": {
+      "$ref": "#/$defs/OperationsActivityBatch"
+    },
+    "ordinal": {
+      "maximum": 6,
+      "minimum": 1,
+      "title": "Ordinal",
+      "type": "integer"
+    },
+    "p12_bundle_index_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Bundle Index Sha256",
+      "type": "string"
+    },
+    "p12_cohort_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Cohort Attestation Sha256",
+      "type": "string"
+    },
+    "p12_cohort_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Cohort Batch Sha256",
+      "type": "string"
+    },
+    "p12_demand_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Demand Attestation Sha256",
+      "type": "string"
+    },
+    "p12_demand_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Demand Batch Sha256",
+      "type": "string"
+    },
+    "p12_operations_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Operations Attestation Sha256",
+      "type": "string"
+    },
+    "p12_operations_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Operations Batch Sha256",
+      "type": "string"
+    },
+    "p12_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Plan Sha256",
+      "type": "string"
+    },
+    "p12_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Policy Sha256",
+      "type": "string"
+    },
+    "p12_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Report Sha256",
+      "type": "string"
+    },
+    "p12_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Trust Store Sha256",
+      "type": "string"
+    },
+    "partner_facts": {
+      "items": {
+        "$ref": "#/$defs/PartnerTractionFacts"
+      },
+      "minItems": 3,
+      "title": "Partner Facts",
+      "type": "array"
+    },
+    "partner_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Partner Set Sha256",
+      "type": "string"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "predecessor_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Predecessor Sha256",
+      "type": "string"
+    },
+    "property_domain_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Domain Sha256",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/TractionProvenance"
+    },
+    "qualified_sessions": {
+      "minimum": 0,
+      "title": "Qualified Sessions",
+      "type": "integer"
+    },
+    "routine_tasks_automated": {
+      "minimum": 0,
+      "title": "Routine Tasks Automated",
+      "type": "integer"
+    },
+    "routine_tasks_total": {
+      "minimum": 0,
+      "title": "Routine Tasks Total",
+      "type": "integer"
+    },
+    "run_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Run Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "settled_amount_at_window_end": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Settled Amount At Window End"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "tco_qa",
+      "title": "Signer Role",
+      "type": "string"
+    },
+    "transaction_identity_tokens": {
+      "default": [],
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Transaction Identity Tokens",
+      "type": "array"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    },
+    "valid_outbound_clicks": {
+      "minimum": 0,
+      "title": "Valid Outbound Clicks",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "issuer",
+    "key_id_sha256",
+    "signer_role",
+    "provenance",
+    "policy_sha256",
+    "trust_store_sha256",
+    "plan_sha256",
+    "ledger_store_id_sha256",
+    "ordinal",
+    "predecessor_sha256",
+    "run_id",
+    "cohort_id",
+    "p12_report_sha256",
+    "p12_plan_sha256",
+    "p12_bundle_index_sha256",
+    "p12_demand_batch_sha256",
+    "p12_cohort_batch_sha256",
+    "p12_operations_batch_sha256",
+    "p12_demand_attestation_sha256",
+    "p12_cohort_attestation_sha256",
+    "p12_operations_attestation_sha256",
+    "p12_policy_sha256",
+    "p12_trust_store_sha256",
+    "operations_activity_batch",
+    "operational_cost_policy",
+    "operations_activity",
+    "property_record_sha256",
+    "property_domain_sha256",
+    "measured_release_sha256",
+    "measured_artifact_sha256",
+    "measured_schema_sha256",
+    "partner_set_sha256",
+    "observation_started_at",
+    "observation_ended_at",
+    "ingested_at",
+    "qualified_sessions",
+    "valid_outbound_clicks",
+    "settled_amount_at_window_end",
+    "partner_facts",
+    "bear_qualified_sessions",
+    "bear_outbound_click_rate",
+    "human_minutes",
+    "routine_tasks_total",
+    "routine_tasks_automated",
+    "job_runs_total",
+    "job_runs_succeeded",
+    "major_misstatements",
+    "exceptions_total",
+    "exact_faults_passed",
+    "issued_at",
+    "expires_at",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "TractionObservation",
+  "type": "object"
+}

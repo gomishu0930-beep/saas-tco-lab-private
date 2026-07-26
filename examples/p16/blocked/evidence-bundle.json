@@ -1,0 +1,9 @@
+{
+  "bundle_sha256": "4d73a196a1adafe7d5a7fff4b10e1856cab1c1d8f40e7e0ab98c65ef83db9ee0",
+  "handoff_policy_sha256": "7b52633e653e22bffc29798ef1ff83ab913cb0dbfc015040ba3704b934fe4979",
+  "launch_semantics": null,
+  "plan_sha256": "3c9cf0466684c4d6a1b6a10f81790a36c24f1725f64121deefe4963fff73f89f",
+  "receipts": [],
+  "repository_acceptance": null,
+  "schema_version": "3.0"
+}

@@ -1,0 +1,103 @@
+{
+  "$defs": {
+    "RollbackTestStatus": {
+      "enum": [
+        "not_run",
+        "passed",
+        "failed"
+      ],
+      "title": "RollbackTestStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "evidence_version": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Evidence Version",
+      "type": "string"
+    },
+    "exceptions_total": {
+      "minimum": 0,
+      "title": "Exceptions Total",
+      "type": "integer"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "human_minutes_per_month": {
+      "minimum": 0,
+      "title": "Human Minutes Per Month",
+      "type": "integer"
+    },
+    "job_runs_succeeded": {
+      "minimum": 0,
+      "title": "Job Runs Succeeded",
+      "type": "integer"
+    },
+    "job_runs_total": {
+      "minimum": 0,
+      "title": "Job Runs Total",
+      "type": "integer"
+    },
+    "major_misstatements": {
+      "minimum": 0,
+      "title": "Major Misstatements",
+      "type": "integer"
+    },
+    "observation_started_at": {
+      "format": "date-time",
+      "title": "Observation Started At",
+      "type": "string"
+    },
+    "rollback_test_status": {
+      "$ref": "#/$defs/RollbackTestStatus"
+    },
+    "routine_tasks_automated": {
+      "minimum": 0,
+      "title": "Routine Tasks Automated",
+      "type": "integer"
+    },
+    "routine_tasks_total": {
+      "minimum": 0,
+      "title": "Routine Tasks Total",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence_version",
+    "source_sha256",
+    "observation_started_at",
+    "captured_at",
+    "expires_at",
+    "human_minutes_per_month",
+    "routine_tasks_total",
+    "routine_tasks_automated",
+    "major_misstatements",
+    "job_runs_total",
+    "job_runs_succeeded",
+    "exceptions_total",
+    "rollback_test_status"
+  ],
+  "title": "OperationsEvidence",
+  "type": "object"
+}

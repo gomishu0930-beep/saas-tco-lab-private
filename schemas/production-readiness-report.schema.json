@@ -1,0 +1,153 @@
+{
+  "$defs": {
+    "ProductionIntegrationCheck": {
+      "enum": [
+        "backup_restore",
+        "egress_allowlist",
+        "external_monotonic_anchor",
+        "independent_readback",
+        "kms_identity_separation",
+        "provider_conditional_mutation",
+        "provider_idempotency_retention",
+        "provider_receipt_lookup",
+        "rollback_disable",
+        "shared_durable_store_fencing",
+        "trusted_clock"
+      ],
+      "title": "ProductionIntegrationCheck",
+      "type": "string"
+    },
+    "ProductionReadinessDecision": {
+      "enum": [
+        "ready_for_human_gate",
+        "stop"
+      ],
+      "title": "ProductionReadinessDecision",
+      "type": "string"
+    },
+    "ProductionReadinessFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "$ref": "#/$defs/ProductionIntegrationCheck"
+        },
+        "reason": {
+          "$ref": "#/$defs/ProductionReadinessReason"
+        }
+      },
+      "required": [
+        "check",
+        "reason"
+      ],
+      "title": "ProductionReadinessFinding",
+      "type": "object"
+    },
+    "ProductionReadinessReason": {
+      "enum": [
+        "check_failed",
+        "conflicting_evidence",
+        "duplicate_evidence",
+        "evidence_expired",
+        "evidence_future",
+        "evidence_signature_invalid",
+        "evidence_ttl_exceeded",
+        "missing_evidence",
+        "plan_expired",
+        "plan_future",
+        "requirement_mismatch",
+        "synthetic_evidence"
+      ],
+      "title": "ProductionReadinessReason",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "decision": {
+      "$ref": "#/$defs/ProductionReadinessDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "evidence_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Bundle Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "failed_checks": {
+      "items": {
+        "$ref": "#/$defs/ProductionIntegrationCheck"
+      },
+      "title": "Failed Checks",
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/ProductionReadinessFinding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "integration_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Integration Policy Sha256",
+      "type": "string"
+    },
+    "passed_checks": {
+      "items": {
+        "$ref": "#/$defs/ProductionIntegrationCheck"
+      },
+      "title": "Passed Checks",
+      "type": "array"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "synthetic_evidence_is_not_production_authority": {
+      "const": true,
+      "default": true,
+      "title": "Synthetic Evidence Is Not Production Authority",
+      "type": "boolean"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision",
+    "evaluated_at",
+    "plan_sha256",
+    "integration_policy_sha256",
+    "trust_store_sha256",
+    "evidence_bundle_sha256",
+    "findings",
+    "passed_checks",
+    "failed_checks",
+    "expires_at",
+    "report_sha256"
+  ],
+  "title": "ProductionReadinessReport",
+  "type": "object"
+}

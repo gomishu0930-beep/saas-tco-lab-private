@@ -1,0 +1,326 @@
+{
+  "$defs": {
+    "ProductionEvidenceProvenance": {
+      "enum": [
+        "production_environment",
+        "synthetic_contract"
+      ],
+      "title": "ProductionEvidenceProvenance",
+      "type": "string"
+    },
+    "PublicationContentReadback": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_release_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Release Artifact Sha256",
+          "type": "string"
+        },
+        "expected_release_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Release Manifest Sha256",
+          "type": "string"
+        },
+        "http_status": {
+          "const": 200,
+          "default": 200,
+          "title": "Http Status",
+          "type": "integer"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "observed_release_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observed Release Artifact Sha256",
+          "type": "string"
+        },
+        "observed_release_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observed Release Manifest Sha256",
+          "type": "string"
+        },
+        "response_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Response Receipt Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "expected_release_manifest_sha256",
+        "observed_release_manifest_sha256",
+        "expected_release_artifact_sha256",
+        "observed_release_artifact_sha256",
+        "response_receipt_sha256",
+        "observed_at"
+      ],
+      "title": "PublicationContentReadback",
+      "type": "object"
+    },
+    "PublicationDisclosureReadback": {
+      "additionalProperties": false,
+      "properties": {
+        "disclosure_visible": {
+          "const": true,
+          "default": true,
+          "title": "Disclosure Visible",
+          "type": "boolean"
+        },
+        "expected_disclosure_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Disclosure Sha256",
+          "type": "string"
+        },
+        "expected_legal_pages_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Legal Pages Sha256",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "observed_disclosure_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observed Disclosure Sha256",
+          "type": "string"
+        },
+        "observed_legal_pages_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observed Legal Pages Sha256",
+          "type": "string"
+        },
+        "response_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Response Receipt Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "expected_legal_pages_sha256",
+        "observed_legal_pages_sha256",
+        "expected_disclosure_sha256",
+        "observed_disclosure_sha256",
+        "response_receipt_sha256",
+        "observed_at"
+      ],
+      "title": "PublicationDisclosureReadback",
+      "type": "object"
+    },
+    "PublicationIndexabilityReadback": {
+      "additionalProperties": false,
+      "properties": {
+        "canonical_matches_property": {
+          "const": true,
+          "default": true,
+          "title": "Canonical Matches Property",
+          "type": "boolean"
+        },
+        "meta_robots_index": {
+          "const": true,
+          "default": true,
+          "title": "Meta Robots Index",
+          "type": "boolean"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "response_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Response Receipt Sha256",
+          "type": "string"
+        },
+        "robots_allows_indexing": {
+          "const": true,
+          "default": true,
+          "title": "Robots Allows Indexing",
+          "type": "boolean"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "response_receipt_sha256",
+        "observed_at"
+      ],
+      "title": "PublicationIndexabilityReadback",
+      "type": "object"
+    },
+    "PublicationReadinessFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "affiliate_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Affiliate Bundle Sha256",
+          "type": "string"
+        },
+        "approved_partner_ids": {
+          "items": {
+            "type": "string"
+          },
+          "minItems": 3,
+          "title": "Approved Partner Ids",
+          "type": "array"
+        },
+        "content_readback": {
+          "$ref": "#/$defs/PublicationContentReadback"
+        },
+        "deployment_candidate_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Deployment Candidate Sha256",
+          "type": "string"
+        },
+        "deployment_readiness_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Deployment Readiness Record Sha256",
+          "type": "string"
+        },
+        "disclosure_readback": {
+          "$ref": "#/$defs/PublicationDisclosureReadback"
+        },
+        "environment_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Environment Identity Sha256",
+          "type": "string"
+        },
+        "indexability_readback": {
+          "$ref": "#/$defs/PublicationIndexabilityReadback"
+        },
+        "property_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Property Record Sha256",
+          "type": "string"
+        },
+        "release_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Release Artifact Sha256",
+          "type": "string"
+        },
+        "release_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Release Identity Sha256",
+          "type": "string"
+        },
+        "release_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Release Manifest Sha256",
+          "type": "string"
+        },
+        "rights_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rights Bundle Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "property_record_sha256",
+        "environment_identity_sha256",
+        "release_identity_sha256",
+        "release_manifest_sha256",
+        "release_artifact_sha256",
+        "deployment_candidate_sha256",
+        "deployment_readiness_record_sha256",
+        "rights_bundle_sha256",
+        "affiliate_bundle_sha256",
+        "approved_partner_ids",
+        "content_readback",
+        "indexability_readback",
+        "disclosure_readback"
+      ],
+      "title": "PublicationReadinessFacts",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "facts": {
+      "$ref": "#/$defs/PublicationReadinessFacts"
+    },
+    "issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ProductionEvidenceProvenance"
+    },
+    "record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Record Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "provider_probe",
+      "default": "provider_probe",
+      "title": "Signer Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "facts",
+    "provenance",
+    "observed_at",
+    "expires_at",
+    "issuer",
+    "key_id_sha256",
+    "record_sha256",
+    "signature_base64url"
+  ],
+  "title": "PublicationReadinessRecord",
+  "type": "object"
+}

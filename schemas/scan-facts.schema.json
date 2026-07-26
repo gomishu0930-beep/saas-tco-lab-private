@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "exit_code": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "findings": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Findings",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "scan",
+      "default": "scan",
+      "title": "Kind",
+      "type": "string"
+    },
+    "output_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Output Sha256",
+      "type": "string"
+    },
+    "scanned_items": {
+      "maximum": 100000000,
+      "minimum": 1,
+      "title": "Scanned Items",
+      "type": "integer"
+    },
+    "unresolved_findings": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Unresolved Findings",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "scanned_items",
+    "findings",
+    "unresolved_findings",
+    "output_sha256",
+    "exit_code"
+  ],
+  "title": "ScanFacts",
+  "type": "object"
+}

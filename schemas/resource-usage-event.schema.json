@@ -1,0 +1,63 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "occurred_at": {
+      "format": "date-time",
+      "title": "Occurred At",
+      "type": "string"
+    },
+    "quantity": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Quantity"
+    },
+    "resource_class": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Resource Class",
+      "type": "string"
+    },
+    "source_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Receipt Sha256",
+      "type": "string"
+    },
+    "unit_cost_jpy": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "title": "Unit Cost Jpy"
+    },
+    "usage_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Usage Id Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "usage_id_sha256",
+    "resource_class",
+    "source_receipt_sha256",
+    "occurred_at",
+    "quantity",
+    "unit_cost_jpy"
+  ],
+  "title": "ResourceUsageEvent",
+  "type": "object"
+}

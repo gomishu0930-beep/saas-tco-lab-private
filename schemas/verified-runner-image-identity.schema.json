@@ -1,0 +1,162 @@
+{
+  "$defs": {
+    "VerifiedRunnerRuntime": {
+      "enum": [
+        "read_only_oci",
+        "read_only_microvm"
+      ],
+      "title": "VerifiedRunnerRuntime",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "boot_measurement_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Boot Measurement Sha256",
+      "type": "string"
+    },
+    "built_at": {
+      "format": "date-time",
+      "title": "Built At",
+      "type": "string"
+    },
+    "dependency_lock_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dependency Lock Sha256",
+      "type": "string"
+    },
+    "external_network": {
+      "const": false,
+      "default": false,
+      "title": "External Network",
+      "type": "boolean"
+    },
+    "host_mounts": {
+      "default": [],
+      "maxItems": 0,
+      "minItems": 0,
+      "title": "Host Mounts",
+      "type": "array"
+    },
+    "host_network": {
+      "const": false,
+      "default": false,
+      "title": "Host Network",
+      "type": "boolean"
+    },
+    "identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Identity Sha256",
+      "type": "string"
+    },
+    "image_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Image Manifest Sha256",
+      "type": "string"
+    },
+    "linux_capabilities": {
+      "default": [],
+      "maxItems": 0,
+      "minItems": 0,
+      "title": "Linux Capabilities",
+      "type": "array"
+    },
+    "node_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Node Id Sha256",
+      "type": "string"
+    },
+    "parser_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Parser Bundle Sha256",
+      "type": "string"
+    },
+    "platform": {
+      "enum": [
+        "linux/amd64",
+        "linux/arm64"
+      ],
+      "title": "Platform",
+      "type": "string"
+    },
+    "privileged": {
+      "const": false,
+      "default": false,
+      "title": "Privileged",
+      "type": "boolean"
+    },
+    "rootfs_read_only": {
+      "const": true,
+      "default": true,
+      "title": "Rootfs Read Only",
+      "type": "boolean"
+    },
+    "rootfs_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rootfs Sha256",
+      "type": "string"
+    },
+    "runner_binary_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Runner Binary Sha256",
+      "type": "string"
+    },
+    "runtime": {
+      "$ref": "#/$defs/VerifiedRunnerRuntime"
+    },
+    "runtime_name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Runtime Name",
+      "type": "string"
+    },
+    "runtime_version": {
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+      "title": "Runtime Version",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "seccomp_profile_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Seccomp Profile Sha256",
+      "type": "string"
+    },
+    "subject_embedded_read_only": {
+      "const": true,
+      "default": true,
+      "title": "Subject Embedded Read Only",
+      "type": "boolean"
+    },
+    "subject_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Tree Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "runtime",
+    "runtime_name",
+    "runtime_version",
+    "platform",
+    "subject_tree_sha256",
+    "image_manifest_sha256",
+    "rootfs_sha256",
+    "boot_measurement_sha256",
+    "runner_binary_sha256",
+    "parser_bundle_sha256",
+    "dependency_lock_sha256",
+    "seccomp_profile_sha256",
+    "node_id_sha256",
+    "built_at",
+    "identity_sha256"
+  ],
+  "title": "VerifiedRunnerImageIdentity",
+  "type": "object"
+}

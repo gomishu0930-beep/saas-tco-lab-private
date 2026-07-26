@@ -1,0 +1,820 @@
+{
+  "$defs": {
+    "AcquisitionMethod": {
+      "enum": [
+        "official_api",
+        "vendor_feed",
+        "direct_http",
+        "browser",
+        "manual"
+      ],
+      "title": "AcquisitionMethod",
+      "type": "string"
+    },
+    "AddonPrice": {
+      "additionalProperties": false,
+      "properties": {
+        "billing_period": {
+          "$ref": "#/$defs/BillingPeriod"
+        },
+        "code": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Code",
+          "type": "string"
+        },
+        "name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Name",
+          "type": "string"
+        },
+        "pricing_model": {
+          "$ref": "#/$defs/PricingModel"
+        },
+        "required": {
+          "title": "Required",
+          "type": "boolean"
+        },
+        "unit_name": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit Name"
+        },
+        "unit_price": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Unit Price"
+        }
+      },
+      "required": [
+        "code",
+        "name",
+        "required",
+        "unit_price",
+        "billing_period",
+        "pricing_model"
+      ],
+      "title": "AddonPrice",
+      "type": "object"
+    },
+    "BillingPeriod": {
+      "enum": [
+        "monthly",
+        "annual"
+      ],
+      "title": "BillingPeriod",
+      "type": "string"
+    },
+    "CandidateParseFailure": {
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "$ref": "#/$defs/ParseFailureCode"
+        },
+        "error_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Error Sha256",
+          "type": "string"
+        },
+        "expected_plan_slug": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Expected Plan Slug",
+          "type": "string"
+        },
+        "expected_vendor_slug": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Expected Vendor Slug",
+          "type": "string"
+        },
+        "input_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Input Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_id_sha256",
+        "expected_vendor_slug",
+        "expected_plan_slug",
+        "code",
+        "error_sha256"
+      ],
+      "title": "CandidateParseFailure",
+      "type": "object"
+    },
+    "CandidatePlan": {
+      "additionalProperties": false,
+      "properties": {
+        "input_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Input Id Sha256",
+          "type": "string"
+        },
+        "plan": {
+          "$ref": "#/$defs/VendorPlan"
+        },
+        "plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Plan Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "input_id_sha256",
+        "plan_sha256",
+        "plan"
+      ],
+      "title": "CandidatePlan",
+      "type": "object"
+    },
+    "EvidenceKind": {
+      "enum": [
+        "fact",
+        "paraphrase",
+        "quote"
+      ],
+      "title": "EvidenceKind",
+      "type": "string"
+    },
+    "EvidencePointer": {
+      "additionalProperties": false,
+      "description": "Minimal, attributable evidence for a single normalized field.",
+      "properties": {
+        "evidence_kind": {
+          "$ref": "#/$defs/EvidenceKind"
+        },
+        "excerpt": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Excerpt",
+          "type": "string"
+        },
+        "raw_archive": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/RawArchivePointer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        },
+        "source_policy": {
+          "$ref": "#/$defs/SourcePolicy"
+        },
+        "url": {
+          "format": "uri",
+          "minLength": 1,
+          "title": "Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "url",
+        "retrieved_at",
+        "sha256",
+        "evidence_kind",
+        "excerpt",
+        "source_policy"
+      ],
+      "title": "EvidencePointer",
+      "type": "object"
+    },
+    "FieldEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "field": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "title": "Field",
+          "type": "string"
+        },
+        "pointers": {
+          "items": {
+            "$ref": "#/$defs/EvidencePointer"
+          },
+          "minItems": 1,
+          "title": "Pointers",
+          "type": "array"
+        }
+      },
+      "required": [
+        "field",
+        "pointers"
+      ],
+      "title": "FieldEvidence",
+      "type": "object"
+    },
+    "ParseFailureCode": {
+      "enum": [
+        "parse_error",
+        "validation_error",
+        "unsupported",
+        "ambiguous",
+        "source_conflict",
+        "rights_invalid"
+      ],
+      "title": "ParseFailureCode",
+      "type": "string"
+    },
+    "PolicyDecision": {
+      "description": "An explicit decision.  Missing review is never equivalent to approval.",
+      "enum": [
+        "approved",
+        "prohibited",
+        "unreviewed"
+      ],
+      "title": "PolicyDecision",
+      "type": "string"
+    },
+    "PricingModel": {
+      "enum": [
+        "flat",
+        "per_seat",
+        "per_usage"
+      ],
+      "title": "PricingModel",
+      "type": "string"
+    },
+    "RawArchivePointer": {
+      "additionalProperties": false,
+      "description": "Metadata pointer only; raw source bytes never enter the pricing record.",
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "delete_after": {
+          "format": "date-time",
+          "title": "Delete After",
+          "type": "string"
+        },
+        "relative_path": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Relative Path",
+          "type": "string"
+        },
+        "sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "relative_path",
+        "sha256",
+        "captured_at",
+        "delete_after"
+      ],
+      "title": "RawArchivePointer",
+      "type": "object"
+    },
+    "SeatPricing": {
+      "additionalProperties": false,
+      "description": "Price for each billable seat.\n\nPhase 1 intentionally excludes hybrid platform-fee/included-seat products:\n``included_seats`` is fixed to zero and VendorPlan validates that the unit\nprice equals its advertised ``base_price``.",
+      "properties": {
+        "included_seats": {
+          "default": 0,
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Included Seats",
+          "type": "integer"
+        },
+        "maximum_seats": {
+          "anyOf": [
+            {
+              "maximum": 1000000,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Maximum Seats"
+        },
+        "minimum_seats": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "Minimum Seats",
+          "type": "integer"
+        },
+        "unit_price": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "description": "Advertised per-seat price for one billing period",
+          "title": "Unit Price"
+        }
+      },
+      "required": [
+        "unit_price",
+        "minimum_seats"
+      ],
+      "title": "SeatPricing",
+      "type": "object"
+    },
+    "SourcePolicy": {
+      "additionalProperties": false,
+      "description": "Field-level permission record for one source and one review window.\n\nEvery capability defaults to ``unreviewed``.  Callers must use ``permits``\ninstead of testing enum truthiness; enum members are intentionally never\nbooleans.",
+      "properties": {
+        "acquisition_method": {
+          "$ref": "#/$defs/AcquisitionMethod"
+        },
+        "attribution_required": {
+          "anyOf": [
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attribution Required"
+        },
+        "attribution_text": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Attribution Text"
+        },
+        "basis": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Basis",
+          "type": "string"
+        },
+        "basis_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Basis Url"
+        },
+        "derive": {
+          "$ref": "#/$defs/PolicyDecision",
+          "default": "unreviewed"
+        },
+        "fetch": {
+          "$ref": "#/$defs/PolicyDecision",
+          "default": "unreviewed"
+        },
+        "field": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "title": "Field",
+          "type": "string"
+        },
+        "max_quote_chars": {
+          "anyOf": [
+            {
+              "maximum": 500,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Quote Chars"
+        },
+        "policy_id": {
+          "format": "uuid",
+          "title": "Policy Id",
+          "type": "string"
+        },
+        "publish": {
+          "$ref": "#/$defs/PolicyDecision",
+          "default": "unreviewed"
+        },
+        "quote": {
+          "$ref": "#/$defs/PolicyDecision",
+          "default": "unreviewed"
+        },
+        "retain_history": {
+          "$ref": "#/$defs/PolicyDecision",
+          "default": "unreviewed"
+        },
+        "retention_days": {
+          "anyOf": [
+            {
+              "maximum": 3650,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Retention Days"
+        },
+        "review_due_at": {
+          "format": "date-time",
+          "title": "Review Due At",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "send_to_ai": {
+          "$ref": "#/$defs/PolicyDecision",
+          "default": "unreviewed"
+        },
+        "source_url": {
+          "format": "uri",
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "store_raw": {
+          "$ref": "#/$defs/PolicyDecision",
+          "default": "unreviewed"
+        }
+      },
+      "required": [
+        "field",
+        "source_url",
+        "acquisition_method",
+        "reviewed_at",
+        "review_due_at",
+        "reviewed_by",
+        "basis"
+      ],
+      "title": "SourcePolicy",
+      "type": "object"
+    },
+    "TaxSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "rate": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Rate"
+        },
+        "treatment": {
+          "$ref": "#/$defs/TaxTreatment"
+        }
+      },
+      "required": [
+        "treatment"
+      ],
+      "title": "TaxSpec",
+      "type": "object"
+    },
+    "TaxTreatment": {
+      "enum": [
+        "included",
+        "excluded",
+        "not_applicable"
+      ],
+      "title": "TaxTreatment",
+      "type": "string"
+    },
+    "UsageAllowance": {
+      "additionalProperties": false,
+      "properties": {
+        "billing_period": {
+          "$ref": "#/$defs/BillingPeriod"
+        },
+        "included_quantity": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Included Quantity"
+        },
+        "overage_unit_price": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Overage Unit Price"
+        },
+        "unit_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Unit Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "unit_name",
+        "billing_period",
+        "included_quantity"
+      ],
+      "title": "UsageAllowance",
+      "type": "object"
+    },
+    "VendorPlan": {
+      "additionalProperties": false,
+      "description": "Immutable price snapshot with evidence for every material input.\n\nFor ``flat`` pricing, ``base_price`` is the fixed charge per billing period.\nFor ``per_seat`` pricing, it is the advertised one-seat price and must equal\n``seat_pricing.unit_price``.  Hybrid platform-fee/included-seat products are\ndeferred to a future schema version so Phase 1 TCO cannot double-count them.",
+      "properties": {
+        "addons": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/AddonPrice"
+          },
+          "title": "Addons",
+          "type": "array"
+        },
+        "base_price": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "description": "Flat period charge, or advertised one-seat price for per-seat plans",
+          "title": "Base Price"
+        },
+        "billing_period": {
+          "$ref": "#/$defs/BillingPeriod"
+        },
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "commitment_months": {
+          "maximum": 120,
+          "minimum": 1,
+          "title": "Commitment Months",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "effective_at": {
+          "format": "date-time",
+          "title": "Effective At",
+          "type": "string"
+        },
+        "field_evidence": {
+          "items": {
+            "$ref": "#/$defs/FieldEvidence"
+          },
+          "minItems": 1,
+          "title": "Field Evidence",
+          "type": "array"
+        },
+        "minor_unit_digits": {
+          "maximum": 6,
+          "minimum": 0,
+          "title": "Minor Unit Digits",
+          "type": "integer"
+        },
+        "plan_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Plan Name",
+          "type": "string"
+        },
+        "plan_slug": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Plan Slug",
+          "type": "string"
+        },
+        "pricing_model": {
+          "$ref": "#/$defs/PricingModel"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seat_pricing": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/SeatPricing"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "snapshot_id": {
+          "format": "uuid",
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "tax": {
+          "$ref": "#/$defs/TaxSpec"
+        },
+        "usage_allowance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/UsageAllowance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "vendor_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Vendor Name",
+          "type": "string"
+        },
+        "vendor_slug": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Vendor Slug",
+          "type": "string"
+        }
+      },
+      "required": [
+        "vendor_slug",
+        "vendor_name",
+        "plan_slug",
+        "plan_name",
+        "captured_at",
+        "effective_at",
+        "currency",
+        "minor_unit_digits",
+        "billing_period",
+        "commitment_months",
+        "pricing_model",
+        "base_price",
+        "tax",
+        "field_evidence"
+      ],
+      "title": "VendorPlan",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "failures": {
+      "items": {
+        "$ref": "#/$defs/CandidateParseFailure"
+      },
+      "title": "Failures",
+      "type": "array"
+    },
+    "parser_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Parser Sha256",
+      "type": "string"
+    },
+    "parser_version": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9]+(?:[A-Za-z0-9._+-]*[A-Za-z0-9])?$",
+      "title": "Parser Version",
+      "type": "string"
+    },
+    "plans": {
+      "items": {
+        "$ref": "#/$defs/CandidatePlan"
+      },
+      "title": "Plans",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Receipt Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_receipt_sha256",
+    "parser_sha256",
+    "parser_version",
+    "captured_at",
+    "expires_at",
+    "plans",
+    "failures"
+  ],
+  "title": "CandidateBatch",
+  "type": "object"
+}

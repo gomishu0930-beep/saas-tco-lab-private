@@ -1,0 +1,122 @@
+{
+  "authority_effect": "none",
+  "authorizes_external_mutation": false,
+  "decision": "stop",
+  "does_not_authorize_external_action": true,
+  "evaluated_at": "2026-07-22T06:00:00Z",
+  "evidence_bundle_sha256": "4d73a196a1adafe7d5a7fff4b10e1856cab1c1d8f40e7e0ab98c65ef83db9ee0",
+  "expires_at": "2026-07-22T06:00:00Z",
+  "failed_gates": [
+    "local_candidate_acceptance",
+    "rights_approval",
+    "affiliate_acceptance",
+    "qualified_demand",
+    "shadow_operations",
+    "gold_set_source_readiness",
+    "production_integration_readiness",
+    "deployment_publication_readiness"
+  ],
+  "findings": [
+    {
+      "gate": "local_candidate_acceptance",
+      "reason": "missing_receipt"
+    },
+    {
+      "gate": "local_candidate_acceptance",
+      "reason": "repository_acceptance_missing"
+    },
+    {
+      "gate": "rights_approval",
+      "reason": "missing_receipt"
+    },
+    {
+      "gate": "rights_approval",
+      "reason": "prerequisite_not_met"
+    },
+    {
+      "gate": "rights_approval",
+      "reason": "semantic_evidence_missing"
+    },
+    {
+      "gate": "affiliate_acceptance",
+      "reason": "missing_receipt"
+    },
+    {
+      "gate": "affiliate_acceptance",
+      "reason": "prerequisite_not_met"
+    },
+    {
+      "gate": "affiliate_acceptance",
+      "reason": "semantic_evidence_missing"
+    },
+    {
+      "gate": "qualified_demand",
+      "reason": "missing_receipt"
+    },
+    {
+      "gate": "qualified_demand",
+      "reason": "prerequisite_not_met"
+    },
+    {
+      "gate": "qualified_demand",
+      "reason": "semantic_evidence_missing"
+    },
+    {
+      "gate": "shadow_operations",
+      "reason": "missing_receipt"
+    },
+    {
+      "gate": "shadow_operations",
+      "reason": "prerequisite_not_met"
+    },
+    {
+      "gate": "shadow_operations",
+      "reason": "semantic_evidence_missing"
+    },
+    {
+      "gate": "gold_set_source_readiness",
+      "reason": "missing_receipt"
+    },
+    {
+      "gate": "gold_set_source_readiness",
+      "reason": "prerequisite_not_met"
+    },
+    {
+      "gate": "gold_set_source_readiness",
+      "reason": "semantic_evidence_missing"
+    },
+    {
+      "gate": "production_integration_readiness",
+      "reason": "missing_receipt"
+    },
+    {
+      "gate": "production_integration_readiness",
+      "reason": "prerequisite_not_met"
+    },
+    {
+      "gate": "production_integration_readiness",
+      "reason": "semantic_evidence_missing"
+    },
+    {
+      "gate": "deployment_publication_readiness",
+      "reason": "missing_receipt"
+    },
+    {
+      "gate": "deployment_publication_readiness",
+      "reason": "prerequisite_not_met"
+    },
+    {
+      "gate": "deployment_publication_readiness",
+      "reason": "semantic_evidence_missing"
+    }
+  ],
+  "handoff_policy_sha256": "7b52633e653e22bffc29798ef1ff83ab913cb0dbfc015040ba3704b934fe4979",
+  "launch_authority_sha256": "ceb6ebd3ade3fe4fb2cee1ed1103dd77447e82f734aeaff530bed3e656aad51c",
+  "passed_gates": [],
+  "permitted_use": "final_human_review_input_only",
+  "plan_sha256": "3c9cf0466684c4d6a1b6a10f81790a36c24f1725f64121deefe4963fff73f89f",
+  "report_sha256": "c1fa88f5382599523fc5dcfa1f2c92108f370158bb4ea521a56354c21d29df75",
+  "requires_execution_boundary_revalidation": true,
+  "schema_version": "3.0",
+  "trust_store_sha256": "7ac043f79a11aab630e37a793fb2aa335006d948355ac04b4441b541acfeadfb"
+}

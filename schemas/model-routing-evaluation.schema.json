@@ -1,0 +1,68 @@
+{
+  "$defs": {
+    "ModelRouteDecision": {
+      "enum": [
+        "ready_for_controller_gate",
+        "stop"
+      ],
+      "title": "ModelRouteDecision",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "const": "none",
+      "default": "none",
+      "title": "Authority",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/ModelRouteDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "request_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Id Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selected_route_id_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Selected Route Id Sha256"
+    }
+  },
+  "required": [
+    "request_id_sha256",
+    "evaluated_at",
+    "decision",
+    "selected_route_id_sha256",
+    "reasons"
+  ],
+  "title": "ModelRoutingEvaluation",
+  "type": "object"
+}

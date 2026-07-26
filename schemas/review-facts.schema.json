@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "exit_code": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "review",
+      "default": "review",
+      "title": "Kind",
+      "type": "string"
+    },
+    "release_blockers": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Release Blockers",
+      "type": "integer"
+    },
+    "requirements_met": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Requirements Met",
+      "type": "integer"
+    },
+    "requirements_total": {
+      "maximum": 1000000,
+      "minimum": 1,
+      "title": "Requirements Total",
+      "type": "integer"
+    },
+    "review_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Review Artifact Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "requirements_total",
+    "requirements_met",
+    "release_blockers",
+    "review_artifact_sha256",
+    "exit_code"
+  ],
+  "title": "ReviewFacts",
+  "type": "object"
+}

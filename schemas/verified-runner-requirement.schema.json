@@ -1,0 +1,54 @@
+{
+  "$defs": {
+    "VerifiedRunnerCheck": {
+      "enum": [
+        "python_base",
+        "python_traction",
+        "python_production_consumer",
+        "schema_determinism",
+        "blocked_fixture_determinism",
+        "uv_lock",
+        "compileall",
+        "secret_scan",
+        "web_tests",
+        "web_lint",
+        "dependency_audit",
+        "workflow_verifier",
+        "contract_storage_audit",
+        "tco_qa_audit"
+      ],
+      "title": "VerifiedRunnerCheck",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "check": {
+      "$ref": "#/$defs/VerifiedRunnerCheck"
+    },
+    "minimum_assertions": {
+      "maximum": 100000000,
+      "minimum": 1,
+      "title": "Minimum Assertions",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "spec_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Spec Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "check",
+    "spec_sha256",
+    "minimum_assertions"
+  ],
+  "title": "VerifiedRunnerRequirement",
+  "type": "object"
+}

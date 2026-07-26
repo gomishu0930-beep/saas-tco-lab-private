@@ -1,0 +1,133 @@
+{
+  "$defs": {
+    "AssuranceCheck": {
+      "enum": [
+        "python_tests",
+        "web_local_tests",
+        "web_production_tests",
+        "schema_determinism",
+        "lock_integrity",
+        "sbom_current",
+        "secret_scan",
+        "dependency_audit",
+        "threat_model_review",
+        "accessibility",
+        "mobile_reflow",
+        "seo_policy",
+        "rollback_faults"
+      ],
+      "title": "AssuranceCheck",
+      "type": "string"
+    },
+    "LocalAssuranceDecision": {
+      "enum": [
+        "ready",
+        "stop"
+      ],
+      "title": "LocalAssuranceDecision",
+      "type": "string"
+    },
+    "LocalAssuranceReason": {
+      "enum": [
+        "check_failed",
+        "evidence_expired",
+        "evidence_future",
+        "evidence_requirement_mismatch",
+        "evidence_signature_invalid",
+        "evidence_ttl_exceeded"
+      ],
+      "title": "LocalAssuranceReason",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Artifact Sha256",
+      "type": "string"
+    },
+    "assurance_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Assurance Policy Sha256",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/LocalAssuranceDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "evidence_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Bundle Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "failed_checks": {
+      "items": {
+        "$ref": "#/$defs/AssuranceCheck"
+      },
+      "title": "Failed Checks",
+      "type": "array"
+    },
+    "manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "passed_checks": {
+      "items": {
+        "$ref": "#/$defs/AssuranceCheck"
+      },
+      "title": "Passed Checks",
+      "type": "array"
+    },
+    "reasons": {
+      "items": {
+        "$ref": "#/$defs/LocalAssuranceReason"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "release_id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Release Id",
+      "type": "string"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision",
+    "evaluated_at",
+    "release_id",
+    "manifest_sha256",
+    "artifact_sha256",
+    "assurance_policy_sha256",
+    "evidence_bundle_sha256",
+    "reasons",
+    "passed_checks",
+    "failed_checks",
+    "expires_at",
+    "report_sha256"
+  ],
+  "title": "LocalAssuranceReport",
+  "type": "object"
+}

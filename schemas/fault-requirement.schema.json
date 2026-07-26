@@ -1,0 +1,35 @@
+{
+  "$defs": {
+    "FaultId": {
+      "enum": [
+        "fi-01-price-change",
+        "fi-02-plan-rename",
+        "fi-03-billing-period-change",
+        "fi-04-currency-change",
+        "fi-05-quota-overage-change",
+        "fi-06-source-conflict",
+        "fi-07-affiliate-expiry",
+        "fi-08-fetch-failure-duplicate-delivery"
+      ],
+      "title": "FaultId",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "definition_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Definition Sha256",
+      "type": "string"
+    },
+    "fault_id": {
+      "$ref": "#/$defs/FaultId"
+    }
+  },
+  "required": [
+    "fault_id",
+    "definition_sha256"
+  ],
+  "title": "FaultRequirement",
+  "type": "object"
+}

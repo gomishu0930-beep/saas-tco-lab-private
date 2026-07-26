@@ -1,0 +1,156 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "as_of": {
+      "format": "date-time",
+      "title": "As Of",
+      "type": "string"
+    },
+    "automation_rate": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Automation Rate"
+    },
+    "confirmed_epc_minor": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Confirmed Epc Minor"
+    },
+    "confirmed_revenue_minor": {
+      "minimum": 0,
+      "title": "Confirmed Revenue Minor",
+      "type": "integer"
+    },
+    "currency": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Z]{3}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Currency"
+    },
+    "evidence_mode": {
+      "const": "observed",
+      "default": "observed",
+      "title": "Evidence Mode",
+      "type": "string"
+    },
+    "human_minutes": {
+      "minimum": 0,
+      "title": "Human Minutes",
+      "type": "integer"
+    },
+    "job_success_rate": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Job Success Rate"
+    },
+    "major_misstatements": {
+      "minimum": 0,
+      "title": "Major Misstatements",
+      "type": "integer"
+    },
+    "metric_version": {
+      "title": "Metric Version",
+      "type": "string"
+    },
+    "net_operating_profit_minor": {
+      "title": "Net Operating Profit Minor",
+      "type": "integer"
+    },
+    "organic_clicks": {
+      "minimum": 0,
+      "title": "Organic Clicks",
+      "type": "integer"
+    },
+    "qualified_sessions": {
+      "minimum": 0,
+      "title": "Qualified Sessions",
+      "type": "integer"
+    },
+    "revenue_per_qualified_session_minor": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Revenue Per Qualified Session Minor"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "search_impressions": {
+      "minimum": 0,
+      "title": "Search Impressions",
+      "type": "integer"
+    },
+    "valid_outbound_clicks": {
+      "minimum": 0,
+      "title": "Valid Outbound Clicks",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "metric_version",
+    "as_of",
+    "currency",
+    "search_impressions",
+    "organic_clicks",
+    "qualified_sessions",
+    "valid_outbound_clicks",
+    "confirmed_revenue_minor",
+    "confirmed_epc_minor",
+    "revenue_per_qualified_session_minor",
+    "net_operating_profit_minor",
+    "human_minutes",
+    "automation_rate",
+    "job_success_rate",
+    "major_misstatements"
+  ],
+  "title": "KpiScorecard",
+  "type": "object"
+}

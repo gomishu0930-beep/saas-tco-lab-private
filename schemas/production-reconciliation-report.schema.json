@@ -1,0 +1,80 @@
+{
+  "$defs": {
+    "ProductionReconciliationAction": {
+      "enum": [
+        "keep_stop",
+        "manual_remediation",
+        "request_human_disable"
+      ],
+      "title": "ProductionReconciliationAction",
+      "type": "string"
+    },
+    "ProductionReconciliationReason": {
+      "enum": [
+        "ambiguous_provider_state",
+        "existing_stop_preserved",
+        "non_applied_fact_preserved",
+        "unknown_not_promoted"
+      ],
+      "title": "ProductionReconciliationReason",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "action": {
+      "$ref": "#/$defs/ProductionReconciliationAction"
+    },
+    "decision": {
+      "const": "stop",
+      "default": "stop",
+      "title": "Decision",
+      "type": "string"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "p13_result_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P13 Result Sha256",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "reason": {
+      "$ref": "#/$defs/ProductionReconciliationReason"
+    },
+    "reconciliation_facts_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reconciliation Facts Sha256",
+      "type": "string"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "action",
+    "reason",
+    "plan_sha256",
+    "p13_result_sha256",
+    "reconciliation_facts_sha256",
+    "evaluated_at",
+    "report_sha256"
+  ],
+  "title": "ProductionReconciliationReport",
+  "type": "object"
+}

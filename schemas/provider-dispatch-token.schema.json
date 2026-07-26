@@ -1,0 +1,287 @@
+{
+  "$defs": {
+    "ProviderOperation": {
+      "enum": [
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ProviderOperation",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "adapter_dependency_closure_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Adapter Dependency Closure Sha256",
+      "type": "string"
+    },
+    "adapter_executable_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Adapter Executable Sha256",
+      "type": "string"
+    },
+    "adapter_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Adapter Id",
+      "type": "string"
+    },
+    "epoch": {
+      "minimum": 0,
+      "title": "Epoch",
+      "type": "integer"
+    },
+    "expected_post_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Post State Sha256",
+      "type": "string"
+    },
+    "expected_pre_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Pre State Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "fencing_token": {
+      "minimum": 1,
+      "title": "Fencing Token",
+      "type": "integer"
+    },
+    "idempotency_key_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Idempotency Key Sha256",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "launch_handoff_authority_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Launch Handoff Authority Sha256"
+    },
+    "launch_handoff_bundle_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Launch Handoff Bundle Sha256"
+    },
+    "launch_handoff_plan_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Launch Handoff Plan Sha256"
+    },
+    "launch_semantic_authority_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Launch Semantic Authority Sha256"
+    },
+    "launch_semantic_packet_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Launch Semantic Packet Sha256"
+    },
+    "operation": {
+      "$ref": "#/$defs/ProviderOperation"
+    },
+    "p11_claim_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P11 Claim Sha256",
+      "type": "string"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "postcondition_schema_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Postcondition Schema Sha256",
+      "type": "string"
+    },
+    "probe_executable_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Probe Executable Sha256",
+      "type": "string"
+    },
+    "production_integration_plan_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Production Integration Plan Sha256"
+    },
+    "production_readiness_authorization_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Production Readiness Authorization Sha256"
+    },
+    "provider_allowlist_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Provider Allowlist Sha256",
+      "type": "string"
+    },
+    "python_executable_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Python Executable Sha256",
+      "type": "string"
+    },
+    "repository_acceptance_authority_pins_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Repository Acceptance Authority Pins Sha256"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "4.0",
+      "default": "4.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "const": "provider_dispatch",
+      "default": "provider_dispatch",
+      "title": "Scope",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "executor",
+      "default": "executor",
+      "title": "Signer Role",
+      "type": "string"
+    },
+    "store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Id Sha256",
+      "type": "string"
+    },
+    "target_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "key_id_sha256",
+    "store_id_sha256",
+    "policy_sha256",
+    "request_sha256",
+    "p11_claim_sha256",
+    "epoch",
+    "fencing_token",
+    "operation",
+    "adapter_id",
+    "adapter_executable_sha256",
+    "probe_executable_sha256",
+    "python_executable_sha256",
+    "adapter_dependency_closure_sha256",
+    "provider_allowlist_sha256",
+    "postcondition_schema_sha256",
+    "target_sha256",
+    "idempotency_key_sha256",
+    "expected_pre_state_sha256",
+    "expected_post_state_sha256",
+    "issued_at",
+    "expires_at",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "ProviderDispatchToken",
+  "type": "object"
+}

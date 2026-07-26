@@ -1,0 +1,148 @@
+{
+  "$defs": {
+    "InitialLearningQualityCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[a-z0-9_.:-]+$",
+          "title": "Name",
+          "type": "string"
+        },
+        "observed": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Observed",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "requirement": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Requirement",
+          "type": "string"
+        },
+        "subject_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Subject Sha256"
+        }
+      },
+      "required": [
+        "name",
+        "passed",
+        "observed",
+        "requirement"
+      ],
+      "title": "InitialLearningQualityCheck",
+      "type": "object"
+    },
+    "InitialLearningQualityDecision": {
+      "enum": [
+        "ready_for_human_review",
+        "stop"
+      ],
+      "title": "InitialLearningQualityDecision",
+      "type": "string"
+    },
+    "InitialLearningQualityReason": {
+      "enum": [
+        "policy_mismatch",
+        "policy_not_current",
+        "authority_root_mismatch",
+        "required_source_missing",
+        "source_not_current",
+        "source_capture_stale",
+        "source_reporting_lag_exceeded",
+        "source_contract_invalid",
+        "source_attestation_invalid",
+        "duplicate_rate_exceeded",
+        "quarantine_rate_exceeded",
+        "missing_rate_exceeded",
+        "orphan_rows_present",
+        "join_coverage_insufficient",
+        "schema_drift",
+        "sensitive_data_present",
+        "synthetic_source",
+        "modeled_source",
+        "target_scope_mismatch",
+        "goldset_not_current",
+        "goldset_synthetic",
+        "goldset_domain_coverage",
+        "human_label_attestation_invalid",
+        "qa_attestation_invalid"
+      ],
+      "title": "InitialLearningQualityReason",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "const": "none",
+      "default": "none",
+      "title": "Authority",
+      "type": "string"
+    },
+    "bundle_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Bundle Id Sha256",
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/InitialLearningQualityCheck"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "decision": {
+      "$ref": "#/$defs/InitialLearningQualityDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "input_root_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Root Sha256",
+      "type": "string"
+    },
+    "reasons": {
+      "items": {
+        "$ref": "#/$defs/InitialLearningQualityReason"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "bundle_id_sha256",
+    "input_root_sha256",
+    "evaluated_at",
+    "decision",
+    "checks",
+    "reasons"
+  ],
+  "title": "InitialLearningQualityReport",
+  "type": "object"
+}

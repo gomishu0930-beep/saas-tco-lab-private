@@ -1,0 +1,41 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "definition_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Definition Sha256",
+      "type": "string"
+    },
+    "local_date": {
+      "format": "date",
+      "title": "Local Date",
+      "type": "string"
+    },
+    "occurrence_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Occurrence Id Sha256",
+      "type": "string"
+    },
+    "scheduled_for": {
+      "format": "date-time",
+      "title": "Scheduled For",
+      "type": "string"
+    },
+    "task_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "occurrence_id_sha256",
+    "task_id",
+    "definition_sha256",
+    "local_date",
+    "scheduled_for"
+  ],
+  "title": "ScheduledRoutineTask",
+  "type": "object"
+}

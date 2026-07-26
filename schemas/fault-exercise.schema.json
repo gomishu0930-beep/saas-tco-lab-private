@@ -1,0 +1,118 @@
+{
+  "$defs": {
+    "FaultId": {
+      "enum": [
+        "fi-01-price-change",
+        "fi-02-plan-rename",
+        "fi-03-billing-period-change",
+        "fi-04-currency-change",
+        "fi-05-quota-overage-change",
+        "fi-06-source-conflict",
+        "fi-07-affiliate-expiry",
+        "fi-08-fetch-failure-duplicate-delivery"
+      ],
+      "title": "FaultId",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "definition_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Definition Sha256",
+      "type": "string"
+    },
+    "detected_at": {
+      "format": "date-time",
+      "title": "Detected At",
+      "type": "string"
+    },
+    "fault_id": {
+      "$ref": "#/$defs/FaultId"
+    },
+    "fault_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Fault State Sha256",
+      "type": "string"
+    },
+    "injected_at": {
+      "format": "date-time",
+      "title": "Injected At",
+      "type": "string"
+    },
+    "passed": {
+      "title": "Passed",
+      "type": "boolean"
+    },
+    "pre_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Pre State Sha256",
+      "type": "string"
+    },
+    "restore_started_at": {
+      "format": "date-time",
+      "title": "Restore Started At",
+      "type": "string"
+    },
+    "restored_at": {
+      "format": "date-time",
+      "title": "Restored At",
+      "type": "string"
+    },
+    "restored_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Restored State Sha256",
+      "type": "string"
+    },
+    "run_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Run Sha256",
+      "type": "string"
+    },
+    "stop_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Stop Receipt Sha256",
+      "type": "string"
+    },
+    "target_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Artifact Sha256",
+      "type": "string"
+    },
+    "target_release_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Release Sha256",
+      "type": "string"
+    },
+    "target_schema_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Schema Sha256",
+      "type": "string"
+    },
+    "validation_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Validation Receipt Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "fault_id",
+    "definition_sha256",
+    "run_sha256",
+    "injected_at",
+    "restored_at",
+    "pre_state_sha256",
+    "fault_state_sha256",
+    "restored_state_sha256",
+    "validation_receipt_sha256",
+    "target_release_sha256",
+    "target_artifact_sha256",
+    "target_schema_sha256",
+    "detected_at",
+    "stop_receipt_sha256",
+    "restore_started_at",
+    "passed"
+  ],
+  "title": "FaultExercise",
+  "type": "object"
+}

@@ -1,0 +1,308 @@
+{
+  "$defs": {
+    "ExternalAction": {
+      "enum": [
+        "send_rights_inquiry",
+        "submit_affiliate_application",
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ExternalAction",
+      "type": "string"
+    },
+    "ProviderOperation": {
+      "enum": [
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ProviderOperation",
+      "type": "string"
+    },
+    "ProviderTargetRule": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_dependency_closure_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Adapter Dependency Closure Sha256",
+          "type": "string"
+        },
+        "adapter_executable_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Adapter Executable Sha256",
+          "type": "string"
+        },
+        "adapter_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Adapter Id",
+          "type": "string"
+        },
+        "expected_post_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Post State Sha256",
+          "type": "string"
+        },
+        "expected_pre_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Pre State Sha256",
+          "type": "string"
+        },
+        "external_action": {
+          "$ref": "#/$defs/ExternalAction"
+        },
+        "operation": {
+          "$ref": "#/$defs/ProviderOperation"
+        },
+        "postcondition_schema_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Postcondition Schema Sha256",
+          "type": "string"
+        },
+        "probe_executable_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Probe Executable Sha256",
+          "type": "string"
+        },
+        "property_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Property Record Sha256",
+          "type": "string"
+        },
+        "provider_allowlist_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Provider Allowlist Sha256",
+          "type": "string"
+        },
+        "python_executable_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Python Executable Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "target_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Target Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "operation",
+        "external_action",
+        "property_record_sha256",
+        "target_sha256",
+        "expected_pre_state_sha256",
+        "expected_post_state_sha256",
+        "adapter_id",
+        "adapter_executable_sha256",
+        "probe_executable_sha256",
+        "python_executable_sha256",
+        "adapter_dependency_closure_sha256",
+        "provider_allowlist_sha256",
+        "postcondition_schema_sha256"
+      ],
+      "title": "ProviderTargetRule",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authority_root_response_timeout_seconds": {
+      "maximum": 60,
+      "minimum": 1,
+      "title": "Authority Root Response Timeout Seconds",
+      "type": "integer"
+    },
+    "clock_response_timeout_seconds": {
+      "maximum": 60,
+      "minimum": 1,
+      "title": "Clock Response Timeout Seconds",
+      "type": "integer"
+    },
+    "external_action_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "External Action Policy Sha256",
+      "type": "string"
+    },
+    "maximum_authority_root_observation_lag_seconds": {
+      "maximum": 60,
+      "minimum": 0,
+      "title": "Maximum Authority Root Observation Lag Seconds",
+      "type": "integer"
+    },
+    "maximum_authority_root_ttl_seconds": {
+      "maximum": 300,
+      "minimum": 1,
+      "title": "Maximum Authority Root Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_clock_attestation_ttl_seconds": {
+      "maximum": 300,
+      "minimum": 1,
+      "title": "Maximum Clock Attestation Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_clock_observation_lag_seconds": {
+      "maximum": 60,
+      "minimum": 0,
+      "title": "Maximum Clock Observation Lag Seconds",
+      "type": "integer"
+    },
+    "maximum_dispatch_ttl_seconds": {
+      "maximum": 300,
+      "minimum": 1,
+      "title": "Maximum Dispatch Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_provider_receipt_delay_seconds": {
+      "maximum": 3600,
+      "minimum": 1,
+      "title": "Maximum Provider Receipt Delay Seconds",
+      "type": "integer"
+    },
+    "maximum_request_ttl_seconds": {
+      "maximum": 3600,
+      "minimum": 1,
+      "title": "Maximum Request Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_reset_ttl_seconds": {
+      "maximum": 3600,
+      "minimum": 1,
+      "title": "Maximum Reset Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_serving_lease_ttl_seconds": {
+      "maximum": 3600,
+      "minimum": 1,
+      "title": "Maximum Serving Lease Ttl Seconds",
+      "type": "integer"
+    },
+    "measurement_authority_pins_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Measurement Authority Pins Sha256",
+      "type": "string"
+    },
+    "measurement_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Measurement Policy Sha256",
+      "type": "string"
+    },
+    "measurement_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Measurement Trust Store Sha256",
+      "type": "string"
+    },
+    "minimum_provider_authority_margin_seconds": {
+      "maximum": 300,
+      "minimum": 1,
+      "title": "Minimum Provider Authority Margin Seconds",
+      "type": "integer"
+    },
+    "policy_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "production_integration_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Production Integration Policy Sha256",
+      "type": "string"
+    },
+    "production_integration_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Production Integration Trust Store Sha256",
+      "type": "string"
+    },
+    "production_reconciliation_ledger_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Production Reconciliation Ledger Store Sha256",
+      "type": "string"
+    },
+    "release_assurance_controller_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Release Assurance Controller Key Id Sha256",
+      "type": "string"
+    },
+    "release_assurance_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Release Assurance Policy Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "serving_controller_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Serving Controller Key Id Sha256",
+      "type": "string"
+    },
+    "serving_lease_issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Serving Lease Issuer",
+      "type": "string"
+    },
+    "store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Id Sha256",
+      "type": "string"
+    },
+    "target_rules": {
+      "items": {
+        "$ref": "#/$defs/ProviderTargetRule"
+      },
+      "maxItems": 2,
+      "minItems": 2,
+      "title": "Target Rules",
+      "type": "array"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "policy_id",
+    "trust_store_sha256",
+    "store_id_sha256",
+    "external_action_policy_sha256",
+    "release_assurance_policy_sha256",
+    "measurement_policy_sha256",
+    "measurement_trust_store_sha256",
+    "measurement_authority_pins_sha256",
+    "production_integration_policy_sha256",
+    "production_integration_trust_store_sha256",
+    "production_reconciliation_ledger_store_sha256",
+    "serving_lease_issuer",
+    "serving_controller_key_id_sha256",
+    "release_assurance_controller_key_id_sha256",
+    "maximum_serving_lease_ttl_seconds",
+    "maximum_request_ttl_seconds",
+    "maximum_dispatch_ttl_seconds",
+    "maximum_reset_ttl_seconds",
+    "maximum_provider_receipt_delay_seconds",
+    "minimum_provider_authority_margin_seconds",
+    "maximum_clock_attestation_ttl_seconds",
+    "maximum_clock_observation_lag_seconds",
+    "clock_response_timeout_seconds",
+    "maximum_authority_root_ttl_seconds",
+    "maximum_authority_root_observation_lag_seconds",
+    "authority_root_response_timeout_seconds",
+    "target_rules"
+  ],
+  "title": "ProductionConsumerPolicy",
+  "type": "object"
+}

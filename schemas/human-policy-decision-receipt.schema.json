@@ -1,0 +1,90 @@
+{
+  "$defs": {
+    "PolicyDecisionOutcome": {
+      "enum": [
+        "approve_experiment",
+        "revise",
+        "reject"
+      ],
+      "title": "PolicyDecisionOutcome",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Hash-only record of a Human policy choice; not an execution grant.",
+  "properties": {
+    "basis_artifact_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Basis Artifact Sha256S",
+      "type": "array"
+    },
+    "decided_at": {
+      "format": "date-time",
+      "title": "Decided At",
+      "type": "string"
+    },
+    "decided_by_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Decided By Sha256",
+      "type": "string"
+    },
+    "decision_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Decision Artifact Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "grants_external_action": {
+      "const": false,
+      "default": false,
+      "title": "Grants External Action",
+      "type": "boolean"
+    },
+    "memo_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Memo Sha256",
+      "type": "string"
+    },
+    "outcome": {
+      "$ref": "#/$defs/PolicyDecisionOutcome"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selected_proposal_id_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Selected Proposal Id Sha256"
+    }
+  },
+  "required": [
+    "memo_sha256",
+    "outcome",
+    "decided_by_sha256",
+    "decision_artifact_sha256",
+    "basis_artifact_sha256s",
+    "decided_at",
+    "expires_at"
+  ],
+  "title": "HumanPolicyDecisionReceipt",
+  "type": "object"
+}

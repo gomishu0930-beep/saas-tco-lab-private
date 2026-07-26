@@ -1,0 +1,56 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "collected": {
+      "maximum": 1000000,
+      "minimum": 1,
+      "title": "Collected",
+      "type": "integer"
+    },
+    "exit_code": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "failed": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Failed",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "test_suite",
+      "default": "test_suite",
+      "title": "Kind",
+      "type": "string"
+    },
+    "output_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Output Sha256",
+      "type": "string"
+    },
+    "passed": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Passed",
+      "type": "integer"
+    },
+    "skipped": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Skipped",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "collected",
+    "passed",
+    "failed",
+    "skipped",
+    "exit_code",
+    "output_sha256"
+  ],
+  "title": "TestSuiteFacts",
+  "type": "object"
+}

@@ -1,0 +1,198 @@
+{
+  "$defs": {
+    "RepositoryAuthorityExclusion": {
+      "enum": [
+        "source_fetch",
+        "outreach_application_email",
+        "account_credential_billing",
+        "production_write",
+        "deploy_publication",
+        "affiliate_link_change",
+        "spend",
+        "scale_authority",
+        "external_mutation"
+      ],
+      "title": "RepositoryAuthorityExclusion",
+      "type": "string"
+    },
+    "RepositoryVerificationRequirement": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "$ref": "#/$defs/VerifiedRunnerCheck"
+        },
+        "command_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Command Sha256",
+          "type": "string"
+        },
+        "minimum_assertions": {
+          "maximum": 100000000,
+          "minimum": 1,
+          "title": "Minimum Assertions",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "tool_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+          "title": "Tool Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "check",
+        "command_sha256",
+        "tool_name",
+        "tool_version",
+        "minimum_assertions"
+      ],
+      "title": "RepositoryVerificationRequirement",
+      "type": "object"
+    },
+    "VerifiedRunnerCheck": {
+      "enum": [
+        "python_base",
+        "python_traction",
+        "python_production_consumer",
+        "schema_determinism",
+        "blocked_fixture_determinism",
+        "uv_lock",
+        "compileall",
+        "secret_scan",
+        "web_tests",
+        "web_lint",
+        "dependency_audit",
+        "workflow_verifier",
+        "contract_storage_audit",
+        "tco_qa_audit"
+      ],
+      "title": "VerifiedRunnerCheck",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expected_previous_candidate_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Previous Candidate Record Sha256",
+      "type": "string"
+    },
+    "human_approver_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Human Approver Key Id Sha256",
+      "type": "string"
+    },
+    "integration_evidence_runner_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Integration Evidence Runner Key Id Sha256",
+      "type": "string"
+    },
+    "maximum_acceptance_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Acceptance Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_manifest_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Manifest Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_verification_age_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Verification Age Seconds",
+      "type": "integer"
+    },
+    "maximum_verification_attestation_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Verification Attestation Ttl Seconds",
+      "type": "integer"
+    },
+    "policy_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "required_authority_exclusions": {
+      "items": {
+        "$ref": "#/$defs/RepositoryAuthorityExclusion"
+      },
+      "maxItems": 9,
+      "minItems": 9,
+      "title": "Required Authority Exclusions",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope_paths_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Scope Paths Sha256",
+      "type": "string"
+    },
+    "scope_profile": {
+      "default": "p11-p21-owned-learning-local-candidate-v5",
+      "enum": [
+        "p11-p18-local-candidate-v1",
+        "p11-p20-local-candidate-v2",
+        "p11-p21-local-candidate-v3",
+        "p11-p21-growth-local-candidate-v4",
+        "p11-p21-owned-learning-local-candidate-v5"
+      ],
+      "title": "Scope Profile",
+      "type": "string"
+    },
+    "tco_qa_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Tco Qa Key Id Sha256",
+      "type": "string"
+    },
+    "verification_requirements": {
+      "items": {
+        "$ref": "#/$defs/RepositoryVerificationRequirement"
+      },
+      "maxItems": 14,
+      "minItems": 14,
+      "title": "Verification Requirements",
+      "type": "array"
+    }
+  },
+  "required": [
+    "policy_id",
+    "scope_paths_sha256",
+    "expected_previous_candidate_record_sha256",
+    "human_approver_key_id_sha256",
+    "integration_evidence_runner_key_id_sha256",
+    "tco_qa_key_id_sha256",
+    "verification_requirements",
+    "required_authority_exclusions",
+    "maximum_manifest_ttl_seconds",
+    "maximum_verification_age_seconds",
+    "maximum_verification_attestation_ttl_seconds",
+    "maximum_acceptance_ttl_seconds"
+  ],
+  "title": "RepositoryAcceptancePolicy",
+  "type": "object"
+}

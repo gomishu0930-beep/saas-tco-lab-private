@@ -1,0 +1,76 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "controller_issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+      "title": "Controller Issuer",
+      "type": "string"
+    },
+    "controller_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Controller Key Id Sha256",
+      "type": "string"
+    },
+    "gold_report_ttl_seconds": {
+      "maximum": 86400,
+      "minimum": 1,
+      "title": "Gold Report Ttl Seconds",
+      "type": "integer"
+    },
+    "heartbeat_ttl_seconds": {
+      "maximum": 86400,
+      "minimum": 1,
+      "title": "Heartbeat Ttl Seconds",
+      "type": "integer"
+    },
+    "lease_scope": {
+      "const": "serve_protected_content",
+      "default": "serve_protected_content",
+      "title": "Lease Scope",
+      "type": "string"
+    },
+    "lease_seconds": {
+      "maximum": 3600,
+      "minimum": 1,
+      "title": "Lease Seconds",
+      "type": "integer"
+    },
+    "maximum_schedule_interval_seconds": {
+      "maximum": 86400,
+      "minimum": 1,
+      "title": "Maximum Schedule Interval Seconds",
+      "type": "integer"
+    },
+    "schedule_grace_seconds": {
+      "maximum": 3600,
+      "minimum": 0,
+      "title": "Schedule Grace Seconds",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "controller_issuer",
+    "controller_key_id_sha256",
+    "trust_store_sha256",
+    "lease_seconds",
+    "heartbeat_ttl_seconds",
+    "gold_report_ttl_seconds",
+    "schedule_grace_seconds",
+    "maximum_schedule_interval_seconds"
+  ],
+  "title": "ControlConfig",
+  "type": "object"
+}

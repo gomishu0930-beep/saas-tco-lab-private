@@ -1,0 +1,124 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "activation_events_emitted": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Activation Events Emitted",
+      "type": "integer"
+    },
+    "active_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Active State Sha256",
+      "type": "string"
+    },
+    "completed_disables": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Completed Disables",
+      "type": "integer"
+    },
+    "disable_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Disable Policy Sha256",
+      "type": "string"
+    },
+    "disabled_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Disabled State Sha256",
+      "type": "string"
+    },
+    "fault_exercises": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Fault Exercises",
+      "type": "integer"
+    },
+    "final_observed_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Final Observed State Sha256",
+      "type": "string"
+    },
+    "final_state_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Final State Artifact Sha256",
+      "type": "string"
+    },
+    "independent_probe_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Independent Probe Receipt Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "rollback_disable",
+      "default": "rollback_disable",
+      "title": "Kind",
+      "type": "string"
+    },
+    "maximum_disable_latency_milliseconds": {
+      "maximum": 86400000,
+      "minimum": 0,
+      "title": "Maximum Disable Latency Milliseconds",
+      "type": "integer"
+    },
+    "p11_disable_authority_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P11 Disable Authority Sha256",
+      "type": "string"
+    },
+    "post_disable_mutation_attempts": {
+      "maximum": 100000,
+      "minimum": 1,
+      "title": "Post Disable Mutation Attempts",
+      "type": "integer"
+    },
+    "provider_disable_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Provider Disable Receipt Sha256",
+      "type": "string"
+    },
+    "retry_events_emitted": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Retry Events Emitted",
+      "type": "integer"
+    },
+    "running_lane_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Running Lane Case Sha256",
+      "type": "string"
+    },
+    "stop_lane_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Stop Lane Case Sha256",
+      "type": "string"
+    },
+    "successful_post_disable_mutations": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Successful Post Disable Mutations",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "disable_policy_sha256",
+    "active_state_sha256",
+    "disabled_state_sha256",
+    "final_observed_state_sha256",
+    "p11_disable_authority_sha256",
+    "provider_disable_receipt_sha256",
+    "independent_probe_receipt_sha256",
+    "running_lane_case_sha256",
+    "stop_lane_case_sha256",
+    "fault_exercises",
+    "completed_disables",
+    "maximum_disable_latency_milliseconds",
+    "post_disable_mutation_attempts",
+    "successful_post_disable_mutations",
+    "activation_events_emitted",
+    "retry_events_emitted",
+    "final_state_artifact_sha256"
+  ],
+  "title": "RollbackDisableFacts",
+  "type": "object"
+}

@@ -1,0 +1,123 @@
+{
+  "$defs": {
+    "ContentIntent": {
+      "enum": [
+        "compare",
+        "price_check",
+        "replace",
+        "fit_check",
+        "migrate",
+        "verify_method"
+      ],
+      "title": "ContentIntent",
+      "type": "string"
+    },
+    "PageType": {
+      "enum": [
+        "comparison",
+        "pricing",
+        "alternatives",
+        "use_case_fit",
+        "migration",
+        "methodology"
+      ],
+      "title": "PageType",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "approved_evidence_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "minItems": 1,
+      "title": "Approved Evidence Sha256S",
+      "type": "array"
+    },
+    "audience": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Audience",
+      "type": "string"
+    },
+    "brief_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Brief Id Sha256",
+      "type": "string"
+    },
+    "comparison_unit_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Comparison Unit Sha256",
+      "type": "string"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "cta_basis_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Cta Basis Sha256"
+    },
+    "cta_eligible": {
+      "title": "Cta Eligible",
+      "type": "boolean"
+    },
+    "forbidden_claim_sha256s": {
+      "default": [],
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Forbidden Claim Sha256S",
+      "type": "array"
+    },
+    "intent": {
+      "$ref": "#/$defs/ContentIntent"
+    },
+    "page_type": {
+      "$ref": "#/$defs/PageType"
+    },
+    "query_cluster_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Query Cluster Id Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_valid_until": {
+      "format": "date-time",
+      "title": "Source Valid Until",
+      "type": "string"
+    }
+  },
+  "required": [
+    "brief_id_sha256",
+    "page_type",
+    "query_cluster_id_sha256",
+    "intent",
+    "audience",
+    "comparison_unit_sha256",
+    "approved_evidence_sha256s",
+    "cta_eligible",
+    "created_at",
+    "source_valid_until"
+  ],
+  "title": "ContentBrief",
+  "type": "object"
+}

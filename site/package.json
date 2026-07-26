@@ -1,0 +1,47 @@
+{
+  "name": "saas-tco-lab-prepublic-mvp",
+  "version": "0.1.0",
+  "private": true,
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "SAAS_RUNTIME_MODE=synthetic-local WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext dev",
+    "build": "SAAS_RUNTIME_MODE=production WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "build:local": "SAAS_RUNTIME_MODE=synthetic-local WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
+    "start": "npm run build && npm run start:built --",
+    "start:built": "SAAS_RUNTIME_MODE=production WRANGLER_LOG_PATH=.wrangler/wrangler.log node scripts/verify-production-build.mjs && SAAS_RUNTIME_MODE=production WRANGLER_LOG_PATH=.wrangler/wrangler.log wrangler dev --config dist/server/wrangler.json",
+    "test": "npm run test:local && npm run test:startup-boundary && npm run test:production",
+    "test:local": "npm run build:local && node --test tests/local-ui.test.mjs tests/prepublication-assurance.test.mjs",
+    "test:startup-boundary": "node --test tests/startup-boundary.test.mjs",
+    "test:production": "npm run build && node --test tests/production-worker.test.mjs",
+    "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
+  },
+  "dependencies": {
+    "next": "16.2.10",
+    "react": "19.2.6",
+    "react-dom": "19.2.6"
+  },
+  "devDependencies": {
+    "@cloudflare/vite-plugin": "1.45.1",
+    "@tailwindcss/postcss": "4.2.1",
+    "@types/node": "22.19.19",
+    "@types/react": "19.2.14",
+    "@types/react-dom": "19.2.3",
+    "@vitejs/plugin-react": "6.0.2",
+    "@vitejs/plugin-rsc": "0.5.26",
+    "eslint": "9.39.4",
+    "eslint-config-next": "16.2.10",
+    "react-server-dom-webpack": "19.2.6",
+    "tailwindcss": "4.2.1",
+    "typescript": "5.9.3",
+    "vinext": "0.0.50",
+    "vite": "8.1.5",
+    "wrangler": "4.112.0"
+  },
+  "overrides": {
+    "postcss": "8.5.21",
+    "sharp": "0.35.3"
+  },
+  "type": "module"
+}

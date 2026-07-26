@@ -1,0 +1,148 @@
+{
+  "$defs": {
+    "CohortInput": {
+      "additionalProperties": false,
+      "properties": {
+        "age_days": {
+          "minimum": 0,
+          "title": "Age Days",
+          "type": "integer"
+        },
+        "commissions": {
+          "$ref": "#/$defs/CommissionInput"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "valid_clicks": {
+          "minimum": 0,
+          "title": "Valid Clicks",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "currency",
+        "valid_clicks",
+        "age_days",
+        "commissions"
+      ],
+      "title": "CohortInput",
+      "type": "object"
+    },
+    "CommissionInput": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmed": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Confirmed"
+        },
+        "paid": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Paid"
+        },
+        "pending": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Pending"
+        },
+        "rejected": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Rejected"
+        }
+      },
+      "required": [
+        "pending",
+        "rejected",
+        "confirmed",
+        "paid"
+      ],
+      "title": "CommissionInput",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "cohort": {
+      "$ref": "#/$defs/CohortInput"
+    },
+    "evidence_version": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Evidence Version",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Sha256",
+      "type": "string"
+    },
+    "status_mapping_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Status Mapping Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evidence_version",
+    "source_sha256",
+    "status_mapping_sha256",
+    "captured_at",
+    "expires_at",
+    "cohort"
+  ],
+  "title": "CohortEvidence",
+  "type": "object"
+}

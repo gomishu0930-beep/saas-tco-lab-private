@@ -1,0 +1,65 @@
+{
+  "$defs": {
+    "ProductionClockPurpose": {
+      "enum": [
+        "reset",
+        "claim",
+        "redeem",
+        "pre_provider",
+        "post_provider",
+        "pre_probe",
+        "post_probe",
+        "terminal"
+      ],
+      "title": "ProductionClockPurpose",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "nonce_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Nonce Sha256",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "production_request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Production Request Sha256",
+      "type": "string"
+    },
+    "purpose": {
+      "$ref": "#/$defs/ProductionClockPurpose"
+    },
+    "request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Id Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "store_id_sha256",
+    "policy_sha256",
+    "production_request_sha256",
+    "purpose",
+    "nonce_sha256",
+    "request_sha256"
+  ],
+  "title": "ProductionAuthorityRootRequest",
+  "type": "object"
+}

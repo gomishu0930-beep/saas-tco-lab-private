@@ -1,0 +1,427 @@
+{
+  "$defs": {
+    "DailyOperationsSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "exceptions_total": {
+          "minimum": 0,
+          "title": "Exceptions Total",
+          "type": "integer"
+        },
+        "human_minutes": {
+          "minimum": 0,
+          "title": "Human Minutes",
+          "type": "integer"
+        },
+        "job_runs_succeeded": {
+          "minimum": 0,
+          "title": "Job Runs Succeeded",
+          "type": "integer"
+        },
+        "job_runs_total": {
+          "minimum": 0,
+          "title": "Job Runs Total",
+          "type": "integer"
+        },
+        "local_date": {
+          "format": "date",
+          "title": "Local Date",
+          "type": "string"
+        },
+        "major_misstatements": {
+          "minimum": 0,
+          "title": "Major Misstatements",
+          "type": "integer"
+        },
+        "rollback_tests_passed": {
+          "minimum": 0,
+          "title": "Rollback Tests Passed",
+          "type": "integer"
+        },
+        "rollback_tests_total": {
+          "minimum": 0,
+          "title": "Rollback Tests Total",
+          "type": "integer"
+        },
+        "routine_tasks_automated": {
+          "minimum": 0,
+          "title": "Routine Tasks Automated",
+          "type": "integer"
+        },
+        "routine_tasks_total": {
+          "minimum": 0,
+          "title": "Routine Tasks Total",
+          "type": "integer"
+        },
+        "summary_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Summary Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary_id_sha256",
+        "local_date",
+        "human_minutes",
+        "routine_tasks_total",
+        "routine_tasks_automated",
+        "job_runs_total",
+        "job_runs_succeeded",
+        "exceptions_total",
+        "major_misstatements",
+        "rollback_tests_total",
+        "rollback_tests_passed"
+      ],
+      "title": "DailyOperationsSummary",
+      "type": "object"
+    },
+    "EvidenceReceipt": {
+      "additionalProperties": false,
+      "description": "Shared hash-only provenance for an already-sanitized L2 summary.",
+      "properties": {
+        "authority": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Authority",
+          "type": "string"
+        },
+        "authority_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authority Record Sha256",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "source_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "authority",
+        "authority_record_sha256",
+        "source_receipt_sha256",
+        "retrieved_at"
+      ],
+      "title": "EvidenceReceipt",
+      "type": "object"
+    },
+    "FaultExercise": {
+      "additionalProperties": false,
+      "properties": {
+        "definition_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Definition Sha256",
+          "type": "string"
+        },
+        "detected_at": {
+          "format": "date-time",
+          "title": "Detected At",
+          "type": "string"
+        },
+        "fault_id": {
+          "$ref": "#/$defs/FaultId"
+        },
+        "fault_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Fault State Sha256",
+          "type": "string"
+        },
+        "injected_at": {
+          "format": "date-time",
+          "title": "Injected At",
+          "type": "string"
+        },
+        "passed": {
+          "title": "Passed",
+          "type": "boolean"
+        },
+        "pre_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Pre State Sha256",
+          "type": "string"
+        },
+        "restore_started_at": {
+          "format": "date-time",
+          "title": "Restore Started At",
+          "type": "string"
+        },
+        "restored_at": {
+          "format": "date-time",
+          "title": "Restored At",
+          "type": "string"
+        },
+        "restored_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Restored State Sha256",
+          "type": "string"
+        },
+        "run_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Run Sha256",
+          "type": "string"
+        },
+        "stop_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Stop Receipt Sha256",
+          "type": "string"
+        },
+        "target_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Target Artifact Sha256",
+          "type": "string"
+        },
+        "target_release_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Target Release Sha256",
+          "type": "string"
+        },
+        "target_schema_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Target Schema Sha256",
+          "type": "string"
+        },
+        "validation_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Validation Receipt Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "fault_id",
+        "definition_sha256",
+        "run_sha256",
+        "injected_at",
+        "restored_at",
+        "pre_state_sha256",
+        "fault_state_sha256",
+        "restored_state_sha256",
+        "validation_receipt_sha256",
+        "target_release_sha256",
+        "target_artifact_sha256",
+        "target_schema_sha256",
+        "detected_at",
+        "stop_receipt_sha256",
+        "restore_started_at",
+        "passed"
+      ],
+      "title": "FaultExercise",
+      "type": "object"
+    },
+    "FaultId": {
+      "enum": [
+        "fi-01-price-change",
+        "fi-02-plan-rename",
+        "fi-03-billing-period-change",
+        "fi-04-currency-change",
+        "fi-05-quota-overage-change",
+        "fi-06-source-conflict",
+        "fi-07-affiliate-expiry",
+        "fi-08-fetch-failure-duplicate-delivery"
+      ],
+      "title": "FaultId",
+      "type": "string"
+    },
+    "LogicalJobRun": {
+      "additionalProperties": false,
+      "properties": {
+        "attempt_receipt_sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Attempt Receipt Sha256S",
+          "type": "array"
+        },
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "run_key_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Run Key Sha256",
+          "type": "string"
+        },
+        "scheduled_for": {
+          "format": "date-time",
+          "title": "Scheduled For",
+          "type": "string"
+        },
+        "succeeded": {
+          "title": "Succeeded",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "run_key_sha256",
+        "scheduled_for",
+        "attempt_receipt_sha256s",
+        "succeeded",
+        "completed_at"
+      ],
+      "title": "LogicalJobRun",
+      "type": "object"
+    },
+    "OperationsSummaryBatch": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "daily_summaries": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/DailyOperationsSummary"
+          },
+          "title": "Daily Summaries",
+          "type": "array"
+        },
+        "exception_deduplication_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Exception Deduplication Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "job_schedule_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Job Schedule Sha256",
+          "type": "string"
+        },
+        "job_status_mapping_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Job Status Mapping Sha256",
+          "type": "string"
+        },
+        "measurement_version": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Measurement Version",
+          "type": "string"
+        },
+        "observation_started_at": {
+          "format": "date-time",
+          "title": "Observation Started At",
+          "type": "string"
+        },
+        "property_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Property Record Sha256",
+          "type": "string"
+        },
+        "qa_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Qa Policy Sha256",
+          "type": "string"
+        },
+        "receipt": {
+          "$ref": "#/$defs/EvidenceReceipt"
+        },
+        "rollback_catalog_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rollback Catalog Sha256",
+          "type": "string"
+        },
+        "routine_inventory_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Routine Inventory Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_timezone": {
+          "const": "Asia/Tokyo",
+          "default": "Asia/Tokyo",
+          "title": "Source Timezone",
+          "type": "string"
+        }
+      },
+      "required": [
+        "measurement_version",
+        "receipt",
+        "property_record_sha256",
+        "observation_started_at",
+        "captured_at",
+        "expires_at",
+        "routine_inventory_sha256",
+        "job_schedule_sha256",
+        "job_status_mapping_sha256",
+        "exception_deduplication_sha256",
+        "qa_policy_sha256",
+        "rollback_catalog_sha256"
+      ],
+      "title": "OperationsSummaryBatch",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "fault_exercises": {
+      "items": {
+        "$ref": "#/$defs/FaultExercise"
+      },
+      "maxItems": 8,
+      "minItems": 8,
+      "title": "Fault Exercises",
+      "type": "array"
+    },
+    "human_time_union_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Human Time Union Sha256",
+      "type": "string"
+    },
+    "logical_job_runs": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/LogicalJobRun"
+      },
+      "title": "Logical Job Runs",
+      "type": "array"
+    },
+    "privacy_minimization_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Privacy Minimization Sha256",
+      "type": "string"
+    },
+    "retry_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Retry Identity Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "summary": {
+      "$ref": "#/$defs/OperationsSummaryBatch"
+    }
+  },
+  "required": [
+    "summary",
+    "retry_identity_sha256",
+    "human_time_union_sha256",
+    "privacy_minimization_sha256",
+    "fault_exercises"
+  ],
+  "title": "OperationsIntegrityBatch",
+  "type": "object"
+}

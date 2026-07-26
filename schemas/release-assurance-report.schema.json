@@ -1,0 +1,332 @@
+{
+  "$defs": {
+    "ApprovalDecision": {
+      "enum": [
+        "go",
+        "stop",
+        "conditional"
+      ],
+      "title": "ApprovalDecision",
+      "type": "string"
+    },
+    "Decision": {
+      "enum": [
+        "go",
+        "continue",
+        "stop"
+      ],
+      "title": "Decision",
+      "type": "string"
+    },
+    "PublicReleaseDecision": {
+      "enum": [
+        "go",
+        "stop"
+      ],
+      "title": "PublicReleaseDecision",
+      "type": "string"
+    },
+    "PublicReleaseReason": {
+      "enum": [
+        "local_assurance_not_ready",
+        "local_assurance_expired",
+        "assurance_policy_mismatch",
+        "release_binding_mismatch",
+        "manifest_invalid",
+        "manifest_future",
+        "manifest_expired",
+        "cta_not_approved",
+        "business_dossier_invalid",
+        "business_not_go",
+        "rights_binding_mismatch",
+        "affiliate_binding_mismatch",
+        "data_binding_mismatch",
+        "tco_qa_attestation_missing",
+        "tco_qa_attestation_invalid",
+        "human_approval_missing",
+        "human_approval_invalid",
+        "human_decision_not_go",
+        "human_snapshot_approval_mismatch"
+      ],
+      "title": "PublicReleaseReason",
+      "type": "string"
+    },
+    "ReleaseAuthorization": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Sha256",
+          "type": "string"
+        },
+        "assurance_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Assurance Policy Sha256",
+          "type": "string"
+        },
+        "business_dossier_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Business Dossier Sha256",
+          "type": "string"
+        },
+        "controller_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Controller Key Id Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Issuer",
+          "type": "string"
+        },
+        "local_report_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Local Report Sha256",
+          "type": "string"
+        },
+        "manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Manifest Sha256",
+          "type": "string"
+        },
+        "payload_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Payload Sha256",
+          "type": "string"
+        },
+        "release_assurance_core_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Release Assurance Core Sha256",
+          "type": "string"
+        },
+        "release_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Release Id",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope": {
+          "const": "public_release_authorization",
+          "default": "public_release_authorization",
+          "title": "Scope",
+          "type": "string"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "signer_role": {
+          "const": "controller",
+          "default": "controller",
+          "title": "Signer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "issuer",
+        "controller_key_id_sha256",
+        "release_assurance_core_sha256",
+        "assurance_policy_sha256",
+        "local_report_sha256",
+        "business_dossier_sha256",
+        "release_id",
+        "manifest_sha256",
+        "artifact_sha256",
+        "issued_at",
+        "expires_at",
+        "payload_sha256",
+        "signature_base64url"
+      ],
+      "title": "ReleaseAuthorization",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "approved_data_snapshot_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Approved Data Snapshot Sha256S",
+      "type": "array"
+    },
+    "artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Artifact Sha256",
+      "type": "string"
+    },
+    "assurance_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Assurance Policy Sha256",
+      "type": "string"
+    },
+    "authorization": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ReleaseAuthorization"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "business_decision": {
+      "$ref": "#/$defs/Decision"
+    },
+    "business_dossier_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Business Dossier Sha256",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/PublicReleaseDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "evidence_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Bundle Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "human_approval_payload_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Human Approval Payload Sha256"
+    },
+    "human_decision": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/ApprovalDecision"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "human_decision_record_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Human Decision Record Sha256"
+    },
+    "local_assurance_ready": {
+      "title": "Local Assurance Ready",
+      "type": "boolean"
+    },
+    "local_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Local Report Sha256",
+      "type": "string"
+    },
+    "manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "public_release_ready": {
+      "title": "Public Release Ready",
+      "type": "boolean"
+    },
+    "reasons": {
+      "items": {
+        "$ref": "#/$defs/PublicReleaseReason"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "release_id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Release Id",
+      "type": "string"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "tco_qa_attestation_payload_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Tco Qa Attestation Payload Sha256"
+    }
+  },
+  "required": [
+    "decision",
+    "evaluated_at",
+    "release_id",
+    "manifest_sha256",
+    "artifact_sha256",
+    "assurance_policy_sha256",
+    "local_report_sha256",
+    "evidence_bundle_sha256",
+    "business_dossier_sha256",
+    "local_assurance_ready",
+    "public_release_ready",
+    "business_decision",
+    "human_decision",
+    "tco_qa_attestation_payload_sha256",
+    "human_approval_payload_sha256",
+    "human_decision_record_sha256",
+    "approved_data_snapshot_sha256s",
+    "reasons",
+    "expires_at",
+    "authorization",
+    "report_sha256"
+  ],
+  "title": "ReleaseAssuranceReport",
+  "type": "object"
+}

@@ -1,0 +1,107 @@
+{
+  "$defs": {
+    "InitiativeAssessment": {
+      "additionalProperties": false,
+      "properties": {
+        "eligible": {
+          "title": "Eligible",
+          "type": "boolean"
+        },
+        "expected_value_of_information": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Expected Value Of Information"
+        },
+        "hard_gate_failures": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Hard Gate Failures",
+          "type": "array"
+        },
+        "posture": {
+          "$ref": "#/$defs/StrategyPosture"
+        },
+        "proposal_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Proposal Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "proposal_id_sha256",
+        "posture",
+        "eligible",
+        "expected_value_of_information",
+        "hard_gate_failures"
+      ],
+      "title": "InitiativeAssessment",
+      "type": "object"
+    },
+    "StrategyPosture": {
+      "enum": [
+        "conservative",
+        "balanced",
+        "aggressive"
+      ],
+      "title": "StrategyPosture",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "as_of": {
+      "format": "date-time",
+      "title": "As Of",
+      "type": "string"
+    },
+    "assessments": {
+      "items": {
+        "$ref": "#/$defs/InitiativeAssessment"
+      },
+      "title": "Assessments",
+      "type": "array"
+    },
+    "currency": {
+      "pattern": "^[A-Z]{3}$",
+      "title": "Currency",
+      "type": "string"
+    },
+    "recommended_proposal_id_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Recommended Proposal Id Sha256"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "as_of",
+    "currency",
+    "recommended_proposal_id_sha256",
+    "assessments"
+  ],
+  "title": "PolicyMemo",
+  "type": "object"
+}

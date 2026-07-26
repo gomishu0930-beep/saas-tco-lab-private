@@ -1,0 +1,234 @@
+{
+  "$defs": {
+    "CommissionInput": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmed": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Confirmed"
+        },
+        "paid": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Paid"
+        },
+        "pending": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Pending"
+        },
+        "rejected": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Rejected"
+        }
+      },
+      "required": [
+        "pending",
+        "rejected",
+        "confirmed",
+        "paid"
+      ],
+      "title": "CommissionInput",
+      "type": "object"
+    },
+    "EvidenceReceipt": {
+      "additionalProperties": false,
+      "description": "Shared hash-only provenance for an already-sanitized L2 summary.",
+      "properties": {
+        "authority": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Authority",
+          "type": "string"
+        },
+        "authority_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authority Record Sha256",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "source_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "authority",
+        "authority_record_sha256",
+        "source_receipt_sha256",
+        "retrieved_at"
+      ],
+      "title": "EvidenceReceipt",
+      "type": "object"
+    },
+    "PartnerCohortSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "commissions": {
+          "$ref": "#/$defs/CommissionInput"
+        },
+        "partner_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Partner Id",
+          "type": "string"
+        },
+        "summary_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Summary Id Sha256",
+          "type": "string"
+        },
+        "valid_clicks": {
+          "minimum": 0,
+          "title": "Valid Clicks",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "summary_id_sha256",
+        "partner_id",
+        "valid_clicks",
+        "commissions"
+      ],
+      "title": "PartnerCohortSummary",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "click_deduplication_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Click Deduplication Sha256",
+      "type": "string"
+    },
+    "cohort_ended_at": {
+      "format": "date-time",
+      "title": "Cohort Ended At",
+      "type": "string"
+    },
+    "cohort_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Cohort Id",
+      "type": "string"
+    },
+    "cohort_started_at": {
+      "format": "date-time",
+      "title": "Cohort Started At",
+      "type": "string"
+    },
+    "currency": {
+      "pattern": "^[A-Z]{3}$",
+      "title": "Currency",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "measurement_version": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Measurement Version",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "receipt": {
+      "$ref": "#/$defs/EvidenceReceipt"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "status_mapping_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Status Mapping Sha256",
+      "type": "string"
+    },
+    "summaries": {
+      "items": {
+        "$ref": "#/$defs/PartnerCohortSummary"
+      },
+      "minItems": 1,
+      "title": "Summaries",
+      "type": "array"
+    },
+    "territory": {
+      "const": "JP",
+      "default": "JP",
+      "title": "Territory",
+      "type": "string"
+    }
+  },
+  "required": [
+    "measurement_version",
+    "receipt",
+    "property_record_sha256",
+    "currency",
+    "cohort_id",
+    "cohort_started_at",
+    "cohort_ended_at",
+    "captured_at",
+    "expires_at",
+    "click_deduplication_sha256",
+    "status_mapping_sha256",
+    "summaries"
+  ],
+  "title": "CohortSummaryBatch",
+  "type": "object"
+}

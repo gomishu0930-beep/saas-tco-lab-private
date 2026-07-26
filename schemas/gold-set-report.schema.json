@@ -1,0 +1,193 @@
+{
+  "$defs": {
+    "QuarantineItem": {
+      "additionalProperties": false,
+      "properties": {
+        "actual_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Actual Sha256"
+        },
+        "expected_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Expected Sha256"
+        },
+        "reason": {
+          "$ref": "#/$defs/QuarantineReason"
+        },
+        "subject_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "reason",
+        "subject_sha256"
+      ],
+      "title": "QuarantineItem",
+      "type": "object"
+    },
+    "QuarantineReason": {
+      "enum": [
+        "partial_goldset",
+        "goldset_not_current",
+        "candidate_not_current",
+        "parse_failure",
+        "parser_failure_rate",
+        "missing_plan",
+        "extra_plan",
+        "missing_field",
+        "extra_field",
+        "field_mismatch",
+        "source_mismatch",
+        "rights_invalid",
+        "label_not_current",
+        "tco_mismatch",
+        "tco_error"
+      ],
+      "title": "QuarantineReason",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "candidate_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Batch Sha256",
+      "type": "string"
+    },
+    "candidate_plan_count": {
+      "minimum": 0,
+      "title": "Candidate Plan Count",
+      "type": "integer"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "full_goldset_coverage": {
+      "title": "Full Goldset Coverage",
+      "type": "boolean"
+    },
+    "gold_label_count": {
+      "minimum": 0,
+      "title": "Gold Label Count",
+      "type": "integer"
+    },
+    "gold_plan_count": {
+      "minimum": 0,
+      "title": "Gold Plan Count",
+      "type": "integer"
+    },
+    "gold_vendor_count": {
+      "minimum": 0,
+      "title": "Gold Vendor Count",
+      "type": "integer"
+    },
+    "goldset_content_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Goldset Content Sha256",
+      "type": "string"
+    },
+    "goldset_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Goldset Id Sha256",
+      "type": "string"
+    },
+    "parse_failure_count": {
+      "minimum": 0,
+      "title": "Parse Failure Count",
+      "type": "integer"
+    },
+    "parse_failure_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Parse Failure Rate"
+    },
+    "parser_failure_stop": {
+      "title": "Parser Failure Stop",
+      "type": "boolean"
+    },
+    "quarantines": {
+      "items": {
+        "$ref": "#/$defs/QuarantineItem"
+      },
+      "title": "Quarantines",
+      "type": "array"
+    },
+    "ready_for_release": {
+      "title": "Ready For Release",
+      "type": "boolean"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "rights_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rights Bundle Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.1",
+      "default": "1.1",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "goldset_id_sha256",
+    "goldset_content_sha256",
+    "rights_bundle_sha256",
+    "candidate_batch_sha256",
+    "evaluated_at",
+    "expires_at",
+    "gold_vendor_count",
+    "gold_plan_count",
+    "gold_label_count",
+    "candidate_plan_count",
+    "parse_failure_count",
+    "parse_failure_rate",
+    "parser_failure_stop",
+    "full_goldset_coverage",
+    "ready_for_release",
+    "quarantines",
+    "report_sha256"
+  ],
+  "title": "GoldSetReport",
+  "type": "object"
+}

@@ -1,0 +1,43 @@
+{
+  "$defs": {
+    "CtaDecision": {
+      "enum": [
+        "enabled",
+        "disabled"
+      ],
+      "title": "CtaDecision",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "decision": {
+      "$ref": "#/$defs/CtaDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Identity Sha256",
+      "type": "string"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    }
+  },
+  "required": [
+    "decision",
+    "evaluated_at",
+    "identity_sha256",
+    "reasons"
+  ],
+  "title": "CtaHealthEvaluation",
+  "type": "object"
+}

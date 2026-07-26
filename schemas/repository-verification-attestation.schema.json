@@ -1,0 +1,114 @@
+{
+  "$defs": {
+    "SigningRole": {
+      "enum": [
+        "controller",
+        "tco_qa",
+        "human_approver",
+        "executor",
+        "demand_producer",
+        "cohort_producer",
+        "operations_producer",
+        "measurement_human",
+        "measurement_indexer",
+        "provider_adapter",
+        "provider_probe",
+        "integration_evidence_runner",
+        "provider_conformance",
+        "security_auditor",
+        "storage_auditor",
+        "time_auditor",
+        "network_auditor",
+        "recovery_auditor"
+      ],
+      "title": "SigningRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "attestation_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Attestation Id",
+      "type": "string"
+    },
+    "attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Attestation Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Signer Issuer",
+      "type": "string"
+    },
+    "signer_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Signer Key Id Sha256",
+      "type": "string"
+    },
+    "signer_role": {
+      "$ref": "#/$defs/SigningRole"
+    },
+    "subject_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Tree Sha256",
+      "type": "string"
+    },
+    "verification_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Verification Bundle Sha256",
+      "type": "string"
+    },
+    "verified_runner_authority_sha256": {
+      "default": "0000000000000000000000000000000000000000000000000000000000000000",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Verified Runner Authority Sha256",
+      "type": "string"
+    },
+    "verified_runner_bundle_sha256": {
+      "default": "0000000000000000000000000000000000000000000000000000000000000000",
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Verified Runner Bundle Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "attestation_id",
+    "subject_tree_sha256",
+    "verification_bundle_sha256",
+    "signer_role",
+    "signer_issuer",
+    "signer_key_id_sha256",
+    "issued_at",
+    "expires_at",
+    "attestation_sha256",
+    "signature_base64url"
+  ],
+  "title": "RepositoryVerificationAttestation",
+  "type": "object"
+}

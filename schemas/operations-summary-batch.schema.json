@@ -1,0 +1,214 @@
+{
+  "$defs": {
+    "DailyOperationsSummary": {
+      "additionalProperties": false,
+      "properties": {
+        "exceptions_total": {
+          "minimum": 0,
+          "title": "Exceptions Total",
+          "type": "integer"
+        },
+        "human_minutes": {
+          "minimum": 0,
+          "title": "Human Minutes",
+          "type": "integer"
+        },
+        "job_runs_succeeded": {
+          "minimum": 0,
+          "title": "Job Runs Succeeded",
+          "type": "integer"
+        },
+        "job_runs_total": {
+          "minimum": 0,
+          "title": "Job Runs Total",
+          "type": "integer"
+        },
+        "local_date": {
+          "format": "date",
+          "title": "Local Date",
+          "type": "string"
+        },
+        "major_misstatements": {
+          "minimum": 0,
+          "title": "Major Misstatements",
+          "type": "integer"
+        },
+        "rollback_tests_passed": {
+          "minimum": 0,
+          "title": "Rollback Tests Passed",
+          "type": "integer"
+        },
+        "rollback_tests_total": {
+          "minimum": 0,
+          "title": "Rollback Tests Total",
+          "type": "integer"
+        },
+        "routine_tasks_automated": {
+          "minimum": 0,
+          "title": "Routine Tasks Automated",
+          "type": "integer"
+        },
+        "routine_tasks_total": {
+          "minimum": 0,
+          "title": "Routine Tasks Total",
+          "type": "integer"
+        },
+        "summary_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Summary Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "summary_id_sha256",
+        "local_date",
+        "human_minutes",
+        "routine_tasks_total",
+        "routine_tasks_automated",
+        "job_runs_total",
+        "job_runs_succeeded",
+        "exceptions_total",
+        "major_misstatements",
+        "rollback_tests_total",
+        "rollback_tests_passed"
+      ],
+      "title": "DailyOperationsSummary",
+      "type": "object"
+    },
+    "EvidenceReceipt": {
+      "additionalProperties": false,
+      "description": "Shared hash-only provenance for an already-sanitized L2 summary.",
+      "properties": {
+        "authority": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Authority",
+          "type": "string"
+        },
+        "authority_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authority Record Sha256",
+          "type": "string"
+        },
+        "retrieved_at": {
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "source_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "authority",
+        "authority_record_sha256",
+        "source_receipt_sha256",
+        "retrieved_at"
+      ],
+      "title": "EvidenceReceipt",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "daily_summaries": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/DailyOperationsSummary"
+      },
+      "title": "Daily Summaries",
+      "type": "array"
+    },
+    "exception_deduplication_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Exception Deduplication Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "job_schedule_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Schedule Sha256",
+      "type": "string"
+    },
+    "job_status_mapping_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Job Status Mapping Sha256",
+      "type": "string"
+    },
+    "measurement_version": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Measurement Version",
+      "type": "string"
+    },
+    "observation_started_at": {
+      "format": "date-time",
+      "title": "Observation Started At",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "qa_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Qa Policy Sha256",
+      "type": "string"
+    },
+    "receipt": {
+      "$ref": "#/$defs/EvidenceReceipt"
+    },
+    "rollback_catalog_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rollback Catalog Sha256",
+      "type": "string"
+    },
+    "routine_inventory_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Routine Inventory Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_timezone": {
+      "const": "Asia/Tokyo",
+      "default": "Asia/Tokyo",
+      "title": "Source Timezone",
+      "type": "string"
+    }
+  },
+  "required": [
+    "measurement_version",
+    "receipt",
+    "property_record_sha256",
+    "observation_started_at",
+    "captured_at",
+    "expires_at",
+    "routine_inventory_sha256",
+    "job_schedule_sha256",
+    "job_status_mapping_sha256",
+    "exception_deduplication_sha256",
+    "qa_policy_sha256",
+    "rollback_catalog_sha256"
+  ],
+  "title": "OperationsSummaryBatch",
+  "type": "object"
+}

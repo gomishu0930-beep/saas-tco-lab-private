@@ -1,0 +1,117 @@
+{
+  "$defs": {
+    "ProviderOperation": {
+      "enum": [
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ProviderOperation",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "adapter_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Adapter Id",
+      "type": "string"
+    },
+    "dispatch_payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dispatch Payload Sha256",
+      "type": "string"
+    },
+    "epoch": {
+      "minimum": 0,
+      "title": "Epoch",
+      "type": "integer"
+    },
+    "fencing_token": {
+      "minimum": 1,
+      "title": "Fencing Token",
+      "type": "integer"
+    },
+    "issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "observed_post_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Observed Post State Sha256",
+      "type": "string"
+    },
+    "operation": {
+      "$ref": "#/$defs/ProviderOperation"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "probed_at": {
+      "format": "date-time",
+      "title": "Probed At",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "const": "provider_probe",
+      "default": "provider_probe",
+      "title": "Scope",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "provider_probe",
+      "default": "provider_probe",
+      "title": "Signer Role",
+      "type": "string"
+    },
+    "store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Id Sha256",
+      "type": "string"
+    },
+    "target_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Target Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "key_id_sha256",
+    "dispatch_payload_sha256",
+    "store_id_sha256",
+    "epoch",
+    "fencing_token",
+    "operation",
+    "adapter_id",
+    "target_sha256",
+    "observed_post_state_sha256",
+    "probed_at",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "ProviderProbeReceipt",
+  "type": "object"
+}

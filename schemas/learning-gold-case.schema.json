@@ -1,0 +1,67 @@
+{
+  "$defs": {
+    "GoldDomain": {
+      "enum": [
+        "field_accuracy",
+        "policy_decision",
+        "content_brief",
+        "claim_citation",
+        "cta_conversion"
+      ],
+      "title": "GoldDomain",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "case_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Case Id Sha256",
+      "type": "string"
+    },
+    "domain": {
+      "$ref": "#/$defs/GoldDomain"
+    },
+    "expected_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Artifact Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "human_label_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Human Label Receipt Sha256",
+      "type": "string"
+    },
+    "input_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Artifact Sha256",
+      "type": "string"
+    },
+    "labeled_at": {
+      "format": "date-time",
+      "title": "Labeled At",
+      "type": "string"
+    },
+    "synthetic": {
+      "title": "Synthetic",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "case_id_sha256",
+    "domain",
+    "input_artifact_sha256",
+    "expected_artifact_sha256",
+    "human_label_receipt_sha256",
+    "synthetic",
+    "labeled_at",
+    "expires_at"
+  ],
+  "title": "LearningGoldCase",
+  "type": "object"
+}

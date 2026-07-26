@@ -1,0 +1,1476 @@
+{
+  "$defs": {
+    "BackupRestoreFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "authoritative_resume_event_gap": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Authoritative Resume Event Gap",
+          "type": "integer"
+        },
+        "backup_age_seconds": {
+          "maximum": 31536000,
+          "minimum": 0,
+          "title": "Backup Age Seconds",
+          "type": "integer"
+        },
+        "corrupt_backup_rejections": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Corrupt Backup Rejections",
+          "type": "integer"
+        },
+        "integrity_mismatches": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Integrity Mismatches",
+          "type": "integer"
+        },
+        "isolated_restore_target_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Isolated Restore Target Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "backup_restore",
+          "default": "backup_restore",
+          "title": "Kind",
+          "type": "string"
+        },
+        "observed_rpo_seconds": {
+          "maximum": 31536000,
+          "minimum": 0,
+          "title": "Observed Rpo Seconds",
+          "type": "integer"
+        },
+        "observed_rto_seconds": {
+          "maximum": 31536000,
+          "minimum": 0,
+          "title": "Observed Rto Seconds",
+          "type": "integer"
+        },
+        "older_backup_reject_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Older Backup Reject Case Sha256",
+          "type": "string"
+        },
+        "production_pointer_after_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Production Pointer After Sha256",
+          "type": "string"
+        },
+        "production_pointer_before_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Production Pointer Before Sha256",
+          "type": "string"
+        },
+        "production_store_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Production Store Identity Sha256",
+          "type": "string"
+        },
+        "restore_attempts": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Restore Attempts",
+          "type": "integer"
+        },
+        "restore_drill_age_seconds": {
+          "maximum": 31536000,
+          "minimum": 0,
+          "title": "Restore Drill Age Seconds",
+          "type": "integer"
+        },
+        "restored_anchor_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Restored Anchor Sha256",
+          "type": "string"
+        },
+        "restored_head_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Restored Head Sha256",
+          "type": "string"
+        },
+        "restored_journal_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Restored Journal Set Sha256",
+          "type": "string"
+        },
+        "restored_snapshot_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Restored Snapshot Sha256",
+          "type": "string"
+        },
+        "result_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Artifact Sha256",
+          "type": "string"
+        },
+        "source_anchor_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Anchor Sha256",
+          "type": "string"
+        },
+        "source_head_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Head Sha256",
+          "type": "string"
+        },
+        "source_journal_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Journal Set Sha256",
+          "type": "string"
+        },
+        "source_snapshot_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Snapshot Sha256",
+          "type": "string"
+        },
+        "successful_restores": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Successful Restores",
+          "type": "integer"
+        },
+        "tampered_backup_reject_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Tampered Backup Reject Case Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "source_snapshot_sha256",
+        "restored_snapshot_sha256",
+        "source_head_sha256",
+        "restored_head_sha256",
+        "source_journal_set_sha256",
+        "restored_journal_set_sha256",
+        "source_anchor_sha256",
+        "restored_anchor_sha256",
+        "isolated_restore_target_sha256",
+        "production_store_identity_sha256",
+        "production_pointer_before_sha256",
+        "production_pointer_after_sha256",
+        "tampered_backup_reject_case_sha256",
+        "older_backup_reject_case_sha256",
+        "restore_attempts",
+        "successful_restores",
+        "integrity_mismatches",
+        "corrupt_backup_rejections",
+        "observed_rpo_seconds",
+        "observed_rto_seconds",
+        "backup_age_seconds",
+        "restore_drill_age_seconds",
+        "authoritative_resume_event_gap",
+        "result_artifact_sha256"
+      ],
+      "title": "BackupRestoreFacts",
+      "type": "object"
+    },
+    "EgressAllowlistFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "allowlist_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Allowlist Policy Sha256",
+          "type": "string"
+        },
+        "approved_attempts": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Approved Attempts",
+          "type": "integer"
+        },
+        "approved_destination_sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Approved Destination Sha256S",
+          "type": "array"
+        },
+        "blocked_unapproved_attempts": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Blocked Unapproved Attempts",
+          "type": "integer"
+        },
+        "deny_dns_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Deny Dns Case Sha256",
+          "type": "string"
+        },
+        "deny_metadata_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Deny Metadata Case Sha256",
+          "type": "string"
+        },
+        "deny_private_range_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Deny Private Range Case Sha256",
+          "type": "string"
+        },
+        "deny_wildcard_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Deny Wildcard Case Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "egress_allowlist",
+          "default": "egress_allowlist",
+          "title": "Kind",
+          "type": "string"
+        },
+        "method_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Method Policy Sha256",
+          "type": "string"
+        },
+        "observed_destination_sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 1,
+          "title": "Observed Destination Sha256S",
+          "type": "array"
+        },
+        "result_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Artifact Sha256",
+          "type": "string"
+        },
+        "successful_unapproved_attempts": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Successful Unapproved Attempts",
+          "type": "integer"
+        },
+        "tls_profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Tls Profile Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "allowlist_policy_sha256",
+        "approved_destination_sha256s",
+        "observed_destination_sha256s",
+        "method_policy_sha256",
+        "tls_profile_sha256",
+        "deny_dns_case_sha256",
+        "deny_private_range_case_sha256",
+        "deny_metadata_case_sha256",
+        "deny_wildcard_case_sha256",
+        "approved_attempts",
+        "blocked_unapproved_attempts",
+        "successful_unapproved_attempts",
+        "result_artifact_sha256"
+      ],
+      "title": "EgressAllowlistFacts",
+      "type": "object"
+    },
+    "ExternalMonotonicAnchorFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "advance_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Advance Case Sha256",
+          "type": "string"
+        },
+        "anchor_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Anchor Identity Sha256",
+          "type": "string"
+        },
+        "authoritative_readback_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authoritative Readback Case Sha256",
+          "type": "string"
+        },
+        "equivocation_reject_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Equivocation Reject Case Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "external_monotonic_anchor",
+          "default": "external_monotonic_anchor",
+          "title": "Kind",
+          "type": "string"
+        },
+        "regressions": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Regressions",
+          "type": "integer"
+        },
+        "replay_rejections": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Replay Rejections",
+          "type": "integer"
+        },
+        "result_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Artifact Sha256",
+          "type": "string"
+        },
+        "revision_after": {
+          "maximum": 9223372036854775807,
+          "minimum": 1,
+          "title": "Revision After",
+          "type": "integer"
+        },
+        "revision_before": {
+          "maximum": 9223372036854775807,
+          "minimum": 0,
+          "title": "Revision Before",
+          "type": "integer"
+        },
+        "rollback_reject_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rollback Reject Case Sha256",
+          "type": "string"
+        },
+        "samples_observed": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Samples Observed",
+          "type": "integer"
+        },
+        "store_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Store Identity Sha256",
+          "type": "string"
+        },
+        "strictly_advanced_transitions": {
+          "maximum": 9999,
+          "minimum": 0,
+          "title": "Strictly Advanced Transitions",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "anchor_identity_sha256",
+        "store_identity_sha256",
+        "advance_case_sha256",
+        "rollback_reject_case_sha256",
+        "equivocation_reject_case_sha256",
+        "authoritative_readback_case_sha256",
+        "revision_before",
+        "revision_after",
+        "samples_observed",
+        "strictly_advanced_transitions",
+        "regressions",
+        "replay_rejections",
+        "result_artifact_sha256"
+      ],
+      "title": "ExternalMonotonicAnchorFacts",
+      "type": "object"
+    },
+    "IndependentReadbackFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "adapter_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Adapter Identity Sha256",
+          "type": "string"
+        },
+        "expected_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected State Sha256",
+          "type": "string"
+        },
+        "journal_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Journal Record Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "independent_readback",
+          "default": "independent_readback",
+          "title": "Kind",
+          "type": "string"
+        },
+        "observed_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observed State Sha256",
+          "type": "string"
+        },
+        "provider_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Provider Receipt Sha256",
+          "type": "string"
+        },
+        "readback_lag_milliseconds": {
+          "maximum": 86400000,
+          "minimum": 0,
+          "title": "Readback Lag Milliseconds",
+          "type": "integer"
+        },
+        "readback_mismatches": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Readback Mismatches",
+          "type": "integer"
+        },
+        "readbacks_attempted": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Readbacks Attempted",
+          "type": "integer"
+        },
+        "readbacks_matched": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Readbacks Matched",
+          "type": "integer"
+        },
+        "reader_acl_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Reader Acl Sha256",
+          "type": "string"
+        },
+        "reader_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Reader Identity Sha256",
+          "type": "string"
+        },
+        "result_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Artifact Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "adapter_identity_sha256",
+        "reader_identity_sha256",
+        "reader_acl_sha256",
+        "provider_receipt_sha256",
+        "journal_record_sha256",
+        "expected_state_sha256",
+        "observed_state_sha256",
+        "readbacks_attempted",
+        "readbacks_matched",
+        "readback_mismatches",
+        "readback_lag_milliseconds",
+        "result_artifact_sha256"
+      ],
+      "title": "IndependentReadbackFacts",
+      "type": "object"
+    },
+    "KmsIdentitySeparationFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "controller_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Controller Identity Sha256",
+          "type": "string"
+        },
+        "controller_permission_profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Controller Permission Profile Sha256",
+          "type": "string"
+        },
+        "export_policy": {
+          "const": "non_exportable",
+          "default": "non_exportable",
+          "title": "Export Policy",
+          "type": "string"
+        },
+        "key_policy_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Key Policy Artifact Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "kms_identity_separation",
+          "default": "kms_identity_separation",
+          "title": "Kind",
+          "type": "string"
+        },
+        "pairwise_assertions_checked": {
+          "maximum": 6,
+          "minimum": 0,
+          "title": "Pairwise Assertions Checked",
+          "type": "integer"
+        },
+        "pairwise_assertions_expected": {
+          "const": 6,
+          "default": 6,
+          "title": "Pairwise Assertions Expected",
+          "type": "integer"
+        },
+        "probe_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Probe Identity Sha256",
+          "type": "string"
+        },
+        "probe_permission_profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Probe Permission Profile Sha256",
+          "type": "string"
+        },
+        "provider_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Provider Identity Sha256",
+          "type": "string"
+        },
+        "provider_permission_profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Provider Permission Profile Sha256",
+          "type": "string"
+        },
+        "runner_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runner Identity Sha256",
+          "type": "string"
+        },
+        "runner_permission_profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runner Permission Profile Sha256",
+          "type": "string"
+        },
+        "separation_violations": {
+          "maximum": 6,
+          "minimum": 0,
+          "title": "Separation Violations",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "provider_identity_sha256",
+        "probe_identity_sha256",
+        "controller_identity_sha256",
+        "runner_identity_sha256",
+        "pairwise_assertions_checked",
+        "separation_violations",
+        "provider_permission_profile_sha256",
+        "probe_permission_profile_sha256",
+        "controller_permission_profile_sha256",
+        "runner_permission_profile_sha256",
+        "key_policy_artifact_sha256"
+      ],
+      "title": "KmsIdentitySeparationFacts",
+      "type": "object"
+    },
+    "ProductionEvidenceProvenance": {
+      "enum": [
+        "production_environment",
+        "synthetic_contract"
+      ],
+      "title": "ProductionEvidenceProvenance",
+      "type": "string"
+    },
+    "ProductionIntegrationCheck": {
+      "enum": [
+        "backup_restore",
+        "egress_allowlist",
+        "external_monotonic_anchor",
+        "independent_readback",
+        "kms_identity_separation",
+        "provider_conditional_mutation",
+        "provider_idempotency_retention",
+        "provider_receipt_lookup",
+        "rollback_disable",
+        "shared_durable_store_fencing",
+        "trusted_clock"
+      ],
+      "title": "ProductionIntegrationCheck",
+      "type": "string"
+    },
+    "ProductionIntegrationEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "check": {
+          "$ref": "#/$defs/ProductionIntegrationCheck"
+        },
+        "command_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Command Sha256",
+          "type": "string"
+        },
+        "environment_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Environment Identity Sha256",
+          "type": "string"
+        },
+        "evidence_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "evidence_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Identity Sha256",
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "facts": {
+          "discriminator": {
+            "mapping": {
+              "backup_restore": "#/$defs/BackupRestoreFacts",
+              "egress_allowlist": "#/$defs/EgressAllowlistFacts",
+              "external_monotonic_anchor": "#/$defs/ExternalMonotonicAnchorFacts",
+              "independent_readback": "#/$defs/IndependentReadbackFacts",
+              "kms_identity_separation": "#/$defs/KmsIdentitySeparationFacts",
+              "provider_conditional_mutation": "#/$defs/ProviderConditionalMutationFacts",
+              "provider_idempotency_retention": "#/$defs/ProviderIdempotencyRetentionFacts",
+              "provider_receipt_lookup": "#/$defs/ProviderReceiptLookupFacts",
+              "rollback_disable": "#/$defs/RollbackDisableFacts",
+              "shared_durable_store_fencing": "#/$defs/SharedDurableStoreFencingFacts",
+              "trusted_clock": "#/$defs/TrustedClockFacts"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/ProviderConditionalMutationFacts"
+            },
+            {
+              "$ref": "#/$defs/ProviderIdempotencyRetentionFacts"
+            },
+            {
+              "$ref": "#/$defs/ProviderReceiptLookupFacts"
+            },
+            {
+              "$ref": "#/$defs/IndependentReadbackFacts"
+            },
+            {
+              "$ref": "#/$defs/KmsIdentitySeparationFacts"
+            },
+            {
+              "$ref": "#/$defs/ExternalMonotonicAnchorFacts"
+            },
+            {
+              "$ref": "#/$defs/TrustedClockFacts"
+            },
+            {
+              "$ref": "#/$defs/SharedDurableStoreFencingFacts"
+            },
+            {
+              "$ref": "#/$defs/EgressAllowlistFacts"
+            },
+            {
+              "$ref": "#/$defs/BackupRestoreFacts"
+            },
+            {
+              "$ref": "#/$defs/RollbackDisableFacts"
+            }
+          ],
+          "title": "Facts"
+        },
+        "integration_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Integration Policy Sha256",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "plan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Plan Sha256",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "#/$defs/ProductionEvidenceProvenance"
+        },
+        "requirement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Requirement Sha256",
+          "type": "string"
+        },
+        "runner_issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+          "title": "Runner Issuer",
+          "type": "string"
+        },
+        "runner_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runner Key Id Sha256",
+          "type": "string"
+        },
+        "runner_role": {
+          "$ref": "#/$defs/SigningRole"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "subject_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Sha256",
+          "type": "string"
+        },
+        "tool_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]*$",
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]*$",
+          "title": "Tool Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "check",
+        "plan_sha256",
+        "integration_policy_sha256",
+        "requirement_sha256",
+        "evidence_identity_sha256",
+        "environment_identity_sha256",
+        "subject_sha256",
+        "command_sha256",
+        "tool_name",
+        "tool_version",
+        "provenance",
+        "facts",
+        "observed_at",
+        "expires_at",
+        "runner_issuer",
+        "runner_key_id_sha256",
+        "runner_role",
+        "evidence_sha256",
+        "signature_base64url"
+      ],
+      "title": "ProductionIntegrationEvidence",
+      "type": "object"
+    },
+    "ProviderConditionalMutationFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "accepted_writes": {
+          "maximum": 4,
+          "minimum": 0,
+          "title": "Accepted Writes",
+          "type": "integer"
+        },
+        "concurrent_precondition_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Concurrent Precondition Case Sha256",
+          "type": "string"
+        },
+        "concurrent_winners": {
+          "maximum": 4,
+          "minimum": 0,
+          "title": "Concurrent Winners",
+          "type": "integer"
+        },
+        "duplicate_side_effects": {
+          "maximum": 4,
+          "minimum": 0,
+          "title": "Duplicate Side Effects",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "provider_conditional_mutation",
+          "default": "provider_conditional_mutation",
+          "title": "Kind",
+          "type": "string"
+        },
+        "lower_fence_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Lower Fence Case Sha256",
+          "type": "string"
+        },
+        "lower_fence_rejections": {
+          "maximum": 4,
+          "minimum": 0,
+          "title": "Lower Fence Rejections",
+          "type": "integer"
+        },
+        "matching_precondition_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Matching Precondition Case Sha256",
+          "type": "string"
+        },
+        "replay_receipt_matches": {
+          "maximum": 4,
+          "minimum": 0,
+          "title": "Replay Receipt Matches",
+          "type": "integer"
+        },
+        "result_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Artifact Sha256",
+          "type": "string"
+        },
+        "scenarios_executed": {
+          "maximum": 4,
+          "minimum": 0,
+          "title": "Scenarios Executed",
+          "type": "integer"
+        },
+        "scenarios_expected": {
+          "const": 4,
+          "default": 4,
+          "title": "Scenarios Expected",
+          "type": "integer"
+        },
+        "stale_precondition_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Stale Precondition Case Sha256",
+          "type": "string"
+        },
+        "stale_precondition_rejections": {
+          "maximum": 4,
+          "minimum": 0,
+          "title": "Stale Precondition Rejections",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "matching_precondition_case_sha256",
+        "stale_precondition_case_sha256",
+        "lower_fence_case_sha256",
+        "concurrent_precondition_case_sha256",
+        "scenarios_executed",
+        "accepted_writes",
+        "stale_precondition_rejections",
+        "lower_fence_rejections",
+        "concurrent_winners",
+        "replay_receipt_matches",
+        "duplicate_side_effects",
+        "result_artifact_sha256"
+      ],
+      "title": "ProviderConditionalMutationFacts",
+      "type": "object"
+    },
+    "ProviderIdempotencyRetentionFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "conflict_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Conflict Case Sha256",
+          "type": "string"
+        },
+        "conflicting_request_rejections": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Conflicting Request Rejections",
+          "type": "integer"
+        },
+        "conflicting_request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Conflicting Request Sha256",
+          "type": "string"
+        },
+        "conflicting_request_side_effects": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Conflicting Request Side Effects",
+          "type": "integer"
+        },
+        "duplicate_side_effects": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Duplicate Side Effects",
+          "type": "integer"
+        },
+        "idempotency_key_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Idempotency Key Sha256",
+          "type": "string"
+        },
+        "initial_audit_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Initial Audit Sha256",
+          "type": "string"
+        },
+        "initial_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Initial Receipt Sha256",
+          "type": "string"
+        },
+        "initial_request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Initial Request Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "provider_idempotency_retention",
+          "default": "provider_idempotency_retention",
+          "title": "Kind",
+          "type": "string"
+        },
+        "matching_receipts": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Matching Receipts",
+          "type": "integer"
+        },
+        "observed_retention_seconds": {
+          "maximum": 31536000,
+          "minimum": 0,
+          "title": "Observed Retention Seconds",
+          "type": "integer"
+        },
+        "replay_attempts": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Replay Attempts",
+          "type": "integer"
+        },
+        "replay_audit_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Replay Audit Sha256",
+          "type": "string"
+        },
+        "replay_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Replay Receipt Sha256",
+          "type": "string"
+        },
+        "replay_request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Replay Request Sha256",
+          "type": "string"
+        },
+        "result_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Artifact Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "idempotency_key_sha256",
+        "initial_request_sha256",
+        "replay_request_sha256",
+        "conflicting_request_sha256",
+        "conflict_case_sha256",
+        "initial_receipt_sha256",
+        "replay_receipt_sha256",
+        "initial_audit_sha256",
+        "replay_audit_sha256",
+        "observed_retention_seconds",
+        "replay_attempts",
+        "matching_receipts",
+        "duplicate_side_effects",
+        "conflicting_request_rejections",
+        "conflicting_request_side_effects",
+        "result_artifact_sha256"
+      ],
+      "title": "ProviderIdempotencyRetentionFacts",
+      "type": "object"
+    },
+    "ProviderReceiptLookupFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Receipt Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "provider_receipt_lookup",
+          "default": "provider_receipt_lookup",
+          "title": "Kind",
+          "type": "string"
+        },
+        "known_lookup_lag_milliseconds": {
+          "maximum": 86400000,
+          "minimum": 0,
+          "title": "Known Lookup Lag Milliseconds",
+          "type": "integer"
+        },
+        "known_query_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Known Query Sha256",
+          "type": "string"
+        },
+        "lookup_attempts": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Lookup Attempts",
+          "type": "integer"
+        },
+        "observed_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observed Receipt Sha256",
+          "type": "string"
+        },
+        "receipt_mismatches": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Receipt Mismatches",
+          "type": "integer"
+        },
+        "receipts_found": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Receipts Found",
+          "type": "integer"
+        },
+        "result_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Artifact Sha256",
+          "type": "string"
+        },
+        "unauthorized_receipts_returned": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Unauthorized Receipts Returned",
+          "type": "integer"
+        },
+        "unknown_lookup_mutation_effects": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Unknown Lookup Mutation Effects",
+          "type": "integer"
+        },
+        "unknown_query_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Unknown Query Sha256",
+          "type": "string"
+        },
+        "unknown_result_kind": {
+          "const": "not_found",
+          "default": "not_found",
+          "title": "Unknown Result Kind",
+          "type": "string"
+        },
+        "unknown_result_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Unknown Result Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "known_query_sha256",
+        "expected_receipt_sha256",
+        "observed_receipt_sha256",
+        "unknown_query_sha256",
+        "unknown_result_sha256",
+        "lookup_attempts",
+        "receipts_found",
+        "receipt_mismatches",
+        "unauthorized_receipts_returned",
+        "known_lookup_lag_milliseconds",
+        "unknown_lookup_mutation_effects",
+        "result_artifact_sha256"
+      ],
+      "title": "ProviderReceiptLookupFacts",
+      "type": "object"
+    },
+    "RollbackDisableFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "activation_events_emitted": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Activation Events Emitted",
+          "type": "integer"
+        },
+        "active_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Active State Sha256",
+          "type": "string"
+        },
+        "completed_disables": {
+          "maximum": 10000,
+          "minimum": 0,
+          "title": "Completed Disables",
+          "type": "integer"
+        },
+        "disable_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Disable Policy Sha256",
+          "type": "string"
+        },
+        "disabled_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Disabled State Sha256",
+          "type": "string"
+        },
+        "fault_exercises": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Fault Exercises",
+          "type": "integer"
+        },
+        "final_observed_state_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Final Observed State Sha256",
+          "type": "string"
+        },
+        "final_state_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Final State Artifact Sha256",
+          "type": "string"
+        },
+        "independent_probe_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Independent Probe Receipt Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "rollback_disable",
+          "default": "rollback_disable",
+          "title": "Kind",
+          "type": "string"
+        },
+        "maximum_disable_latency_milliseconds": {
+          "maximum": 86400000,
+          "minimum": 0,
+          "title": "Maximum Disable Latency Milliseconds",
+          "type": "integer"
+        },
+        "p11_disable_authority_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "P11 Disable Authority Sha256",
+          "type": "string"
+        },
+        "post_disable_mutation_attempts": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Post Disable Mutation Attempts",
+          "type": "integer"
+        },
+        "provider_disable_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Provider Disable Receipt Sha256",
+          "type": "string"
+        },
+        "retry_events_emitted": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Retry Events Emitted",
+          "type": "integer"
+        },
+        "running_lane_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Running Lane Case Sha256",
+          "type": "string"
+        },
+        "stop_lane_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Stop Lane Case Sha256",
+          "type": "string"
+        },
+        "successful_post_disable_mutations": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Successful Post Disable Mutations",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "disable_policy_sha256",
+        "active_state_sha256",
+        "disabled_state_sha256",
+        "final_observed_state_sha256",
+        "p11_disable_authority_sha256",
+        "provider_disable_receipt_sha256",
+        "independent_probe_receipt_sha256",
+        "running_lane_case_sha256",
+        "stop_lane_case_sha256",
+        "fault_exercises",
+        "completed_disables",
+        "maximum_disable_latency_milliseconds",
+        "post_disable_mutation_attempts",
+        "successful_post_disable_mutations",
+        "activation_events_emitted",
+        "retry_events_emitted",
+        "final_state_artifact_sha256"
+      ],
+      "title": "RollbackDisableFacts",
+      "type": "object"
+    },
+    "SharedDurableStoreFencingFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "claim_contenders": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Claim Contenders",
+          "type": "integer"
+        },
+        "concurrent_workers": {
+          "maximum": 10000,
+          "minimum": 1,
+          "title": "Concurrent Workers",
+          "type": "integer"
+        },
+        "failure_domain_sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "maxItems": 20,
+          "minItems": 2,
+          "title": "Failure Domain Sha256S",
+          "type": "array"
+        },
+        "kind": {
+          "const": "shared_durable_store_fencing",
+          "default": "shared_durable_store_fencing",
+          "title": "Kind",
+          "type": "string"
+        },
+        "lower_fence_reject_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Lower Fence Reject Case Sha256",
+          "type": "string"
+        },
+        "old_owner_reject_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Old Owner Reject Case Sha256",
+          "type": "string"
+        },
+        "owner_death_reopen_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Owner Death Reopen Case Sha256",
+          "type": "string"
+        },
+        "result_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Artifact Sha256",
+          "type": "string"
+        },
+        "stale_writer_rejections": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Stale Writer Rejections",
+          "type": "integer"
+        },
+        "store_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Store Identity Sha256",
+          "type": "string"
+        },
+        "unfenced_successful_writes": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Unfenced Successful Writes",
+          "type": "integer"
+        },
+        "winning_claims": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Winning Claims",
+          "type": "integer"
+        },
+        "worker_identity_sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "maxItems": 100,
+          "minItems": 2,
+          "title": "Worker Identity Sha256S",
+          "type": "array"
+        }
+      },
+      "required": [
+        "store_identity_sha256",
+        "worker_identity_sha256s",
+        "failure_domain_sha256s",
+        "lower_fence_reject_case_sha256",
+        "old_owner_reject_case_sha256",
+        "owner_death_reopen_case_sha256",
+        "concurrent_workers",
+        "claim_contenders",
+        "winning_claims",
+        "stale_writer_rejections",
+        "unfenced_successful_writes",
+        "result_artifact_sha256"
+      ],
+      "title": "SharedDurableStoreFencingFacts",
+      "type": "object"
+    },
+    "SigningRole": {
+      "enum": [
+        "controller",
+        "tco_qa",
+        "human_approver",
+        "executor",
+        "demand_producer",
+        "cohort_producer",
+        "operations_producer",
+        "measurement_human",
+        "measurement_indexer",
+        "provider_adapter",
+        "provider_probe",
+        "integration_evidence_runner",
+        "provider_conformance",
+        "security_auditor",
+        "storage_auditor",
+        "time_auditor",
+        "network_auditor",
+        "recovery_auditor"
+      ],
+      "title": "SigningRole",
+      "type": "string"
+    },
+    "TrustedClockFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "backward_steps": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Backward Steps",
+          "type": "integer"
+        },
+        "clock_source_identity_sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "maxItems": 10,
+          "minItems": 1,
+          "title": "Clock Source Identity Sha256S",
+          "type": "array"
+        },
+        "failure_domain_sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "maxItems": 10,
+          "minItems": 1,
+          "title": "Failure Domain Sha256S",
+          "type": "array"
+        },
+        "future_reject_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Future Reject Case Sha256",
+          "type": "string"
+        },
+        "kind": {
+          "const": "trusted_clock",
+          "default": "trusted_clock",
+          "title": "Kind",
+          "type": "string"
+        },
+        "maximum_absolute_offset_milliseconds": {
+          "maximum": 86400000,
+          "minimum": 0,
+          "title": "Maximum Absolute Offset Milliseconds",
+          "type": "integer"
+        },
+        "maximum_uncertainty_milliseconds": {
+          "maximum": 86400000,
+          "minimum": 0,
+          "title": "Maximum Uncertainty Milliseconds",
+          "type": "integer"
+        },
+        "out_of_bound_samples": {
+          "maximum": 100000,
+          "minimum": 0,
+          "title": "Out Of Bound Samples",
+          "type": "integer"
+        },
+        "result_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Artifact Sha256",
+          "type": "string"
+        },
+        "rollback_reject_case_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rollback Reject Case Sha256",
+          "type": "string"
+        },
+        "samples_observed": {
+          "maximum": 100000,
+          "minimum": 1,
+          "title": "Samples Observed",
+          "type": "integer"
+        },
+        "signed_sample_sequence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Signed Sample Sequence Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "clock_source_identity_sha256s",
+        "failure_domain_sha256s",
+        "signed_sample_sequence_sha256",
+        "rollback_reject_case_sha256",
+        "future_reject_case_sha256",
+        "samples_observed",
+        "maximum_absolute_offset_milliseconds",
+        "maximum_uncertainty_milliseconds",
+        "backward_steps",
+        "out_of_bound_samples",
+        "result_artifact_sha256"
+      ],
+      "title": "TrustedClockFacts",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Bundle Sha256",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/ProductionIntegrationEvidence"
+      },
+      "maxItems": 22,
+      "title": "Evidence",
+      "type": "array"
+    },
+    "integration_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Integration Policy Sha256",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "plan_sha256",
+    "integration_policy_sha256",
+    "evidence",
+    "bundle_sha256"
+  ],
+  "title": "ProductionIntegrationEvidenceBundle",
+  "type": "object"
+}

@@ -1,0 +1,45 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_authorization_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Authorization Sha256",
+      "type": "string"
+    },
+    "expected_integration_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Integration Policy Sha256",
+      "type": "string"
+    },
+    "expected_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Plan Sha256",
+      "type": "string"
+    },
+    "expected_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Report Sha256",
+      "type": "string"
+    },
+    "expected_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Trust Store Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "expected_trust_store_sha256",
+    "expected_integration_policy_sha256",
+    "expected_plan_sha256",
+    "expected_report_sha256",
+    "expected_authorization_sha256"
+  ],
+  "title": "ProductionReadinessAuthorityPins",
+  "type": "object"
+}

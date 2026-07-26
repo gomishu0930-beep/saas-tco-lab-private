@@ -1,0 +1,189 @@
+{
+  "$defs": {
+    "FunnelEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "amount_minor": {
+          "default": 0,
+          "minimum": 0,
+          "title": "Amount Minor",
+          "type": "integer"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "event_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Event Id Sha256",
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/GrowthIdentity"
+        },
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "parent_event_id_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Parent Event Id Sha256"
+        },
+        "source_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Artifact Sha256",
+          "type": "string"
+        },
+        "stage": {
+          "$ref": "#/$defs/FunnelStage"
+        },
+        "transaction_id_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Transaction Id Sha256"
+        }
+      },
+      "required": [
+        "event_id_sha256",
+        "identity",
+        "stage",
+        "occurred_at",
+        "source_artifact_sha256"
+      ],
+      "title": "FunnelEvent",
+      "type": "object"
+    },
+    "FunnelStage": {
+      "enum": [
+        "search_impression",
+        "organic_click",
+        "qualified_session",
+        "comparison_interaction",
+        "outbound_click",
+        "merchant_event",
+        "pending",
+        "confirmed",
+        "paid"
+      ],
+      "title": "FunnelStage",
+      "type": "string"
+    },
+    "GrowthIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "campaign_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Campaign Id Sha256",
+          "type": "string"
+        },
+        "cohort_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cohort Id Sha256",
+          "type": "string"
+        },
+        "content_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Id Sha256",
+          "type": "string"
+        },
+        "cta_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cta Id Sha256",
+          "type": "string"
+        },
+        "property_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Property Id Sha256",
+          "type": "string"
+        },
+        "query_cluster_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Query Cluster Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "property_id_sha256",
+        "content_id_sha256",
+        "query_cluster_id_sha256",
+        "campaign_id_sha256",
+        "cta_id_sha256",
+        "cohort_id_sha256"
+      ],
+      "title": "GrowthIdentity",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "batch_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Batch Id Sha256",
+      "type": "string"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/FunnelEvent"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "metric_version": {
+      "pattern": "^[0-9]+\\.[0-9]+(?:\\.[0-9]+)?$",
+      "title": "Metric Version",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "batch_id_sha256",
+    "metric_version",
+    "captured_at",
+    "expires_at",
+    "events"
+  ],
+  "title": "FeedbackBatch",
+  "type": "object"
+}

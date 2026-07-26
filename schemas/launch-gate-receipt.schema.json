@@ -1,0 +1,216 @@
+{
+  "$defs": {
+    "LaunchHandoffGate": {
+      "enum": [
+        "local_candidate_acceptance",
+        "rights_approval",
+        "affiliate_acceptance",
+        "qualified_demand",
+        "shadow_operations",
+        "gold_set_source_readiness",
+        "production_integration_readiness",
+        "deployment_publication_readiness"
+      ],
+      "title": "LaunchHandoffGate",
+      "type": "string"
+    },
+    "LaunchHandoffProvenance": {
+      "enum": [
+        "verified_record",
+        "synthetic_contract"
+      ],
+      "title": "LaunchHandoffProvenance",
+      "type": "string"
+    },
+    "SigningRole": {
+      "enum": [
+        "controller",
+        "tco_qa",
+        "human_approver",
+        "executor",
+        "demand_producer",
+        "cohort_producer",
+        "operations_producer",
+        "measurement_human",
+        "measurement_indexer",
+        "provider_adapter",
+        "provider_probe",
+        "integration_evidence_runner",
+        "provider_conformance",
+        "security_auditor",
+        "storage_auditor",
+        "time_auditor",
+        "network_auditor",
+        "recovery_auditor"
+      ],
+      "title": "SigningRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Artifact Sha256",
+      "type": "string"
+    },
+    "candidate_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Manifest Sha256",
+      "type": "string"
+    },
+    "command_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Command Sha256",
+      "type": "string"
+    },
+    "deployment_candidate_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Deployment Candidate Sha256",
+      "type": "string"
+    },
+    "environment_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Identity Sha256",
+      "type": "string"
+    },
+    "evidence_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Identity Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "gate": {
+      "$ref": "#/$defs/LaunchHandoffGate"
+    },
+    "gate_ordinal": {
+      "maximum": 8,
+      "minimum": 1,
+      "title": "Gate Ordinal",
+      "type": "integer"
+    },
+    "handoff_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Handoff Policy Sha256",
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "predecessor_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Predecessor Receipt Sha256",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/LaunchHandoffProvenance"
+    },
+    "receipt_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Receipt Id",
+      "type": "string"
+    },
+    "receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Sha256",
+      "type": "string"
+    },
+    "requirement_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Requirement Sha256",
+      "type": "string"
+    },
+    "reviewer_issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Reviewer Issuer",
+      "type": "string"
+    },
+    "reviewer_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reviewer Key Id Sha256",
+      "type": "string"
+    },
+    "reviewer_role": {
+      "$ref": "#/$defs/SigningRole"
+    },
+    "schema_version": {
+      "const": "3.0",
+      "default": "3.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "subject_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Sha256",
+      "type": "string"
+    },
+    "tool_name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Tool Name",
+      "type": "string"
+    },
+    "tool_version": {
+      "maxLength": 40,
+      "minLength": 1,
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+      "title": "Tool Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "receipt_id",
+    "gate",
+    "gate_ordinal",
+    "predecessor_receipt_sha256",
+    "plan_sha256",
+    "handoff_policy_sha256",
+    "requirement_sha256",
+    "evidence_identity_sha256",
+    "candidate_manifest_sha256",
+    "property_record_sha256",
+    "environment_identity_sha256",
+    "deployment_candidate_sha256",
+    "artifact_sha256",
+    "subject_sha256",
+    "command_sha256",
+    "tool_name",
+    "tool_version",
+    "provenance",
+    "observed_at",
+    "expires_at",
+    "reviewer_issuer",
+    "reviewer_key_id_sha256",
+    "reviewer_role",
+    "receipt_sha256",
+    "signature_base64url"
+  ],
+  "title": "LaunchGateReceipt",
+  "type": "object"
+}

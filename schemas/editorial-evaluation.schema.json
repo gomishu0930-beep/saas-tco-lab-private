@@ -1,0 +1,55 @@
+{
+  "$defs": {
+    "EditorialDecision": {
+      "enum": [
+        "ready_for_human_review",
+        "stop"
+      ],
+      "title": "EditorialDecision",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "brief_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Brief Id Sha256",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/EditorialDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "missing_synthesized_claims": {
+      "minimum": 0,
+      "title": "Missing Synthesized Claims",
+      "type": "integer"
+    },
+    "reasons": {
+      "items": {
+        "type": "string"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "unsupported_material_claims": {
+      "minimum": 0,
+      "title": "Unsupported Material Claims",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "decision",
+    "evaluated_at",
+    "brief_id_sha256",
+    "unsupported_material_claims",
+    "missing_synthesized_claims",
+    "reasons"
+  ],
+  "title": "EditorialEvaluation",
+  "type": "object"
+}

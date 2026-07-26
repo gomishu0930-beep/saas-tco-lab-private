@@ -1,0 +1,51 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "human_minutes": {
+      "minimum": 0,
+      "title": "Human Minutes",
+      "type": "integer"
+    },
+    "jobs_succeeded": {
+      "minimum": 0,
+      "title": "Jobs Succeeded",
+      "type": "integer"
+    },
+    "jobs_total": {
+      "minimum": 0,
+      "title": "Jobs Total",
+      "type": "integer"
+    },
+    "major_misstatements": {
+      "minimum": 0,
+      "title": "Major Misstatements",
+      "type": "integer"
+    },
+    "operating_cost_minor": {
+      "minimum": 0,
+      "title": "Operating Cost Minor",
+      "type": "integer"
+    },
+    "routine_tasks_automated": {
+      "minimum": 0,
+      "title": "Routine Tasks Automated",
+      "type": "integer"
+    },
+    "routine_tasks_total": {
+      "minimum": 0,
+      "title": "Routine Tasks Total",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "human_minutes",
+    "routine_tasks_total",
+    "routine_tasks_automated",
+    "jobs_total",
+    "jobs_succeeded",
+    "major_misstatements",
+    "operating_cost_minor"
+  ],
+  "title": "OperationsKpiInput",
+  "type": "object"
+}

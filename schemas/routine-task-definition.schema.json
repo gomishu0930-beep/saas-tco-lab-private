@@ -1,0 +1,37 @@
+{
+  "$defs": {
+    "RoutineTaskMode": {
+      "enum": [
+        "automated",
+        "manual"
+      ],
+      "title": "RoutineTaskMode",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "definition_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Definition Sha256",
+      "type": "string"
+    },
+    "mode": {
+      "$ref": "#/$defs/RoutineTaskMode"
+    },
+    "task_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Task Id",
+      "type": "string"
+    }
+  },
+  "required": [
+    "task_id",
+    "definition_sha256",
+    "mode"
+  ],
+  "title": "RoutineTaskDefinition",
+  "type": "object"
+}

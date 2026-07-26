@@ -1,0 +1,251 @@
+{
+  "$defs": {
+    "InitialLearningSourceKind": {
+      "enum": [
+        "field_evidence",
+        "keyword_demand",
+        "search_console",
+        "analytics",
+        "affiliate",
+        "operations"
+      ],
+      "title": "InitialLearningSourceKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "ambiguous_timestamps_detected": {
+      "default": false,
+      "title": "Ambiguous Timestamps Detected",
+      "type": "boolean"
+    },
+    "authority_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authority Record Sha256",
+      "type": "string"
+    },
+    "candidate_key_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Candidate Key Sha256",
+      "type": "string"
+    },
+    "canonical_timezone": {
+      "const": "UTC",
+      "default": "UTC",
+      "title": "Canonical Timezone",
+      "type": "string"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "contains_sensitive_data": {
+      "default": false,
+      "title": "Contains Sensitive Data",
+      "type": "boolean"
+    },
+    "country": {
+      "const": "JP",
+      "default": "JP",
+      "title": "Country",
+      "type": "string"
+    },
+    "coverage_manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Coverage Manifest Sha256",
+      "type": "string"
+    },
+    "currency": {
+      "anyOf": [
+        {
+          "pattern": "^[A-Z]{3}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Currency"
+    },
+    "dataset_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Dataset Id Sha256",
+      "type": "string"
+    },
+    "duplicate_headers_detected": {
+      "default": false,
+      "title": "Duplicate Headers Detected",
+      "type": "boolean"
+    },
+    "duplicate_rows": {
+      "minimum": 0,
+      "title": "Duplicate Rows",
+      "type": "integer"
+    },
+    "expected_grain_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Grain Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "extraction_spec_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Extraction Spec Sha256",
+      "type": "string"
+    },
+    "join_matched_rows": {
+      "minimum": 0,
+      "title": "Join Matched Rows",
+      "type": "integer"
+    },
+    "join_parent_rows": {
+      "minimum": 0,
+      "title": "Join Parent Rows",
+      "type": "integer"
+    },
+    "kind": {
+      "$ref": "#/$defs/InitialLearningSourceKind"
+    },
+    "language": {
+      "const": "ja",
+      "default": "ja",
+      "title": "Language",
+      "type": "string"
+    },
+    "mapping_version_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Mapping Version Sha256",
+      "type": "string"
+    },
+    "mixed_currency_detected": {
+      "default": false,
+      "title": "Mixed Currency Detected",
+      "type": "boolean"
+    },
+    "modeled": {
+      "default": false,
+      "title": "Modeled",
+      "type": "boolean"
+    },
+    "orphan_rows": {
+      "minimum": 0,
+      "title": "Orphan Rows",
+      "type": "integer"
+    },
+    "quarantined_rows": {
+      "minimum": 0,
+      "title": "Quarantined Rows",
+      "type": "integer"
+    },
+    "raw_export_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Raw Export Receipt Sha256",
+      "type": "string"
+    },
+    "reporting_period_end": {
+      "format": "date-time",
+      "title": "Reporting Period End",
+      "type": "string"
+    },
+    "reporting_period_start": {
+      "format": "date-time",
+      "title": "Reporting Period Start",
+      "type": "string"
+    },
+    "required_values_missing": {
+      "minimum": 0,
+      "title": "Required Values Missing",
+      "type": "integer"
+    },
+    "required_values_total": {
+      "exclusiveMinimum": 0,
+      "title": "Required Values Total",
+      "type": "integer"
+    },
+    "rows_accepted": {
+      "exclusiveMinimum": 0,
+      "title": "Rows Accepted",
+      "type": "integer"
+    },
+    "rows_received": {
+      "exclusiveMinimum": 0,
+      "title": "Rows Received",
+      "type": "integer"
+    },
+    "safe_summary_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Safe Summary Sha256",
+      "type": "string"
+    },
+    "schema_drift_detected": {
+      "default": false,
+      "title": "Schema Drift Detected",
+      "type": "boolean"
+    },
+    "schema_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Schema Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_timezone": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9_+:/-]+$",
+      "title": "Source Timezone",
+      "type": "string"
+    },
+    "synthetic": {
+      "default": false,
+      "title": "Synthetic",
+      "type": "boolean"
+    },
+    "unknown_state_rows": {
+      "default": 0,
+      "minimum": 0,
+      "title": "Unknown State Rows",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "dataset_id_sha256",
+    "kind",
+    "raw_export_receipt_sha256",
+    "safe_summary_sha256",
+    "authority_record_sha256",
+    "schema_sha256",
+    "mapping_version_sha256",
+    "extraction_spec_sha256",
+    "coverage_manifest_sha256",
+    "expected_grain_sha256",
+    "candidate_key_sha256",
+    "reporting_period_start",
+    "reporting_period_end",
+    "captured_at",
+    "expires_at",
+    "source_timezone",
+    "rows_received",
+    "rows_accepted",
+    "duplicate_rows",
+    "quarantined_rows",
+    "required_values_total",
+    "required_values_missing",
+    "orphan_rows",
+    "join_parent_rows",
+    "join_matched_rows"
+  ],
+  "title": "InitialLearningDatasetProfile",
+  "type": "object"
+}

@@ -1,0 +1,168 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "authoritative_resume_event_gap": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Authoritative Resume Event Gap",
+      "type": "integer"
+    },
+    "backup_age_seconds": {
+      "maximum": 31536000,
+      "minimum": 0,
+      "title": "Backup Age Seconds",
+      "type": "integer"
+    },
+    "corrupt_backup_rejections": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Corrupt Backup Rejections",
+      "type": "integer"
+    },
+    "integrity_mismatches": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Integrity Mismatches",
+      "type": "integer"
+    },
+    "isolated_restore_target_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Isolated Restore Target Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "backup_restore",
+      "default": "backup_restore",
+      "title": "Kind",
+      "type": "string"
+    },
+    "observed_rpo_seconds": {
+      "maximum": 31536000,
+      "minimum": 0,
+      "title": "Observed Rpo Seconds",
+      "type": "integer"
+    },
+    "observed_rto_seconds": {
+      "maximum": 31536000,
+      "minimum": 0,
+      "title": "Observed Rto Seconds",
+      "type": "integer"
+    },
+    "older_backup_reject_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Older Backup Reject Case Sha256",
+      "type": "string"
+    },
+    "production_pointer_after_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Production Pointer After Sha256",
+      "type": "string"
+    },
+    "production_pointer_before_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Production Pointer Before Sha256",
+      "type": "string"
+    },
+    "production_store_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Production Store Identity Sha256",
+      "type": "string"
+    },
+    "restore_attempts": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Restore Attempts",
+      "type": "integer"
+    },
+    "restore_drill_age_seconds": {
+      "maximum": 31536000,
+      "minimum": 0,
+      "title": "Restore Drill Age Seconds",
+      "type": "integer"
+    },
+    "restored_anchor_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Restored Anchor Sha256",
+      "type": "string"
+    },
+    "restored_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Restored Head Sha256",
+      "type": "string"
+    },
+    "restored_journal_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Restored Journal Set Sha256",
+      "type": "string"
+    },
+    "restored_snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Restored Snapshot Sha256",
+      "type": "string"
+    },
+    "result_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Artifact Sha256",
+      "type": "string"
+    },
+    "source_anchor_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Anchor Sha256",
+      "type": "string"
+    },
+    "source_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Head Sha256",
+      "type": "string"
+    },
+    "source_journal_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Journal Set Sha256",
+      "type": "string"
+    },
+    "source_snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Snapshot Sha256",
+      "type": "string"
+    },
+    "successful_restores": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Successful Restores",
+      "type": "integer"
+    },
+    "tampered_backup_reject_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Tampered Backup Reject Case Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "source_snapshot_sha256",
+    "restored_snapshot_sha256",
+    "source_head_sha256",
+    "restored_head_sha256",
+    "source_journal_set_sha256",
+    "restored_journal_set_sha256",
+    "source_anchor_sha256",
+    "restored_anchor_sha256",
+    "isolated_restore_target_sha256",
+    "production_store_identity_sha256",
+    "production_pointer_before_sha256",
+    "production_pointer_after_sha256",
+    "tampered_backup_reject_case_sha256",
+    "older_backup_reject_case_sha256",
+    "restore_attempts",
+    "successful_restores",
+    "integrity_mismatches",
+    "corrupt_backup_rejections",
+    "observed_rpo_seconds",
+    "observed_rto_seconds",
+    "backup_age_seconds",
+    "restore_drill_age_seconds",
+    "authoritative_resume_event_gap",
+    "result_artifact_sha256"
+  ],
+  "title": "BackupRestoreFacts",
+  "type": "object"
+}

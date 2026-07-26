@@ -1,0 +1,151 @@
+universe_version,country,language,cluster_id,intent,vendor,query
+jp-ja-v1,JP,ja,category-seo-tools,category,,SEO ツール
+jp-ja-v1,JP,ja,category-seo-tools,category,,SEOツール
+jp-ja-v1,JP,ja,category-seo-tools,category,,SEO 対策 ツール
+jp-ja-v1,JP,ja,category-analysis,category,,SEO 分析 ツール
+jp-ja-v1,JP,ja,category-rank-tracking,category,,検索順位 チェック ツール
+jp-ja-v1,JP,ja,category-rank-tracking,category,,検索順位 ツール
+jp-ja-v1,JP,ja,category-keyword-research,category,,キーワード 調査 ツール
+jp-ja-v1,JP,ja,category-keyword-research,category,,キーワード 選定 ツール
+jp-ja-v1,JP,ja,category-backlink,category,,被リンク チェック ツール
+jp-ja-v1,JP,ja,category-competitor,category,,競合 分析 ツール
+jp-ja-v1,JP,ja,category-audit,category,,サイト 監査 ツール
+jp-ja-v1,JP,ja,category-reporting,category,,SEO レポート ツール
+jp-ja-v1,JP,ja,category-seo-tools,category,,SEO ソフト
+jp-ja-v1,JP,ja,category-seo-tools,category,,SEO SaaS
+jp-ja-v1,JP,ja,category-seo-tools,category,,マーケティング SEO ツール
+jp-ja-v1,JP,ja,category-business,category,,法人 SEO ツール
+jp-ja-v1,JP,ja,category-business,category,,企業 SEO ツール
+jp-ja-v1,JP,ja,category-owned-media,category,,オウンドメディア SEO ツール
+jp-ja-v1,JP,ja,category-ecommerce,category,,EC SEO ツール
+jp-ja-v1,JP,ja,category-ai,category,,AI SEO ツール
+jp-ja-v1,JP,ja,comparison-seo-tools,comparison,,SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-seo-tools,comparison,,SEOツール 比較
+jp-ja-v1,JP,ja,comparison-seo-tools,comparison,,SEO ツール おすすめ
+jp-ja-v1,JP,ja,comparison-seo-tools,comparison,,SEO ツール ランキング
+jp-ja-v1,JP,ja,comparison-free-paid,comparison,,SEO ツール 無料 比較
+jp-ja-v1,JP,ja,comparison-free-paid,comparison,,SEO ツール 有料 比較
+jp-ja-v1,JP,ja,comparison-business,comparison,,法人 SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-business,comparison,,中小企業 SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-business,comparison,,大企業 SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-owned-media,comparison,,オウンドメディア SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-ecommerce,comparison,,EC SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-agency,comparison,,SEO 代理店 ツール 比較
+jp-ja-v1,JP,ja,comparison-rank-tracking,comparison,,検索順位 チェック ツール 比較
+jp-ja-v1,JP,ja,comparison-keyword,comparison,,キーワード ツール 比較
+jp-ja-v1,JP,ja,comparison-backlink,comparison,,被リンク チェック ツール 比較
+jp-ja-v1,JP,ja,comparison-competitor,comparison,,競合 分析 ツール 比較
+jp-ja-v1,JP,ja,comparison-audit,comparison,,サイト 監査 ツール 比較
+jp-ja-v1,JP,ja,comparison-ai,comparison,,AI SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-cloud,comparison,,クラウド SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-integrated,comparison,,統合型 SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-all-in-one,comparison,,オールインワン SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-japanese,comparison,,日本語 SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-overseas,comparison,,海外 SEO ツール 比較
+jp-ja-v1,JP,ja,comparison-review,comparison,,SEO ツール 口コミ 比較
+jp-ja-v1,JP,ja,comparison-review,comparison,,SEO ツール 評判 比較
+jp-ja-v1,JP,ja,pricing-seo-tools,pricing,,SEO ツール 料金
+jp-ja-v1,JP,ja,pricing-seo-tools,pricing,,SEO ツール 価格
+jp-ja-v1,JP,ja,pricing-seo-tools,pricing,,SEO ツール 費用
+jp-ja-v1,JP,ja,pricing-seo-tools,pricing,,SEO ツール 相場
+jp-ja-v1,JP,ja,pricing-seo-tools,pricing,,SEO ツール 月額
+jp-ja-v1,JP,ja,pricing-seo-tools,pricing,,SEO ツール 年額
+jp-ja-v1,JP,ja,pricing-seo-tools,pricing,,SEO ツール コスト
+jp-ja-v1,JP,ja,pricing-seo-tools,pricing,,SEO ツール 安い
+jp-ja-v1,JP,ja,pricing-rank-tracking,pricing,,検索順位 チェック ツール 料金
+jp-ja-v1,JP,ja,pricing-keyword,pricing,,キーワード ツール 料金
+jp-ja-v1,JP,ja,pricing-backlink,pricing,,被リンク チェック ツール 料金
+jp-ja-v1,JP,ja,pricing-competitor,pricing,,競合 分析 ツール 料金
+jp-ja-v1,JP,ja,pricing-audit,pricing,,サイト 監査 ツール 料金
+jp-ja-v1,JP,ja,pricing-ai,pricing,,AI SEO ツール 料金
+jp-ja-v1,JP,ja,pricing-business,pricing,,法人 SEO ツール 料金
+jp-ja-v1,JP,ja,pricing-business,pricing,,企業 SEO ツール 費用
+jp-ja-v1,JP,ja,pricing-owned-media,pricing,,オウンドメディア SEO 費用
+jp-ja-v1,JP,ja,pricing-ecommerce,pricing,,EC SEO ツール 料金
+jp-ja-v1,JP,ja,pricing-tco,pricing,,SEO ツール 総費用
+jp-ja-v1,JP,ja,pricing-tco,pricing,,SEO ツール TCO
+jp-ja-v1,JP,ja,pricing-budget,pricing,,SEO ツール 予算
+jp-ja-v1,JP,ja,pricing-discount,pricing,,SEO ツール 年払い 割引
+jp-ja-v1,JP,ja,pricing-contract,pricing,,SEO ツール 契約期間
+jp-ja-v1,JP,ja,pricing-estimate,pricing,,SEO ツール 見積もり
+jp-ja-v1,JP,ja,pricing-cost-performance,pricing,,SEO ツール コスパ
+jp-ja-v1,JP,ja,alternative-seo-tools,alternative,,SEO ツール 代替
+jp-ja-v1,JP,ja,alternative-seo-tools,alternative,,SEO ツール 乗り換え
+jp-ja-v1,JP,ja,alternative-seo-tools,alternative,,SEO ツール 移行
+jp-ja-v1,JP,ja,alternative-seo-tools,alternative,,SEO ツール 他社比較
+jp-ja-v1,JP,ja,alternative-seo-tools,alternative,,SEO ツール 変更
+jp-ja-v1,JP,ja,alternative-seo-tools,alternative,,SEO ツール 解約 乗り換え
+jp-ja-v1,JP,ja,alternative-free-paid,alternative,,無料 SEO ツール から 乗り換え
+jp-ja-v1,JP,ja,alternative-free-paid,alternative,,有料 SEO ツール 乗り換え
+jp-ja-v1,JP,ja,alternative-rank-tracking,alternative,,検索順位 ツール 乗り換え
+jp-ja-v1,JP,ja,alternative-keyword,alternative,,キーワード ツール 代替
+jp-ja-v1,JP,ja,alternative-backlink,alternative,,被リンク ツール 代替
+jp-ja-v1,JP,ja,alternative-competitor,alternative,,競合 分析 ツール 代替
+jp-ja-v1,JP,ja,alternative-audit,alternative,,サイト 監査 ツール 代替
+jp-ja-v1,JP,ja,alternative-ai,alternative,,AI SEO ツール 乗り換え
+jp-ja-v1,JP,ja,alternative-business,alternative,,法人 SEO ツール 乗り換え
+jp-ja-v1,JP,ja,alternative-data,alternative,,SEO ツール データ 移行
+jp-ja-v1,JP,ja,alternative-contract,alternative,,SEO ツール 更新前 見直し
+jp-ja-v1,JP,ja,alternative-cost,alternative,,SEO ツール 値上げ 乗り換え
+jp-ja-v1,JP,ja,alternative-overseas,alternative,,海外 SEO ツール 代替
+jp-ja-v1,JP,ja,alternative-integrated,alternative,,統合型 SEO ツール 乗り換え
+jp-ja-v1,JP,ja,fit-keywords,fit,,SEO ツール 追跡 キーワード数
+jp-ja-v1,JP,ja,fit-sites,fit,,SEO ツール 登録 サイト数
+jp-ja-v1,JP,ja,fit-seats,fit,,SEO ツール ユーザー数
+jp-ja-v1,JP,ja,fit-seats,fit,,SEO ツール 追加席 料金
+jp-ja-v1,JP,ja,fit-audit,fit,,SEO ツール 監査 ページ数
+jp-ja-v1,JP,ja,fit-api,fit,,SEO ツール API 料金
+jp-ja-v1,JP,ja,fit-api,fit,,SEO ツール API 制限
+jp-ja-v1,JP,ja,fit-ai,fit,,SEO ツール AI 検索 追跡
+jp-ja-v1,JP,ja,fit-ai,fit,,SEO ツール AI アドオン
+jp-ja-v1,JP,ja,fit-local,fit,,SEO ツール ローカル SEO
+jp-ja-v1,JP,ja,fit-global,fit,,SEO ツール 海外 検索順位
+jp-ja-v1,JP,ja,fit-japanese,fit,,SEO ツール 日本語 対応
+jp-ja-v1,JP,ja,fit-reporting,fit,,SEO ツール レポート 自動化
+jp-ja-v1,JP,ja,fit-white-label,fit,,SEO ツール ホワイトラベル
+jp-ja-v1,JP,ja,fit-agency,fit,,SEO ツール 代理店 向け
+jp-ja-v1,JP,ja,fit-small-business,fit,,SEO ツール 小規模 事業
+jp-ja-v1,JP,ja,fit-enterprise,fit,,SEO ツール エンタープライズ
+jp-ja-v1,JP,ja,fit-support,fit,,SEO ツール 日本語 サポート
+jp-ja-v1,JP,ja,fit-cancel,fit,,SEO ツール 解約 条件
+jp-ja-v1,JP,ja,fit-trial,fit,,SEO ツール 無料 トライアル
+jp-ja-v1,JP,ja,brand-semrush,brand,semrush,Semrush 料金
+jp-ja-v1,JP,ja,brand-semrush,brand,semrush,Semrush 価格
+jp-ja-v1,JP,ja,brand-semrush,brand,semrush,Semrush プラン
+jp-ja-v1,JP,ja,brand-semrush,brand,semrush,Semrush 費用
+jp-ja-v1,JP,ja,brand-semrush,brand,semrush,Semrush 比較
+jp-ja-v1,JP,ja,brand-semrush,brand,semrush,Semrush 評判
+jp-ja-v1,JP,ja,brand-semrush,brand,semrush,Semrush 代替
+jp-ja-v1,JP,ja,brand-semrush,brand,semrush,Semrush 使い方
+jp-ja-v1,JP,ja,brand-se-ranking,brand,se-ranking,SE Ranking 料金
+jp-ja-v1,JP,ja,brand-se-ranking,brand,se-ranking,SE Ranking 価格
+jp-ja-v1,JP,ja,brand-se-ranking,brand,se-ranking,SE Ranking プラン
+jp-ja-v1,JP,ja,brand-se-ranking,brand,se-ranking,SE Ranking 費用
+jp-ja-v1,JP,ja,brand-se-ranking,brand,se-ranking,SE Ranking 比較
+jp-ja-v1,JP,ja,brand-se-ranking,brand,se-ranking,SE Ranking 評判
+jp-ja-v1,JP,ja,brand-se-ranking,brand,se-ranking,SE Ranking 代替
+jp-ja-v1,JP,ja,brand-se-ranking,brand,se-ranking,SE Ranking 使い方
+jp-ja-v1,JP,ja,brand-mangools,brand,mangools,Mangools 料金
+jp-ja-v1,JP,ja,brand-mangools,brand,mangools,Mangools 価格
+jp-ja-v1,JP,ja,brand-mangools,brand,mangools,Mangools プラン
+jp-ja-v1,JP,ja,brand-mangools,brand,mangools,Mangools 費用
+jp-ja-v1,JP,ja,brand-mangools,brand,mangools,Mangools 比較
+jp-ja-v1,JP,ja,brand-mangools,brand,mangools,Mangools 評判
+jp-ja-v1,JP,ja,brand-mangools,brand,mangools,Mangools 代替
+jp-ja-v1,JP,ja,brand-mangools,brand,mangools,Mangools 使い方
+jp-ja-v1,JP,ja,brand-serpstat,brand,serpstat,Serpstat 料金
+jp-ja-v1,JP,ja,brand-serpstat,brand,serpstat,Serpstat 価格
+jp-ja-v1,JP,ja,brand-serpstat,brand,serpstat,Serpstat プラン
+jp-ja-v1,JP,ja,brand-serpstat,brand,serpstat,Serpstat 費用
+jp-ja-v1,JP,ja,brand-serpstat,brand,serpstat,Serpstat 比較
+jp-ja-v1,JP,ja,brand-serpstat,brand,serpstat,Serpstat 評判
+jp-ja-v1,JP,ja,brand-serpstat,brand,serpstat,Serpstat 代替
+jp-ja-v1,JP,ja,brand-serpstat,brand,serpstat,Serpstat 使い方
+jp-ja-v1,JP,ja,brand-hubspot,brand,hubspot,HubSpot 料金
+jp-ja-v1,JP,ja,brand-hubspot,brand,hubspot,HubSpot 価格
+jp-ja-v1,JP,ja,brand-hubspot,brand,hubspot,HubSpot プラン
+jp-ja-v1,JP,ja,brand-hubspot,brand,hubspot,HubSpot 費用
+jp-ja-v1,JP,ja,brand-hubspot,brand,hubspot,HubSpot 比較
+jp-ja-v1,JP,ja,brand-hubspot,brand,hubspot,HubSpot 評判
+jp-ja-v1,JP,ja,brand-hubspot,brand,hubspot,HubSpot 代替
+jp-ja-v1,JP,ja,brand-hubspot,brand,hubspot,HubSpot 使い方

@@ -1,0 +1,153 @@
+{
+  "$defs": {
+    "P13TerminalState": {
+      "enum": [
+        "stop",
+        "unknown"
+      ],
+      "title": "P13TerminalState",
+      "type": "string"
+    },
+    "ProviderObservedState": {
+      "enum": [
+        "applied",
+        "not_applied",
+        "ambiguous"
+      ],
+      "title": "ProviderObservedState",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "facts_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Facts Sha256",
+      "type": "string"
+    },
+    "independent_readback_evidence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Independent Readback Evidence Sha256",
+      "type": "string"
+    },
+    "journaled_provider_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Journaled Provider Receipt Sha256",
+      "type": "string"
+    },
+    "observed_at": {
+      "format": "date-time",
+      "title": "Observed At",
+      "type": "string"
+    },
+    "p13_result_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P13 Result Sha256",
+      "type": "string"
+    },
+    "p13_store_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P13 Store Identity Sha256",
+      "type": "string"
+    },
+    "p13_terminal_state": {
+      "$ref": "#/$defs/P13TerminalState"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "producer_issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Producer Issuer",
+      "type": "string"
+    },
+    "producer_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Producer Key Id Sha256",
+      "type": "string"
+    },
+    "producer_role": {
+      "const": "recovery_auditor",
+      "default": "recovery_auditor",
+      "title": "Producer Role",
+      "type": "string"
+    },
+    "provider_observed_state": {
+      "$ref": "#/$defs/ProviderObservedState"
+    },
+    "provider_probe_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Provider Probe Receipt Sha256",
+      "type": "string"
+    },
+    "provider_result_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Provider Result Receipt Sha256",
+      "type": "string"
+    },
+    "receipt_lookup_evidence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Lookup Evidence Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "stop_reason_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Stop Reason Sha256",
+      "type": "string"
+    },
+    "stopped_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Stopped Head Sha256",
+      "type": "string"
+    },
+    "stopped_revision": {
+      "maximum": 9223372036854775807,
+      "minimum": 0,
+      "title": "Stopped Revision",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "plan_sha256",
+    "p13_store_identity_sha256",
+    "p13_result_sha256",
+    "p13_terminal_state",
+    "stopped_revision",
+    "stopped_head_sha256",
+    "stop_reason_sha256",
+    "provider_observed_state",
+    "provider_result_receipt_sha256",
+    "journaled_provider_receipt_sha256",
+    "provider_probe_receipt_sha256",
+    "receipt_lookup_evidence_sha256",
+    "independent_readback_evidence_sha256",
+    "observed_at",
+    "expires_at",
+    "producer_issuer",
+    "producer_key_id_sha256",
+    "facts_sha256",
+    "signature_base64url"
+  ],
+  "title": "ProductionReconciliationFacts",
+  "type": "object"
+}

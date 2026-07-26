@@ -1,0 +1,91 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "database_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Database Sha256",
+      "type": "string"
+    },
+    "ecosystem": {
+      "const": "npm",
+      "default": "npm",
+      "title": "Ecosystem",
+      "type": "string"
+    },
+    "generated_at": {
+      "format": "date-time",
+      "title": "Generated At",
+      "type": "string"
+    },
+    "not_after": {
+      "format": "date-time",
+      "title": "Not After",
+      "type": "string"
+    },
+    "record_count": {
+      "maximum": 1000000000,
+      "minimum": 1,
+      "title": "Record Count",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Signer Issuer",
+      "type": "string"
+    },
+    "signer_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Signer Key Id Sha256",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "security_auditor",
+      "default": "security_auditor",
+      "title": "Signer Role",
+      "type": "string"
+    },
+    "snapshot_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Snapshot Id",
+      "type": "string"
+    },
+    "snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Snapshot Sha256",
+      "type": "string"
+    },
+    "source_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Set Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "snapshot_id",
+    "source_set_sha256",
+    "database_sha256",
+    "record_count",
+    "generated_at",
+    "not_after",
+    "signer_issuer",
+    "signer_key_id_sha256",
+    "snapshot_sha256",
+    "signature_base64url"
+  ],
+  "title": "SignedAdvisorySnapshot",
+  "type": "object"
+}

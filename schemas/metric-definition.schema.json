@@ -1,0 +1,62 @@
+{
+  "$defs": {
+    "MetricUnit": {
+      "enum": [
+        "count",
+        "minor_currency",
+        "ratio",
+        "minutes"
+      ],
+      "title": "MetricUnit",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "denominator_metric_key": {
+      "anyOf": [
+        {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Denominator Metric Key"
+    },
+    "description_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Description Sha256",
+      "type": "string"
+    },
+    "metric_key": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Metric Key",
+      "type": "string"
+    },
+    "metric_version": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[0-9]+\\.[0-9]+(?:\\.[0-9]+)?$",
+      "title": "Metric Version",
+      "type": "string"
+    },
+    "unit": {
+      "$ref": "#/$defs/MetricUnit"
+    }
+  },
+  "required": [
+    "metric_key",
+    "metric_version",
+    "unit",
+    "description_sha256"
+  ],
+  "title": "MetricDefinition",
+  "type": "object"
+}

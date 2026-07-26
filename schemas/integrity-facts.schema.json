@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "checked_items": {
+      "maximum": 1000000,
+      "minimum": 1,
+      "title": "Checked Items",
+      "type": "integer"
+    },
+    "drift_items": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Drift Items",
+      "type": "integer"
+    },
+    "exit_code": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "invalid_items": {
+      "maximum": 1000000,
+      "minimum": 0,
+      "title": "Invalid Items",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "integrity",
+      "default": "integrity",
+      "title": "Kind",
+      "type": "string"
+    },
+    "output_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Output Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "checked_items",
+    "invalid_items",
+    "drift_items",
+    "output_sha256",
+    "exit_code"
+  ],
+  "title": "IntegrityFacts",
+  "type": "object"
+}

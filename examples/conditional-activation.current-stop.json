@@ -1,0 +1,26 @@
+{
+  "schema_version": "1.0",
+  "activation_id_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "kind": "challenger_model",
+  "captured_at": "2026-07-23T03:00:00Z",
+  "expires_at": "2026-07-30T03:00:00Z",
+  "evidence_artifact_sha256s": [
+    "1111111111111111111111111111111111111111111111111111111111111111"
+  ],
+  "upstream_ready": false,
+  "operational_need_demonstrated": false,
+  "evaluated_runs": 0,
+  "meaningful_monthly_runs": 0,
+  "observed_days": 0,
+  "approved_sources": 0,
+  "quality_gain_percent": 0,
+  "cost_or_latency_gain_percent": 0,
+  "quality_regression": false,
+  "single_provider_candidate": false,
+  "retention_approved": false,
+  "hosting_approved": false,
+  "budget_approved": false,
+  "tool_choice_approved": false,
+  "public_go_approved": false,
+  "approval_receipt_sha256s": []
+}

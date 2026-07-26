@@ -1,0 +1,384 @@
+{
+  "$defs": {
+    "TractionCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Name",
+          "type": "string"
+        },
+        "observed": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Observed",
+          "type": "string"
+        },
+        "requirement": {
+          "maxLength": 240,
+          "minLength": 1,
+          "title": "Requirement",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/TractionCheckStatus"
+        }
+      },
+      "required": [
+        "name",
+        "status",
+        "observed",
+        "requirement"
+      ],
+      "title": "TractionCheck",
+      "type": "object"
+    },
+    "TractionCheckStatus": {
+      "enum": [
+        "pass",
+        "wait",
+        "fail"
+      ],
+      "title": "TractionCheckStatus",
+      "type": "string"
+    },
+    "TractionDecision": {
+      "enum": [
+        "stop",
+        "continue_observation",
+        "ready_for_scale_review"
+      ],
+      "title": "TractionDecision",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "const": "none",
+      "default": "none",
+      "title": "Authority",
+      "type": "string"
+    },
+    "checks": {
+      "items": {
+        "$ref": "#/$defs/TractionCheck"
+      },
+      "title": "Checks",
+      "type": "array"
+    },
+    "covered_days": {
+      "maximum": 180,
+      "minimum": 0,
+      "title": "Covered Days",
+      "type": "integer"
+    },
+    "cumulative_qualified_sessions": {
+      "minimum": 0,
+      "title": "Cumulative Qualified Sessions",
+      "type": "integer"
+    },
+    "cumulative_settled_amount": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Cumulative Settled Amount"
+    },
+    "cumulative_settled_epc": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Cumulative Settled Epc"
+    },
+    "cumulative_valid_clicks": {
+      "minimum": 0,
+      "title": "Cumulative Valid Clicks",
+      "type": "integer"
+    },
+    "decision": {
+      "$ref": "#/$defs/TractionDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "external_mutation_authorized": {
+      "const": false,
+      "default": false,
+      "title": "External Mutation Authorized",
+      "type": "boolean"
+    },
+    "latest_automation_rate": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Latest Automation Rate"
+    },
+    "latest_job_success_rate": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Latest Job Success Rate"
+    },
+    "latest_max_partner_share": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Latest Max Partner Share"
+    },
+    "latest_net_operating_profit": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Latest Net Operating Profit"
+    },
+    "latest_operating_tco": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Latest Operating Tco"
+    },
+    "latest_outbound_ctr": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Latest Outbound Ctr"
+    },
+    "latest_revenue": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Latest Revenue"
+    },
+    "ledger_authenticated": {
+      "title": "Ledger Authenticated",
+      "type": "boolean"
+    },
+    "ledger_event_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Ledger Event Head Sha256",
+      "type": "string"
+    },
+    "ledger_event_revision": {
+      "minimum": 0,
+      "title": "Ledger Event Revision",
+      "type": "integer"
+    },
+    "ledger_store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Ledger Store Id Sha256",
+      "type": "string"
+    },
+    "observation_count": {
+      "maximum": 6,
+      "minimum": 0,
+      "title": "Observation Count",
+      "type": "integer"
+    },
+    "observation_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Observation Head Sha256",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "purpose": {
+      "const": "human_scale_review_input_only",
+      "default": "human_scale_review_input_only",
+      "title": "Purpose",
+      "type": "string"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "required_clicks_exact": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Required Clicks Exact"
+    },
+    "required_qualified_sessions_exact": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Required Qualified Sessions Exact"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "settlement_complete": {
+      "title": "Settlement Complete",
+      "type": "boolean"
+    },
+    "settlement_evidence_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Settlement Evidence Sha256S",
+      "type": "array"
+    },
+    "traction_mature": {
+      "title": "Traction Mature",
+      "type": "boolean"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    },
+    "trusted_clock_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trusted Clock Attestation Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision",
+    "policy_sha256",
+    "trust_store_sha256",
+    "plan_sha256",
+    "ledger_store_id_sha256",
+    "evaluated_at",
+    "observation_count",
+    "covered_days",
+    "cumulative_valid_clicks",
+    "cumulative_qualified_sessions",
+    "cumulative_settled_amount",
+    "cumulative_settled_epc",
+    "traction_mature",
+    "ledger_authenticated",
+    "settlement_complete",
+    "latest_revenue",
+    "latest_operating_tco",
+    "latest_net_operating_profit",
+    "latest_outbound_ctr",
+    "latest_max_partner_share",
+    "latest_automation_rate",
+    "latest_job_success_rate",
+    "required_clicks_exact",
+    "required_qualified_sessions_exact",
+    "checks",
+    "observation_head_sha256",
+    "settlement_evidence_sha256s",
+    "ledger_event_revision",
+    "ledger_event_head_sha256",
+    "trusted_clock_attestation_sha256",
+    "report_sha256"
+  ],
+  "title": "TractionReport",
+  "type": "object"
+}

@@ -1,0 +1,24 @@
+.DS_Store
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.hypothesis/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+
+# Local evidence databases and runtime outputs must not enter source control.
+*.sqlite
+*.sqlite3
+*.db
+data/
+
+# Secrets and local environment files.
+.env
+.env.*
+!.env.example
+*.pem
+*.key

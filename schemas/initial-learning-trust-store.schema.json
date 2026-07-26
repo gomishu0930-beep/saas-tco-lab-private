@@ -1,0 +1,58 @@
+{
+  "$defs": {
+    "InitialLearningVerificationKey": {
+      "additionalProperties": false,
+      "properties": {
+        "issuer": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Issuer",
+          "type": "string"
+        },
+        "key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Key Id Sha256",
+          "type": "string"
+        },
+        "public_key_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{43}$",
+          "title": "Public Key Base64Url",
+          "type": "string"
+        }
+      },
+      "required": [
+        "issuer",
+        "key_id_sha256",
+        "public_key_base64url"
+      ],
+      "title": "InitialLearningVerificationKey",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "human_labeler": {
+      "$ref": "#/$defs/InitialLearningVerificationKey"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_steward": {
+      "$ref": "#/$defs/InitialLearningVerificationKey"
+    },
+    "tco_qa": {
+      "$ref": "#/$defs/InitialLearningVerificationKey"
+    }
+  },
+  "required": [
+    "source_steward",
+    "human_labeler",
+    "tco_qa"
+  ],
+  "title": "InitialLearningTrustStore",
+  "type": "object"
+}

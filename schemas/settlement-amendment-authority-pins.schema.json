@@ -1,0 +1,74 @@
+{
+  "additionalProperties": false,
+  "description": "Consumer-owned bootstrap values; never derive these from an amendment.",
+  "properties": {
+    "expected_cohort_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Expected Cohort Id",
+      "type": "string"
+    },
+    "expected_p12_bundle_index_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected P12 Bundle Index Sha256",
+      "type": "string"
+    },
+    "expected_p12_cohort_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected P12 Cohort Attestation Sha256",
+      "type": "string"
+    },
+    "expected_p12_cohort_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected P12 Cohort Batch Sha256",
+      "type": "string"
+    },
+    "expected_p12_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected P12 Plan Sha256",
+      "type": "string"
+    },
+    "expected_p12_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected P12 Report Sha256",
+      "type": "string"
+    },
+    "expected_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Policy Sha256",
+      "type": "string"
+    },
+    "expected_run_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Expected Run Id",
+      "type": "string"
+    },
+    "expected_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Trust Store Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "expected_policy_sha256",
+    "expected_trust_store_sha256",
+    "expected_p12_report_sha256",
+    "expected_p12_plan_sha256",
+    "expected_p12_bundle_index_sha256",
+    "expected_p12_cohort_batch_sha256",
+    "expected_p12_cohort_attestation_sha256",
+    "expected_run_id",
+    "expected_cohort_id"
+  ],
+  "title": "SettlementAmendmentAuthorityPins",
+  "type": "object"
+}

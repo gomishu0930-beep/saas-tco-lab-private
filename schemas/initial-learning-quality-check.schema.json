@@ -1,0 +1,49 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[a-z0-9_.:-]+$",
+      "title": "Name",
+      "type": "string"
+    },
+    "observed": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Observed",
+      "type": "string"
+    },
+    "passed": {
+      "title": "Passed",
+      "type": "boolean"
+    },
+    "requirement": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Requirement",
+      "type": "string"
+    },
+    "subject_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Subject Sha256"
+    }
+  },
+  "required": [
+    "name",
+    "passed",
+    "observed",
+    "requirement"
+  ],
+  "title": "InitialLearningQualityCheck",
+  "type": "object"
+}

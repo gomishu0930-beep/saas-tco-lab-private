@@ -1,0 +1,72 @@
+{
+  "decision": "stop",
+  "evaluated_at": "2026-07-22T03:00:00Z",
+  "evidence_bundle_sha256": "ffaca7a518fe77fd94d9e13e05fd30983dcca2aa688659c3dc1a1ff09197b223",
+  "expires_at": "2026-07-22T03:00:00Z",
+  "failed_checks": [
+    "backup_restore",
+    "egress_allowlist",
+    "external_monotonic_anchor",
+    "independent_readback",
+    "kms_identity_separation",
+    "provider_conditional_mutation",
+    "provider_idempotency_retention",
+    "provider_receipt_lookup",
+    "rollback_disable",
+    "shared_durable_store_fencing",
+    "trusted_clock"
+  ],
+  "findings": [
+    {
+      "check": "backup_restore",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "egress_allowlist",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "external_monotonic_anchor",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "independent_readback",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "kms_identity_separation",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "provider_conditional_mutation",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "provider_idempotency_retention",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "provider_receipt_lookup",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "rollback_disable",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "shared_durable_store_fencing",
+      "reason": "missing_evidence"
+    },
+    {
+      "check": "trusted_clock",
+      "reason": "missing_evidence"
+    }
+  ],
+  "integration_policy_sha256": "d1c0be26fe2d56c8763eb6637ed9c0b91d68086f83ca8b23299ea6d331a8d578",
+  "passed_checks": [],
+  "plan_sha256": "541aca044aa0a427c152880d08ce3bcb83e79bd87ad44ad5bb6db88088dfdcde",
+  "report_sha256": "389ee7e941c4deca5051c506ee27d586d73930035557db0b4b4c89112b0025c9",
+  "schema_version": "1.0",
+  "synthetic_evidence_is_not_production_authority": true,
+  "trust_store_sha256": "706b871f0f39efaaf7901b9585e04ff94d40dd40bebbe76f58f42b18171d266e"
+}

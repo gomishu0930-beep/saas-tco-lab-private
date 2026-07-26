@@ -1,0 +1,107 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Artifact Sha256",
+      "type": "string"
+    },
+    "assurance_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Assurance Policy Sha256",
+      "type": "string"
+    },
+    "business_dossier_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Business Dossier Sha256",
+      "type": "string"
+    },
+    "controller_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Controller Key Id Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Issuer",
+      "type": "string"
+    },
+    "local_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Local Report Sha256",
+      "type": "string"
+    },
+    "manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "release_assurance_core_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Release Assurance Core Sha256",
+      "type": "string"
+    },
+    "release_id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Release Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope": {
+      "const": "public_release_authorization",
+      "default": "public_release_authorization",
+      "title": "Scope",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "controller",
+      "default": "controller",
+      "title": "Signer Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "controller_key_id_sha256",
+    "release_assurance_core_sha256",
+    "assurance_policy_sha256",
+    "local_report_sha256",
+    "business_dossier_sha256",
+    "release_id",
+    "manifest_sha256",
+    "artifact_sha256",
+    "issued_at",
+    "expires_at",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "ReleaseAuthorization",
+  "type": "object"
+}

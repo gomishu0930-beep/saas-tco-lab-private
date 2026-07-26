@@ -1,0 +1,53 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "completeness_rule_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Completeness Rule Sha256",
+      "type": "string"
+    },
+    "maximum_amendment_ttl_seconds": {
+      "maximum": 2678400,
+      "minimum": 1,
+      "title": "Maximum Amendment Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_completeness_ttl_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Completeness Ttl Seconds",
+      "type": "integer"
+    },
+    "p12_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Policy Sha256",
+      "type": "string"
+    },
+    "p12_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Trust Store Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trust_store_sha256",
+    "p12_policy_sha256",
+    "p12_trust_store_sha256",
+    "completeness_rule_sha256",
+    "maximum_amendment_ttl_seconds",
+    "maximum_completeness_ttl_seconds"
+  ],
+  "title": "SettlementAmendmentPolicy",
+  "type": "object"
+}

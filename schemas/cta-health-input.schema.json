@@ -1,0 +1,119 @@
+{
+  "$defs": {
+    "GrowthIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "campaign_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Campaign Id Sha256",
+          "type": "string"
+        },
+        "cohort_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cohort Id Sha256",
+          "type": "string"
+        },
+        "content_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Id Sha256",
+          "type": "string"
+        },
+        "cta_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cta Id Sha256",
+          "type": "string"
+        },
+        "property_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Property Id Sha256",
+          "type": "string"
+        },
+        "query_cluster_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Query Cluster Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "property_id_sha256",
+        "content_id_sha256",
+        "query_cluster_id_sha256",
+        "campaign_id_sha256",
+        "cta_id_sha256",
+        "cohort_id_sha256"
+      ],
+      "title": "GrowthIdentity",
+      "type": "object"
+    },
+    "LinkStatus": {
+      "enum": [
+        "healthy",
+        "broken",
+        "unknown"
+      ],
+      "title": "LinkStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "affiliate_approved": {
+      "title": "Affiliate Approved",
+      "type": "boolean"
+    },
+    "checked_at": {
+      "format": "date-time",
+      "title": "Checked At",
+      "type": "string"
+    },
+    "expected_destination_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Destination Sha256",
+      "type": "string"
+    },
+    "expected_disclosure_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Disclosure Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "identity": {
+      "$ref": "#/$defs/GrowthIdentity"
+    },
+    "link_status": {
+      "$ref": "#/$defs/LinkStatus"
+    },
+    "observed_destination_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Observed Destination Sha256",
+      "type": "string"
+    },
+    "observed_disclosure_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Observed Disclosure Sha256",
+      "type": "string"
+    },
+    "rights_current": {
+      "title": "Rights Current",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "identity",
+    "affiliate_approved",
+    "rights_current",
+    "link_status",
+    "expected_destination_sha256",
+    "observed_destination_sha256",
+    "expected_disclosure_sha256",
+    "observed_disclosure_sha256",
+    "checked_at",
+    "expires_at"
+  ],
+  "title": "CtaHealthInput",
+  "type": "object"
+}

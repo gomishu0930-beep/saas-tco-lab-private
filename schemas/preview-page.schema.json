@@ -1,0 +1,227 @@
+{
+  "$defs": {
+    "BillingPeriod": {
+      "enum": [
+        "monthly",
+        "annual"
+      ],
+      "title": "BillingPeriod",
+      "type": "string"
+    },
+    "FitStatus": {
+      "enum": [
+        "fit",
+        "not_fit",
+        "unknown"
+      ],
+      "title": "FitStatus",
+      "type": "string"
+    },
+    "PreviewPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "affiliate_active": {
+          "default": false,
+          "title": "Affiliate Active",
+          "type": "boolean"
+        },
+        "affiliate_expires_at": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Affiliate Expires At"
+        },
+        "affiliate_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Affiliate Url"
+        },
+        "billing_period": {
+          "$ref": "#/$defs/BillingPeriod"
+        },
+        "commitment_months": {
+          "maximum": 120,
+          "minimum": 1,
+          "title": "Commitment Months",
+          "type": "integer"
+        },
+        "currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "data_expires_at": {
+          "format": "date-time",
+          "title": "Data Expires At",
+          "type": "string"
+        },
+        "evidence_retrieved_at": {
+          "format": "date-time",
+          "title": "Evidence Retrieved At",
+          "type": "string"
+        },
+        "evidence_url": {
+          "format": "uri",
+          "minLength": 1,
+          "title": "Evidence Url",
+          "type": "string"
+        },
+        "fit_reason": {
+          "maxLength": 500,
+          "minLength": 1,
+          "title": "Fit Reason",
+          "type": "string"
+        },
+        "fit_status": {
+          "$ref": "#/$defs/FitStatus"
+        },
+        "minor_unit_digits": {
+          "maximum": 6,
+          "minimum": 0,
+          "title": "Minor Unit Digits",
+          "type": "integer"
+        },
+        "plan_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Plan Name",
+          "type": "string"
+        },
+        "plan_slug": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Plan Slug",
+          "type": "string"
+        },
+        "region": {
+          "maxLength": 40,
+          "minLength": 2,
+          "title": "Region",
+          "type": "string"
+        },
+        "rights_expires_at": {
+          "format": "date-time",
+          "title": "Rights Expires At",
+          "type": "string"
+        },
+        "scenario_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Scenario Name",
+          "type": "string"
+        },
+        "tax_note": {
+          "maxLength": 200,
+          "minLength": 1,
+          "title": "Tax Note",
+          "type": "string"
+        },
+        "total_minor": {
+          "minimum": 0,
+          "title": "Total Minor",
+          "type": "integer"
+        },
+        "vendor_name": {
+          "maxLength": 160,
+          "minLength": 1,
+          "title": "Vendor Name",
+          "type": "string"
+        },
+        "vendor_slug": {
+          "maxLength": 80,
+          "minLength": 1,
+          "title": "Vendor Slug",
+          "type": "string"
+        }
+      },
+      "required": [
+        "vendor_slug",
+        "vendor_name",
+        "plan_slug",
+        "plan_name",
+        "scenario_name",
+        "region",
+        "tax_note",
+        "currency",
+        "billing_period",
+        "commitment_months",
+        "minor_unit_digits",
+        "total_minor",
+        "fit_status",
+        "fit_reason",
+        "evidence_url",
+        "evidence_retrieved_at",
+        "data_expires_at",
+        "rights_expires_at"
+      ],
+      "title": "PreviewPlan",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "affiliate_disclosure": {
+      "default": "このページにはアフィリエイトリンクが含まれる場合があります。",
+      "maxLength": 500,
+      "minLength": 1,
+      "title": "Affiliate Disclosure",
+      "type": "string"
+    },
+    "methodology": {
+      "maxLength": 1000,
+      "minLength": 1,
+      "title": "Methodology",
+      "type": "string"
+    },
+    "plans": {
+      "items": {
+        "$ref": "#/$defs/PreviewPlan"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Plans",
+      "type": "array"
+    },
+    "rendered_at": {
+      "format": "date-time",
+      "title": "Rendered At",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 200,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "title",
+    "methodology",
+    "rendered_at",
+    "plans"
+  ],
+  "title": "PreviewPage",
+  "type": "object"
+}

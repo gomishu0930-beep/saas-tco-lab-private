@@ -1,0 +1,93 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "accepted_records": {
+      "minimum": 0,
+      "title": "Accepted Records",
+      "type": "integer"
+    },
+    "complete_export_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Complete Export Receipt Sha256",
+      "type": "string"
+    },
+    "conflict_records": {
+      "minimum": 0,
+      "title": "Conflict Records",
+      "type": "integer"
+    },
+    "coverage_rule_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Coverage Rule Sha256",
+      "type": "string"
+    },
+    "duplicate_records": {
+      "minimum": 0,
+      "title": "Duplicate Records",
+      "type": "integer"
+    },
+    "event_id_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Event Id Set Sha256",
+      "type": "string"
+    },
+    "output_records": {
+      "minimum": 0,
+      "title": "Output Records",
+      "type": "integer"
+    },
+    "privacy_scan_passed": {
+      "const": true,
+      "title": "Privacy Scan Passed",
+      "type": "boolean"
+    },
+    "privacy_scan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Privacy Scan Sha256",
+      "type": "string"
+    },
+    "raw_records": {
+      "minimum": 0,
+      "title": "Raw Records",
+      "type": "integer"
+    },
+    "rejected_records": {
+      "minimum": 0,
+      "title": "Rejected Records",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_export_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Export Sha256",
+      "type": "string"
+    },
+    "unknown_records": {
+      "minimum": 0,
+      "title": "Unknown Records",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "source_export_sha256",
+    "complete_export_receipt_sha256",
+    "coverage_rule_sha256",
+    "raw_records",
+    "accepted_records",
+    "rejected_records",
+    "duplicate_records",
+    "conflict_records",
+    "unknown_records",
+    "output_records",
+    "event_id_set_sha256",
+    "privacy_scan_sha256",
+    "privacy_scan_passed"
+  ],
+  "title": "SettlementCompletenessCoverage",
+  "type": "object"
+}

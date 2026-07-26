@@ -1,0 +1,56 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "complete": {
+      "title": "Complete",
+      "type": "boolean"
+    },
+    "executed_occurrences": {
+      "minimum": 0,
+      "title": "Executed Occurrences",
+      "type": "integer"
+    },
+    "execution_receipts": {
+      "minimum": 0,
+      "title": "Execution Receipts",
+      "type": "integer"
+    },
+    "human_activity_receipts": {
+      "minimum": 0,
+      "title": "Human Activity Receipts",
+      "type": "integer"
+    },
+    "manual_occurrences": {
+      "minimum": 0,
+      "title": "Manual Occurrences",
+      "type": "integer"
+    },
+    "manual_occurrences_with_activity": {
+      "minimum": 0,
+      "title": "Manual Occurrences With Activity",
+      "type": "integer"
+    },
+    "resource_usage_receipts": {
+      "minimum": 0,
+      "title": "Resource Usage Receipts",
+      "type": "integer"
+    },
+    "scheduled_occurrences": {
+      "minimum": 0,
+      "title": "Scheduled Occurrences",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "scheduled_occurrences",
+    "executed_occurrences",
+    "execution_receipts",
+    "manual_occurrences",
+    "manual_occurrences_with_activity",
+    "human_activity_receipts",
+    "resource_usage_receipts",
+    "complete"
+  ],
+  "title": "TaskActivityCoverage",
+  "type": "object"
+}

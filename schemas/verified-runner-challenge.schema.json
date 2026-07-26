@@ -1,0 +1,78 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "challenge_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Challenge Id",
+      "type": "string"
+    },
+    "challenge_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Challenge Sha256",
+      "type": "string"
+    },
+    "consumer_store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Consumer Store Id Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "nonce_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Nonce Sha256",
+      "type": "string"
+    },
+    "not_before": {
+      "format": "date-time",
+      "title": "Not Before",
+      "type": "string"
+    },
+    "previous_evidence_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Previous Evidence Head Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sequence": {
+      "maximum": 1000000000,
+      "minimum": 1,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "subject_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Tree Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "challenge_id",
+    "sequence",
+    "nonce_sha256",
+    "subject_tree_sha256",
+    "consumer_store_id_sha256",
+    "previous_evidence_head_sha256",
+    "issued_at",
+    "not_before",
+    "expires_at",
+    "challenge_sha256"
+  ],
+  "title": "VerifiedRunnerChallenge",
+  "type": "object"
+}

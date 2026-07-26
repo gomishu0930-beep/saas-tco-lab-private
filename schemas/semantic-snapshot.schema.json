@@ -1,0 +1,244 @@
+{
+  "$defs": {
+    "EvidenceMode": {
+      "enum": [
+        "modeled",
+        "observed"
+      ],
+      "title": "EvidenceMode",
+      "type": "string"
+    },
+    "GrowthIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "campaign_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Campaign Id Sha256",
+          "type": "string"
+        },
+        "cohort_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cohort Id Sha256",
+          "type": "string"
+        },
+        "content_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Content Id Sha256",
+          "type": "string"
+        },
+        "cta_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Cta Id Sha256",
+          "type": "string"
+        },
+        "property_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Property Id Sha256",
+          "type": "string"
+        },
+        "query_cluster_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Query Cluster Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "property_id_sha256",
+        "content_id_sha256",
+        "query_cluster_id_sha256",
+        "campaign_id_sha256",
+        "cta_id_sha256",
+        "cohort_id_sha256"
+      ],
+      "title": "GrowthIdentity",
+      "type": "object"
+    },
+    "MetricDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "denominator_metric_key": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Denominator Metric Key"
+        },
+        "description_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Description Sha256",
+          "type": "string"
+        },
+        "metric_key": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Metric Key",
+          "type": "string"
+        },
+        "metric_version": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[0-9]+\\.[0-9]+(?:\\.[0-9]+)?$",
+          "title": "Metric Version",
+          "type": "string"
+        },
+        "unit": {
+          "$ref": "#/$defs/MetricUnit"
+        }
+      },
+      "required": [
+        "metric_key",
+        "metric_version",
+        "unit",
+        "description_sha256"
+      ],
+      "title": "MetricDefinition",
+      "type": "object"
+    },
+    "MetricUnit": {
+      "enum": [
+        "count",
+        "minor_currency",
+        "ratio",
+        "minutes"
+      ],
+      "title": "MetricUnit",
+      "type": "string"
+    },
+    "SemanticFact": {
+      "additionalProperties": false,
+      "properties": {
+        "captured_at": {
+          "format": "date-time",
+          "title": "Captured At",
+          "type": "string"
+        },
+        "evidence_mode": {
+          "$ref": "#/$defs/EvidenceMode"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "fact_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Fact Id Sha256",
+          "type": "string"
+        },
+        "identity": {
+          "$ref": "#/$defs/GrowthIdentity"
+        },
+        "metric_key": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Metric Key",
+          "type": "string"
+        },
+        "metric_version": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[0-9]+\\.[0-9]+(?:\\.[0-9]+)?$",
+          "title": "Metric Version",
+          "type": "string"
+        },
+        "scenario_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scenario Sha256"
+        },
+        "source_artifact_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Artifact Sha256"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Value"
+        }
+      },
+      "required": [
+        "fact_id_sha256",
+        "identity",
+        "metric_key",
+        "metric_version",
+        "value",
+        "evidence_mode",
+        "captured_at",
+        "expires_at"
+      ],
+      "title": "SemanticFact",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "definitions": {
+      "items": {
+        "$ref": "#/$defs/MetricDefinition"
+      },
+      "minItems": 1,
+      "title": "Definitions",
+      "type": "array"
+    },
+    "facts": {
+      "items": {
+        "$ref": "#/$defs/SemanticFact"
+      },
+      "minItems": 1,
+      "title": "Facts",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "created_at",
+    "definitions",
+    "facts"
+  ],
+  "title": "SemanticSnapshot",
+  "type": "object"
+}

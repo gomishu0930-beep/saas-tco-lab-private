@@ -1,0 +1,1163 @@
+{
+  "$defs": {
+    "SignedAdvisorySnapshot": {
+      "additionalProperties": false,
+      "properties": {
+        "database_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Database Sha256",
+          "type": "string"
+        },
+        "ecosystem": {
+          "const": "npm",
+          "default": "npm",
+          "title": "Ecosystem",
+          "type": "string"
+        },
+        "generated_at": {
+          "format": "date-time",
+          "title": "Generated At",
+          "type": "string"
+        },
+        "not_after": {
+          "format": "date-time",
+          "title": "Not After",
+          "type": "string"
+        },
+        "record_count": {
+          "maximum": 1000000000,
+          "minimum": 1,
+          "title": "Record Count",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "signer_issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Signer Issuer",
+          "type": "string"
+        },
+        "signer_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Signer Key Id Sha256",
+          "type": "string"
+        },
+        "signer_role": {
+          "const": "security_auditor",
+          "default": "security_auditor",
+          "title": "Signer Role",
+          "type": "string"
+        },
+        "snapshot_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Snapshot Id",
+          "type": "string"
+        },
+        "snapshot_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Snapshot Sha256",
+          "type": "string"
+        },
+        "source_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Set Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "snapshot_id",
+        "source_set_sha256",
+        "database_sha256",
+        "record_count",
+        "generated_at",
+        "not_after",
+        "signer_issuer",
+        "signer_key_id_sha256",
+        "snapshot_sha256",
+        "signature_base64url"
+      ],
+      "title": "SignedAdvisorySnapshot",
+      "type": "object"
+    },
+    "SignedRunnerImageAttestation": {
+      "additionalProperties": false,
+      "properties": {
+        "attestation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Attestation Sha256",
+          "type": "string"
+        },
+        "challenge_nonce_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Nonce Sha256",
+          "type": "string"
+        },
+        "challenge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "image_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Image Identity Sha256",
+          "type": "string"
+        },
+        "isolation_measurement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Isolation Measurement Sha256",
+          "type": "string"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "platform_quote_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Platform Quote Sha256",
+          "type": "string"
+        },
+        "record_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Record Set Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "signer_issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Signer Issuer",
+          "type": "string"
+        },
+        "signer_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Signer Key Id Sha256",
+          "type": "string"
+        },
+        "signer_role": {
+          "const": "provider_conformance",
+          "default": "provider_conformance",
+          "title": "Signer Role",
+          "type": "string"
+        },
+        "subject_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Tree Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "image_identity_sha256",
+        "subject_tree_sha256",
+        "challenge_sha256",
+        "challenge_nonce_sha256",
+        "record_set_sha256",
+        "platform_quote_sha256",
+        "isolation_measurement_sha256",
+        "signer_issuer",
+        "signer_key_id_sha256",
+        "issued_at",
+        "expires_at",
+        "attestation_sha256",
+        "signature_base64url"
+      ],
+      "title": "SignedRunnerImageAttestation",
+      "type": "object"
+    },
+    "SignedVerifiedRunClockAttestation": {
+      "additionalProperties": false,
+      "properties": {
+        "attestation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Attestation Sha256",
+          "type": "string"
+        },
+        "challenge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "node_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Node Id Sha256",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "record_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Record Set Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "signer_issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Signer Issuer",
+          "type": "string"
+        },
+        "signer_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Signer Key Id Sha256",
+          "type": "string"
+        },
+        "signer_role": {
+          "const": "time_auditor",
+          "default": "time_auditor",
+          "title": "Signer Role",
+          "type": "string"
+        }
+      },
+      "required": [
+        "challenge_sha256",
+        "record_set_sha256",
+        "node_id_sha256",
+        "observed_at",
+        "signer_issuer",
+        "signer_key_id_sha256",
+        "issued_at",
+        "expires_at",
+        "attestation_sha256",
+        "signature_base64url"
+      ],
+      "title": "SignedVerifiedRunClockAttestation",
+      "type": "object"
+    },
+    "VerifiedCheckRecord": {
+      "additionalProperties": false,
+      "properties": {
+        "result": {
+          "$ref": "#/$defs/VerifiedCheckResult"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "spec": {
+          "$ref": "#/$defs/VerifiedCheckSpec"
+        }
+      },
+      "required": [
+        "spec",
+        "result"
+      ],
+      "title": "VerifiedCheckRecord",
+      "type": "object"
+    },
+    "VerifiedCheckResult": {
+      "additionalProperties": false,
+      "properties": {
+        "advisory_bytes_read": {
+          "default": 0,
+          "maximum": 4000000000,
+          "minimum": 0,
+          "title": "Advisory Bytes Read",
+          "type": "integer"
+        },
+        "advisory_database_sha256": {
+          "default": "0000000000000000000000000000000000000000000000000000000000000000",
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Advisory Database Sha256",
+          "type": "string"
+        },
+        "advisory_file_identity_sha256": {
+          "default": "0000000000000000000000000000000000000000000000000000000000000000",
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Advisory File Identity Sha256",
+          "type": "string"
+        },
+        "advisory_input_complete": {
+          "default": false,
+          "title": "Advisory Input Complete",
+          "type": "boolean"
+        },
+        "advisory_snapshot_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Advisory Snapshot Sha256",
+          "type": "string"
+        },
+        "assertions_executed": {
+          "maximum": 100000000,
+          "minimum": 1,
+          "title": "Assertions Executed",
+          "type": "integer"
+        },
+        "challenge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Sha256",
+          "type": "string"
+        },
+        "check": {
+          "$ref": "#/$defs/VerifiedRunnerCheck"
+        },
+        "duration_milliseconds": {
+          "maximum": 3600000,
+          "minimum": 0,
+          "title": "Duration Milliseconds",
+          "type": "integer"
+        },
+        "ended_at": {
+          "format": "date-time",
+          "title": "Ended At",
+          "type": "string"
+        },
+        "exit_code": {
+          "anyOf": [
+            {
+              "maximum": 255,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Exit Code"
+        },
+        "failures": {
+          "maximum": 100000000,
+          "minimum": 0,
+          "title": "Failures",
+          "type": "integer"
+        },
+        "image_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Image Identity Sha256",
+          "type": "string"
+        },
+        "monotonic_duration_nanoseconds": {
+          "maximum": 3600000000000,
+          "minimum": 0,
+          "title": "Monotonic Duration Nanoseconds",
+          "type": "integer"
+        },
+        "node_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Node Id Sha256",
+          "type": "string"
+        },
+        "not_after": {
+          "format": "date-time",
+          "title": "Not After",
+          "type": "string"
+        },
+        "parser_binary_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Parser Binary Sha256",
+          "type": "string"
+        },
+        "parser_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Parser Name",
+          "type": "string"
+        },
+        "parser_output_bytes": {
+          "maximum": 67108864,
+          "minimum": 1,
+          "title": "Parser Output Bytes",
+          "type": "integer"
+        },
+        "parser_output_complete": {
+          "const": true,
+          "default": true,
+          "title": "Parser Output Complete",
+          "type": "boolean"
+        },
+        "parser_output_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Parser Output Sha256",
+          "type": "string"
+        },
+        "parser_version": {
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+          "title": "Parser Version",
+          "type": "string"
+        },
+        "result_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Result Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signal_number": {
+          "anyOf": [
+            {
+              "maximum": 64,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Signal Number"
+        },
+        "skipped": {
+          "maximum": 100000000,
+          "minimum": 0,
+          "title": "Skipped",
+          "type": "integer"
+        },
+        "spec_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Spec Sha256",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        },
+        "stderr_bytes": {
+          "maximum": 67108864,
+          "minimum": 0,
+          "title": "Stderr Bytes",
+          "type": "integer"
+        },
+        "stderr_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Stderr Sha256",
+          "type": "string"
+        },
+        "stderr_truncated": {
+          "title": "Stderr Truncated",
+          "type": "boolean"
+        },
+        "stdout_bytes": {
+          "maximum": 67108864,
+          "minimum": 0,
+          "title": "Stdout Bytes",
+          "type": "integer"
+        },
+        "stdout_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Stdout Sha256",
+          "type": "string"
+        },
+        "stdout_truncated": {
+          "title": "Stdout Truncated",
+          "type": "boolean"
+        },
+        "subject_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Tree Sha256",
+          "type": "string"
+        },
+        "termination_reason": {
+          "$ref": "#/$defs/VerifiedTerminationReason"
+        },
+        "tool_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+          "title": "Tool Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "check",
+        "challenge_sha256",
+        "spec_sha256",
+        "subject_tree_sha256",
+        "image_identity_sha256",
+        "advisory_snapshot_sha256",
+        "node_id_sha256",
+        "started_at",
+        "ended_at",
+        "not_after",
+        "duration_milliseconds",
+        "monotonic_duration_nanoseconds",
+        "termination_reason",
+        "stdout_sha256",
+        "stdout_bytes",
+        "stdout_truncated",
+        "stderr_sha256",
+        "stderr_bytes",
+        "stderr_truncated",
+        "parser_name",
+        "parser_version",
+        "parser_binary_sha256",
+        "parser_output_sha256",
+        "parser_output_bytes",
+        "tool_name",
+        "tool_version",
+        "assertions_executed",
+        "failures",
+        "skipped",
+        "result_sha256"
+      ],
+      "title": "VerifiedCheckResult",
+      "type": "object"
+    },
+    "VerifiedCheckSpec": {
+      "additionalProperties": false,
+      "properties": {
+        "advisory_snapshot_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Advisory Snapshot Sha256",
+          "type": "string"
+        },
+        "challenge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Sha256",
+          "type": "string"
+        },
+        "check": {
+          "$ref": "#/$defs/VerifiedRunnerCheck"
+        },
+        "command_argv": {
+          "items": {
+            "type": "string"
+          },
+          "maxItems": 40,
+          "minItems": 1,
+          "title": "Command Argv",
+          "type": "array"
+        },
+        "environment_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Environment Sha256",
+          "type": "string"
+        },
+        "image_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Image Identity Sha256",
+          "type": "string"
+        },
+        "import_closure_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Import Closure Sha256",
+          "type": "string"
+        },
+        "interpreter_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Interpreter Sha256",
+          "type": "string"
+        },
+        "maximum_stderr_bytes": {
+          "maximum": 67108864,
+          "minimum": 1,
+          "title": "Maximum Stderr Bytes",
+          "type": "integer"
+        },
+        "maximum_stdout_bytes": {
+          "maximum": 67108864,
+          "minimum": 1,
+          "title": "Maximum Stdout Bytes",
+          "type": "integer"
+        },
+        "minimum_assertions": {
+          "maximum": 100000000,
+          "minimum": 1,
+          "title": "Minimum Assertions",
+          "type": "integer"
+        },
+        "network_mode": {
+          "$ref": "#/$defs/VerifiedRunnerNetworkMode"
+        },
+        "node_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Node Id Sha256",
+          "type": "string"
+        },
+        "parser_binary_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Parser Binary Sha256",
+          "type": "string"
+        },
+        "parser_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Parser Name",
+          "type": "string"
+        },
+        "parser_version": {
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+          "title": "Parser Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "spec_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Spec Sha256",
+          "type": "string"
+        },
+        "subject_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Tree Sha256",
+          "type": "string"
+        },
+        "timeout_seconds": {
+          "maximum": 3600,
+          "minimum": 1,
+          "title": "Timeout Seconds",
+          "type": "integer"
+        },
+        "tool_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+          "title": "Tool Version",
+          "type": "string"
+        },
+        "working_directory": {
+          "const": "/workspace/repository",
+          "default": "/workspace/repository",
+          "title": "Working Directory",
+          "type": "string"
+        }
+      },
+      "required": [
+        "check",
+        "challenge_sha256",
+        "subject_tree_sha256",
+        "image_identity_sha256",
+        "advisory_snapshot_sha256",
+        "node_id_sha256",
+        "command_argv",
+        "environment_sha256",
+        "network_mode",
+        "interpreter_sha256",
+        "import_closure_sha256",
+        "parser_name",
+        "parser_version",
+        "parser_binary_sha256",
+        "tool_name",
+        "tool_version",
+        "minimum_assertions",
+        "timeout_seconds",
+        "maximum_stdout_bytes",
+        "maximum_stderr_bytes",
+        "spec_sha256"
+      ],
+      "title": "VerifiedCheckSpec",
+      "type": "object"
+    },
+    "VerifiedRunnerAttestation": {
+      "additionalProperties": false,
+      "properties": {
+        "advisory_snapshot_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Advisory Snapshot Sha256",
+          "type": "string"
+        },
+        "attestation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Attestation Sha256",
+          "type": "string"
+        },
+        "challenge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Sha256",
+          "type": "string"
+        },
+        "clock_attestation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Clock Attestation Sha256",
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "image_identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Image Identity Sha256",
+          "type": "string"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Policy Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "signer_issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Signer Issuer",
+          "type": "string"
+        },
+        "signer_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Signer Key Id Sha256",
+          "type": "string"
+        },
+        "signer_role": {
+          "const": "integration_evidence_runner",
+          "default": "integration_evidence_runner",
+          "title": "Signer Role",
+          "type": "string"
+        },
+        "subject_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Tree Sha256",
+          "type": "string"
+        },
+        "trust_store_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Trust Store Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_sha256",
+        "challenge_sha256",
+        "clock_attestation_sha256",
+        "subject_tree_sha256",
+        "image_identity_sha256",
+        "advisory_snapshot_sha256",
+        "policy_sha256",
+        "trust_store_sha256",
+        "signer_issuer",
+        "signer_key_id_sha256",
+        "issued_at",
+        "expires_at",
+        "attestation_sha256",
+        "signature_base64url"
+      ],
+      "title": "VerifiedRunnerAttestation",
+      "type": "object"
+    },
+    "VerifiedRunnerChallenge": {
+      "additionalProperties": false,
+      "properties": {
+        "challenge_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Challenge Id",
+          "type": "string"
+        },
+        "challenge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Sha256",
+          "type": "string"
+        },
+        "consumer_store_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Consumer Store Id Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "nonce_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Nonce Sha256",
+          "type": "string"
+        },
+        "not_before": {
+          "format": "date-time",
+          "title": "Not Before",
+          "type": "string"
+        },
+        "previous_evidence_head_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Previous Evidence Head Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "sequence": {
+          "maximum": 1000000000,
+          "minimum": 1,
+          "title": "Sequence",
+          "type": "integer"
+        },
+        "subject_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Tree Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "challenge_id",
+        "sequence",
+        "nonce_sha256",
+        "subject_tree_sha256",
+        "consumer_store_id_sha256",
+        "previous_evidence_head_sha256",
+        "issued_at",
+        "not_before",
+        "expires_at",
+        "challenge_sha256"
+      ],
+      "title": "VerifiedRunnerChallenge",
+      "type": "object"
+    },
+    "VerifiedRunnerCheck": {
+      "enum": [
+        "python_base",
+        "python_traction",
+        "python_production_consumer",
+        "schema_determinism",
+        "blocked_fixture_determinism",
+        "uv_lock",
+        "compileall",
+        "secret_scan",
+        "web_tests",
+        "web_lint",
+        "dependency_audit",
+        "workflow_verifier",
+        "contract_storage_audit",
+        "tco_qa_audit"
+      ],
+      "title": "VerifiedRunnerCheck",
+      "type": "string"
+    },
+    "VerifiedRunnerImageIdentity": {
+      "additionalProperties": false,
+      "properties": {
+        "boot_measurement_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Boot Measurement Sha256",
+          "type": "string"
+        },
+        "built_at": {
+          "format": "date-time",
+          "title": "Built At",
+          "type": "string"
+        },
+        "dependency_lock_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Dependency Lock Sha256",
+          "type": "string"
+        },
+        "external_network": {
+          "const": false,
+          "default": false,
+          "title": "External Network",
+          "type": "boolean"
+        },
+        "host_mounts": {
+          "default": [],
+          "maxItems": 0,
+          "minItems": 0,
+          "title": "Host Mounts",
+          "type": "array"
+        },
+        "host_network": {
+          "const": false,
+          "default": false,
+          "title": "Host Network",
+          "type": "boolean"
+        },
+        "identity_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Identity Sha256",
+          "type": "string"
+        },
+        "image_manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Image Manifest Sha256",
+          "type": "string"
+        },
+        "linux_capabilities": {
+          "default": [],
+          "maxItems": 0,
+          "minItems": 0,
+          "title": "Linux Capabilities",
+          "type": "array"
+        },
+        "node_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Node Id Sha256",
+          "type": "string"
+        },
+        "parser_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Parser Bundle Sha256",
+          "type": "string"
+        },
+        "platform": {
+          "enum": [
+            "linux/amd64",
+            "linux/arm64"
+          ],
+          "title": "Platform",
+          "type": "string"
+        },
+        "privileged": {
+          "const": false,
+          "default": false,
+          "title": "Privileged",
+          "type": "boolean"
+        },
+        "rootfs_read_only": {
+          "const": true,
+          "default": true,
+          "title": "Rootfs Read Only",
+          "type": "boolean"
+        },
+        "rootfs_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Rootfs Sha256",
+          "type": "string"
+        },
+        "runner_binary_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runner Binary Sha256",
+          "type": "string"
+        },
+        "runtime": {
+          "$ref": "#/$defs/VerifiedRunnerRuntime"
+        },
+        "runtime_name": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Runtime Name",
+          "type": "string"
+        },
+        "runtime_version": {
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+          "title": "Runtime Version",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "2.0",
+          "default": "2.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "seccomp_profile_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Seccomp Profile Sha256",
+          "type": "string"
+        },
+        "subject_embedded_read_only": {
+          "const": true,
+          "default": true,
+          "title": "Subject Embedded Read Only",
+          "type": "boolean"
+        },
+        "subject_tree_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Tree Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "runtime",
+        "runtime_name",
+        "runtime_version",
+        "platform",
+        "subject_tree_sha256",
+        "image_manifest_sha256",
+        "rootfs_sha256",
+        "boot_measurement_sha256",
+        "runner_binary_sha256",
+        "parser_bundle_sha256",
+        "dependency_lock_sha256",
+        "seccomp_profile_sha256",
+        "node_id_sha256",
+        "built_at",
+        "identity_sha256"
+      ],
+      "title": "VerifiedRunnerImageIdentity",
+      "type": "object"
+    },
+    "VerifiedRunnerNetworkMode": {
+      "enum": [
+        "disabled",
+        "loopback_only",
+        "not_applicable"
+      ],
+      "title": "VerifiedRunnerNetworkMode",
+      "type": "string"
+    },
+    "VerifiedRunnerRuntime": {
+      "enum": [
+        "read_only_oci",
+        "read_only_microvm"
+      ],
+      "title": "VerifiedRunnerRuntime",
+      "type": "string"
+    },
+    "VerifiedTerminationReason": {
+      "enum": [
+        "exited",
+        "signalled",
+        "timeout",
+        "output_limit",
+        "launch_error"
+      ],
+      "title": "VerifiedTerminationReason",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "advisory_snapshot": {
+      "$ref": "#/$defs/SignedAdvisorySnapshot"
+    },
+    "bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Bundle Sha256",
+      "type": "string"
+    },
+    "challenge": {
+      "$ref": "#/$defs/VerifiedRunnerChallenge"
+    },
+    "clock_attestation": {
+      "$ref": "#/$defs/SignedVerifiedRunClockAttestation"
+    },
+    "evidence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Sha256",
+      "type": "string"
+    },
+    "image": {
+      "$ref": "#/$defs/VerifiedRunnerImageIdentity"
+    },
+    "image_attestation": {
+      "$ref": "#/$defs/SignedRunnerImageAttestation"
+    },
+    "records": {
+      "items": {
+        "$ref": "#/$defs/VerifiedCheckRecord"
+      },
+      "maxItems": 14,
+      "minItems": 14,
+      "title": "Records",
+      "type": "array"
+    },
+    "runner_attestation": {
+      "$ref": "#/$defs/VerifiedRunnerAttestation"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "subject_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Tree Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "subject_tree_sha256",
+    "challenge",
+    "image",
+    "image_attestation",
+    "advisory_snapshot",
+    "records",
+    "clock_attestation",
+    "evidence_sha256",
+    "runner_attestation",
+    "bundle_sha256"
+  ],
+  "title": "VerifiedRunnerEvidenceBundle",
+  "type": "object"
+}

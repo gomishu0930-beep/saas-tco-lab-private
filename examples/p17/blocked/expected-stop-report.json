@@ -1,0 +1,128 @@
+{
+  "authority": "none",
+  "checks": [
+    {
+      "name": "observations",
+      "observed": "0",
+      "requirement": ">= 1 contiguous signed observation",
+      "status": "fail"
+    },
+    {
+      "name": "ledger",
+      "observed": "unverified",
+      "requirement": "authenticated append-only ledger and current external anchor",
+      "status": "fail"
+    },
+    {
+      "name": "settlement",
+      "observed": "False",
+      "requirement": "complete signed settlement coverage",
+      "status": "fail"
+    },
+    {
+      "name": "provenance",
+      "observed": "synthetic-or-empty",
+      "requirement": "all observations verified P12",
+      "status": "fail"
+    },
+    {
+      "name": "maturity",
+      "observed": "clicks=0,days=0",
+      "requirement": "clicks >= 1000 OR contiguous days >= 180",
+      "status": "wait"
+    },
+    {
+      "name": "epc",
+      "observed": "undefined",
+      "requirement": ">= JPY 60 cumulative settled EPC",
+      "status": "fail"
+    },
+    {
+      "name": "revenue",
+      "observed": "undefined",
+      "requirement": ">= JPY 200000 latest 30-day net operating profit",
+      "status": "fail"
+    },
+    {
+      "name": "capacity",
+      "observed": "undefined",
+      "requirement": ">= exact bear qualified-session requirement",
+      "status": "fail"
+    },
+    {
+      "name": "ctr",
+      "observed": "undefined",
+      "requirement": ">= 0.10 latest 30-day outbound CTR",
+      "status": "fail"
+    },
+    {
+      "name": "partners",
+      "observed": "0",
+      "requirement": ">= 3 frozen partners",
+      "status": "fail"
+    },
+    {
+      "name": "concentration",
+      "observed": "undefined",
+      "requirement": "<= 0.40 latest partner revenue share",
+      "status": "fail"
+    },
+    {
+      "name": "automation",
+      "observed": "undefined",
+      "requirement": ">= 0.80 latest automation rate",
+      "status": "fail"
+    },
+    {
+      "name": "human",
+      "observed": "undefined",
+      "requirement": "<= 720 minutes latest 30 days",
+      "status": "fail"
+    },
+    {
+      "name": "jobs",
+      "observed": "undefined",
+      "requirement": ">= 0.99 latest logical-job success rate",
+      "status": "fail"
+    },
+    {
+      "name": "quality",
+      "observed": "undefined",
+      "requirement": "major=0, exceptions<=24, faults=8",
+      "status": "fail"
+    }
+  ],
+  "covered_days": 0,
+  "cumulative_qualified_sessions": 0,
+  "cumulative_settled_amount": "0",
+  "cumulative_settled_epc": null,
+  "cumulative_valid_clicks": 0,
+  "decision": "stop",
+  "evaluated_at": "2026-07-31T15:00:00Z",
+  "external_mutation_authorized": false,
+  "latest_automation_rate": null,
+  "latest_job_success_rate": null,
+  "latest_max_partner_share": null,
+  "latest_net_operating_profit": null,
+  "latest_operating_tco": null,
+  "latest_outbound_ctr": null,
+  "latest_revenue": null,
+  "ledger_authenticated": false,
+  "ledger_event_head_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "ledger_event_revision": 0,
+  "ledger_store_id_sha256": "0000000000000000000000000000000000000000000000000000000000000068",
+  "observation_count": 0,
+  "observation_head_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "plan_sha256": "85ba7b8320242d9ceb2b799596a94c245508934858e04f99c9e784d869b7e8e7",
+  "policy_sha256": "6b34ac2d1c852cd4d317e77f32d0566de938e50ad2669c01a92956cb6677024a",
+  "purpose": "human_scale_review_input_only",
+  "report_sha256": "6f2831df600ce442e7cb92c4922c921f64e80f9024466bec73fddac7db1f8217",
+  "required_clicks_exact": null,
+  "required_qualified_sessions_exact": null,
+  "schema_version": "1.0",
+  "settlement_complete": false,
+  "settlement_evidence_sha256s": [],
+  "traction_mature": false,
+  "trust_store_sha256": "43981cd2668bfd21c1d2309fdf437dc38c325874458cf26c29c1449ca3cd23d2",
+  "trusted_clock_attestation_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+}

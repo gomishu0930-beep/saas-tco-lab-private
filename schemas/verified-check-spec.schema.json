@@ -1,0 +1,186 @@
+{
+  "$defs": {
+    "VerifiedRunnerCheck": {
+      "enum": [
+        "python_base",
+        "python_traction",
+        "python_production_consumer",
+        "schema_determinism",
+        "blocked_fixture_determinism",
+        "uv_lock",
+        "compileall",
+        "secret_scan",
+        "web_tests",
+        "web_lint",
+        "dependency_audit",
+        "workflow_verifier",
+        "contract_storage_audit",
+        "tco_qa_audit"
+      ],
+      "title": "VerifiedRunnerCheck",
+      "type": "string"
+    },
+    "VerifiedRunnerNetworkMode": {
+      "enum": [
+        "disabled",
+        "loopback_only",
+        "not_applicable"
+      ],
+      "title": "VerifiedRunnerNetworkMode",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "advisory_snapshot_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Advisory Snapshot Sha256",
+      "type": "string"
+    },
+    "challenge_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Challenge Sha256",
+      "type": "string"
+    },
+    "check": {
+      "$ref": "#/$defs/VerifiedRunnerCheck"
+    },
+    "command_argv": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 40,
+      "minItems": 1,
+      "title": "Command Argv",
+      "type": "array"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "image_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Image Identity Sha256",
+      "type": "string"
+    },
+    "import_closure_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Import Closure Sha256",
+      "type": "string"
+    },
+    "interpreter_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Interpreter Sha256",
+      "type": "string"
+    },
+    "maximum_stderr_bytes": {
+      "maximum": 67108864,
+      "minimum": 1,
+      "title": "Maximum Stderr Bytes",
+      "type": "integer"
+    },
+    "maximum_stdout_bytes": {
+      "maximum": 67108864,
+      "minimum": 1,
+      "title": "Maximum Stdout Bytes",
+      "type": "integer"
+    },
+    "minimum_assertions": {
+      "maximum": 100000000,
+      "minimum": 1,
+      "title": "Minimum Assertions",
+      "type": "integer"
+    },
+    "network_mode": {
+      "$ref": "#/$defs/VerifiedRunnerNetworkMode"
+    },
+    "node_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Node Id Sha256",
+      "type": "string"
+    },
+    "parser_binary_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Parser Binary Sha256",
+      "type": "string"
+    },
+    "parser_name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Parser Name",
+      "type": "string"
+    },
+    "parser_version": {
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+      "title": "Parser Version",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "spec_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Spec Sha256",
+      "type": "string"
+    },
+    "subject_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Tree Sha256",
+      "type": "string"
+    },
+    "timeout_seconds": {
+      "maximum": 3600,
+      "minimum": 1,
+      "title": "Timeout Seconds",
+      "type": "integer"
+    },
+    "tool_name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Tool Name",
+      "type": "string"
+    },
+    "tool_version": {
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+      "title": "Tool Version",
+      "type": "string"
+    },
+    "working_directory": {
+      "const": "/workspace/repository",
+      "default": "/workspace/repository",
+      "title": "Working Directory",
+      "type": "string"
+    }
+  },
+  "required": [
+    "check",
+    "challenge_sha256",
+    "subject_tree_sha256",
+    "image_identity_sha256",
+    "advisory_snapshot_sha256",
+    "node_id_sha256",
+    "command_argv",
+    "environment_sha256",
+    "network_mode",
+    "interpreter_sha256",
+    "import_closure_sha256",
+    "parser_name",
+    "parser_version",
+    "parser_binary_sha256",
+    "tool_name",
+    "tool_version",
+    "minimum_assertions",
+    "timeout_seconds",
+    "maximum_stdout_bytes",
+    "maximum_stderr_bytes",
+    "spec_sha256"
+  ],
+  "title": "VerifiedCheckSpec",
+  "type": "object"
+}

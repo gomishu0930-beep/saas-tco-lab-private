@@ -1,0 +1,200 @@
+{
+  "$defs": {
+    "SettlementCompletenessCoverage": {
+      "additionalProperties": false,
+      "properties": {
+        "accepted_records": {
+          "minimum": 0,
+          "title": "Accepted Records",
+          "type": "integer"
+        },
+        "complete_export_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Complete Export Receipt Sha256",
+          "type": "string"
+        },
+        "conflict_records": {
+          "minimum": 0,
+          "title": "Conflict Records",
+          "type": "integer"
+        },
+        "coverage_rule_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Coverage Rule Sha256",
+          "type": "string"
+        },
+        "duplicate_records": {
+          "minimum": 0,
+          "title": "Duplicate Records",
+          "type": "integer"
+        },
+        "event_id_set_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Event Id Set Sha256",
+          "type": "string"
+        },
+        "output_records": {
+          "minimum": 0,
+          "title": "Output Records",
+          "type": "integer"
+        },
+        "privacy_scan_passed": {
+          "const": true,
+          "title": "Privacy Scan Passed",
+          "type": "boolean"
+        },
+        "privacy_scan_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Privacy Scan Sha256",
+          "type": "string"
+        },
+        "raw_records": {
+          "minimum": 0,
+          "title": "Raw Records",
+          "type": "integer"
+        },
+        "rejected_records": {
+          "minimum": 0,
+          "title": "Rejected Records",
+          "type": "integer"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_export_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Export Sha256",
+          "type": "string"
+        },
+        "unknown_records": {
+          "minimum": 0,
+          "title": "Unknown Records",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "source_export_sha256",
+        "complete_export_receipt_sha256",
+        "coverage_rule_sha256",
+        "raw_records",
+        "accepted_records",
+        "rejected_records",
+        "duplicate_records",
+        "conflict_records",
+        "unknown_records",
+        "output_records",
+        "event_id_set_sha256",
+        "privacy_scan_sha256",
+        "privacy_scan_passed"
+      ],
+      "title": "SettlementCompletenessCoverage",
+      "type": "object"
+    },
+    "SettlementCompletenessDecision": {
+      "enum": [
+        "complete",
+        "incomplete"
+      ],
+      "title": "SettlementCompletenessDecision",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "amendment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Amendment Sha256",
+      "type": "string"
+    },
+    "coverage": {
+      "$ref": "#/$defs/SettlementCompletenessCoverage"
+    },
+    "decision": {
+      "$ref": "#/$defs/SettlementCompletenessDecision"
+    },
+    "event_root_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Event Root Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "observed_through_at": {
+      "format": "date-time",
+      "title": "Observed Through At",
+      "type": "string"
+    },
+    "original_binding_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Original Binding Sha256",
+      "type": "string"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "tco_qa",
+      "title": "Signer Role",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "key_id_sha256",
+    "signer_role",
+    "decision",
+    "policy_sha256",
+    "original_binding_sha256",
+    "amendment_sha256",
+    "event_root_sha256",
+    "observed_through_at",
+    "coverage",
+    "issued_at",
+    "expires_at",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "SettlementCompletenessAttestation",
+  "type": "object"
+}

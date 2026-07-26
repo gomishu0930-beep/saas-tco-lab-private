@@ -1,0 +1,73 @@
+{
+  "$defs": {
+    "TransactionStatus": {
+      "enum": [
+        "pending",
+        "rejected",
+        "confirmed",
+        "paid",
+        "refunded",
+        "charged_back"
+      ],
+      "title": "TransactionStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "current_status": {
+      "$ref": "#/$defs/TransactionStatus"
+    },
+    "effective_at": {
+      "format": "date-time",
+      "title": "Effective At",
+      "type": "string"
+    },
+    "event_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Event Id Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "status_change",
+      "default": "status_change",
+      "title": "Kind",
+      "type": "string"
+    },
+    "original_transaction_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Original Transaction Sha256",
+      "type": "string"
+    },
+    "previous_status": {
+      "$ref": "#/$defs/TransactionStatus"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_row_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Row Sha256",
+      "type": "string"
+    },
+    "transaction_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Transaction Id Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_id_sha256",
+    "transaction_id_sha256",
+    "original_transaction_sha256",
+    "previous_status",
+    "current_status",
+    "source_row_sha256",
+    "effective_at"
+  ],
+  "title": "SettlementStatusChange",
+  "type": "object"
+}

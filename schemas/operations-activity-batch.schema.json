@@ -1,0 +1,368 @@
+{
+  "$defs": {
+    "HumanActivityEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "activity_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Activity Id Sha256",
+          "type": "string"
+        },
+        "actor_identity_token_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Actor Identity Token Sha256",
+          "type": "string"
+        },
+        "ended_at": {
+          "format": "date-time",
+          "title": "Ended At",
+          "type": "string"
+        },
+        "occurrence_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Occurrence Id Sha256",
+          "type": "string"
+        },
+        "role_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Role Id",
+          "type": "string"
+        },
+        "source_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Sha256",
+          "type": "string"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "activity_id_sha256",
+        "actor_identity_token_sha256",
+        "role_id",
+        "occurrence_id_sha256",
+        "source_receipt_sha256",
+        "started_at",
+        "ended_at"
+      ],
+      "title": "HumanActivityEvent",
+      "type": "object"
+    },
+    "ResourceUsageEvent": {
+      "additionalProperties": false,
+      "properties": {
+        "occurred_at": {
+          "format": "date-time",
+          "title": "Occurred At",
+          "type": "string"
+        },
+        "quantity": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Quantity"
+        },
+        "resource_class": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Resource Class",
+          "type": "string"
+        },
+        "source_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Source Receipt Sha256",
+          "type": "string"
+        },
+        "unit_cost_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Unit Cost Jpy"
+        },
+        "usage_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Usage Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "usage_id_sha256",
+        "resource_class",
+        "source_receipt_sha256",
+        "occurred_at",
+        "quantity",
+        "unit_cost_jpy"
+      ],
+      "title": "ResourceUsageEvent",
+      "type": "object"
+    },
+    "RoutineExecutionOutcome": {
+      "enum": [
+        "succeeded",
+        "failed"
+      ],
+      "title": "RoutineExecutionOutcome",
+      "type": "string"
+    },
+    "RoutineTaskDefinition": {
+      "additionalProperties": false,
+      "properties": {
+        "definition_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Definition Sha256",
+          "type": "string"
+        },
+        "mode": {
+          "$ref": "#/$defs/RoutineTaskMode"
+        },
+        "task_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "task_id",
+        "definition_sha256",
+        "mode"
+      ],
+      "title": "RoutineTaskDefinition",
+      "type": "object"
+    },
+    "RoutineTaskExecution": {
+      "additionalProperties": false,
+      "properties": {
+        "completed_at": {
+          "format": "date-time",
+          "title": "Completed At",
+          "type": "string"
+        },
+        "exception_count": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Exception Count",
+          "type": "integer"
+        },
+        "execution_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Execution Receipt Sha256",
+          "type": "string"
+        },
+        "major_misstatement_count": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Major Misstatement Count",
+          "type": "integer"
+        },
+        "mode": {
+          "$ref": "#/$defs/RoutineTaskMode"
+        },
+        "occurrence_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Occurrence Id Sha256",
+          "type": "string"
+        },
+        "outcome": {
+          "$ref": "#/$defs/RoutineExecutionOutcome"
+        },
+        "started_at": {
+          "format": "date-time",
+          "title": "Started At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "occurrence_id_sha256",
+        "execution_receipt_sha256",
+        "mode",
+        "started_at",
+        "completed_at",
+        "outcome",
+        "exception_count",
+        "major_misstatement_count"
+      ],
+      "title": "RoutineTaskExecution",
+      "type": "object"
+    },
+    "RoutineTaskMode": {
+      "enum": [
+        "automated",
+        "manual"
+      ],
+      "title": "RoutineTaskMode",
+      "type": "string"
+    },
+    "ScheduledRoutineTask": {
+      "additionalProperties": false,
+      "properties": {
+        "definition_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Definition Sha256",
+          "type": "string"
+        },
+        "local_date": {
+          "format": "date",
+          "title": "Local Date",
+          "type": "string"
+        },
+        "occurrence_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Occurrence Id Sha256",
+          "type": "string"
+        },
+        "scheduled_for": {
+          "format": "date-time",
+          "title": "Scheduled For",
+          "type": "string"
+        },
+        "task_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Task Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "occurrence_id_sha256",
+        "task_id",
+        "definition_sha256",
+        "local_date",
+        "scheduled_for"
+      ],
+      "title": "ScheduledRoutineTask",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "batch_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Batch Id",
+      "type": "string"
+    },
+    "batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Batch Sha256",
+      "type": "string"
+    },
+    "captured_at": {
+      "format": "date-time",
+      "title": "Captured At",
+      "type": "string"
+    },
+    "definitions": {
+      "items": {
+        "$ref": "#/$defs/RoutineTaskDefinition"
+      },
+      "maxItems": 1000,
+      "minItems": 1,
+      "title": "Definitions",
+      "type": "array"
+    },
+    "executions": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/RoutineTaskExecution"
+      },
+      "maxItems": 1000000,
+      "title": "Executions",
+      "type": "array"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "human_activities": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/HumanActivityEvent"
+      },
+      "maxItems": 1000000,
+      "title": "Human Activities",
+      "type": "array"
+    },
+    "observation_ended_at": {
+      "format": "date-time",
+      "title": "Observation Ended At",
+      "type": "string"
+    },
+    "observation_started_at": {
+      "format": "date-time",
+      "title": "Observation Started At",
+      "type": "string"
+    },
+    "resource_usage": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ResourceUsageEvent"
+      },
+      "maxItems": 1000000,
+      "title": "Resource Usage",
+      "type": "array"
+    },
+    "schedules": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ScheduledRoutineTask"
+      },
+      "maxItems": 1000000,
+      "title": "Schedules",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "source_operations_batch_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Source Operations Batch Sha256",
+      "type": "string"
+    },
+    "source_timezone": {
+      "const": "Asia/Tokyo",
+      "default": "Asia/Tokyo",
+      "title": "Source Timezone",
+      "type": "string"
+    }
+  },
+  "required": [
+    "batch_id",
+    "source_operations_batch_sha256",
+    "observation_started_at",
+    "observation_ended_at",
+    "captured_at",
+    "expires_at",
+    "definitions",
+    "batch_sha256"
+  ],
+  "title": "OperationsActivityBatch",
+  "type": "object"
+}

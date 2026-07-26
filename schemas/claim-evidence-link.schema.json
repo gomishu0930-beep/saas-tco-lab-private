@@ -1,0 +1,42 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "citation_id_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Citation Id Sha256"
+    },
+    "claim_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Claim Id Sha256",
+      "type": "string"
+    },
+    "evidence_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "title": "Evidence Sha256S",
+      "type": "array"
+    },
+    "material": {
+      "title": "Material",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "claim_id_sha256",
+    "material",
+    "evidence_sha256s"
+  ],
+  "title": "ClaimEvidenceLink",
+  "type": "object"
+}

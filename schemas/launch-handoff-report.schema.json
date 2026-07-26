@@ -1,0 +1,190 @@
+{
+  "$defs": {
+    "LaunchHandoffDecision": {
+      "enum": [
+        "ready_for_final_human_review",
+        "stop"
+      ],
+      "title": "LaunchHandoffDecision",
+      "type": "string"
+    },
+    "LaunchHandoffFinding": {
+      "additionalProperties": false,
+      "properties": {
+        "gate": {
+          "$ref": "#/$defs/LaunchHandoffGate"
+        },
+        "reason": {
+          "$ref": "#/$defs/LaunchHandoffReason"
+        }
+      },
+      "required": [
+        "gate",
+        "reason"
+      ],
+      "title": "LaunchHandoffFinding",
+      "type": "object"
+    },
+    "LaunchHandoffGate": {
+      "enum": [
+        "local_candidate_acceptance",
+        "rights_approval",
+        "affiliate_acceptance",
+        "qualified_demand",
+        "shadow_operations",
+        "gold_set_source_readiness",
+        "production_integration_readiness",
+        "deployment_publication_readiness"
+      ],
+      "title": "LaunchHandoffGate",
+      "type": "string"
+    },
+    "LaunchHandoffReason": {
+      "enum": [
+        "conflicting_receipt",
+        "duplicate_receipt",
+        "missing_receipt",
+        "out_of_order_receipt",
+        "plan_expired",
+        "plan_future",
+        "plan_ttl_exceeded",
+        "prerequisite_not_met",
+        "receipt_before_plan",
+        "receipt_expired",
+        "receipt_future",
+        "receipt_signature_invalid",
+        "receipt_ttl_exceeded",
+        "repository_acceptance_invalid",
+        "repository_acceptance_missing",
+        "requirement_mismatch",
+        "synthetic_receipt",
+        "semantic_evidence_missing",
+        "semantic_evidence_invalid",
+        "semantic_requirement_mismatch",
+        "semantic_scope_mismatch",
+        "semantic_expiry_exceeded"
+      ],
+      "title": "LaunchHandoffReason",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authority_effect": {
+      "const": "none",
+      "default": "none",
+      "title": "Authority Effect",
+      "type": "string"
+    },
+    "authorizes_external_mutation": {
+      "const": false,
+      "default": false,
+      "title": "Authorizes External Mutation",
+      "type": "boolean"
+    },
+    "decision": {
+      "$ref": "#/$defs/LaunchHandoffDecision"
+    },
+    "does_not_authorize_external_action": {
+      "const": true,
+      "default": true,
+      "title": "Does Not Authorize External Action",
+      "type": "boolean"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "evidence_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Bundle Sha256",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "failed_gates": {
+      "items": {
+        "$ref": "#/$defs/LaunchHandoffGate"
+      },
+      "title": "Failed Gates",
+      "type": "array"
+    },
+    "findings": {
+      "items": {
+        "$ref": "#/$defs/LaunchHandoffFinding"
+      },
+      "title": "Findings",
+      "type": "array"
+    },
+    "handoff_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Handoff Policy Sha256",
+      "type": "string"
+    },
+    "launch_authority_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Launch Authority Sha256",
+      "type": "string"
+    },
+    "passed_gates": {
+      "items": {
+        "$ref": "#/$defs/LaunchHandoffGate"
+      },
+      "title": "Passed Gates",
+      "type": "array"
+    },
+    "permitted_use": {
+      "const": "final_human_review_input_only",
+      "default": "final_human_review_input_only",
+      "title": "Permitted Use",
+      "type": "string"
+    },
+    "plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Plan Sha256",
+      "type": "string"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "requires_execution_boundary_revalidation": {
+      "const": true,
+      "default": true,
+      "title": "Requires Execution Boundary Revalidation",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "3.0",
+      "default": "3.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "decision",
+    "evaluated_at",
+    "plan_sha256",
+    "handoff_policy_sha256",
+    "trust_store_sha256",
+    "launch_authority_sha256",
+    "evidence_bundle_sha256",
+    "findings",
+    "passed_gates",
+    "failed_gates",
+    "expires_at",
+    "report_sha256"
+  ],
+  "title": "LaunchHandoffReport",
+  "type": "object"
+}

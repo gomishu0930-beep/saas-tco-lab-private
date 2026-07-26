@@ -1,0 +1,270 @@
+{
+  "$defs": {
+    "SignedVerifiedRunnerConsumerClockAttestation": {
+      "additionalProperties": false,
+      "properties": {
+        "attestation_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Attestation Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "issued_at": {
+          "format": "date-time",
+          "title": "Issued At",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "observed_evidence_head_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Observed Evidence Head Sha256",
+          "type": "string"
+        },
+        "observed_sequence": {
+          "maximum": 1000000000,
+          "minimum": 0,
+          "title": "Observed Sequence",
+          "type": "integer"
+        },
+        "request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "signer_issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Signer Issuer",
+          "type": "string"
+        },
+        "signer_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Signer Key Id Sha256",
+          "type": "string"
+        },
+        "signer_role": {
+          "const": "time_auditor",
+          "default": "time_auditor",
+          "title": "Signer Role",
+          "type": "string"
+        },
+        "store_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Store Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "request_sha256",
+        "store_id_sha256",
+        "observed_sequence",
+        "observed_evidence_head_sha256",
+        "observed_at",
+        "issued_at",
+        "expires_at",
+        "signer_issuer",
+        "signer_key_id_sha256",
+        "attestation_sha256",
+        "signature_base64url"
+      ],
+      "title": "SignedVerifiedRunnerConsumerClockAttestation",
+      "type": "object"
+    },
+    "VerifiedRunnerConsumerClockRequest": {
+      "additionalProperties": false,
+      "properties": {
+        "authority_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Authority Sha256",
+          "type": "string"
+        },
+        "challenge_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Challenge Sha256",
+          "type": "string"
+        },
+        "evidence_bundle_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Bundle Sha256",
+          "type": "string"
+        },
+        "expected_previous_evidence_head_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Previous Evidence Head Sha256",
+          "type": "string"
+        },
+        "expected_sequence": {
+          "maximum": 1000000000,
+          "minimum": 1,
+          "title": "Expected Sequence",
+          "type": "integer"
+        },
+        "request_nonce_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Nonce Sha256",
+          "type": "string"
+        },
+        "request_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Request Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "store_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Store Id Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "store_id_sha256",
+        "expected_sequence",
+        "expected_previous_evidence_head_sha256",
+        "challenge_sha256",
+        "evidence_bundle_sha256",
+        "authority_sha256",
+        "request_nonce_sha256",
+        "request_sha256"
+      ],
+      "title": "VerifiedRunnerConsumerClockRequest",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authority_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authority Sha256",
+      "type": "string"
+    },
+    "challenge_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Challenge Sha256",
+      "type": "string"
+    },
+    "clock_attestation": {
+      "$ref": "#/$defs/SignedVerifiedRunnerConsumerClockAttestation"
+    },
+    "clock_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Clock Attestation Sha256",
+      "type": "string"
+    },
+    "clock_request": {
+      "$ref": "#/$defs/VerifiedRunnerConsumerClockRequest"
+    },
+    "clock_request_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Clock Request Sha256",
+      "type": "string"
+    },
+    "consumed_at": {
+      "format": "date-time",
+      "title": "Consumed At",
+      "type": "string"
+    },
+    "evidence_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Bundle Sha256",
+      "type": "string"
+    },
+    "evidence_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Head Sha256",
+      "type": "string"
+    },
+    "previous_evidence_head_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Previous Evidence Head Sha256",
+      "type": "string"
+    },
+    "receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Receipt Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "sequence": {
+      "maximum": 1000000000,
+      "minimum": 1,
+      "title": "Sequence",
+      "type": "integer"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_issuer": {
+      "maxLength": 120,
+      "minLength": 1,
+      "title": "Signer Issuer",
+      "type": "string"
+    },
+    "signer_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Signer Key Id Sha256",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "storage_auditor",
+      "default": "storage_auditor",
+      "title": "Signer Role",
+      "type": "string"
+    },
+    "store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Id Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "store_id_sha256",
+    "sequence",
+    "previous_evidence_head_sha256",
+    "evidence_head_sha256",
+    "challenge_sha256",
+    "evidence_bundle_sha256",
+    "authority_sha256",
+    "clock_request",
+    "clock_attestation",
+    "clock_request_sha256",
+    "clock_attestation_sha256",
+    "consumed_at",
+    "signer_issuer",
+    "signer_key_id_sha256",
+    "receipt_sha256",
+    "signature_base64url"
+  ],
+  "title": "VerifiedRunnerConsumptionReceipt",
+  "type": "object"
+}

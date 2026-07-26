@@ -1,0 +1,186 @@
+{
+  "$defs": {
+    "RepositoryAcceptanceDecision": {
+      "enum": [
+        "pending",
+        "accepted",
+        "conditional_pending",
+        "rejected",
+        "stop"
+      ],
+      "title": "RepositoryAcceptanceDecision",
+      "type": "string"
+    },
+    "RepositoryAcceptanceReason": {
+      "enum": [
+        "scope_profile_outdated",
+        "manifest_drift",
+        "manifest_future",
+        "manifest_expired",
+        "manifest_ttl_exceeded",
+        "verification_failed",
+        "verification_expired",
+        "verification_too_old",
+        "verification_synthetic",
+        "verification_requirement_mismatch",
+        "verification_trust_missing",
+        "verification_trust_mismatch",
+        "verification_attestation_missing",
+        "verification_attestation_invalid",
+        "receipt_missing",
+        "authority_missing",
+        "authority_root_missing",
+        "authority_root_mismatch",
+        "authority_pin_mismatch",
+        "policy_mismatch",
+        "trust_store_mismatch",
+        "receipt_binding_mismatch",
+        "receipt_signature_invalid",
+        "receipt_future",
+        "receipt_expired",
+        "receipt_ttl_exceeded",
+        "receipt_not_current",
+        "receipt_chain_invalid",
+        "human_conditional",
+        "human_stop"
+      ],
+      "title": "RepositoryAcceptanceReason",
+      "type": "string"
+    },
+    "RepositoryRequiredInput": {
+      "enum": [
+        "current_signed_verification_bundle",
+        "human_signed_repository_acceptance",
+        "current_pinned_acceptance_chain",
+        "current_rights_decision_records"
+      ],
+      "title": "RepositoryRequiredInput",
+      "type": "string"
+    },
+    "RepositoryRestartGate": {
+      "enum": [
+        "local_verification",
+        "repository_acceptance",
+        "rights_evidence"
+      ],
+      "title": "RepositoryRestartGate",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "authority": {
+      "const": "none",
+      "default": "none",
+      "title": "Authority",
+      "type": "string"
+    },
+    "decision": {
+      "$ref": "#/$defs/RepositoryAcceptanceDecision"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "expected_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Tree Sha256",
+      "type": "string"
+    },
+    "external_mutation_authorized": {
+      "const": false,
+      "default": false,
+      "title": "External Mutation Authorized",
+      "type": "boolean"
+    },
+    "first_external_gate": {
+      "const": "rights_evidence",
+      "default": "rights_evidence",
+      "title": "First External Gate",
+      "type": "string"
+    },
+    "local_integration_accepted": {
+      "title": "Local Integration Accepted",
+      "type": "boolean"
+    },
+    "manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "next_gate": {
+      "$ref": "#/$defs/RepositoryRestartGate"
+    },
+    "observed_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Observed Tree Sha256",
+      "type": "string"
+    },
+    "production_write_authorized": {
+      "const": false,
+      "default": false,
+      "title": "Production Write Authorized",
+      "type": "boolean"
+    },
+    "public_release_authorized": {
+      "const": false,
+      "default": false,
+      "title": "Public Release Authorized",
+      "type": "boolean"
+    },
+    "reasons": {
+      "items": {
+        "$ref": "#/$defs/RepositoryAcceptanceReason"
+      },
+      "title": "Reasons",
+      "type": "array"
+    },
+    "report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Report Sha256",
+      "type": "string"
+    },
+    "required_inputs": {
+      "items": {
+        "$ref": "#/$defs/RepositoryRequiredInput"
+      },
+      "maxItems": 1,
+      "minItems": 1,
+      "title": "Required Inputs",
+      "type": "array"
+    },
+    "scale_authorized": {
+      "const": false,
+      "default": false,
+      "title": "Scale Authorized",
+      "type": "boolean"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "verification_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Verification Bundle Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "evaluated_at",
+    "manifest_sha256",
+    "expected_tree_sha256",
+    "observed_tree_sha256",
+    "verification_bundle_sha256",
+    "decision",
+    "reasons",
+    "local_integration_accepted",
+    "next_gate",
+    "required_inputs",
+    "report_sha256"
+  ],
+  "title": "RepositoryAcceptanceReport",
+  "type": "object"
+}

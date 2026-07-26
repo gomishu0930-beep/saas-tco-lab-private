@@ -1,0 +1,44 @@
+{
+  "$defs": {
+    "LaunchArtifactComponentKind": {
+      "enum": [
+        "p18_repository_acceptance_authority_bundle",
+        "rights_decision_record",
+        "affiliate_decision_record",
+        "qualified_demand_record",
+        "shadow_operations_record",
+        "gold_source_readiness_record",
+        "p15_readiness_report",
+        "p15_tco_qa_attestation",
+        "p10_local_assurance_report",
+        "deployment_readiness_record",
+        "publication_readiness_record"
+      ],
+      "title": "LaunchArtifactComponentKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Artifact Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/LaunchArtifactComponentKind"
+    },
+    "schema_version": {
+      "const": "3.0",
+      "default": "3.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "kind",
+    "artifact_sha256"
+  ],
+  "title": "LaunchArtifactComponent",
+  "type": "object"
+}

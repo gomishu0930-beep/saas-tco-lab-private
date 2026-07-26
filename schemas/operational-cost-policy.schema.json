@@ -1,0 +1,99 @@
+{
+  "$defs": {
+    "RoleLaborRate": {
+      "additionalProperties": false,
+      "properties": {
+        "hourly_cost_jpy": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            }
+          ],
+          "title": "Hourly Cost Jpy"
+        },
+        "role_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Role Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "role_id",
+        "hourly_cost_jpy"
+      ],
+      "title": "RoleLaborRate",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "maximum_evidence_ttl_seconds": {
+      "maximum": 2678400,
+      "minimum": 1,
+      "title": "Maximum Evidence Ttl Seconds",
+      "type": "integer"
+    },
+    "objective_basis": {
+      "const": "net_operating_profit",
+      "default": "net_operating_profit",
+      "title": "Objective Basis",
+      "type": "string"
+    },
+    "policy_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "role_labor_rates": {
+      "items": {
+        "$ref": "#/$defs/RoleLaborRate"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Role Labor Rates",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "target_monthly_net_profit_jpy": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+          "type": "string"
+        }
+      ],
+      "default": "200000",
+      "title": "Target Monthly Net Profit Jpy"
+    }
+  },
+  "required": [
+    "policy_id",
+    "role_labor_rates",
+    "maximum_evidence_ttl_seconds",
+    "policy_sha256"
+  ],
+  "title": "OperationalCostPolicy",
+  "type": "object"
+}

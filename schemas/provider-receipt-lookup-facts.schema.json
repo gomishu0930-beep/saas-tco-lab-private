@@ -1,0 +1,99 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Receipt Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "provider_receipt_lookup",
+      "default": "provider_receipt_lookup",
+      "title": "Kind",
+      "type": "string"
+    },
+    "known_lookup_lag_milliseconds": {
+      "maximum": 86400000,
+      "minimum": 0,
+      "title": "Known Lookup Lag Milliseconds",
+      "type": "integer"
+    },
+    "known_query_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Known Query Sha256",
+      "type": "string"
+    },
+    "lookup_attempts": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Lookup Attempts",
+      "type": "integer"
+    },
+    "observed_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Observed Receipt Sha256",
+      "type": "string"
+    },
+    "receipt_mismatches": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Receipt Mismatches",
+      "type": "integer"
+    },
+    "receipts_found": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Receipts Found",
+      "type": "integer"
+    },
+    "result_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Artifact Sha256",
+      "type": "string"
+    },
+    "unauthorized_receipts_returned": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Unauthorized Receipts Returned",
+      "type": "integer"
+    },
+    "unknown_lookup_mutation_effects": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Unknown Lookup Mutation Effects",
+      "type": "integer"
+    },
+    "unknown_query_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Unknown Query Sha256",
+      "type": "string"
+    },
+    "unknown_result_kind": {
+      "const": "not_found",
+      "default": "not_found",
+      "title": "Unknown Result Kind",
+      "type": "string"
+    },
+    "unknown_result_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Unknown Result Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "known_query_sha256",
+    "expected_receipt_sha256",
+    "observed_receipt_sha256",
+    "unknown_query_sha256",
+    "unknown_result_sha256",
+    "lookup_attempts",
+    "receipts_found",
+    "receipt_mismatches",
+    "unauthorized_receipts_returned",
+    "known_lookup_lag_milliseconds",
+    "unknown_lookup_mutation_effects",
+    "result_artifact_sha256"
+  ],
+  "title": "ProviderReceiptLookupFacts",
+  "type": "object"
+}

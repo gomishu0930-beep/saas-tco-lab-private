@@ -1,0 +1,9 @@
+{
+  "maximum_evidence_ttl_seconds": 86400,
+  "maximum_live_gate_ttl_seconds": 600,
+  "maximum_plan_ttl_seconds": 86400,
+  "maximum_report_ttl_seconds": 300,
+  "policy_id": "p16-blocked-fixture-v1",
+  "schema_version": "3.0",
+  "trust_store_sha256": "7ac043f79a11aab630e37a793fb2aa335006d948355ac04b4441b541acfeadfb"
+}

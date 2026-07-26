@@ -1,0 +1,218 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "maximum_authorization_ttl_seconds": {
+      "maximum": 86400,
+      "minimum": 1,
+      "title": "Maximum Authorization Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_backup_age_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Backup Age Seconds",
+      "type": "integer"
+    },
+    "maximum_clock_offset_milliseconds": {
+      "maximum": 60000,
+      "minimum": 0,
+      "title": "Maximum Clock Offset Milliseconds",
+      "type": "integer"
+    },
+    "maximum_disable_latency_milliseconds": {
+      "maximum": 86400000,
+      "minimum": 1,
+      "title": "Maximum Disable Latency Milliseconds",
+      "type": "integer"
+    },
+    "maximum_evidence_ttl_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Evidence Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_human_approval_ttl_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Human Approval Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_independent_readback_lag_milliseconds": {
+      "maximum": 3600000,
+      "minimum": 1,
+      "title": "Maximum Independent Readback Lag Milliseconds",
+      "type": "integer"
+    },
+    "maximum_live_control_ttl_seconds": {
+      "maximum": 3600,
+      "minimum": 1,
+      "title": "Maximum Live Control Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_receipt_lookup_lag_milliseconds": {
+      "maximum": 3600000,
+      "minimum": 1,
+      "title": "Maximum Receipt Lookup Lag Milliseconds",
+      "type": "integer"
+    },
+    "maximum_recovery_evidence_ttl_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Recovery Evidence Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_report_ttl_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Report Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_restore_drill_age_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Restore Drill Age Seconds",
+      "type": "integer"
+    },
+    "maximum_rpo_seconds": {
+      "maximum": 2592000,
+      "minimum": 0,
+      "title": "Maximum Rpo Seconds",
+      "type": "integer"
+    },
+    "maximum_rto_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Rto Seconds",
+      "type": "integer"
+    },
+    "maximum_tco_attestation_ttl_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Tco Attestation Ttl Seconds",
+      "type": "integer"
+    },
+    "minimum_anchor_samples": {
+      "maximum": 10000,
+      "minimum": 3,
+      "title": "Minimum Anchor Samples",
+      "type": "integer"
+    },
+    "minimum_clock_failure_domains": {
+      "maximum": 10,
+      "minimum": 2,
+      "title": "Minimum Clock Failure Domains",
+      "type": "integer"
+    },
+    "minimum_clock_sources": {
+      "maximum": 10,
+      "minimum": 3,
+      "title": "Minimum Clock Sources",
+      "type": "integer"
+    },
+    "minimum_fencing_failure_domains": {
+      "maximum": 20,
+      "minimum": 2,
+      "title": "Minimum Fencing Failure Domains",
+      "type": "integer"
+    },
+    "minimum_fencing_workers": {
+      "maximum": 10000,
+      "minimum": 2,
+      "title": "Minimum Fencing Workers",
+      "type": "integer"
+    },
+    "minimum_idempotency_retention_seconds": {
+      "maximum": 31536000,
+      "minimum": 1,
+      "title": "Minimum Idempotency Retention Seconds",
+      "type": "integer"
+    },
+    "minimum_independent_readbacks": {
+      "maximum": 10000,
+      "minimum": 2,
+      "title": "Minimum Independent Readbacks",
+      "type": "integer"
+    },
+    "minimum_receipt_lookup_attempts": {
+      "maximum": 10000,
+      "minimum": 2,
+      "title": "Minimum Receipt Lookup Attempts",
+      "type": "integer"
+    },
+    "minimum_replay_attempts": {
+      "maximum": 10000,
+      "minimum": 2,
+      "title": "Minimum Replay Attempts",
+      "type": "integer"
+    },
+    "minimum_restore_attempts": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Minimum Restore Attempts",
+      "type": "integer"
+    },
+    "minimum_rollback_exercises": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Minimum Rollback Exercises",
+      "type": "integer"
+    },
+    "minimum_unapproved_egress_attempts": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Minimum Unapproved Egress Attempts",
+      "type": "integer"
+    },
+    "policy_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "policy_id",
+    "trust_store_sha256",
+    "maximum_evidence_ttl_seconds",
+    "maximum_live_control_ttl_seconds",
+    "maximum_recovery_evidence_ttl_seconds",
+    "maximum_report_ttl_seconds",
+    "maximum_tco_attestation_ttl_seconds",
+    "maximum_human_approval_ttl_seconds",
+    "maximum_authorization_ttl_seconds",
+    "minimum_idempotency_retention_seconds",
+    "minimum_replay_attempts",
+    "minimum_receipt_lookup_attempts",
+    "maximum_receipt_lookup_lag_milliseconds",
+    "minimum_independent_readbacks",
+    "maximum_independent_readback_lag_milliseconds",
+    "minimum_anchor_samples",
+    "maximum_clock_offset_milliseconds",
+    "minimum_clock_sources",
+    "minimum_clock_failure_domains",
+    "minimum_fencing_workers",
+    "minimum_fencing_failure_domains",
+    "minimum_unapproved_egress_attempts",
+    "minimum_restore_attempts",
+    "maximum_rpo_seconds",
+    "maximum_rto_seconds",
+    "maximum_backup_age_seconds",
+    "maximum_restore_drill_age_seconds",
+    "minimum_rollback_exercises",
+    "maximum_disable_latency_milliseconds"
+  ],
+  "title": "ProductionIntegrationPolicy",
+  "type": "object"
+}

@@ -1,0 +1,46 @@
+{
+  "$defs": {
+    "TractionCheckStatus": {
+      "enum": [
+        "pass",
+        "wait",
+        "fail"
+      ],
+      "title": "TractionCheckStatus",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Name",
+      "type": "string"
+    },
+    "observed": {
+      "maxLength": 160,
+      "minLength": 1,
+      "title": "Observed",
+      "type": "string"
+    },
+    "requirement": {
+      "maxLength": 240,
+      "minLength": 1,
+      "title": "Requirement",
+      "type": "string"
+    },
+    "status": {
+      "$ref": "#/$defs/TractionCheckStatus"
+    }
+  },
+  "required": [
+    "name",
+    "status",
+    "observed",
+    "requirement"
+  ],
+  "title": "TractionCheck",
+  "type": "object"
+}

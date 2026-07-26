@@ -1,0 +1,99 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "advance_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Advance Case Sha256",
+      "type": "string"
+    },
+    "anchor_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Anchor Identity Sha256",
+      "type": "string"
+    },
+    "authoritative_readback_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Authoritative Readback Case Sha256",
+      "type": "string"
+    },
+    "equivocation_reject_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Equivocation Reject Case Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "external_monotonic_anchor",
+      "default": "external_monotonic_anchor",
+      "title": "Kind",
+      "type": "string"
+    },
+    "regressions": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Regressions",
+      "type": "integer"
+    },
+    "replay_rejections": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Replay Rejections",
+      "type": "integer"
+    },
+    "result_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Artifact Sha256",
+      "type": "string"
+    },
+    "revision_after": {
+      "maximum": 9223372036854775807,
+      "minimum": 1,
+      "title": "Revision After",
+      "type": "integer"
+    },
+    "revision_before": {
+      "maximum": 9223372036854775807,
+      "minimum": 0,
+      "title": "Revision Before",
+      "type": "integer"
+    },
+    "rollback_reject_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rollback Reject Case Sha256",
+      "type": "string"
+    },
+    "samples_observed": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Samples Observed",
+      "type": "integer"
+    },
+    "store_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Store Identity Sha256",
+      "type": "string"
+    },
+    "strictly_advanced_transitions": {
+      "maximum": 9999,
+      "minimum": 0,
+      "title": "Strictly Advanced Transitions",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "anchor_identity_sha256",
+    "store_identity_sha256",
+    "advance_case_sha256",
+    "rollback_reject_case_sha256",
+    "equivocation_reject_case_sha256",
+    "authoritative_readback_case_sha256",
+    "revision_before",
+    "revision_after",
+    "samples_observed",
+    "strictly_advanced_transitions",
+    "regressions",
+    "replay_rejections",
+    "result_artifact_sha256"
+  ],
+  "title": "ExternalMonotonicAnchorFacts",
+  "type": "object"
+}

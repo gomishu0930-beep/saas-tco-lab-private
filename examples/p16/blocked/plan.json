@@ -1,0 +1,194 @@
+{
+  "affiliate_disclosure_sha256": "0000000000000000000000000000000000000000000000000000000000000202",
+  "candidate_manifest_sha256": "00000000000000000000000000000000000000000000000000000000000001f5",
+  "deployment_candidate_sha256": "00000000000000000000000000000000000000000000000000000000000001f9",
+  "environment_identity_sha256": "00000000000000000000000000000000000000000000000000000000000001f7",
+  "expected_post_state_sha256": "00000000000000000000000000000000000000000000000000000000000001ff",
+  "expected_pre_state_sha256": "00000000000000000000000000000000000000000000000000000000000001fe",
+  "expires_at": "2026-07-22T12:00:00Z",
+  "handoff_policy_sha256": "7b52633e653e22bffc29798ef1ff83ab913cb0dbfc015040ba3704b934fe4979",
+  "issued_at": "2026-07-22T04:00:00Z",
+  "launch_semantic_authority_pins_sha256": "00000000000000000000000000000000000000000000000000000000000001fa",
+  "legal_pages_sha256": "0000000000000000000000000000000000000000000000000000000000000201",
+  "not_before": "2026-07-22T05:00:00Z",
+  "plan_id": "p16-blocked-fixture",
+  "plan_sha256": "3c9cf0466684c4d6a1b6a10f81790a36c24f1725f64121deefe4963fff73f89f",
+  "property_record_sha256": "00000000000000000000000000000000000000000000000000000000000001f6",
+  "provider_target_sha256": "00000000000000000000000000000000000000000000000000000000000001fd",
+  "release_artifact_sha256": "00000000000000000000000000000000000000000000000000000000000001f8",
+  "release_identity_sha256": "00000000000000000000000000000000000000000000000000000000000001fb",
+  "release_manifest_sha256": "00000000000000000000000000000000000000000000000000000000000001fc",
+  "repository_acceptance_authority_pins_sha256": "00000000000000000000000000000000000000000000000000000000000001f4",
+  "requirements": [
+    {
+      "artifact_components": [
+        {
+          "artifact_sha256": "0000000000000000000000000000000000000000000000000000000000000263",
+          "kind": "p18_repository_acceptance_authority_bundle",
+          "schema_version": "3.0"
+        }
+      ],
+      "command_sha256": "0000000000000000000000000000000000000000000000000000000000000191",
+      "evidence_identity_sha256": "0000000000000000000000000000000000000000000000000000000000000065",
+      "expected_artifact_sha256": "1ad056878c9b8dfbdbcfb36e825f382addb5d16f4a52d4403b92ebe7d7c460cb",
+      "gate": "local_candidate_acceptance",
+      "schema_version": "3.0",
+      "signer_key_id_sha256": "c948faa4d3613332d53bac5bbbc52558685a4d3cc16ff48b14cb2f1f85a7c94b",
+      "signer_role": "human_approver",
+      "subject_sha256": "000000000000000000000000000000000000000000000000000000000000012d",
+      "tool_name": "fixture-local-candidate-acceptance",
+      "tool_version": "1.0.0"
+    },
+    {
+      "artifact_components": [
+        {
+          "artifact_sha256": "000000000000000000000000000000000000000000000000000000000000026d",
+          "kind": "rights_decision_record",
+          "schema_version": "3.0"
+        }
+      ],
+      "command_sha256": "0000000000000000000000000000000000000000000000000000000000000192",
+      "evidence_identity_sha256": "0000000000000000000000000000000000000000000000000000000000000066",
+      "expected_artifact_sha256": "9454d315ce2c6670d64dadf20a43412f6dc12e6ad27d65c939af9c12400cb6eb",
+      "gate": "rights_approval",
+      "schema_version": "3.0",
+      "signer_key_id_sha256": "c948faa4d3613332d53bac5bbbc52558685a4d3cc16ff48b14cb2f1f85a7c94b",
+      "signer_role": "human_approver",
+      "subject_sha256": "000000000000000000000000000000000000000000000000000000000000012e",
+      "tool_name": "fixture-rights-approval",
+      "tool_version": "1.0.0"
+    },
+    {
+      "artifact_components": [
+        {
+          "artifact_sha256": "0000000000000000000000000000000000000000000000000000000000000277",
+          "kind": "affiliate_decision_record",
+          "schema_version": "3.0"
+        }
+      ],
+      "command_sha256": "0000000000000000000000000000000000000000000000000000000000000193",
+      "evidence_identity_sha256": "0000000000000000000000000000000000000000000000000000000000000067",
+      "expected_artifact_sha256": "676728fbbc839fca29269ea80b89492d8ac3fb476a1263476ffa3c17025959e0",
+      "gate": "affiliate_acceptance",
+      "schema_version": "3.0",
+      "signer_key_id_sha256": "c948faa4d3613332d53bac5bbbc52558685a4d3cc16ff48b14cb2f1f85a7c94b",
+      "signer_role": "human_approver",
+      "subject_sha256": "000000000000000000000000000000000000000000000000000000000000012f",
+      "tool_name": "fixture-affiliate-acceptance",
+      "tool_version": "1.0.0"
+    },
+    {
+      "artifact_components": [
+        {
+          "artifact_sha256": "0000000000000000000000000000000000000000000000000000000000000281",
+          "kind": "qualified_demand_record",
+          "schema_version": "3.0"
+        }
+      ],
+      "command_sha256": "0000000000000000000000000000000000000000000000000000000000000194",
+      "evidence_identity_sha256": "0000000000000000000000000000000000000000000000000000000000000068",
+      "expected_artifact_sha256": "9674a1904c80d24ade784a45e7b2395157449d65b68f616156eb6f17fb167553",
+      "gate": "qualified_demand",
+      "schema_version": "3.0",
+      "signer_key_id_sha256": "6f5ecb8fc873d204b6d63341061da5235d987850a6515827487607e4b3be2857",
+      "signer_role": "tco_qa",
+      "subject_sha256": "0000000000000000000000000000000000000000000000000000000000000130",
+      "tool_name": "fixture-qualified-demand",
+      "tool_version": "1.0.0"
+    },
+    {
+      "artifact_components": [
+        {
+          "artifact_sha256": "000000000000000000000000000000000000000000000000000000000000028b",
+          "kind": "shadow_operations_record",
+          "schema_version": "3.0"
+        }
+      ],
+      "command_sha256": "0000000000000000000000000000000000000000000000000000000000000195",
+      "evidence_identity_sha256": "0000000000000000000000000000000000000000000000000000000000000069",
+      "expected_artifact_sha256": "8eefe48e59b07b8a055122bb2c3034cead1d904b5c867e8471dfc65dcd8f2c8c",
+      "gate": "shadow_operations",
+      "schema_version": "3.0",
+      "signer_key_id_sha256": "6f5ecb8fc873d204b6d63341061da5235d987850a6515827487607e4b3be2857",
+      "signer_role": "tco_qa",
+      "subject_sha256": "0000000000000000000000000000000000000000000000000000000000000131",
+      "tool_name": "fixture-shadow-operations",
+      "tool_version": "1.0.0"
+    },
+    {
+      "artifact_components": [
+        {
+          "artifact_sha256": "0000000000000000000000000000000000000000000000000000000000000295",
+          "kind": "gold_source_readiness_record",
+          "schema_version": "3.0"
+        }
+      ],
+      "command_sha256": "0000000000000000000000000000000000000000000000000000000000000196",
+      "evidence_identity_sha256": "000000000000000000000000000000000000000000000000000000000000006a",
+      "expected_artifact_sha256": "60a1fc7cb4d75bb8e375599ed496712f670d65163c025a0b28525290e32bb212",
+      "gate": "gold_set_source_readiness",
+      "schema_version": "3.0",
+      "signer_key_id_sha256": "6f5ecb8fc873d204b6d63341061da5235d987850a6515827487607e4b3be2857",
+      "signer_role": "tco_qa",
+      "subject_sha256": "0000000000000000000000000000000000000000000000000000000000000132",
+      "tool_name": "fixture-gold-set-source-readiness",
+      "tool_version": "1.0.0"
+    },
+    {
+      "artifact_components": [
+        {
+          "artifact_sha256": "000000000000000000000000000000000000000000000000000000000000029f",
+          "kind": "p15_readiness_report",
+          "schema_version": "3.0"
+        },
+        {
+          "artifact_sha256": "00000000000000000000000000000000000000000000000000000000000002a0",
+          "kind": "p15_tco_qa_attestation",
+          "schema_version": "3.0"
+        }
+      ],
+      "command_sha256": "0000000000000000000000000000000000000000000000000000000000000197",
+      "evidence_identity_sha256": "000000000000000000000000000000000000000000000000000000000000006b",
+      "expected_artifact_sha256": "abfce2d9ccebe200c59338a20cfc128c4c42ecbc77c06d9f9d2fb2de32c72a95",
+      "gate": "production_integration_readiness",
+      "schema_version": "3.0",
+      "signer_key_id_sha256": "6f5ecb8fc873d204b6d63341061da5235d987850a6515827487607e4b3be2857",
+      "signer_role": "tco_qa",
+      "subject_sha256": "0000000000000000000000000000000000000000000000000000000000000133",
+      "tool_name": "fixture-production-integration-readiness",
+      "tool_version": "1.0.0"
+    },
+    {
+      "artifact_components": [
+        {
+          "artifact_sha256": "00000000000000000000000000000000000000000000000000000000000002a9",
+          "kind": "p10_local_assurance_report",
+          "schema_version": "3.0"
+        },
+        {
+          "artifact_sha256": "00000000000000000000000000000000000000000000000000000000000002aa",
+          "kind": "deployment_readiness_record",
+          "schema_version": "3.0"
+        },
+        {
+          "artifact_sha256": "00000000000000000000000000000000000000000000000000000000000002ab",
+          "kind": "publication_readiness_record",
+          "schema_version": "3.0"
+        }
+      ],
+      "command_sha256": "0000000000000000000000000000000000000000000000000000000000000198",
+      "evidence_identity_sha256": "000000000000000000000000000000000000000000000000000000000000006c",
+      "expected_artifact_sha256": "1e8873269996093346f3d3f396fd6086bb629bd463759261889ce770aabafb60",
+      "gate": "deployment_publication_readiness",
+      "schema_version": "3.0",
+      "signer_key_id_sha256": "c948faa4d3613332d53bac5bbbc52558685a4d3cc16ff48b14cb2f1f85a7c94b",
+      "signer_role": "human_approver",
+      "subject_sha256": "0000000000000000000000000000000000000000000000000000000000000134",
+      "tool_name": "fixture-deployment-publication-readiness",
+      "tool_version": "1.0.0"
+    }
+  ],
+  "rollback_state_sha256": "0000000000000000000000000000000000000000000000000000000000000200",
+  "schema_version": "3.0",
+  "trust_store_sha256": "7ac043f79a11aab630e37a793fb2aa335006d948355ac04b4441b541acfeadfb"
+}

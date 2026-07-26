@@ -1,0 +1,109 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "gross_settled_revenue_jpy": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Gross Settled Revenue Jpy"
+    },
+    "human_minutes": {
+      "minimum": 0,
+      "title": "Human Minutes",
+      "type": "integer"
+    },
+    "labor_cost_jpy": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Labor Cost Jpy"
+    },
+    "net_operating_profit_jpy": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Net Operating Profit Jpy"
+    },
+    "objective_basis": {
+      "const": "net_operating_profit",
+      "default": "net_operating_profit",
+      "title": "Objective Basis",
+      "type": "string"
+    },
+    "resource_cost_jpy": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Resource Cost Jpy"
+    },
+    "target_achieved": {
+      "title": "Target Achieved",
+      "type": "boolean"
+    },
+    "target_monthly_net_profit_jpy": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Target Monthly Net Profit Jpy"
+    },
+    "total_operating_tco_jpy": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Total Operating Tco Jpy"
+    }
+  },
+  "required": [
+    "target_monthly_net_profit_jpy",
+    "gross_settled_revenue_jpy",
+    "human_minutes",
+    "labor_cost_jpy",
+    "resource_cost_jpy",
+    "total_operating_tco_jpy",
+    "net_operating_profit_jpy",
+    "target_achieved"
+  ],
+  "title": "MonthlyOperatingTco",
+  "type": "object"
+}

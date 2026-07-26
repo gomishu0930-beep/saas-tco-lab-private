@@ -1,0 +1,66 @@
+{
+  "$defs": {
+    "ModelTask": {
+      "enum": [
+        "bulk",
+        "draft",
+        "policy_qa"
+      ],
+      "title": "ModelTask",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "contains_sensitive_data": {
+      "const": false,
+      "default": false,
+      "title": "Contains Sensitive Data",
+      "type": "boolean"
+    },
+    "goldset_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Goldset Id Sha256",
+      "type": "string"
+    },
+    "input_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Input Artifact Sha256",
+      "type": "string"
+    },
+    "projected_monthly_spend_minor": {
+      "minimum": 0,
+      "title": "Projected Monthly Spend Minor",
+      "type": "integer"
+    },
+    "prompt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Prompt Sha256",
+      "type": "string"
+    },
+    "request_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Request Id Sha256",
+      "type": "string"
+    },
+    "requested_at": {
+      "format": "date-time",
+      "title": "Requested At",
+      "type": "string"
+    },
+    "task": {
+      "$ref": "#/$defs/ModelTask"
+    }
+  },
+  "required": [
+    "request_id_sha256",
+    "task",
+    "goldset_id_sha256",
+    "prompt_sha256",
+    "input_artifact_sha256",
+    "requested_at",
+    "projected_monthly_spend_minor"
+  ],
+  "title": "ModelRoutingRequest",
+  "type": "object"
+}

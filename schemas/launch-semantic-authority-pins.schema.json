@@ -1,0 +1,183 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "expected_affiliate_packet_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Affiliate Packet Sha256",
+      "type": "string"
+    },
+    "expected_assurance_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Assurance Bundle Sha256",
+      "type": "string"
+    },
+    "expected_assurance_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Assurance Policy Sha256",
+      "type": "string"
+    },
+    "expected_assurance_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Assurance Trust Store Sha256",
+      "type": "string"
+    },
+    "expected_deployment_publication_packet_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Deployment Publication Packet Sha256",
+      "type": "string"
+    },
+    "expected_deployment_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Deployment Record Sha256",
+      "type": "string"
+    },
+    "expected_gold_packet_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Gold Packet Sha256",
+      "type": "string"
+    },
+    "expected_gold_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Gold Report Sha256",
+      "type": "string"
+    },
+    "expected_gold_tco_qa_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Gold Tco Qa Key Id Sha256",
+      "type": "string"
+    },
+    "expected_local_assurance_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Local Assurance Report Sha256",
+      "type": "string"
+    },
+    "expected_measurement_authority_pins_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Measurement Authority Pins Sha256",
+      "type": "string"
+    },
+    "expected_measurement_index_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Measurement Index Sha256",
+      "type": "string"
+    },
+    "expected_measurement_packet_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Measurement Packet Sha256",
+      "type": "string"
+    },
+    "expected_measurement_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Measurement Plan Sha256",
+      "type": "string"
+    },
+    "expected_measurement_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Measurement Policy Sha256",
+      "type": "string"
+    },
+    "expected_measurement_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Measurement Report Sha256",
+      "type": "string"
+    },
+    "expected_measurement_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Measurement Trust Store Sha256",
+      "type": "string"
+    },
+    "expected_packet_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Packet Sha256",
+      "type": "string"
+    },
+    "expected_production_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Production Bundle Sha256",
+      "type": "string"
+    },
+    "expected_production_packet_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Production Packet Sha256",
+      "type": "string"
+    },
+    "expected_production_plan_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Production Plan Sha256",
+      "type": "string"
+    },
+    "expected_production_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Production Policy Sha256",
+      "type": "string"
+    },
+    "expected_production_report_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Production Report Sha256",
+      "type": "string"
+    },
+    "expected_production_tco_attestation_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Production Tco Attestation Sha256",
+      "type": "string"
+    },
+    "expected_production_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Production Trust Store Sha256",
+      "type": "string"
+    },
+    "expected_publication_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Publication Record Sha256",
+      "type": "string"
+    },
+    "expected_rights_packet_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected Rights Packet Sha256",
+      "type": "string"
+    },
+    "pins_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Pins Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "expected_packet_sha256",
+    "expected_rights_packet_sha256",
+    "expected_affiliate_packet_sha256",
+    "expected_measurement_packet_sha256",
+    "expected_measurement_policy_sha256",
+    "expected_measurement_trust_store_sha256",
+    "expected_measurement_authority_pins_sha256",
+    "expected_measurement_plan_sha256",
+    "expected_measurement_index_sha256",
+    "expected_measurement_report_sha256",
+    "expected_gold_packet_sha256",
+    "expected_gold_report_sha256",
+    "expected_gold_tco_qa_key_id_sha256",
+    "expected_production_packet_sha256",
+    "expected_production_plan_sha256",
+    "expected_production_policy_sha256",
+    "expected_production_trust_store_sha256",
+    "expected_production_bundle_sha256",
+    "expected_production_report_sha256",
+    "expected_production_tco_attestation_sha256",
+    "expected_deployment_publication_packet_sha256",
+    "expected_assurance_policy_sha256",
+    "expected_assurance_trust_store_sha256",
+    "expected_assurance_bundle_sha256",
+    "expected_local_assurance_report_sha256",
+    "expected_deployment_record_sha256",
+    "expected_publication_record_sha256",
+    "pins_sha256"
+  ],
+  "title": "LaunchSemanticAuthorityPins",
+  "type": "object"
+}

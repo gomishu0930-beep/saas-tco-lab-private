@@ -1,0 +1,29 @@
+{
+  "schema_version": "1.0",
+  "decision": "stop",
+  "evaluated_at": "2026-07-22T03:00:00Z",
+  "release_id": "prepublic-current-stop",
+  "manifest_sha256": "af69d6c2277a9d1d2e975ffeff30d3687cf761eacf64b722e74708b7450167fa",
+  "artifact_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "assurance_policy_sha256": "bd3c2a95d2f17ec027f76867393b697a86f2a8c361aa74ac07161ef67c130739",
+  "local_report_sha256": "aa7375f316e0efdf23302014925cce74bbe450e583f4188d54674c6ee518b172",
+  "evidence_bundle_sha256": "35931f5b7ed1d48982a20fa15cfe9601cc7237ad639d0d38f0cf2d9b500d9224",
+  "business_dossier_sha256": "db1933f0ed4b1b1a8035fceec495655a780c884e7354c6847d0fdfbbcb259b23",
+  "local_assurance_ready": true,
+  "public_release_ready": false,
+  "business_decision": "stop",
+  "human_decision": null,
+  "tco_qa_attestation_payload_sha256": null,
+  "human_approval_payload_sha256": null,
+  "human_decision_record_sha256": null,
+  "approved_data_snapshot_sha256s": [],
+  "reasons": [
+    "business_not_go",
+    "cta_not_approved",
+    "human_approval_missing",
+    "tco_qa_attestation_missing"
+  ],
+  "expires_at": "2026-07-22T12:00:00Z",
+  "authorization": null,
+  "report_sha256": "dd1e35220367440294633c756c2482bc6a36e606edecb7aa19997562c9523710"
+}

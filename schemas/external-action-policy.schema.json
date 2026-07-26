@@ -1,0 +1,172 @@
+{
+  "$defs": {
+    "ActionEnvironment": {
+      "enum": [
+        "vendor_contact",
+        "production"
+      ],
+      "title": "ActionEnvironment",
+      "type": "string"
+    },
+    "ExternalAction": {
+      "enum": [
+        "send_rights_inquiry",
+        "submit_affiliate_application",
+        "activate_public_release",
+        "disable_public_release"
+      ],
+      "title": "ExternalAction",
+      "type": "string"
+    },
+    "ExternalActionTargetRule": {
+      "additionalProperties": false,
+      "properties": {
+        "action": {
+          "$ref": "#/$defs/ExternalAction"
+        },
+        "environment": {
+          "$ref": "#/$defs/ActionEnvironment"
+        },
+        "environment_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Environment Sha256",
+          "type": "string"
+        },
+        "property_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Property Record Sha256",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "target_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Target Sha256",
+          "type": "string"
+        },
+        "vendor_slug": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vendor Slug"
+        }
+      },
+      "required": [
+        "action",
+        "environment",
+        "environment_sha256",
+        "property_record_sha256",
+        "target_sha256"
+      ],
+      "title": "ExternalActionTargetRule",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "allowed_actions": {
+      "default": [
+        "activate_public_release",
+        "disable_public_release",
+        "send_rights_inquiry",
+        "submit_affiliate_application"
+      ],
+      "items": {
+        "$ref": "#/$defs/ExternalAction"
+      },
+      "title": "Allowed Actions",
+      "type": "array"
+    },
+    "controller_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Controller Key Id Sha256",
+      "type": "string"
+    },
+    "executor_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Executor Key Id Sha256",
+      "type": "string"
+    },
+    "human_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Human Key Id Sha256",
+      "type": "string"
+    },
+    "maximum_approval_ttl_seconds": {
+      "maximum": 604800,
+      "minimum": 1,
+      "title": "Maximum Approval Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_grant_ttl_seconds": {
+      "maximum": 3600,
+      "minimum": 1,
+      "title": "Maximum Grant Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_receipt_delay_seconds": {
+      "default": 3600,
+      "maximum": 86400,
+      "minimum": 1,
+      "title": "Maximum Receipt Delay Seconds",
+      "type": "integer"
+    },
+    "maximum_request_ttl_seconds": {
+      "maximum": 2592000,
+      "minimum": 1,
+      "title": "Maximum Request Ttl Seconds",
+      "type": "integer"
+    },
+    "policy_id": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Policy Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "target_rules": {
+      "items": {
+        "$ref": "#/$defs/ExternalActionTargetRule"
+      },
+      "title": "Target Rules",
+      "type": "array"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "policy_id",
+    "trust_store_sha256",
+    "controller_key_id_sha256",
+    "human_key_id_sha256",
+    "executor_key_id_sha256",
+    "target_rules",
+    "maximum_request_ttl_seconds",
+    "maximum_approval_ttl_seconds",
+    "maximum_grant_ttl_seconds"
+  ],
+  "title": "ExternalActionPolicy",
+  "type": "object"
+}

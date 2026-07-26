@@ -1,0 +1,232 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "clock_response_timeout_seconds": {
+      "default": 5,
+      "maximum": 30,
+      "minimum": 1,
+      "title": "Clock Response Timeout Seconds",
+      "type": "integer"
+    },
+    "empty_ledger_action": {
+      "const": "stop",
+      "default": "stop",
+      "title": "Empty Ledger Action",
+      "type": "string"
+    },
+    "identity_hmac_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Identity Hmac Key Id Sha256",
+      "type": "string"
+    },
+    "ledger_store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Ledger Store Id Sha256",
+      "type": "string"
+    },
+    "maturity_days": {
+      "const": 180,
+      "default": 180,
+      "title": "Maturity Days",
+      "type": "integer"
+    },
+    "maturity_valid_clicks": {
+      "const": 1000,
+      "default": 1000,
+      "title": "Maturity Valid Clicks",
+      "type": "integer"
+    },
+    "maximum_exceptions": {
+      "const": 24,
+      "default": 24,
+      "title": "Maximum Exceptions",
+      "type": "integer"
+    },
+    "maximum_human_minutes": {
+      "const": 720,
+      "default": 720,
+      "title": "Maximum Human Minutes",
+      "type": "integer"
+    },
+    "maximum_major_misstatements": {
+      "const": 0,
+      "default": 0,
+      "title": "Maximum Major Misstatements",
+      "type": "integer"
+    },
+    "maximum_observation_ttl_seconds": {
+      "maximum": 2678400,
+      "minimum": 1,
+      "title": "Maximum Observation Ttl Seconds",
+      "type": "integer"
+    },
+    "maximum_partner_revenue_share": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0.40",
+      "title": "Maximum Partner Revenue Share"
+    },
+    "maximum_plan_ttl_seconds": {
+      "maximum": 34560000,
+      "minimum": 15552000,
+      "title": "Maximum Plan Ttl Seconds",
+      "type": "integer"
+    },
+    "minimum_automation_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0.80",
+      "title": "Minimum Automation Rate"
+    },
+    "minimum_job_success_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0.99",
+      "title": "Minimum Job Success Rate"
+    },
+    "minimum_outbound_ctr": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "0.10",
+      "title": "Minimum Outbound Ctr"
+    },
+    "minimum_partner_count": {
+      "const": 3,
+      "default": 3,
+      "title": "Minimum Partner Count",
+      "type": "integer"
+    },
+    "minimum_settled_epc": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "60",
+      "title": "Minimum Settled Epc"
+    },
+    "objective_basis": {
+      "const": "net_operating_profit",
+      "default": "net_operating_profit",
+      "title": "Objective Basis",
+      "type": "string"
+    },
+    "observation_days": {
+      "const": 30,
+      "default": 30,
+      "title": "Observation Days",
+      "type": "integer"
+    },
+    "p12_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Policy Sha256",
+      "type": "string"
+    },
+    "p12_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Trust Store Sha256",
+      "type": "string"
+    },
+    "required_fault_count": {
+      "const": 8,
+      "default": 8,
+      "title": "Required Fault Count",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "settlement_lag_days": {
+      "const": 30,
+      "default": 30,
+      "title": "Settlement Lag Days",
+      "type": "integer"
+    },
+    "settlement_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Settlement Policy Sha256",
+      "type": "string"
+    },
+    "settlement_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Settlement Trust Store Sha256",
+      "type": "string"
+    },
+    "target_monthly_net_profit": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "default": "200000",
+      "title": "Target Monthly Net Profit"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "trust_store_sha256",
+    "ledger_store_id_sha256",
+    "p12_policy_sha256",
+    "p12_trust_store_sha256",
+    "settlement_policy_sha256",
+    "settlement_trust_store_sha256",
+    "identity_hmac_key_id_sha256",
+    "maximum_plan_ttl_seconds",
+    "maximum_observation_ttl_seconds"
+  ],
+  "title": "TractionPolicy",
+  "type": "object"
+}

@@ -1,0 +1,251 @@
+{
+  "$defs": {
+    "GoldFieldLabel": {
+      "additionalProperties": false,
+      "properties": {
+        "evidence_source_sha256s": {
+          "items": {
+            "pattern": "^[0-9a-f]{64}$",
+            "type": "string"
+          },
+          "minItems": 1,
+          "title": "Evidence Source Sha256S",
+          "type": "array"
+        },
+        "expected_value_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Value Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "field_path": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "title": "Field Path",
+          "type": "string"
+        },
+        "human_label_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Human Label Receipt Sha256",
+          "type": "string"
+        },
+        "label_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Label Id Sha256",
+          "type": "string"
+        },
+        "labeled_at": {
+          "format": "date-time",
+          "title": "Labeled At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "label_id_sha256",
+        "field_path",
+        "expected_value_sha256",
+        "evidence_source_sha256s",
+        "human_label_receipt_sha256",
+        "labeled_at",
+        "expires_at"
+      ],
+      "title": "GoldFieldLabel",
+      "type": "object"
+    },
+    "GoldPlan": {
+      "additionalProperties": false,
+      "properties": {
+        "labels": {
+          "items": {
+            "$ref": "#/$defs/GoldFieldLabel"
+          },
+          "minItems": 1,
+          "title": "Labels",
+          "type": "array"
+        },
+        "plan_slug": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Plan Slug",
+          "type": "string"
+        },
+        "tco_expectations": {
+          "items": {
+            "$ref": "#/$defs/GoldTcoExpectation"
+          },
+          "minItems": 1,
+          "title": "Tco Expectations",
+          "type": "array"
+        },
+        "vendor_slug": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Vendor Slug",
+          "type": "string"
+        }
+      },
+      "required": [
+        "vendor_slug",
+        "plan_slug",
+        "labels",
+        "tco_expectations"
+      ],
+      "title": "GoldPlan",
+      "type": "object"
+    },
+    "GoldTcoExpectation": {
+      "additionalProperties": false,
+      "properties": {
+        "expected_currency": {
+          "pattern": "^[A-Z]{3}$",
+          "title": "Expected Currency",
+          "type": "string"
+        },
+        "expected_tco_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Expected Tco Sha256",
+          "type": "string"
+        },
+        "expected_total_minor": {
+          "minimum": 0,
+          "title": "Expected Total Minor",
+          "type": "integer"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "human_label_receipt_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Human Label Receipt Sha256",
+          "type": "string"
+        },
+        "labeled_at": {
+          "format": "date-time",
+          "title": "Labeled At",
+          "type": "string"
+        },
+        "monthly_usage": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Monthly Usage"
+        },
+        "months": {
+          "const": 12,
+          "default": 12,
+          "title": "Months",
+          "type": "integer"
+        },
+        "scenario_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Scenario Id Sha256",
+          "type": "string"
+        },
+        "seats": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "Seats",
+          "type": "integer"
+        },
+        "selected_addon_codes": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Selected Addon Codes",
+          "type": "array"
+        },
+        "usage_unit": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Usage Unit"
+        }
+      },
+      "required": [
+        "scenario_id_sha256",
+        "human_label_receipt_sha256",
+        "labeled_at",
+        "expires_at",
+        "seats",
+        "monthly_usage",
+        "expected_tco_sha256",
+        "expected_total_minor",
+        "expected_currency"
+      ],
+      "title": "GoldTcoExpectation",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "goldset_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Goldset Id Sha256",
+      "type": "string"
+    },
+    "plans": {
+      "items": {
+        "$ref": "#/$defs/GoldPlan"
+      },
+      "minItems": 1,
+      "title": "Plans",
+      "type": "array"
+    },
+    "rights_bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rights Bundle Sha256",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "goldset_id_sha256",
+    "rights_bundle_sha256",
+    "created_at",
+    "expires_at",
+    "plans"
+  ],
+  "title": "HumanGoldSet",
+  "type": "object"
+}

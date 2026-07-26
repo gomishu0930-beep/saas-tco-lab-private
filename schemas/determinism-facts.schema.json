@@ -1,0 +1,47 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "committed_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Committed Sha256",
+      "type": "string"
+    },
+    "exit_code": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "first_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "First Sha256",
+      "type": "string"
+    },
+    "generated_items": {
+      "maximum": 1000000,
+      "minimum": 1,
+      "title": "Generated Items",
+      "type": "integer"
+    },
+    "kind": {
+      "const": "determinism",
+      "default": "determinism",
+      "title": "Kind",
+      "type": "string"
+    },
+    "second_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Second Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "generated_items",
+    "first_sha256",
+    "second_sha256",
+    "committed_sha256",
+    "exit_code"
+  ],
+  "title": "DeterminismFacts",
+  "type": "object"
+}

@@ -1,0 +1,176 @@
+{
+  "$defs": {
+    "RepositoryVerificationProvenance": {
+      "enum": [
+        "verified_local_run",
+        "verified_immutable_run_v2",
+        "local_diagnostic_run",
+        "synthetic_contract"
+      ],
+      "title": "RepositoryVerificationProvenance",
+      "type": "string"
+    },
+    "VerifiedRunnerCheck": {
+      "enum": [
+        "python_base",
+        "python_traction",
+        "python_production_consumer",
+        "schema_determinism",
+        "blocked_fixture_determinism",
+        "uv_lock",
+        "compileall",
+        "secret_scan",
+        "web_tests",
+        "web_lint",
+        "dependency_audit",
+        "workflow_verifier",
+        "contract_storage_audit",
+        "tco_qa_audit"
+      ],
+      "title": "VerifiedRunnerCheck",
+      "type": "string"
+    },
+    "VerifiedRunnerNetworkMode": {
+      "enum": [
+        "disabled",
+        "loopback_only",
+        "not_applicable"
+      ],
+      "title": "VerifiedRunnerNetworkMode",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "assertions_executed": {
+      "maximum": 100000000,
+      "minimum": 1,
+      "title": "Assertions Executed",
+      "type": "integer"
+    },
+    "check": {
+      "$ref": "#/$defs/VerifiedRunnerCheck"
+    },
+    "command_argv": {
+      "items": {
+        "type": "string"
+      },
+      "maxItems": 40,
+      "minItems": 1,
+      "title": "Command Argv",
+      "type": "array"
+    },
+    "command_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Command Sha256",
+      "type": "string"
+    },
+    "environment_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Environment Sha256",
+      "type": "string"
+    },
+    "executed_at": {
+      "format": "date-time",
+      "title": "Executed At",
+      "type": "string"
+    },
+    "exit_code": {
+      "maximum": 255,
+      "minimum": 0,
+      "title": "Exit Code",
+      "type": "integer"
+    },
+    "failures": {
+      "maximum": 100000000,
+      "minimum": 0,
+      "title": "Failures",
+      "type": "integer"
+    },
+    "import_closure_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Import Closure Sha256",
+      "type": "string"
+    },
+    "interpreter_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Interpreter Sha256",
+      "type": "string"
+    },
+    "network_mode": {
+      "$ref": "#/$defs/VerifiedRunnerNetworkMode"
+    },
+    "not_after": {
+      "format": "date-time",
+      "title": "Not After",
+      "type": "string"
+    },
+    "output_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Output Sha256",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/RepositoryVerificationProvenance"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "skipped": {
+      "maximum": 100000000,
+      "minimum": 0,
+      "title": "Skipped",
+      "type": "integer"
+    },
+    "subject_tree_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Tree Sha256",
+      "type": "string"
+    },
+    "tool_name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Tool Name",
+      "type": "string"
+    },
+    "tool_version": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+(?:-[a-z0-9.-]+)?$",
+      "title": "Tool Version",
+      "type": "string"
+    },
+    "working_directory": {
+      "const": "repository-root",
+      "default": "repository-root",
+      "title": "Working Directory",
+      "type": "string"
+    }
+  },
+  "required": [
+    "check",
+    "subject_tree_sha256",
+    "command_argv",
+    "environment_sha256",
+    "network_mode",
+    "interpreter_sha256",
+    "import_closure_sha256",
+    "command_sha256",
+    "tool_name",
+    "tool_version",
+    "provenance",
+    "executed_at",
+    "not_after",
+    "assertions_executed",
+    "failures",
+    "skipped",
+    "exit_code",
+    "output_sha256"
+  ],
+  "title": "RepositoryVerificationFact",
+  "type": "object"
+}

@@ -1,0 +1,91 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "adapter_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Adapter Identity Sha256",
+      "type": "string"
+    },
+    "expected_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Expected State Sha256",
+      "type": "string"
+    },
+    "journal_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Journal Record Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "independent_readback",
+      "default": "independent_readback",
+      "title": "Kind",
+      "type": "string"
+    },
+    "observed_state_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Observed State Sha256",
+      "type": "string"
+    },
+    "provider_receipt_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Provider Receipt Sha256",
+      "type": "string"
+    },
+    "readback_lag_milliseconds": {
+      "maximum": 86400000,
+      "minimum": 0,
+      "title": "Readback Lag Milliseconds",
+      "type": "integer"
+    },
+    "readback_mismatches": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Readback Mismatches",
+      "type": "integer"
+    },
+    "readbacks_attempted": {
+      "maximum": 10000,
+      "minimum": 1,
+      "title": "Readbacks Attempted",
+      "type": "integer"
+    },
+    "readbacks_matched": {
+      "maximum": 10000,
+      "minimum": 0,
+      "title": "Readbacks Matched",
+      "type": "integer"
+    },
+    "reader_acl_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reader Acl Sha256",
+      "type": "string"
+    },
+    "reader_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Reader Identity Sha256",
+      "type": "string"
+    },
+    "result_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Artifact Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "adapter_identity_sha256",
+    "reader_identity_sha256",
+    "reader_acl_sha256",
+    "provider_receipt_sha256",
+    "journal_record_sha256",
+    "expected_state_sha256",
+    "observed_state_sha256",
+    "readbacks_attempted",
+    "readbacks_matched",
+    "readback_mismatches",
+    "readback_lag_milliseconds",
+    "result_artifact_sha256"
+  ],
+  "title": "IndependentReadbackFacts",
+  "type": "object"
+}

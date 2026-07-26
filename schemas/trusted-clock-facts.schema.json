@@ -1,0 +1,96 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "backward_steps": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Backward Steps",
+      "type": "integer"
+    },
+    "clock_source_identity_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "maxItems": 10,
+      "minItems": 1,
+      "title": "Clock Source Identity Sha256S",
+      "type": "array"
+    },
+    "failure_domain_sha256s": {
+      "items": {
+        "pattern": "^[0-9a-f]{64}$",
+        "type": "string"
+      },
+      "maxItems": 10,
+      "minItems": 1,
+      "title": "Failure Domain Sha256S",
+      "type": "array"
+    },
+    "future_reject_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Future Reject Case Sha256",
+      "type": "string"
+    },
+    "kind": {
+      "const": "trusted_clock",
+      "default": "trusted_clock",
+      "title": "Kind",
+      "type": "string"
+    },
+    "maximum_absolute_offset_milliseconds": {
+      "maximum": 86400000,
+      "minimum": 0,
+      "title": "Maximum Absolute Offset Milliseconds",
+      "type": "integer"
+    },
+    "maximum_uncertainty_milliseconds": {
+      "maximum": 86400000,
+      "minimum": 0,
+      "title": "Maximum Uncertainty Milliseconds",
+      "type": "integer"
+    },
+    "out_of_bound_samples": {
+      "maximum": 100000,
+      "minimum": 0,
+      "title": "Out Of Bound Samples",
+      "type": "integer"
+    },
+    "result_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Result Artifact Sha256",
+      "type": "string"
+    },
+    "rollback_reject_case_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rollback Reject Case Sha256",
+      "type": "string"
+    },
+    "samples_observed": {
+      "maximum": 100000,
+      "minimum": 1,
+      "title": "Samples Observed",
+      "type": "integer"
+    },
+    "signed_sample_sequence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Signed Sample Sequence Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "clock_source_identity_sha256s",
+    "failure_domain_sha256s",
+    "signed_sample_sequence_sha256",
+    "rollback_reject_case_sha256",
+    "future_reject_case_sha256",
+    "samples_observed",
+    "maximum_absolute_offset_milliseconds",
+    "maximum_uncertainty_milliseconds",
+    "backward_steps",
+    "out_of_bound_samples",
+    "result_artifact_sha256"
+  ],
+  "title": "TrustedClockFacts",
+  "type": "object"
+}

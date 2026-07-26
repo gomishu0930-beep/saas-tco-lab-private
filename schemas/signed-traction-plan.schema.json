@@ -1,0 +1,185 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "affiliate_evidence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Affiliate Evidence Sha256",
+      "type": "string"
+    },
+    "affiliate_expires_at": {
+      "format": "date-time",
+      "title": "Affiliate Expires At",
+      "type": "string"
+    },
+    "experiment_ended_at": {
+      "format": "date-time",
+      "title": "Experiment Ended At",
+      "type": "string"
+    },
+    "experiment_started_at": {
+      "format": "date-time",
+      "title": "Experiment Started At",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "issued_at": {
+      "format": "date-time",
+      "title": "Issued At",
+      "type": "string"
+    },
+    "issuer": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Issuer",
+      "type": "string"
+    },
+    "key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Key Id Sha256",
+      "type": "string"
+    },
+    "ledger_store_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Ledger Store Id Sha256",
+      "type": "string"
+    },
+    "measured_artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Measured Artifact Sha256",
+      "type": "string"
+    },
+    "measured_release_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Measured Release Sha256",
+      "type": "string"
+    },
+    "measured_schema_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Measured Schema Sha256",
+      "type": "string"
+    },
+    "p12_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Policy Sha256",
+      "type": "string"
+    },
+    "p12_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "P12 Trust Store Sha256",
+      "type": "string"
+    },
+    "partner_ids": {
+      "items": {
+        "maxLength": 80,
+        "minLength": 1,
+        "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+        "type": "string"
+      },
+      "minItems": 3,
+      "title": "Partner Ids",
+      "type": "array"
+    },
+    "partner_set_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Partner Set Sha256",
+      "type": "string"
+    },
+    "payload_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Payload Sha256",
+      "type": "string"
+    },
+    "policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Sha256",
+      "type": "string"
+    },
+    "property_domain_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Domain Sha256",
+      "type": "string"
+    },
+    "property_record_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Property Record Sha256",
+      "type": "string"
+    },
+    "rights_evidence_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Rights Evidence Sha256",
+      "type": "string"
+    },
+    "rights_expires_at": {
+      "format": "date-time",
+      "title": "Rights Expires At",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "settlement_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Settlement Policy Sha256",
+      "type": "string"
+    },
+    "settlement_trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Settlement Trust Store Sha256",
+      "type": "string"
+    },
+    "signature_base64url": {
+      "pattern": "^[A-Za-z0-9_-]{86}$",
+      "title": "Signature Base64Url",
+      "type": "string"
+    },
+    "signer_role": {
+      "const": "human_approver",
+      "title": "Signer Role",
+      "type": "string"
+    },
+    "trust_store_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Trust Store Sha256",
+      "type": "string"
+    }
+  },
+  "required": [
+    "issuer",
+    "key_id_sha256",
+    "signer_role",
+    "policy_sha256",
+    "trust_store_sha256",
+    "ledger_store_id_sha256",
+    "property_record_sha256",
+    "property_domain_sha256",
+    "measured_release_sha256",
+    "measured_artifact_sha256",
+    "measured_schema_sha256",
+    "partner_ids",
+    "partner_set_sha256",
+    "rights_evidence_sha256",
+    "rights_expires_at",
+    "affiliate_evidence_sha256",
+    "affiliate_expires_at",
+    "p12_policy_sha256",
+    "p12_trust_store_sha256",
+    "settlement_policy_sha256",
+    "settlement_trust_store_sha256",
+    "experiment_started_at",
+    "experiment_ended_at",
+    "issued_at",
+    "expires_at",
+    "payload_sha256",
+    "signature_base64url"
+  ],
+  "title": "SignedTractionPlan",
+  "type": "object"
+}

@@ -1,0 +1,205 @@
+{
+  "$defs": {
+    "EvaluatedModelRoute": {
+      "additionalProperties": false,
+      "properties": {
+        "evaluated_at": {
+          "format": "date-time",
+          "title": "Evaluated At",
+          "type": "string"
+        },
+        "evaluation_expires_at": {
+          "format": "date-time",
+          "title": "Evaluation Expires At",
+          "type": "string"
+        },
+        "evaluation_passed": {
+          "title": "Evaluation Passed",
+          "type": "boolean"
+        },
+        "goldset_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Goldset Id Sha256",
+          "type": "string"
+        },
+        "model": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+          "title": "Model",
+          "type": "string"
+        },
+        "model_snapshot": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$",
+          "title": "Model Snapshot",
+          "type": "string"
+        },
+        "p95_latency_ms": {
+          "minimum": 0,
+          "title": "P95 Latency Ms",
+          "type": "integer"
+        },
+        "predicted_cost_minor": {
+          "minimum": 0,
+          "title": "Predicted Cost Minor",
+          "type": "integer"
+        },
+        "provider": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Provider",
+          "type": "string"
+        },
+        "quality_score": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            }
+          ],
+          "title": "Quality Score"
+        },
+        "route_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Route Id Sha256",
+          "type": "string"
+        },
+        "task": {
+          "$ref": "#/$defs/ModelTask"
+        },
+        "tier": {
+          "$ref": "#/$defs/ModelTier"
+        }
+      },
+      "required": [
+        "route_id_sha256",
+        "task",
+        "tier",
+        "provider",
+        "model",
+        "model_snapshot",
+        "goldset_id_sha256",
+        "evaluated_at",
+        "evaluation_expires_at",
+        "evaluation_passed",
+        "quality_score",
+        "predicted_cost_minor",
+        "p95_latency_ms"
+      ],
+      "title": "EvaluatedModelRoute",
+      "type": "object"
+    },
+    "ModelTask": {
+      "enum": [
+        "bulk",
+        "draft",
+        "policy_qa"
+      ],
+      "title": "ModelTask",
+      "type": "string"
+    },
+    "ModelTier": {
+      "enum": [
+        "luna",
+        "terra",
+        "sol"
+      ],
+      "title": "ModelTier",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "budget_approval_receipt_sha256": {
+      "anyOf": [
+        {
+          "pattern": "^[0-9a-f]{64}$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Budget Approval Receipt Sha256"
+    },
+    "budget_approved": {
+      "default": false,
+      "title": "Budget Approved",
+      "type": "boolean"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "currency": {
+      "pattern": "^[A-Z]{3}$",
+      "title": "Currency",
+      "type": "string"
+    },
+    "expires_at": {
+      "format": "date-time",
+      "title": "Expires At",
+      "type": "string"
+    },
+    "minimum_quality_score": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Minimum Quality Score"
+    },
+    "monthly_budget_minor": {
+      "exclusiveMinimum": 0,
+      "title": "Monthly Budget Minor",
+      "type": "integer"
+    },
+    "policy_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Policy Id Sha256",
+      "type": "string"
+    },
+    "routes": {
+      "items": {
+        "$ref": "#/$defs/EvaluatedModelRoute"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Routes",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "policy_id_sha256",
+    "currency",
+    "monthly_budget_minor",
+    "minimum_quality_score",
+    "created_at",
+    "expires_at",
+    "routes"
+  ],
+  "title": "ModelRouterPolicy",
+  "type": "object"
+}

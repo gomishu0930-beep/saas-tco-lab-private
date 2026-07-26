@@ -1,0 +1,121 @@
+{
+  "$defs": {
+    "ProductionFactsKind": {
+      "enum": [
+        "backup_restore",
+        "egress_allowlist",
+        "external_monotonic_anchor",
+        "independent_readback",
+        "kms_identity_separation",
+        "provider_conditional_mutation",
+        "provider_idempotency_retention",
+        "provider_receipt_lookup",
+        "rollback_disable",
+        "shared_durable_store_fencing",
+        "trusted_clock"
+      ],
+      "title": "ProductionFactsKind",
+      "type": "string"
+    },
+    "ProductionIntegrationCheck": {
+      "enum": [
+        "backup_restore",
+        "egress_allowlist",
+        "external_monotonic_anchor",
+        "independent_readback",
+        "kms_identity_separation",
+        "provider_conditional_mutation",
+        "provider_idempotency_retention",
+        "provider_receipt_lookup",
+        "rollback_disable",
+        "shared_durable_store_fencing",
+        "trusted_clock"
+      ],
+      "title": "ProductionIntegrationCheck",
+      "type": "string"
+    },
+    "SigningRole": {
+      "enum": [
+        "controller",
+        "tco_qa",
+        "human_approver",
+        "executor",
+        "demand_producer",
+        "cohort_producer",
+        "operations_producer",
+        "measurement_human",
+        "measurement_indexer",
+        "provider_adapter",
+        "provider_probe",
+        "integration_evidence_runner",
+        "provider_conformance",
+        "security_auditor",
+        "storage_auditor",
+        "time_auditor",
+        "network_auditor",
+        "recovery_auditor"
+      ],
+      "title": "SigningRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "check": {
+      "$ref": "#/$defs/ProductionIntegrationCheck"
+    },
+    "command_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Command Sha256",
+      "type": "string"
+    },
+    "evidence_identity_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Evidence Identity Sha256",
+      "type": "string"
+    },
+    "facts_kind": {
+      "$ref": "#/$defs/ProductionFactsKind"
+    },
+    "signer_key_id_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Signer Key Id Sha256",
+      "type": "string"
+    },
+    "signer_role": {
+      "$ref": "#/$defs/SigningRole"
+    },
+    "subject_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Subject Sha256",
+      "type": "string"
+    },
+    "tool_name": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]*$",
+      "title": "Tool Name",
+      "type": "string"
+    },
+    "tool_version": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._+-]*$",
+      "title": "Tool Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "check",
+    "facts_kind",
+    "evidence_identity_sha256",
+    "signer_role",
+    "signer_key_id_sha256",
+    "subject_sha256",
+    "command_sha256",
+    "tool_name",
+    "tool_version"
+  ],
+  "title": "ProductionIntegrationRequirement",
+  "type": "object"
+}

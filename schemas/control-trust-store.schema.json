@@ -1,0 +1,92 @@
+{
+  "$defs": {
+    "Ed25519VerificationKey": {
+      "additionalProperties": false,
+      "properties": {
+        "issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+          "title": "Issuer",
+          "type": "string"
+        },
+        "key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Key Id Sha256",
+          "type": "string"
+        },
+        "public_key_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{43}$",
+          "title": "Public Key Base64Url",
+          "type": "string"
+        },
+        "role": {
+          "$ref": "#/$defs/SigningRole"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "issuer",
+        "role",
+        "key_id_sha256",
+        "public_key_base64url"
+      ],
+      "title": "Ed25519VerificationKey",
+      "type": "object"
+    },
+    "SigningRole": {
+      "enum": [
+        "controller",
+        "tco_qa",
+        "human_approver",
+        "executor",
+        "demand_producer",
+        "cohort_producer",
+        "operations_producer",
+        "measurement_human",
+        "measurement_indexer",
+        "provider_adapter",
+        "provider_probe",
+        "integration_evidence_runner",
+        "provider_conformance",
+        "security_auditor",
+        "storage_auditor",
+        "time_auditor",
+        "network_auditor",
+        "recovery_auditor"
+      ],
+      "title": "SigningRole",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "controller": {
+      "$ref": "#/$defs/Ed25519VerificationKey"
+    },
+    "gold_tco_qa": {
+      "$ref": "#/$defs/Ed25519VerificationKey"
+    },
+    "release_human": {
+      "$ref": "#/$defs/Ed25519VerificationKey"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "controller",
+    "gold_tco_qa",
+    "release_human"
+  ],
+  "title": "ControlTrustStore",
+  "type": "object"
+}

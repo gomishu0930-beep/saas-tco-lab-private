@@ -1,0 +1,175 @@
+{
+  "$defs": {
+    "AffiliateDecisionBatch": {
+      "additionalProperties": false,
+      "properties": {
+        "decisions": {
+          "items": {
+            "$ref": "#/$defs/AffiliateProgramDecision"
+          },
+          "minItems": 1,
+          "title": "Decisions",
+          "type": "array"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "decisions"
+      ],
+      "title": "AffiliateDecisionBatch",
+      "type": "object"
+    },
+    "AffiliateProgramDecision": {
+      "additionalProperties": false,
+      "description": "Hash-only affiliate review result for one vendor and web property.",
+      "properties": {
+        "decision": {
+          "$ref": "#/$defs/AffiliateReviewDecision"
+        },
+        "decision_record_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Decision Record Sha256",
+          "type": "string"
+        },
+        "destination_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Destination Sha256"
+        },
+        "disclosure_sha256": {
+          "anyOf": [
+            {
+              "pattern": "^[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Disclosure Sha256"
+        },
+        "partner_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Partner Id",
+          "type": "string"
+        },
+        "program_id": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Program Id"
+        },
+        "property_domain": {
+          "maxLength": 253,
+          "minLength": 1,
+          "title": "Property Domain",
+          "type": "string"
+        },
+        "review_due_at": {
+          "format": "date-time",
+          "title": "Review Due At",
+          "type": "string"
+        },
+        "reviewed_at": {
+          "format": "date-time",
+          "title": "Reviewed At",
+          "type": "string"
+        },
+        "reviewed_by": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Reviewed By",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "territory": {
+          "maxLength": 32,
+          "minLength": 2,
+          "title": "Territory",
+          "type": "string"
+        },
+        "vendor_slug": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Vendor Slug",
+          "type": "string"
+        }
+      },
+      "required": [
+        "partner_id",
+        "vendor_slug",
+        "property_domain",
+        "territory",
+        "decision",
+        "reviewed_at",
+        "review_due_at",
+        "reviewed_by",
+        "decision_record_sha256"
+      ],
+      "title": "AffiliateProgramDecision",
+      "type": "object"
+    },
+    "AffiliateReviewDecision": {
+      "enum": [
+        "approved",
+        "prohibited",
+        "unreviewed"
+      ],
+      "title": "AffiliateReviewDecision",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "decisions": {
+      "$ref": "#/$defs/AffiliateDecisionBatch"
+    },
+    "property_domain": {
+      "maxLength": 253,
+      "minLength": 1,
+      "title": "Property Domain",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "property_domain",
+    "decisions"
+  ],
+  "title": "AffiliateSemanticPacket",
+  "type": "object"
+}

@@ -1,0 +1,538 @@
+{
+  "$defs": {
+    "AssuranceCheck": {
+      "enum": [
+        "python_tests",
+        "web_local_tests",
+        "web_production_tests",
+        "schema_determinism",
+        "lock_integrity",
+        "sbom_current",
+        "secret_scan",
+        "dependency_audit",
+        "threat_model_review",
+        "accessibility",
+        "mobile_reflow",
+        "seo_policy",
+        "rollback_faults"
+      ],
+      "title": "AssuranceCheck",
+      "type": "string"
+    },
+    "AssuranceEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Artifact Sha256",
+          "type": "string"
+        },
+        "assurance_policy_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Assurance Policy Sha256",
+          "type": "string"
+        },
+        "check": {
+          "$ref": "#/$defs/AssuranceCheck"
+        },
+        "command_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Command Sha256",
+          "type": "string"
+        },
+        "evidence_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+          "title": "Evidence Id",
+          "type": "string"
+        },
+        "evidence_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Evidence Sha256",
+          "type": "string"
+        },
+        "expires_at": {
+          "format": "date-time",
+          "title": "Expires At",
+          "type": "string"
+        },
+        "facts": {
+          "discriminator": {
+            "mapping": {
+              "determinism": "#/$defs/DeterminismFacts",
+              "integrity": "#/$defs/IntegrityFacts",
+              "review": "#/$defs/ReviewFacts",
+              "route_assurance": "#/$defs/RouteAssuranceFacts",
+              "scan": "#/$defs/ScanFacts",
+              "test_suite": "#/$defs/TestSuiteFacts"
+            },
+            "propertyName": "kind"
+          },
+          "oneOf": [
+            {
+              "$ref": "#/$defs/TestSuiteFacts"
+            },
+            {
+              "$ref": "#/$defs/DeterminismFacts"
+            },
+            {
+              "$ref": "#/$defs/IntegrityFacts"
+            },
+            {
+              "$ref": "#/$defs/ScanFacts"
+            },
+            {
+              "$ref": "#/$defs/ReviewFacts"
+            },
+            {
+              "$ref": "#/$defs/RouteAssuranceFacts"
+            }
+          ],
+          "title": "Facts"
+        },
+        "manifest_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Manifest Sha256",
+          "type": "string"
+        },
+        "observed_at": {
+          "format": "date-time",
+          "title": "Observed At",
+          "type": "string"
+        },
+        "release_id": {
+          "maxLength": 120,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+          "title": "Release Id",
+          "type": "string"
+        },
+        "runner_issuer": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Runner Issuer",
+          "type": "string"
+        },
+        "runner_key_id_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Runner Key Id Sha256",
+          "type": "string"
+        },
+        "runner_role": {
+          "const": "controller",
+          "default": "controller",
+          "title": "Runner Role",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "signature_base64url": {
+          "pattern": "^[A-Za-z0-9_-]{86}$",
+          "title": "Signature Base64Url",
+          "type": "string"
+        },
+        "subject_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Subject Sha256",
+          "type": "string"
+        },
+        "tool_name": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Tool Name",
+          "type": "string"
+        },
+        "tool_version": {
+          "maxLength": 120,
+          "minLength": 1,
+          "title": "Tool Version",
+          "type": "string"
+        }
+      },
+      "required": [
+        "evidence_id",
+        "check",
+        "release_id",
+        "manifest_sha256",
+        "artifact_sha256",
+        "assurance_policy_sha256",
+        "subject_sha256",
+        "command_sha256",
+        "tool_name",
+        "tool_version",
+        "facts",
+        "observed_at",
+        "expires_at",
+        "runner_issuer",
+        "runner_key_id_sha256",
+        "evidence_sha256",
+        "signature_base64url"
+      ],
+      "title": "AssuranceEvidence",
+      "type": "object"
+    },
+    "DeterminismFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "committed_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Committed Sha256",
+          "type": "string"
+        },
+        "exit_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "first_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "First Sha256",
+          "type": "string"
+        },
+        "generated_items": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "Generated Items",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "determinism",
+          "default": "determinism",
+          "title": "Kind",
+          "type": "string"
+        },
+        "second_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Second Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "generated_items",
+        "first_sha256",
+        "second_sha256",
+        "committed_sha256",
+        "exit_code"
+      ],
+      "title": "DeterminismFacts",
+      "type": "object"
+    },
+    "IntegrityFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "checked_items": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "Checked Items",
+          "type": "integer"
+        },
+        "drift_items": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Drift Items",
+          "type": "integer"
+        },
+        "exit_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "invalid_items": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Invalid Items",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "integrity",
+          "default": "integrity",
+          "title": "Kind",
+          "type": "string"
+        },
+        "output_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "checked_items",
+        "invalid_items",
+        "drift_items",
+        "output_sha256",
+        "exit_code"
+      ],
+      "title": "IntegrityFacts",
+      "type": "object"
+    },
+    "ReviewFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "exit_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "review",
+          "default": "review",
+          "title": "Kind",
+          "type": "string"
+        },
+        "release_blockers": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Release Blockers",
+          "type": "integer"
+        },
+        "requirements_met": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Requirements Met",
+          "type": "integer"
+        },
+        "requirements_total": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "Requirements Total",
+          "type": "integer"
+        },
+        "review_artifact_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Review Artifact Sha256",
+          "type": "string"
+        }
+      },
+      "required": [
+        "requirements_total",
+        "requirements_met",
+        "release_blockers",
+        "review_artifact_sha256",
+        "exit_code"
+      ],
+      "title": "ReviewFacts",
+      "type": "object"
+    },
+    "RouteAssuranceFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "assertions_executed": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "Assertions Executed",
+          "type": "integer"
+        },
+        "exit_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "route_assurance",
+          "default": "route_assurance",
+          "title": "Kind",
+          "type": "string"
+        },
+        "output_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Sha256",
+          "type": "string"
+        },
+        "routes_checked": {
+          "maximum": 5,
+          "minimum": 0,
+          "title": "Routes Checked",
+          "type": "integer"
+        },
+        "routes_expected": {
+          "const": 5,
+          "default": 5,
+          "title": "Routes Expected",
+          "type": "integer"
+        },
+        "violations": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Violations",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "routes_checked",
+        "assertions_executed",
+        "violations",
+        "output_sha256",
+        "exit_code"
+      ],
+      "title": "RouteAssuranceFacts",
+      "type": "object"
+    },
+    "ScanFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "exit_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "findings": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Findings",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "scan",
+          "default": "scan",
+          "title": "Kind",
+          "type": "string"
+        },
+        "output_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Sha256",
+          "type": "string"
+        },
+        "scanned_items": {
+          "maximum": 100000000,
+          "minimum": 1,
+          "title": "Scanned Items",
+          "type": "integer"
+        },
+        "unresolved_findings": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Unresolved Findings",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "scanned_items",
+        "findings",
+        "unresolved_findings",
+        "output_sha256",
+        "exit_code"
+      ],
+      "title": "ScanFacts",
+      "type": "object"
+    },
+    "TestSuiteFacts": {
+      "additionalProperties": false,
+      "properties": {
+        "collected": {
+          "maximum": 1000000,
+          "minimum": 1,
+          "title": "Collected",
+          "type": "integer"
+        },
+        "exit_code": {
+          "maximum": 255,
+          "minimum": 0,
+          "title": "Exit Code",
+          "type": "integer"
+        },
+        "failed": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Failed",
+          "type": "integer"
+        },
+        "kind": {
+          "const": "test_suite",
+          "default": "test_suite",
+          "title": "Kind",
+          "type": "string"
+        },
+        "output_sha256": {
+          "pattern": "^[0-9a-f]{64}$",
+          "title": "Output Sha256",
+          "type": "string"
+        },
+        "passed": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Passed",
+          "type": "integer"
+        },
+        "skipped": {
+          "maximum": 1000000,
+          "minimum": 0,
+          "title": "Skipped",
+          "type": "integer"
+        }
+      },
+      "required": [
+        "collected",
+        "passed",
+        "failed",
+        "skipped",
+        "exit_code",
+        "output_sha256"
+      ],
+      "title": "TestSuiteFacts",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "artifact_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Artifact Sha256",
+      "type": "string"
+    },
+    "assurance_policy_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Assurance Policy Sha256",
+      "type": "string"
+    },
+    "bundle_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Bundle Sha256",
+      "type": "string"
+    },
+    "evidence": {
+      "items": {
+        "$ref": "#/$defs/AssuranceEvidence"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "manifest_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Manifest Sha256",
+      "type": "string"
+    },
+    "release_id": {
+      "maxLength": 120,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9._-]*[a-z0-9])?$",
+      "title": "Release Id",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "release_id",
+    "manifest_sha256",
+    "artifact_sha256",
+    "assurance_policy_sha256",
+    "evidence",
+    "bundle_sha256"
+  ],
+  "title": "AssuranceEvidenceBundle",
+  "type": "object"
+}

@@ -1,0 +1,144 @@
+{
+  "additionalProperties": false,
+  "properties": {
+    "affiliate_accepted_clicks": {
+      "minimum": 0,
+      "title": "Affiliate Accepted Clicks",
+      "type": "integer"
+    },
+    "confirmed_epc": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Confirmed Epc"
+    },
+    "current_transactions": {
+      "minimum": 0,
+      "title": "Current Transactions",
+      "type": "integer"
+    },
+    "exact_faults_passed": {
+      "maximum": 8,
+      "minimum": 0,
+      "title": "Exact Faults Passed",
+      "type": "integer"
+    },
+    "gross_paid_transactions": {
+      "minimum": 0,
+      "title": "Gross Paid Transactions",
+      "type": "integer"
+    },
+    "gross_payout_amount": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Gross Payout Amount"
+    },
+    "net_paid_transactions": {
+      "minimum": 0,
+      "title": "Net Paid Transactions",
+      "type": "integer"
+    },
+    "net_payout_amount": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Net Payout Amount"
+    },
+    "net_payout_epc": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Net Payout Epc"
+    },
+    "new_acquisition_transactions": {
+      "minimum": 0,
+      "title": "New Acquisition Transactions",
+      "type": "integer"
+    },
+    "qualified_sessions": {
+      "minimum": 0,
+      "title": "Qualified Sessions",
+      "type": "integer"
+    },
+    "reversed_paid_transactions": {
+      "minimum": 0,
+      "title": "Reversed Paid Transactions",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "settled_new_acquisition_amount": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Settled New Acquisition Amount"
+    },
+    "valid_outbound_clicks": {
+      "minimum": 0,
+      "title": "Valid Outbound Clicks",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "qualified_sessions",
+    "valid_outbound_clicks",
+    "affiliate_accepted_clicks",
+    "current_transactions",
+    "new_acquisition_transactions",
+    "gross_paid_transactions",
+    "reversed_paid_transactions",
+    "net_paid_transactions",
+    "settled_new_acquisition_amount",
+    "gross_payout_amount",
+    "net_payout_amount",
+    "confirmed_epc",
+    "net_payout_epc",
+    "exact_faults_passed"
+  ],
+  "title": "MeasurementReconciliationFacts",
+  "type": "object"
+}
