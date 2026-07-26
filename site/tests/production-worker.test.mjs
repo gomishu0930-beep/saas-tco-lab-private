@@ -193,6 +193,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     );
     assert.match(body, /<script data-saastco-analytics-consent>/i, path);
     assert.match(body, /G-TEST123456/, path);
+    assert.match(body, /dataLayer\.push\(arguments\)/, path);
     assert.match(body, /同意するまでGoogleへの通信は行いません/, path);
     const head = body.match(/<head(?:\s[^>]*)?>([\s\S]*?)<\/head>/i);
     assert.ok(head, `${path}: head`);
