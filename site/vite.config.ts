@@ -39,7 +39,7 @@ const localBindingConfig = {
       ]
     : [],
   ...(runtimeMode === "production"
-    ? { assets: { run_worker_first: true } }
+    ? { assets: { binding: "ASSETS", run_worker_first: true } }
     : {}),
 };
 
@@ -54,6 +54,9 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    define: {
+      "process.env.SAAS_RUNTIME_MODE": JSON.stringify(runtimeMode),
+    },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,

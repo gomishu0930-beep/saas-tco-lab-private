@@ -140,7 +140,7 @@ after(async () => {
   );
 });
 
-test("built production config routes assets through the fail-closed worker", async () => {
+test("built production config exposes only the public-prelaunch allowlist", async () => {
   const config = JSON.parse(
     await readFile(new URL("../dist/server/wrangler.json", import.meta.url), "utf8"),
   );
@@ -154,14 +154,38 @@ test("built production config routes assets through the fail-closed worker", asy
 
   for (const path of [
     "/",
-    "/comparison",
     "/methodology",
     "/disclosure",
+    "/pilot/annual-vs-monthly",
+    "/pilot/migration-cost",
+    "/pilot/evidence-method",
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`);
+    assert.equal(response.status, 200, path);
+    const body = await response.text();
+    assert.match(body, /SaaS TCO Lab/i, path);
+    assert.doesNotMatch(body, /href=["']\/(?:comparison|learning|readiness|operator|pilot)\/?["']/i, path);
+    assert.doesNotMatch(body, /href=["']https?:\/\//i, path);
+    assert.equal(
+      response.headers.get("x-robots-tag"),
+      "noindex, nofollow, noarchive, nosnippet",
+      path,
+    );
+  }
+
+  for (const path of [`/assets/${javascriptAsset}`, "/favicon.svg"]) {
+    const response = await fetch(`${baseUrl}${path}`);
+    assert.equal(response.status, 200, path);
+    assert.equal(response.headers.get("cache-control"), "no-store", path);
+  }
+
+  for (const path of [
+    "/comparison",
+    "/learning",
+    "/pilot",
+    "/pilot/pricing-calculator",
     "/readiness",
     "/operator",
-    `/assets/${javascriptAsset}`,
-    "/favicon.svg",
-    "/_vinext/image?url=%2Ffavicon.svg&w=32&q=75",
     "/missing",
   ]) {
     const response = await fetch(`${baseUrl}${path}`);

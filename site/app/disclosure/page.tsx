@@ -38,7 +38,8 @@ export default function DisclosurePage() {
         <p className="eyebrow">CURRENT STATE</p>
         <h2 id="current-state">現在の広告状態: 無効</h2>
         <p>
-          実提携0件、実CTA 0件、外部送客0件です。Humanの提携承認と公開承認を得るまで変更しません。
+          公開承認済みAffiliate CTA 0件、外部送客0件です。提携・権利・掲載先・広告表示の
+          全条件が一致するまで変更しません。
         </p>
       </section>
     </main>

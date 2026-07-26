@@ -3,6 +3,8 @@ import Link from "next/link";
 
 import "./globals.css";
 
+const publicPrelaunch = process.env.SAAS_RUNTIME_MODE === "production";
+
 export const metadata: Metadata = {
   title: {
     default: "SaaS TCO Lab | 公開前比較MVP",
@@ -42,11 +44,20 @@ export default function RootLayout({
               </span>
             </Link>
             <nav aria-label="主要ナビゲーション">
-              <Link href="/comparison/">比較</Link>
               <Link href="/methodology/">算定方法</Link>
-              <Link href="/learning/">学習と施策</Link>
-              <Link href="/readiness/">公開準備</Link>
-              <Link href="/operator/">あなたの操作</Link>
+              {publicPrelaunch ? (
+                <>
+                  <Link href="/pilot/annual-vs-monthly/">記事見本</Link>
+                  <Link href="/pilot/evidence-method/">根拠方針</Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/comparison/">比較</Link>
+                  <Link href="/learning/">学習と施策</Link>
+                  <Link href="/readiness/">公開準備</Link>
+                  <Link href="/operator/">あなたの操作</Link>
+                </>
+              )}
               <Link href="/disclosure/">広告表示</Link>
             </nav>
             <span className="noindex-badge">NOINDEX</span>
@@ -66,9 +77,18 @@ export default function RootLayout({
             <nav aria-label="フッターナビゲーション">
               <Link href="/methodology/">算定方法</Link>
               <Link href="/disclosure/">広告表示</Link>
-              <Link href="/readiness/">公開準備</Link>
-              <Link href="/learning/">学習と施策</Link>
-              <Link href="/operator/">あなたの操作</Link>
+              {publicPrelaunch ? (
+                <>
+                  <Link href="/pilot/annual-vs-monthly/">記事見本</Link>
+                  <Link href="/pilot/evidence-method/">根拠方針</Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/readiness/">公開準備</Link>
+                  <Link href="/learning/">学習と施策</Link>
+                  <Link href="/operator/">あなたの操作</Link>
+                </>
+              )}
             </nav>
           </div>
         </footer>

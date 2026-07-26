@@ -2,6 +2,8 @@ import Link from "next/link";
 
 import type { PilotPage } from "../lib/pilot-pages";
 
+const publicPrelaunch = process.env.SAAS_RUNTIME_MODE === "production";
+
 export function PilotArticle({ page }: { page: PilotPage }) {
   return (
     <main id="main-content" className="page-main">
@@ -41,7 +43,9 @@ export function PilotArticle({ page }: { page: PilotPage }) {
       </section>
 
       <section className="shell page-section">
-        <Link className="text-link" href="/pilot/">12本のpilot一覧へ戻る</Link>
+        <Link className="text-link" href={publicPrelaunch ? "/" : "/pilot/"}>
+          {publicPrelaunch ? "SaaS TCO Labへ戻る" : "12本のpilot一覧へ戻る"}
+        </Link>
       </section>
     </main>
   );
