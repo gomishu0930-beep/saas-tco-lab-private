@@ -35,17 +35,16 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 
 ## 今すぐ返信するテンプレート
 
-公開URLは次で確定しています。HubSpotには同じoriginを入力します。
+公開URL、名義、Google Ads見送り、Mangools登録、HubSpot申請は確定済みなので再入力しません。
+現在必要なのは、作成直前の外部3操作と、候補台帳3件のHuman判断だけです。
 
 ```text
-legal_name_or_entity:
-site_url: https://saas-tco-lab-jp.shukun0930.chatgpt.site
-human_approver_name:
-
-google_ads: GO / STOP
-
-mangools_terms: GO / STOP
-hubspot_impact_contract: GO / STOP
+gsc_property_create: GO / STOP
+ga4_stream_create: GO / STOP
+semrush_contract: GO / STOP
+rights_decision_slate: approve / revise <ID:修正>
+gold_prelabel_slate: approve_all / revise <G-ID:修正> / reject <G-ID>
+pilot_structure_slate: approve_all / revise <P-ID:修正> / reject <P-ID>
 ```
 
 利用許諾照会の既定値は、取得頻度を`週1回以下`、履歴保持を`36か月（相手方がより短い期間を指定した場合はその期間）`とします。変更したい場合だけ返信へ追記してください。
