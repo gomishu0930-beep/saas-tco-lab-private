@@ -6,20 +6,21 @@
 Google Ads・公開手順は`docs/HUMAN_ACTION_MANUAL.md`を優先する。
 
 2026-07-31まではカード不要モードとし、Google Workspace、domain購入、OpenAI API、外部AI課金、
-cloud、hosting、有料trialを保留する。カード不要でも外部送信・規約同意・account作成は対象別GOを必要とする。
+有料cloud・有料hosting・有料trialを保留する。カード不要でも外部送信・規約同意・account作成は対象別GOを必要とする。
+例外として、2026-07-26のHuman指示により、実データ・Affiliate CTAを含まないSites公開前版だけを本番originへ公開した。
 
 |ID|時期|本人が行うこと|完了の合図|Codexが続けること|共有禁止|
 |---|---|---|---|---|---|
 |A-H01|完了|private GitHub repositoryと初回baselineを作成|2026-07-26完了|`saas-tco-lab-private`のprivate設定、`main`、500-file baseline、remote CI全3jobをread-back済み|PAT/SSH秘密鍵|
 |A-H02|完了|Google Drive pluginをinstall/connectし専用folderを選択|2026-07-26完了|`SaaS TCO Lab`と7分類を作成済み。safe-summaryだけを投入する|契約全文、PIIをchat・Driveへ貼らない|
 |A-H03|完了|Google Calendar pluginをconnectし専用calendarを選択|2026-07-26完了|非公開`SaaS TCO Lab`と5予定を作成・read-back済み|個人予定、calendar ID|
-|A-H04|Wave 1・origin待ち|中立な公開URLを決め、そのURLのSearch Console propertyを登録・所有確認|`measurement_origin: GO <public-url>`の後に`gsc_property: done`|read-only query/page export contractを検証。旧FANZA URL-prefix propertyは転用しない|verification token|
-|A-H05|一部完了|既存の未使用GA4管理枠をSaaS専用へ再分類し、任意data sharingを全OFF、event retentionを14か月に設定済み。実在する中立な公開URLを決める|`measurement_origin: GO <public-url>`|正しいstream、event taxonomy、DebugView、consent、内部traffic除外を設定・検証|measurement secret、測定ID|
+|A-H04|Wave 1・property待ち|確定済みoriginをSearch Console propertyへ登録・所有確認|`gsc_property: done`|read-only query/page export contractを検証。旧FANZA URL-prefix propertyは転用しない|verification token|
+|A-H05|一部完了|確定済みoriginの専用GA4 streamを選択または作成する。任意data sharingは全OFF、event retentionは14か月に設定済み|`ga4_stream: done`|event taxonomy、DebugView、consent、内部traffic除外を設定・検証|measurement secret、測定ID|
 |A-H06|月末後|OpenAI API project、budget cap、API keyを本人管理で作成|`openai_project: done`|env参照方法、gold-set benchmark、routerを実装|API key、billing情報|
 |A-H07|Affiliate承認後|各partnerからexportを本人取得可能にする|`affiliate_export_ready: <partner>`|safe summary、status mapping、settlement reconcile|tracking ID、税務/受取情報|
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
-|A-H10|public GO後|cloud/DB/hosting/providerと予算を選択|対象ごとのexact GO|staging、backup/restore、readback、rollbackを実装|cloud root credential|
+|A-H10|公開前版完了|カード不要Sitesを公開前originとして採用済み。実データ、indexing、CTA、DB、独自domainは別承認|2026-07-26 public-prelaunch GO|外部readbackとfail-closed経路を継続監視。実運用releaseはGate A–Cまで停止|cloud root credential|
 |A-H11|自データ取得開始前|Google Ads以外の承認済みJP/ja需要export、field evidence、初回15件以上のHuman gold labelを確認|`jp_ja_export: done`、`field_evidence: done`、`initial_gold_labels: done`|署名付き初期学習品質bundleを作り、低品質batchを開始前にSTOP|raw本文、PII、credential、tracking ID|
 
 ## Plugin画面での既定選択
@@ -34,7 +35,7 @@ cloud、hosting、有料trialを保留する。カード不要でも外部送信
 ```text
 gsc_property: pending / done
 ga4_property: partial / done
-measurement_origin: pending / GO <public-url>
+measurement_origin: GO https://saas-tco-lab-jp.shukun0930.chatgpt.site
 openai_project: pending / done
 initial_gold_labels: pending / done
 notion: use / skip
@@ -75,7 +76,7 @@ CSV取得・repository取込・記事利用はすべてSTOPです。
 |---:|---|---|---|---|
 |1|Mangools KWFinder Human CSV|`selected_pending_rights`|公開前bootstrapのJP/ja volume|field-level書面回答がない|
 |2|Microsoft Advertising Keyword Planner|`contingency_unverified`|Mangools不許可時の代替|account作成GOなし、カード不要性未確認|
-|3|Search Console|`approved_after_public_origin`|公開後の自サイト実需要|中立origin未確定、公開前データなし|
+|3|Search Console|`available_after_property`|公開後の自サイト実需要|origin確定済み、property・実測データは未作成|
 |4|Google Trends|`supporting_only`|季節性・相対比較|絶対需要やCVRへ換算禁止|
 
 `jp_ja_export: done`はMangoolsから8権利の書面回答を得て、HumanがCSVを正規exportし、locale、欠損、
@@ -166,18 +167,20 @@ custom definitionがなく、初期作成以外の運用変更もなかった。
 ただし、旧Search Console propertyは成人向けを連想させるURL-prefixそのものに固定され、
 現在そのoriginはDNS解決もしない。propertyは改名・別URLへの付け替えができないため、
 SaaS用途へは転用しない。GA4内の旧web streamも同じlegacy originを指すため、本番collectorには
-採用しない。中立な公開URLが決まるまで、`gsc_property`と`ga4_property`は完了扱いにしない。
+採用しない。中立originは2026-07-26に
+`https://saas-tco-lab-jp.shukun0930.chatgpt.site`へ確定したが、専用property・streamの検証までは
+`gsc_property`と`ga4_property`を完了扱いにしない。
 
 同日、Humanの明示指定に従い、任意のGoogle data sharing 4項目をすべてOFF、event data retentionを
 14か月へ変更し、保存後の画面でread-backした。ユーザーデータ保持は既存の14か月を維持した。
 確認済みの未完了項目は、同意シグナル未実装、内部traffic filterがtest、DebugView実データなし、
-中立な公開originとその専用streamが未作成である。
+新originのSearch Console propertyと専用GA4 streamが未作成である。
 
-カード不要の中立な公開URLを決めた後、次の形式だけを返信する。公開、deploy、DNS変更、
+確定したoriginを変更する場合だけ、次の形式で新しいURLを返信する。新しいdeploy、DNS変更、
 credential作成をこの返信だけで承認するものではない。
 
 ```text
-measurement_origin: GO https://<neutral-public-origin>
+measurement_origin: GO https://<new-neutral-public-origin>
 ga4_data_sharing: OFF / KEEP
 ga4_event_retention: 14_months / KEEP_2_months
 ```
@@ -186,6 +189,16 @@ ga4_event_retention: 14_months / KEEP_2_months
 新origin専用stream、deny既定のconsent、`qualified_session`・`comparison_interaction`・
 `outbound_click`、DebugView、内部traffic除外、新Search Console property、GA4 linkの順で検証する。
 PII、affiliate URL、測定ID、verification token、個人メールはartifactやevent parameterに保存しない。
+
+## 公開前originの現在地
+
+2026-07-26、Humanの「本番で使用するURLを使う」指示を、`SaaS TCO Lab`の公開前originを
+一般閲覧可能な本番URLへ置く承認として実行した。scopeはSites version 1、commit
+`17123624f55090465970ee6b27917cb04dc54594`、上記originに限定する。条件は全ページ`noindex`、
+外部link 0件、実在vendorの価格・評価・Affiliate CTA 0件、公開allowlist 6経路である。
+外部readbackでは公開6経路がHTTP 200、`/operator`と`/comparison`がHTTP 503、`robots.txt`が
+`Disallow: /`、全応答が`X-Robots-Tag: noindex, nofollow, noarchive, nosnippet`であることを確認した。
+この承認は実データ取得、実価格公開、indexing、Affiliate link、GA4送信、独自domain、課金へ拡張しない。
 
 `ga4_property: done`は中立origin、consent、event taxonomy、DebugView、内部traffic除外の全条件を
 満たした時だけ許可する。`gsc_property: done`は中立originの所有確認とread-only export contractを

@@ -1,6 +1,6 @@
 # Human Action Manual — あなたが操作する箇所だけ
 
-基準日: 2026-07-23（Asia/Tokyo）
+基準日: 2026-07-26（Asia/Tokyo）
 
 この表は、本人確認、credential、法的同意、税務・受取情報、最終事業判断のように、Human Approver本人でなければ完了できない作業だけを残したものです。価格収集、入力整形、比較計算、検証、実装、集計、監視はCodex側で進めます。
 
@@ -9,7 +9,8 @@
 ## 月末までのカード不要モード
 
 2026-07-31までは、カード登録、有料trial、支払いプロファイル作成、課金開始を行わない。
-Google Workspace、domain購入、OpenAI API、challenger AI、cloud、hosting、有料SEO toolは保留する。
+Google Workspace、domain購入、OpenAI API、challenger AI、有料cloud・有料hosting、有料SEO toolは保留する。
+カード不要Sitesの公開前originだけは、2026-07-26のHuman指示に基づき一般公開済みである。
 無料登録であってもカード画面が出た時点で停止し、代替カードや別Payments profileを繰り返し試さない。
 
 この期間に先行できるのは、許諾文面の確認、対象別GO後の問い合わせ、Mangools無料登録、
@@ -20,7 +21,7 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 
 |ID|時期|あなたが行うこと|所要目安|現在地|完了の合図|完了後にCodexが行うこと|
 |---|---|---|---:|---|---|---|
-|H1|一部完了|公開名義と公開予定URLを決める|3分|公開brand=`SaaS TCO Lab`、approver=`omishu`、URL未公開|中立な公開URLだけ後日指定|GSC/GA4と申請先siteを同一originへ確定する|
+|H1|完了|公開名義と公開予定URLを決める|0分|brand=`SaaS TCO Lab`、approver=`omishu`、恒久origin確定・外部readback済み|追加操作なし|GSC/GA4と申請先siteを同一originへそろえる|
 |H2|回答確認中|5社への利用許諾照会を承認する|2分|2026-07-23送信済み。SemrushとSerpstatは回答あり、他3社は未回答|field判定表へ`approve / revise`|Human承認済みのrights decisionだけを台帳化する|
 |H3|見送り|Google Adsをカード要求前まで進める変更不能設定を承認する|0分|2026-07-26、日本・日本時間をread-back後、支払い方法の一時承認課金画面で未送信停止。同日Human判断でGoogle Ads／Keyword Planner経路をskip|追加操作なし|Google Adsへ再進入せず、承認済みの代替JP/ja需要exportを待つ|
 |H4|完了|MangoolsのcredentialとreCAPTCHAを本人操作する|5–8分|2026-07-26登録済み・Affiliate有効|追加操作なし|回答待ちのrightsと公開準備が整うまで紹介IDを非公開のまま保持する|
@@ -30,15 +31,15 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |H7|回答到着時|各社回答の権限・scopeについて最終判断する|1社5分|未到着|Codexのfield別判定案に`approve`または`reject`|`SourcePolicy`へfield単位で反映し、許可済みsourceだけadapterを実装する|
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
-|H10|公開直前|domain、法的表示、privacy、公開を個別承認する|10分|まだ実施禁止|各対象へのexact `GO`|noindex staging、readback、rollback後に別途公開判定へ進む|
+|H10|一部完了|実データ、indexing、Affiliate CTA、独自domain、法的表示を個別承認する|10分|安全なnoindex公開前版だけ本番originで稼働中|各対象へのexact `GO`|実運用releaseをreadbackし、rollback可能性を確認する|
 
 ## 今すぐ返信するテンプレート
 
-未公開の場合、`site_url`は`未公開`で構いません。ただしHubSpotなどの審査は、外部から確認できる公開URLがないと不承認または保留になる可能性があります。
+公開URLは次で確定しています。HubSpotには同じoriginを入力します。
 
 ```text
 legal_name_or_entity:
-site_url:
+site_url: https://saas-tco-lab-jp.shukun0930.chatgpt.site
 human_approver_name:
 
 google_ads: GO / STOP
@@ -116,7 +117,8 @@ omishu
 1. 保存済み`HubSpot-Affiliate-Agreement-2024-09-18.pdf`を読みます。
 2. Impactの`Contract Terms for HubSpot`画面へ戻ります。
 3. 同意する場合だけcheckboxを選び、`Continue`を押します。
-4. credential、2FA、本人・事業情報、公開予定site、集客方法は本人が入力します。
+4. credential、2FA、本人・事業情報、集客方法は本人が入力します。siteには
+   `https://saas-tco-lab-jp.shukun0930.chatgpt.site`を指定します。
 5. 申請内容を確認し、本人が送信します。
 6. `hubspot_application: submitted`と返信します。入力値やcredentialは共有しません。
 7. カード、有料契約、支払方法を要求された場合は送信せず停止します。
@@ -146,11 +148,12 @@ omishu
 |5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush・Serpstat回答確認済み、Mangools・HubSpot・SE Ranking待ち|
 |SE Ranking公式窓口とAffiliate条件|確認済み|
 |SE Ranking通常登録|work email必須で停止。カード不要の公式問い合わせを2026-07-23送信済み、回答待ち|
-|HubSpot / Semrush Impact申請導線|双方とも契約同意直前まで準備済み。checkbox・送信は本人操作|
+|HubSpot / Semrush Impact申請導線|双方とも契約同意直前まで準備済み。HubSpot用の外部閲覧可能URLも確定。checkbox・送信は本人操作|
 |Google Ads / Keyword Planner|変更不能な初期設定の続行直前|
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|
-|公開site・実価格取得・実Affiliate CTA|Gate A–C合格まで技術的にSTOP|
+|公開前site|カード不要Sitesで公開済み。noindex、外部link 0、実価格0、Affiliate CTA 0、内部routeは503|
+|実価格取得・indexing・実Affiliate CTA|Gate A–C合格まで技術的にSTOP|
 
 ## 停止条件
 
@@ -159,4 +162,4 @@ omishu
 - 利用許諾が届くまで、対象会社の価格fieldを自動取得・保存・公開しない。
 - Affiliate申請中を承認済みとして数えない。
 - Google Trends指数を月間検索数へ換算しない。
-- 3社のrights、3社のAffiliate、JP/ja需要が揃うまで公開しない。
+- 3社のrights、3社のAffiliate、JP/ja需要が揃うまで、実価格、実Affiliate CTA、indexingを公開しない。
