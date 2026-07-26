@@ -14,8 +14,8 @@ Google Ads・公開手順は`docs/HUMAN_ACTION_MANUAL.md`を優先する。
 |A-H01|完了|private GitHub repositoryと初回baselineを作成|2026-07-26完了|`saas-tco-lab-private`のprivate設定、`main`、500-file baseline、remote CI全3jobをread-back済み|PAT/SSH秘密鍵|
 |A-H02|完了|Google Drive pluginをinstall/connectし専用folderを選択|2026-07-26完了|`SaaS TCO Lab`と7分類を作成済み。safe-summaryだけを投入する|契約全文、PIIをchat・Driveへ貼らない|
 |A-H03|完了|Google Calendar pluginをconnectし専用calendarを選択|2026-07-26完了|非公開`SaaS TCO Lab`と5予定を作成・read-back済み|個人予定、calendar ID|
-|A-H04|property作成済み・所有確認待ち|確定済みoriginのSearch Console URL-prefix propertyは作成済み。所有確認用の公開site変更は未承認|`gsc_property: done`|確認tag/fileを別gateでdeployし、所有確認とread-only query/page export contractを検証|verification token|
-|A-H05|stream作成済み・計測実装待ち|確定済みoriginの専用GA4 streamを作成済み。任意data sharingは全OFF、event retentionは14か月。tag未設置・送信未開始|`ga4_stream: done`|別gateでconsent付きtag、event taxonomy、DebugView、内部traffic除外を設定・検証|measurement secret、測定ID|
+|A-H04|deploy-ready・所有確認待ち|確定済みoriginのSearch Console URL-prefix propertyは作成済み。runtime verification metaはローカル実装・テスト済み、公開site変更は未承認|`gsc_verification_deploy: GO`|値をrepoへ保存せずdeployし、所有確認とread-only query/page export contractを検証|verification token|
+|A-H05|deploy-ready・送信開始待ち|確定済みoriginの専用GA4 streamを作成済み。任意data sharingと拡張計測は全OFF、event retentionは14か月。同意前通信0のruntime bootstrapはローカル実装・テスト済み|`ga4_tag_deploy: GO`|runtime値を設定してdeployし、同意前/拒否後0件、同意後DebugView、内部traffic除外を検証|measurement secret、測定ID|
 |A-H06|月末後|OpenAI API project、budget cap、API keyを本人管理で作成|`openai_project: done`|env参照方法、gold-set benchmark、routerを実装|API key、billing情報|
 |A-H07|Affiliate承認後|各partnerからexportを本人取得可能にする|`affiliate_export_ready: <partner>`|safe summary、status mapping、settlement reconcile|tracking ID、税務/受取情報|
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
@@ -182,8 +182,9 @@ SaaS用途へは転用しない。GA4内の旧web streamも同じlegacy origin�
 
 同日、Humanの明示指定に従い、任意のGoogle data sharing 4項目をすべてOFF、event data retentionを
 14か月へ変更し、保存後の画面でread-backした。ユーザーデータ保持は既存の14か月を維持した。
-確認済みの未完了項目は、同意シグナル未実装、内部traffic filterがtest、DebugView実データなし、
-新originのSearch Console propertyと専用GA4 streamが未作成である。
+その後、新originのSearch Console propertyと専用GA4 streamを作成した。現在の未完了項目は、
+公開versionへのGSC verification deploy、GA4 runtime値と同意制御tagのdeploy、DebugView実データ、
+内部traffic filterの最終検証である。
 
 確定したoriginを変更する場合だけ、次の形式で新しいURLを返信する。新しいdeploy、DNS変更、
 credential作成をこの返信だけで承認するものではない。
@@ -203,6 +204,9 @@ PII、affiliate URL、測定ID、verification token、個人メールはartifact
 `<head>`へ確認tagを追加するか、確認fileを置く必要があり、新しいpublic deployは別gateのため停止した。
 GA4は同originの`SaaS TCO Lab — Public Web` streamを作成しread-backしたが、tagは設置せず、
 analytics送信も開始していない。次に必要なのは作成承認ではなく、公開site変更と送信開始の個別承認である。
+GSC verification metaとGA4 bootstrapは2026-07-26にローカル実装した。runtime値がない場合はmarkupと
+Google向けCSP許可を出さず、GA4を有効にしても訪問者の同意前はGoogle scriptを読み込まない。
+実行・検証・rollback手順は`docs/GSC_GA4_DEPLOYMENT_GATE.md`を正本とする。
 
 ```text
 gsc_verification_deploy: GO / STOP

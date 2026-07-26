@@ -151,7 +151,7 @@ omishu
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|
 |公開前site|カード不要Sitesで公開済み。noindex、外部link 0、実価格0、Affiliate CTA 0、内部routeは503|
-|Search Console / GA4|新originのGSC propertyとGA4 streamを作成済み。GSC所有確認用deployとGA4 tag/送信は別gateで未実行|
+|Search Console / GA4|新originのGSC propertyとGA4 streamを作成済み。runtime GSC metaと同意前通信0のGA4 bootstrapはローカル検証済み。公開deploy・送信は別gateで未実行|
 |実価格取得・indexing・実Affiliate CTA|Gate A–C合格まで技術的にSTOP|
 
 ## 停止条件

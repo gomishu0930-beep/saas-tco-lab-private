@@ -246,6 +246,11 @@ test("comparison tables expose captions, scoped headers, adjacent disclosure, an
 test("pre-public HTML contains no canonical, JSON-LD, public origin, or active CTA", () => {
   for (const path of ROUTES) {
     const html = pages.get(path);
+    assert.doesNotMatch(
+      html,
+      /google-site-verification|googletagmanager|google-analytics|data-saastco-analytics-consent/i,
+      `${path}: runtime measurement controls must be absent without approved env`,
+    );
     for (const link of openingTags(html, "link").map(attributes)) {
       const rel = (link.get("rel") ?? "").toLowerCase().split(/\s+/);
       assert.equal(rel.includes("canonical"), false, `${path}: canonical`);

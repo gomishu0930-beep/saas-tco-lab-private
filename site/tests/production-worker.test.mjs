@@ -121,6 +121,12 @@ before(async () => {
       "127.0.0.1",
       "--var",
       "IMPACT_SITE_VERIFICATION:test-impact-verification-value",
+      "--var",
+      "GOOGLE_SITE_VERIFICATION:test-google-site-verification-value",
+      "--var",
+      "GA4_ANALYTICS_ENABLED:true",
+      "--var",
+      "GA4_MEASUREMENT_ID:G-TEST123456",
     ],
     {
       cwd: siteRoot,
@@ -180,6 +186,14 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       /<meta name="impact-site-verification" value="test-impact-verification-value">/i,
       path,
     );
+    assert.match(
+      body,
+      /<meta name="google-site-verification" content="test-google-site-verification-value">/i,
+      path,
+    );
+    assert.match(body, /<script data-saastco-analytics-consent>/i, path);
+    assert.match(body, /G-TEST123456/, path);
+    assert.match(body, /同意するまでGoogleへの通信は行いません/, path);
     const head = body.match(/<head(?:\s[^>]*)?>([\s\S]*?)<\/head>/i);
     assert.ok(head, `${path}: head`);
     const firstMeta = head[1].match(/<meta\b[^>]*>/i);
@@ -189,6 +203,11 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       /name="impact-site-verification" value="test-impact-verification-value"/i,
       `${path}: verification must be the first meta tag`,
     );
+    assert.ok(
+      body.indexOf('name="impact-site-verification"') <
+        body.indexOf('name="google-site-verification"'),
+      `${path}: Impact verification must stay before GSC verification`,
+    );
     assert.doesNotMatch(body, /href=["']\/(?:comparison|learning|readiness|operator|pilot)\/?["']/i, path);
     assert.doesNotMatch(body, /href=["']https?:\/\//i, path);
     assert.equal(
@@ -196,6 +215,9 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       "noindex, nofollow, noarchive, nosnippet",
       path,
     );
+    const csp = response.headers.get("content-security-policy");
+    assert.match(csp, /script-src[^;]*https:\/\/www\.googletagmanager\.com/i, path);
+    assert.match(csp, /connect-src[^;]*https:\/\/www\.google-analytics\.com/i, path);
   }
 
   for (const path of [`/assets/${javascriptAsset}`, "/favicon.svg"]) {
@@ -218,6 +240,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     const body = await response.text();
     assert.equal(body, "Service Unavailable\n", path);
     assert.doesNotMatch(body, /JPY|SaaS|synthetic|affiliate/i, path);
+    assert.doesNotMatch(body, /google-site-verification|googletagmanager|G-TEST123456/i, path);
     assert.equal(response.headers.get("cache-control"), "no-store", path);
   }
 });
