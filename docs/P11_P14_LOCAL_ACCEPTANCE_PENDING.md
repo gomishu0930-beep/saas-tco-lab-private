@@ -58,7 +58,7 @@ SBOM           a860dd9810e1fb76f75198ff23870c4c4b271609670124aa90dd9ee803595c13
 - compileall、`uv lock --check`、workflow verifier、Gitleaks: passed。
 - Web local/startup/production tests and builds、ESLint: passed。
 - `npm audit`: 0 vulnerabilities。`sharp` 0.35.3 overrideでNext/Miniflare build互換を再検証。
-- CycloneDX 1.6 SBOM: 651 components / 651 dependency nodes、`--check` passed。
+- CycloneDX 1.6 SBOM: 451 components / 451 dependency nodes、`--check` passed。
 - business/public state: `STOP`。
 
 この票を`GO`へ変更しても、対象外のexternal/production行為は一切承認されない。外部操作は

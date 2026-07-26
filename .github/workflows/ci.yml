@@ -52,7 +52,10 @@ jobs:
         run: uv python install 3.14
 
       - name: Sync locked environment
-        run: uv sync --locked --group dev
+        run: uv sync --locked --group dev --link-mode copy
+
+      - name: Generate ignored deterministic P18 test fixture
+        run: uv run python scripts/generate_p18_pending_fixture.py
 
       - name: Run tests
         run: uv run pytest
