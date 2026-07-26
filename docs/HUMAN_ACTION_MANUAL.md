@@ -26,8 +26,8 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |H3|見送り|Google Adsをカード要求前まで進める変更不能設定を承認する|0分|2026-07-26、日本・日本時間をread-back後、支払い方法の一時承認課金画面で未送信停止。同日Human判断でGoogle Ads／Keyword Planner経路をskip|追加操作なし|Google Adsへ再進入せず、承認済みの代替JP/ja需要exportを待つ|
 |H4|完了|MangoolsのcredentialとreCAPTCHAを本人操作する|5–8分|2026-07-26登録済み・Affiliate有効|追加操作なし|回答待ちのrightsと公開準備が整うまで紹介IDを非公開のまま保持する|
 |H5|完了|SE Rankingへwork emailなしの登録方法を問い合わせる|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を登録可否・必要証拠・条件へ分解する|
-|H6|申請完了・審査待ち|HubSpot Impact契約への同意、credential、申請送信を本人操作する|0分|2026-07-26に申請送信済み。JPY確定、追加Marketplace・税務・受取設定は未操作|追加操作なし|審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
-|H6-S|website認証deploy待ち|Impact MarketplaceのSaaS TCO Lab media propertyを認証する|1分|税務workflowと公開profileは完了。認証metaだけのSites version 2は保存済み・未公開。Semrush申請未送信|`impact_verification_deploy: GO`|version 2を公開し、website認証を送信して結果を確認する。Semrush最終申請は別GOまで停止する|
+|H6|申請完了・審査待ち|HubSpot Impact契約への同意、credential、申請送信を本人操作する|0分|2026-07-26に申請送信済み。JPY確定、dashboardは`In Review`|追加操作なし|審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
+|H6-S|完了・Marketplace審査待ち|Impact MarketplaceのSaaS TCO Lab media propertyを認証する|0分|税務workflow、公開profile、website認証、Marketplace申請が完了。Semrush個別申請は未送信|Semrushへ進む時だけ`semrush_submit: GO`|Marketplace結果を追跡し、Semrush最終申請は別GOまで停止する|
 |H7|回答到着時|各社回答の権限・scopeについて最終判断する|1社5分|未到着|Codexのfield別判定案に`approve`または`reject`|`SourcePolicy`へfield単位で反映し、許可済みsourceだけadapterを実装する|
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
@@ -37,10 +37,10 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 
 公開URL、名義、Google Ads見送り、Mangools登録、HubSpot申請は確定済みなので再入力しません。
 直前の外部3操作と候補台帳3件は2026-07-26に一括承認され、実行・記録済みです。
-現在必要なのは、Impact website認証専用versionの公開と、新しいGSC・analytics送信gateの判断です。
+現在必要なのは、Semrush最終申請と、新しいGSC・analytics送信gateの判断です。
 
 ```text
-impact_verification_deploy: GO / STOP
+semrush_submit: GO / STOP
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP
 ```
@@ -114,7 +114,7 @@ omishu
 1. Humanのaction-time承認後、ImpactのPartner Program Agreementへ同意し、申請を送信しました。
 2. siteは`https://saas-tco-lab-jp.shukun0930.chatgpt.site`、表示名は`SaaS TCO Lab`、
    事業区分は`Search/Comparison`、通貨はJPYで確定しました。
-3. 申請後に表示されたImpact Marketplace参加、追加規約、税務情報、受取情報は別gateとして未操作です。
+3. Impact Marketplace規約、税務workflow、公開profile、website認証、Marketplace申請は完了しています。税務値と受取情報は記録していません。
 4. HubSpotの審査結果が届くまで、Affiliate承認・CTA・収益計上へ進めません。
 5. 承認後もpublic pricingの取得・保存・TCO・履歴権は別回答として確認します。
 
@@ -125,9 +125,9 @@ omishu
 3. 2026-07-26、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User Agreement（画面上の更新日2024-07-10）とMaster Program Agreement（現行URLを2026-07-26確認）へ同意しました。規約全文は保存していません。
 4. 税務workflowは本人判断後に完了しました。選択値、税番号、受取情報はchat・repo・logへ保存していません。
 5. 公開profileは`Search/Comparison`、SaaS TCO Labの説明・関心tag・中立logoで保存済みです。個人情報、配送先、追加link、media kitは追加していません。
-6. SaaS TCO Lab website media propertyは登録済みですが未認証です。認証値はSitesのsecret設定へ分離し、metaを出すversion 2は保存のみで未公開です。
-7. Humanが`impact_verification_deploy: GO`を返した後、Codexがversion 2を公開し、Impactへwebsite認証を送信して結果を確認します。FANZA・成人向けbrand/domain/contentは登録しません。
-8. カード、有料契約、支払方法を要求された場合は未送信で停止します。Marketplace onboarding完了後もSemrush最終送信は別のaction-time確認まで行いません。
+6. SaaS TCO Lab website media propertyは認証済みです。認証値はSitesのsecret設定へ分離し、repoには保存していません。
+7. Impact公式条件どおり認証metaを最初のmetaとするversion 3を公開し、HTTP 200、noindex header、Impact画面の`Verified`をread-backしました。FANZA・成人向けbrand/domain/contentは登録していません。
+8. Marketplace申請は受領済みです。カード、有料契約、支払方法を要求された場合は未送信で停止し、Semrush最終送信は`semrush_submit: GO`まで行いません。
 9. Affiliate承認を、禁止回答済みの自動取得・継続保存・履歴DB化の許可へ読み替えません。
 
 ### H7 — 利用許諾回答
@@ -146,7 +146,7 @@ omishu
 |5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush回答確認済み。Serpstatは2026-07-26 requested due-diligence返信済み・正式回答待ち。Mangools・HubSpot・SE Ranking待ち|
 |SE Ranking公式窓口とAffiliate条件|確認済み|
 |SE Ranking通常登録|work email必須で停止。カード不要の公式問い合わせを2026-07-23送信済み、回答待ち|
-|HubSpot / Semrush Impact申請導線|HubSpotは申請済み・審査待ち。SemrushはImpact Marketplace規約同意・税務workflow・公開profile完了、media propertyはwebsite認証待ち、申請未送信|
+|HubSpot / Semrush Impact申請導線|HubSpotは`In Review`。Impact Marketplace申請とwebsite認証は完了。Semrush個別申請は未送信|
 |Google Ads / Keyword Planner|変更不能な初期設定の続行直前|
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|

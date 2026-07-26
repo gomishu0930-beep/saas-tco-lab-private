@@ -56,13 +56,13 @@ Google Ads／Keyword Plannerは2026-07-26のHuman判断でskipし、自動再試
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答|0|rights回答を待つ。紹介IDは共有しない|
 |HubSpot|2026-07-26 Impact申請送信済み・審査待ち|未回答|0|審査結果を待つ。申請中を承認済みと数えない|
-|Semrush|Impact Marketplace規約同意・税務workflow・公開profile完了。SaaS TCO Lab media propertyは未認証、申請未送信|回答あり|0|認証metaだけのSites version 2公開を承認し、website認証後もSemrush最終申請は別GOまで停止する|
+|Semrush|Impact Marketplace申請受領・website認証済み。Semrush個別申請は未送信|回答あり|0|Marketplace審査を待つ。Semrush最終申請は`semrush_submit: GO`まで停止する|
 |SE Ranking|work email例外回答待ち|未回答|0|回答まで再登録しない|
 |Serpstat|未申請|回答あり・社内審査中。2026-07-26 due-diligence返信済み|0|authorized teamの8項目回答を待つ|
 
 HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。現在は
 審査待ちで、追加表示されたImpact Marketplace設定、税務情報、受取情報は未操作です。Semrushは
-2026-07-26に契約同意、Impact credential受付、SMS端末認証、既存Impact accountへのloginまで完了しました。同日、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User AgreementとMaster Program Agreementへ同意しました。税務workflowは値を記録せず完了し、SaaS TCO Lab限定の公開profileも保存済みです。media propertyは登録済みですがwebsite認証前で、認証metaをruntime secretから出すSites version 2は保存のみ、未公開です。Semrush申請は未送信です。申請中も承認済みと数えず、Affiliate、data rights、対象site、
+2026-07-26に契約同意、Impact credential受付、SMS端末認証、既存Impact accountへのloginまで完了しました。同日、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User AgreementとMaster Program Agreementへ同意しました。税務workflowは値を記録せず完了し、SaaS TCO Lab限定の公開profileも保存済みです。media propertyはwebsite認証済みで、Impact Marketplace申請は受領済みです。Semrush個別申請は未送信です。申請中も承認済みと数えず、Affiliate、data rights、対象site、
 payoutの全条件が揃った会社だけを1社と数えます。
 
 ## Google Ads以外のJP/ja需要source
@@ -207,7 +207,7 @@ analytics送信も開始していない。次に必要なのは作成承認で�
 ```text
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP
-impact_verification_deploy: GO / STOP
+semrush_submit: GO / STOP
 ```
 
 ## 公開前originの現在地
@@ -220,9 +220,11 @@ impact_verification_deploy: GO / STOP
 `Disallow: /`、全応答が`X-Robots-Tag: noindex, nofollow, noarchive, nosnippet`であることを確認した。
 この承認は実データ取得、実価格公開、indexing、Affiliate link、GA4送信、独自domain、課金へ拡張しない。
 
-2026-07-26、Impact website認証専用のSites version 2を保存した。sourceはruntime secretが存在する時だけ
-`impact-site-verification` metaをHTMLへ挿入し、値そのものをrepoへ保存しない。local build・testは全件合格し、
-version 2は未deployである。既存の一般公開version 1を更新する前に`impact_verification_deploy: GO`を必要とする。
+2026-07-26、Humanの`impact_verification_deploy: GO`後にImpact website認証専用のSites更新を公開した。
+sourceはruntime secretが存在する時だけ`impact-site-verification` metaをHTMLへ挿入し、値そのものをrepoへ
+保存しない。Impact公式手順に合わせてmetaを`<head>`内の最初のmetaとするversion 3を再検証・公開し、
+外部readbackでHTTP 200、meta位置、従来のnoindex security headerを確認した。Impact画面ではwebsiteが
+`Verified`となり、Marketplace進捗100%、Marketplace application受領を確認した。Semrush個別申請は送信していない。
 
 `ga4_property: done`は中立origin、consent、event taxonomy、DebugView、内部traffic除外の全条件を
 満たした時だけ許可する。`gsc_property: done`は中立originの所有確認とread-only export contractを
