@@ -23,7 +23,15 @@ const ROUTES = [
   "/disclosure",
   "/readiness",
   "/operator",
+  "/operator/derivatives",
+  "/embed/tco-calculator",
+  "/about",
+  "/operator-information",
+  "/privacy",
+  "/contact",
+  "/advertising-policy",
 ];
+const ARTICLE_ROUTES = ROUTES.filter((path) => path.startsWith("/pilot/"));
 const ROUTE_PATHS = new Set(ROUTES);
 const pages = new Map();
 
@@ -96,7 +104,7 @@ before(async () => {
   }
 });
 
-test("all twenty routes expose deterministic accessible document metadata", () => {
+test("all public-prelaunch and local routes expose deterministic accessible document metadata", () => {
   const titles = new Set();
   const descriptions = new Set();
   const headings = new Set();
@@ -157,6 +165,37 @@ test("all twenty routes expose deterministic accessible document metadata", () =
       `${path}: unique description`,
     );
     descriptions.add(descriptionText);
+  }
+});
+
+test("every P01-P12 article renders PR disclosure before a disabled CTA", () => {
+  assert.equal(ARTICLE_ROUTES.length, 12);
+  for (const path of ARTICLE_ROUTES) {
+    const html = pages.get(path);
+    const disclosurePosition = html.indexOf('id="article-pr-disclosure"');
+    const ctaPosition = html.indexOf("CTA DISABLED");
+    assert.ok(disclosurePosition >= 0, `${path}: PR disclosure`);
+    assert.ok(ctaPosition > disclosurePosition, `${path}: disclosure before CTA`);
+    assert.doesNotMatch(html, /rel=["'][^"']*sponsored/i, path);
+  }
+});
+
+test("every P01-P12 article renders safe Product, FAQ, and Breadcrumb JSON-LD", () => {
+  assert.equal(ARTICLE_ROUTES.length, 12);
+  for (const path of ARTICLE_ROUTES) {
+    const html = pages.get(path);
+    const payloads = [...html.matchAll(
+      /<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
+    )].map((match) => JSON.parse(match[1]));
+    assert.equal(payloads.length, 1, `${path}: JSON-LD count`);
+    const graph = payloads[0]["@graph"];
+    assert.deepEqual(
+      graph.map((item) => item["@type"]),
+      ["Product", "FAQPage", "BreadcrumbList"],
+      `${path}: required structured-data types`,
+    );
+    assert.equal("offers" in graph[0], false, `${path}: unapproved price excluded`);
+    assert.doesNotMatch(JSON.stringify(payloads[0]), /"price"\s*:/i, `${path}: no price markup`);
   }
 });
 
@@ -243,7 +282,12 @@ test("comparison tables expose captions, scoped headers, adjacent disclosure, an
   }
 });
 
-test("pre-public HTML contains no canonical, JSON-LD, public origin, or active CTA", () => {
+test("pre-public HTML contains no canonical, runtime origin, tracking URL, or active CTA", () => {
+  const allowedEvidenceHosts = new Set([
+    "mangools.com",
+    "seranking.com",
+    "www.semrush.com",
+  ]);
   for (const path of ROUTES) {
     const html = pages.get(path);
     assert.doesNotMatch(
@@ -255,14 +299,14 @@ test("pre-public HTML contains no canonical, JSON-LD, public origin, or active C
       const rel = (link.get("rel") ?? "").toLowerCase().split(/\s+/);
       assert.equal(rel.includes("canonical"), false, `${path}: canonical`);
     }
-    for (const script of openingTags(html, "script").map(attributes)) {
-      assert.notEqual(
-        script.get("type")?.toLowerCase(),
-        "application/ld+json",
-        `${path}: JSON-LD`,
-      );
+    const htmlWithoutScripts = html.replace(/<script\b[\s\S]*?<\/script>/gi, "");
+    const externalTextUrls = [...htmlWithoutScripts.matchAll(/https:\/\/([^\s<]+)/gi)];
+    for (const match of externalTextUrls) {
+      const host = match[1].replace(/\/$/, "").split("/")[0];
+      assert.equal(allowedEvidenceHosts.has(host), true, `${path}: unapproved external evidence host ${host}`);
     }
-    assert.doesNotMatch(html, /\b(?:https?:)?\/\//i, `${path}: public origin`);
+    assert.doesNotMatch(html, /saas-tco-lab-jp\.shukun0930\.chatgpt\.site/i, `${path}: runtime origin`);
+    assert.doesNotMatch(html, /[?&](?:utm_|ref|aff|partner|clickid|subid)/i, `${path}: tracking URL`);
     assert.doesNotMatch(html, /\brel=["'][^"']*sponsored/i, `${path}: sponsored link`);
     assert.doesNotMatch(html, /公式サイトへ|affiliate[_-]?url/i, `${path}: active CTA`);
   }

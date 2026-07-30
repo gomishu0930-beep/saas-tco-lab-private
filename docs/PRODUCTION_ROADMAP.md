@@ -1,19 +1,24 @@
 # SaaS比較Affiliate 完成ロードマップ
 
-基準日: 2026-07-23
+基準日: 2026-07-28
+
+> 2026-07-28のHuman decisions `DR-2026-07-28-REVENUE-TRACK`と
+> `Human指示 2026-07-28(2)`と`Human指示 2026-07-30(最終)`を優先する。P0–P18はmaintenance only、P19以降の拡張は凍結し、
+> 以下の完成定義とGate Aにはrights model v2を適用する。
 
 ## 完成の定義
 
-本件の「完成」は、サイトが表示できることではない。次の6条件を同時に満たし、停止・復旧も再現できる状態とする。
+本件のlaunch完成は、次の6条件を同時に満たす状態とする。
 
-1. 公開する全fieldに、取得、正規化保存、履歴、派生TCO、比較表示、最小引用、公開の有効な根拠がある。
-2. 実利用可能なAffiliate広告主が3社以上あり、CTA、商標、広告表示、対象地域、期限が検証される。
-3. 料金・上限・適合判定・12か月TCOがcanonical Python実装から生成され、重大誤表示が0件である。
-4. `data / rights / affiliate`の最短期限をrequest/serve時に検査し、期限切れ数値・順位・CTAが自動非表示になる。
-5. 定常90日で人手イベント比率20%以下、人手720分/月以下、job成功率99%以上を満たす。
-6. 成熟したconfirmed 1,000 outbound clicksで新規獲得EPC 60円以上、または180日でSTOP/縮小を判断する。
+1. P01–P12が実記事templateへ変換され、vendor値にはvendor・plan識別子、Human入力値または明示的unknown、出典URL、観測日、次回確認日がある。Humanシナリオ値はvendor値と分離し、入力根拠と日付を持つ。unknownを推測しない。
+2. 全記事の冒頭に広告・アフィリエイトのPR表示があり、CTAより先に表示される。
+3. 12か月TCOはcanonical Python実装とgolden一致するTypeScript計算機から生成され、重大誤表示が0件である。
+4. 運営者情報、About、プライバシーポリシー、お問い合わせ、広告掲載ポリシーがnoindexで確認できる。
+5. index対象はHuman承認済み記事だけ、CTA対象はAffiliate承認済みpartnerだけであり、domain・index・CTAの各GOを分離する。
+6. 月次に公開記事数、インデックス数、GSC clicks、outbound clicks、confirmed commissionsの5指標を取得できる。
 
-月20万円は完成条件から逆算する。EPC 60円なら月3,334 confirmed outbound clicksが必要である。送客CTR 15%なら約22,227 qualified sessions、12%なら約27,783 sessionsが必要になる。これは目標式であり、実績値ではない。
+月20万円は目標式として維持する。EPC 60円なら月3,334 confirmed outbound clicks、送客CTR
+15%なら約22,227 sessionsが必要である。confirmed 1,000 outbound clicksまではこの単純式と5 KPIだけを使い、P17の複雑なscale判定を再開しない。
 
 ## 全体経路
 
@@ -22,19 +27,25 @@
 |0|規律・正本・供給網|Integration|schema、lock、test、scan|承認境界|完了|
 |1|local決定論コア|Contract/TCO|validation、TCO、append-only保存|権利承認|完了|
 |2|Preflight制御面|全role|release、TTL、CTA、例外、EPC、dry run|候補選択|実装・fixture合格|
-|3|30日実証|Evidence/Human|dossier検査、集計、故障注入|許諾照会、Affiliate申請、需要入力|Gate A–D合格|
-|4|許諾済みadapter/gold set|Evidence/Contract|approved fetch、parser、差分、quarantine|曖昧値確定|3社×6プラン|
-|5|noindex公開前MVP|Integration/TCO|preview、release、rollback、security test|表示・広告・公開承認|公開前GO|
-|6|production launch|Integration/Human|scheduler、DB、監視、serve-time TTL|account、credential、課金、deploy|公開・監視稼働|
+|3|rights・Affiliate・需要／30日実証|Evidence/Human|lane別gate検査、集計、故障注入|許諾照会、Affiliate申請、需要入力|A2/B/Cはeditorial、A1/Dはautomated|
+|4|許諾済みadapter/gold set（automated data path）|Evidence/Contract|approved fetch、parser、差分、quarantine|曖昧値確定|3社×6プラン|
+|5|noindex公開前MVP|Integration/TCO|preview、release、rollback、security test|Human実値・表示・記事承認|editorial L2またはautomated公開前GO|
+|6|production launch|Integration/Human|公開境界、監視、serve-time制御|domain、index、CTA、deployの個別GO|lane別に公開・監視稼働|
 |7|最大180日Traction|Economics/Human|KPI/cohort集計、STOP判定|施策・投資判断|拡大または撤退|
 |8|月20万円scale|全role|例外だけ人手、月次release|新広告主・費用判断|持続条件維持|
 
 ## 現在地と完走キュー
 
+この節は二車線で管理する。C1–C7は自動取得・価格DB・履歴DBを扱う
+**automated data path専用**であり、editorial launch laneの入口条件ではない。C0は既存local実装の
+maintenance基準にすぎず、どちらのlaneにも公開権限を与えない。
+
+### Automated data path — C1–C7
+
 |順序|現在状態|機械的入口|実装・自動処理|Human／外部入力|出口|
 |---:|---|---|---|---|---|
 |C0|local技術候補完成／business STOP|静止したP21 scope|741 Python lane assertion、197 schema、STOP fixture、Web・供給網・秘密検査|独立監査|P21 local closure|
-|C1|`STOP`|3社分のfield-level rights、Affiliate acceptance、JP/ja需要export|P5/P8/P12契約で検査・quarantine|照会・申請・export承認|Gate A–C合格|
+|C1|`STOP`|3社分のfield-level rights、対象partnerのAffiliate acceptance、JP/ja需要export|P5/P8/P12契約で検査・quarantine|照会・申請・export承認|Gate A1・B・C合格|
 |C2|待機|C1合格sourceのみ|source別adapter、3社×6プランgold set、30日shadow|曖昧値label、運用例外判断|Gate D・P8合格|
 |C3|待機|P15統合証拠とP16 handoff|noindex deploy候補、readback、rollback drill|domain/cloud/KMS/clock/anchor/provider承認|公開前Human review|
 |C4|待機|P18受理と最終Human署名|限定公開、監視、serve-time expiry、kill switch|公開・広告・privacy承認|public MVP稼働|
@@ -42,8 +53,67 @@
 |C6|待機|成熟1,000 clicksまたは最大180日|P17がEPC・純利益・capacityを厳密判定|継続／撤退判断|scale reviewまたはSTOP|
 |C7|待機|`READY_FOR_SCALE_REVIEW`とHuman承認|月次release、異常時自動STOP|費用・新partner判断|月20万円純利益を持続確認|
 
-C0の合格はC1以降の実績を生成しない。現在の直接値はrights 0/3、Affiliate 0/3、実観測0であり、
-public・production・business・scaleはすべて`STOP`である。
+C0の合格はC1以降の実績を生成しない。automated data pathの現在の直接値はfield-level rights 0/3、
+実観測0であり、automated fetch・価格DB・履歴DB・その成果物の公開はすべて`STOP`である。
+
+### Editorial launch lane — L1–L4
+
+このlaneはHumanが公開価格を確認するrights model v2のeditorial pathだけを扱う。P15/P16/P18受理、
+Gate D、3社×6プランgold set、C1–C7の合格を入口条件にしない。
+
+|順序|現在状態|入口／GO|実装・Human処理|出口|
+|---:|---|---|---|---|
+|L1|`HOLD`|`domain: GO <domain>`|独自domain、DNS、GSC property、GA4 stream、redirect、Impact再verificationを個別確認|domain切替とreadback合格|
+|L2|template完成・実値待ち|L1完了|P01–P12へvendor・plan別のHuman実値／unknownと出典・日付を入力し、Humanシナリオを分離して各記事を承認|12記事の公開候補が承認済み|
+|L3|`HOLD`|`index_go: GO`と対象記事の承認|承認済み記事だけnoindex解除。未承認記事とfilter/query routeはnoindex維持|承認記事のindexability readback合格|
+|L4|`HOLD`|partner別CTA GO|当該partnerのAffiliate承認、規約・表示遵守、開示先行、`rel="sponsored"`を確認してCTA有効化|承認partnerだけCTA稼働|
+
+現在はL1が`HOLD`、P01–P12は構造templateまで、Mangoolsはeditorial laneのAffiliate条件を満たすが
+CTA GO未受領である。したがってindexとAffiliate CTAは無効のまま維持する。
+
+## Launch Quarter 2026-08〜10
+
+### Human予算と記事順
+
+- 2026-08-01〜2026-10-31のHuman予算はlaunch track限定で月2,000分。2026-11に720分へ戻すか再判定する。
+- 公開第1弾はP01–P03を維持する。
+- 下書き・入力の作業優先順は`P01 → P06 → P07 → P08 → P09 → P02 → P03 → P04 → P05 → P11 → P10 → P12`。
+- P01、P06、P07、P08、P09を取引意図先行群、P10・P12を最終群とする。
+
+### 週次実行計画
+
+|期間|主作業|Humanの操作|機械的出口|
+|---|---|---|---|
+|7/31–8/2|domain dayとP01–P03最終標本|domain token、価格・記事確認|L1 read-back、P01–P03承認候補|
+|8/3–8/9|第1弾release準備|`article_approve`、domain反映後の`index_go`|承認記事だけindex候補|
+|8/10–8/16|Mangools CTA・W6需要|partner別CTA GO、150 query CSV export|CTA gate、需要safe-summary|
+|8/17–8/31|P06–P09中心に約8本へ|公式値確認、ASP申請は別GO|8本前後の承認候補、ASP申請可能|
+|9月|残記事、embed、note/X Human再配信、Impact/ASP審査|投稿・申請・回答判断だけ|index/impression/clickの週次観測|
+|10/1–10/24|取引意図記事の改稿と内部導線|標本確認だけ|比較可能な連続2期間|
+|10/25–10/31|90日判定|`scope_expand: GO / HOLD`|継続・拡張・縮小を固定判定|
+
+### 2026-10-31固定判定
+
+測定windowは、現行28日=`2026-10-04〜2026-10-31`、直前28日=`2026-09-06〜2026-10-03`とする。
+index数は2026-10-31 JST終了時点のGSC snapshot、impressionsとclicksはGSC Web検索の合計を使う。
+各tierは行内条件をすべて満たす必要があり、上位から判定する。判定後に閾値を動かさない。
+
+|判定|index数|現行28日 impressions|現行28日 clicks|impressions成長|click成長|処置|
+|---|---:|---:|---:|---:|---:|---|
+|拡張|10以上|5,000以上|80以上|直前28日比+50%以上|直前28日比+30%以上|カテゴリ拡張とpartner分散を提案。実行は`scope_expand: GO`後|
+|継続|8以上|1,500以上|25以上|直前28日比+25%以上|直前28日以上|同じscopeで次の90日を継続|
+|最低ライン|4以上|300以上|5以上|直前28日以上|直前28日以上|改善を1回だけ実施し、30日後に再判定|
+
+最低ラインのいずれかを下回る場合は縮小する。新規signalで直前28日が0の場合、現行値が当該tierの絶対閾値を
+満たす時だけ成長条件を合格とし、無限成長率とは表示しない。GSCの欠測、property不一致、manual action、
+security・legal・rights hard gate違反がある場合は数値tierより先にSTOPする。
+
+### 8月末の目標状態
+
+- 公開記事8本前後（Human承認・index GOの範囲だけ）。
+- ImpactのHuman側残手続き完了、または相手方審査待ちを明示。
+- W6 JP/ja需要safe-summary取得済み。
+- A8.net、もしもアフィリエイト、バリューコマースをHumanが個別申請できるサイト状態。
 
 ## Phase 0 — 規律と供給網（完了）
 
@@ -89,7 +159,8 @@ gitleaks dir . --redact --no-banner --no-color
 
 - 需要を `deduplicated volume × organic visibility × rank CTR × qualified rate` で算定。
 - revenueは`confirmed`だけ。pending/rejectedをEPC分子へ入れない。
-- 月20万円に必要なclick/session、3社gate、EPC60円、人手720分を同じreadiness reportで判定。
+- 月20万円に必要なclick/session、EPC60円、人手720分を同じreadiness reportで判定する。3社条件は
+  editorial launch gateではなく、単一partner依存が60%を超えた後の拡大診断にだけ用いる。
 
 ### 2C local end-to-end
 
@@ -137,11 +208,15 @@ gitleaks dir . --redact --no-banner --no-color
 
 実装上の入力契約とCLI手順は`docs/READINESS_INPUTS.md`を参照する。
 
-## Phase 3 — 30日Preflight実証（Human入力待ち）
+## Phase 3 — lane別gateと30日Preflight実証（Human入力待ち）
 
-### Gate A: rights
+### Gate A: rights model v2
 
-対象候補をSE Ranking、Mangools、Serpstatから開始し、Semrush、HubSpotは冷開始条件と審査を別管理する。各社について次を権限者または契約文書で確定する。
+Gate Aは経路を分ける。
+
+#### A1 automated data path（strict gate維持）
+
+対象候補をSE Ranking、Mangools、Serpstatから開始し、Semrush、HubSpotは冷開始条件と審査を別管理する。自動取得、価格DB保存、履歴DB化、canonical計算への採用について次を権限者または契約文書で確定する。
 
 - 対象domain、plan/field、region。
 - API/feed/manual/browserの許可methodと頻度。
@@ -149,22 +224,47 @@ gitleaks dir . --redact --no-banner --no-color
 - 競合比較、派生TCO、Web/X表示、商標・logo、attribution。
 - 契約終了・撤回時の非表示・削除期限。
 
-Human action: 問い合わせ送信、回答者権限の確認、承認scope/期限の署名。一般FAQだけで`approved`へしない。
+Human action: 問い合わせ送信、回答者権限の確認、承認scope/期限の署名。一般FAQだけで`approved`へしない。Semrushのautomated fetch、ongoing storage、historyは禁止を維持する。
+
+Impact承認済みpartnerに正規product feed / catalogが表示される場合は、
+`docs/IMPACT_PRODUCT_FEED_CHECKLIST.md`でAffiliate関係、catalog、method、field、region、保存、履歴、
+派生、表示、終了処理をHumanが画面確認する。catalogの存在だけではapprovedにせず、利用する全scopeが
+明示されたexact feedだけを`impact_feed_a1: GO <partner>`でA1 source policyへ登録する。登録はfetch、
+download、API/FTP credential、定期job、raw保存、公開の実行権限を含まない。
 
 現在地: 5社の同一8項目照会は、公開名義`omishu`、公開予定URLは未公開として
 2026-07-23に送信済み。送信receiptは許諾ではないため、回答・Human判定まではrights 0/3のまま停止する。
 
-Exit: 公開予定fieldの100%がapproved/prohibitedに確定し、unreviewedが0。3社未満ならSTOP。
+Exit: 自動取得・DB化するfieldの100%がapproved/prohibitedに確定し、unreviewedが0。3社未満なら自動取得trackをSTOPする。
+
+#### A2 human editorial path（launch blockerから分離）
+
+Humanが公開価格を正規画面で確認し、vendor・plan識別子、入力値または明示的unknown、出典URL、観測日、次回確認日を記事入力contractへ記録する。seat数・利用量等のHumanシナリオはvendor観測から分離し、入力根拠と日付を記録する。この経路はfield-level書面許諾をlaunch blockerにしない。値の自動取得、raw保存、価格DB、履歴DB、禁止回答済み行為、推測補完は行わない。ベンダー照会と30/90/180日追跡は継続する。
+
+Exit: 記事内の数値fieldがHuman入力contractを満たし、出典がcurrentで、記事とindexがHuman承認済みである。未承認fieldはunknownまたは非表示とする。
 
 ### Gate B: affiliate
 
-Human action: 専用事業mail/accountで申請し、program ID、対象site、報酬、cookie、region、広告表示、商標、deep link、tracking、失効条件を記録する。
+Gate BはAffiliate利用権だけを判定し、価格data rightsとは分離する。editorial laneのCTA条件は、
+**当該partnerのAffiliate承認が有効で、規約・広告表示・商標・link条件を遵守できること**である。
+field-level rights回答、3社確保、automated data pathのgold setはこの条件へ混ぜない。
 
-現在地: Mangoolsは2026-07-26に無料account作成・Affiliate section・紹介ID発行まで確認済み。
-ただしrights回答と対象siteの承認記録がないため、Gate Bではまだ未承認として0/3に数える。
-SE Rankingはaccount/Agreement発効前、HubSpot Impactは契約checkbox前まで準備済み。
+Human action: 専用事業mail/accountで申請し、program ID、対象site、報酬、cookie、region、広告表示、
+商標、deep link、tracking、失効条件をprivate recordへ記録する。記事側は開示先行と
+`rel="sponsored"`を検査し、credential、紹介ID、非公開報酬をrepositoryへ保存しない。
 
-Exit: 実利用可能3社。申請中は0.5社として数えず0社扱い。単一広告主依存60%超見込みなら拡大保留。
+現在地の再判定:
+
+- **Mangools: editorial laneでAffiliate承認済みとして算入可。** 2026-07-26に審査不要のAffiliate
+  sectionが有効化され、紹介IDと提供素材の発行を確認済みである。禁止事項、報酬条件、表示条件も
+  Human記録にある。価格の自動取得・DB保存・履歴利用の権利は未承認のままで、CTAはpartner別GOまで無効とする。
+- HubSpot: Impact申請審査中のため未承認。
+- Semrush: Impact Marketplace手続中で、個別programの受付が確認できないため未承認。
+- SE Ranking、Serpstat: Affiliate利用を開始できる承認記録がないため未承認。
+
+Exit（editorial lane）: 掲載対象partner単位でAffiliate承認がcurrentで、規約・表示遵守を検査できる。
+MangoolsはこのAffiliate条件を満たす。実利用可能3社はlaunch条件ではなく、公開後に単一partner依存が
+confirmed outbound clicksまたはconfirmed commissionsの60%を超えた場合の拡大・分散候補とする。
 
 ### Gate C: qualified demand
 
@@ -187,9 +287,11 @@ Exit: 重大誤表示0、例外≤24/月、人手≤720分/月見込、job≥99%
 
 30日の日次coverageとGate D判定はlocal実装済み。実shadow runは権利・source・schedule scope確定後に開始する。
 
-## Phase 4 — 許諾済みadapterと3社×6プランgold set
+## Phase 4 — 許諾済みadapterと3社×6プランgold set（automated data path専用）
 
-Entry: Gate A/Bを合格したsourceだけ。
+Entry: **automated data pathに限り**、Gate A1と対象用途に必要なGate Bを合格したsourceだけを扱う。
+このPhaseのadapter、P8、3社×6プランgold set、30日shadowはeditorial launch laneのL1–L4、
+Phase 5–6のeditorial公開、Human記事承認、index解除、partner CTAの入口条件ではない。
 
 ### Local P8受入境界（完了）
 
@@ -217,6 +319,11 @@ Entry: Gate A/Bを合格したsourceだけ。
 
 ## Phase 5 — noindex公開前MVP
 
+Phase 5には二つの入口がある。automated data pathから入る場合はPhase 4成果物と既存P7–P18 controlを使う。
+editorial launch laneから入る場合はL1–L2、Human editorial input contract、PR開示、TCO golden test、
+記事別承認を使い、Phase 4、P15、P16、P18、3社×6プランgold setに依存しない。以下のP7–P18説明は
+maintenance中のautomated data path controlであり、editorial laneへ入口条件を追加しない。
+
 ### Local P7実装（完了）
 
 - Sites/vinext互換の`site/`へhome、comparison、methodology、disclosure、readiness、robotsを実装した。
@@ -234,7 +341,7 @@ Entry: Gate A/Bを合格したsourceだけ。
 - `uv.lock`と`site/package-lock.json`だけから、networkなしでCycloneDX 1.6 SBOMを決定論生成する。451 components・451 graph nodes、lock hash、purl、利用可能な配布物hash、npm licenseを保持し、credential URL・絶対path・timestampを拒否する。
 - synthetic-local 5 routeで、document metadata、landmark、skip link、internal link、table semantics、広告説明、無効CTA、900/620px reflow、keyboard focus、reduced motion、canonical/JSON-LD/public origin不在を検査する。
 - 13の必須checkごとにfacts種別、tool/version、command/subject hashをpolicyへ固定し、controller-role runnerが型付きfactsへ署名する。件数、coverage、exit code、determinism、finding、future、expiry、最大TTLをcheck別に再計算し、全件合格だけを`local ready`とする。
-- `public GO`には、local reportへ結合したTCO/QA署名、exact BusinessDossierとmanifest全snapshot完全listへ結合したHuman署名、事業`GO`、manifestとのrights/Affiliate/demand/cohort/operations binding、current CTA/expiryを全て要求する。local readyをpublic GOへ読み替えない。
+- automated data pathの`public GO`には、local reportへ結合したTCO/QA署名、exact BusinessDossierとmanifest全snapshot完全listへ結合したHuman署名、事業`GO`、manifestとのrights/Affiliate/demand/cohort/operations binding、current CTA/expiryを全て要求する。local readyをpublic GOへ読み替えない。この条件はeditorial laneのL1–L4へ適用しない。
 - 最終GOだけにcontroller署名authorizationを発行する。consumerはrepo外から固定するcontroller公開鍵、policy hash、最大TTL、現在時刻で再検証し、別Authorityの自己承認とexpired report replayを拒否する。
 - 現在のcurrent-state fixtureは、合成local passを与えてもbusiness `STOP`、CTA未承認、TCO/QA・Human署名なしでpublic `STOP`となる。
 
@@ -352,8 +459,9 @@ Entry: Gate A/Bを合格したsourceだけ。
   hash済みimport-file allowlistをFDで渡す。検証した同じPython bytesまたはextension descriptorからloadし、caller
   `PYTHONPATH/sys.path/sitecustomize`と未pin runtime moduleは継承・loadしない。bootstrap Python executableは
   read-only immutable production imageを信頼境界とする。
-- 現在fixtureはsynthetic/unsignedのため`STOP / local_verification`。P18 acceptedでも次はrights evidenceであり、
-  public/production/affiliate/spend/scale authorityは全てfalseである。
+- 現在fixtureはsynthetic/unsignedのため`STOP / local_verification`。P18 acceptedでもautomated data pathでは
+  次にrights evidenceが必要で、automated sourceのpublic/production/affiliate/spend/scale authorityはfalseである。
+  これはHuman editorial pathのL1–L4を停止する根拠にはしない。
 
 詳細は`docs/P18_REPOSITORY_ACCEPTANCE.md`と`docs/P18_ACCEPTANCE_TESTS.md`を参照する。
 
@@ -365,13 +473,21 @@ Entry: Gate A/Bを合格したsourceだけ。
 - 広告であることを判断箇所の近くに表示。Affiliate linkは`rel="sponsored"`。
 - filter/sort/query/空結果/個別入力はnoindex。canonicalは代表pageだけ。
 
-公開前gate:
+automated data pathの公開前gate:
 
 - threat model、secret/SBOM/dependency scan、accessibility、mobile、structured data、robots/canonical。
 - expired release、affiliate invalid、scheduler停止、DB破損、rollbackのE2E。
-- Human signed `GO | STOP | CONDITIONAL`。GOまでは公開URLを作らない。
+- Human signed `GO | STOP | CONDITIONAL`。automated data成果物はGOまで公開しない。
+
+editorial laneの公開前gateは、L2の記事別Human承認、PR開示先行、currentな出典・次回確認日、
+TCO golden一致、秘密検査、承認記事だけを対象にした`index_go: GO`で構成する。CTAはさらにGate Bと
+partner別GOを要求し、index GOから推論しない。
 
 ## Phase 6 — production launch（別承認）
+
+editorial laneのPhase 6はL3–L4を実行する。Phase 4成果物、P15、P16、P18、3社×6プランgold setの
+受理を要求せず、承認記事だけのindex解除と承認partnerだけのCTAを独立したGOで行う。
+以下のP9 control boundaryはautomated data pathのproduction serving用であり、editorial公開の入口条件ではない。
 
 ### Local P9署名付きcontrol boundary（完了）
 
@@ -410,13 +526,16 @@ Settlement Amendmentだけで反映し、裸の`settlement_complete`や調整額
 - affiliate click、pending、rejected、confirmed、paid revenue。
 - source freshness、rights/affiliate expiry、重大誤表示、false change、例外、人手分。
 
-判定は累積1,000 valid outbound clicksまたは連続180日の早い方。EPCはsettlement amendment適用後の
+P17の複雑な判定はconfirmed 1,000 outbound clicks到達まで再開しない。再開後のEPCはsettlement amendment適用後の
 new-acquisition settled額を全valid clickで割る。最新30日売上・CTR・partner集中・運用品質と累積EPCを混ぜない。
 
 - Scale review候補: settled new-acquisition EPC≥60円、最新settled売上≥20万円、bear capacity、
-  site→merchant CTR≥10%、3社以上、最大partner share≤40%、automation≥80%、job≥99%、重大誤表示0、人手≤720分。
+  site→merchant CTR≥10%、automation≥80%、job≥99%、重大誤表示0、人手≤720分。3社以上はlaunch・reviewの
+  必須条件ではない。単一partnerがconfirmed outbound clicksまたはconfirmed commissionsの60%を超えた場合に、
+  実利用可能partnerを最大3社まで増やす分散施策を評価する。
 - Continue: sample不足かつhard operations合格。成功扱いせず、追加投資は新しいHuman decision。
-- Stop/縮小: EPC<60円、3社未満、rights失効、薄い再掲しか作れない、人手超過。
+- Stop/縮小: EPC<60円、掲載中partnerのAffiliate失効、薄い再掲しか作れない、人手超過。3社未満だけを
+  STOP理由にしない。
 
 local出力は`READY_FOR_SCALE_REVIEW`までで外部authorityはない。詳細は`docs/P17_TRACTION_SCALE_CONTROL.md`、
 境界は`docs/P17_BOUNDARY_MATRIX.md`を参照する。
@@ -426,7 +545,8 @@ local出力は`READY_FOR_SCALE_REVIEW`までで外部authorityはない。詳細
 優先順位:
 
 1. qualified率と送客CTRを改善し、必要trafficを減らす。
-2. confirmed EPCの高いmerchant/scenarioを増やす。ただし単一広告主依存40%未満を目標。
+2. confirmed EPCの高いmerchant/scenarioを増やす。単一広告主依存60%超を分散施策の発動条件とし、
+   実利用可能3社はその緩和策であってlaunch条件にしない。
 3. 実測で価値があるsource/fieldだけ増やす。
 4. parser不能20%以上または確認4時間/月超で初めて抽出AI 1社をA/Bする。
 5. 2 provider、90日、1万req/月またはAI費5万円/月になるまでgateway/MCPを入れない。
@@ -435,22 +555,30 @@ local出力は`READY_FOR_SCALE_REVIEW`までで外部authorityはない。詳細
 
 ## 現在の停止点と再開条件
 
-credential-free実装はP21 typed launch semanticsまで進み、P13 exact one-shot execution port、P17 bounded
-file-lock/anchor、authenticated plan storage v2を追加した。現在の外部順序はP18 `local_verification`、Human
-repository acceptance、rights evidenceである。外部入力と分離して、
+automated data pathのcredential-free実装はP21 typed launch semanticsまで進み、P13 exact one-shot execution port、
+P17 bounded file-lock/anchor、authenticated plan storage v2を追加した。このlaneの外部順序はP18
+`local_verification`、Human repository acceptance、rights evidenceである。外部入力と分離して、
 typed task/activity evidenceによるautomation 80%・人手・運用TCO・純利益の再計算と、immutable P18 verification
-runner V2、Storage Auditor署名consumption receiptのP18→P16→P13 binding、store固定/durable-freeze replay consumer、credential-blind P17 broker、P13の署名clock/current-root再取得・provider後時刻・P18/P16実行直前再検証は実装した。P21はrightsからpublicationまでの型付き上流証拠を再計算し、P16 receiptの正しい署名だけではREADYにならない。P13 request/token/current-rootにも意味packetとpacket外rootを固定した。実quote/CASとproduction clock/anchor/current-root serviceは環境engineering backlogとして残る。real adapter、実環境11証拠、30日実証、公開、
-実tractionは外部stateを変えるため、個別Human承認まで進めない。
+runner V2、Storage Auditor署名consumption receiptのP18→P16→P13 binding、store固定/durable-freeze replay consumer、credential-blind P17 broker、P13の署名clock/current-root再取得・provider後時刻・P18/P16実行直前再検証は実装した。P21はrightsからpublicationまでの型付き上流証拠を再計算し、P16 receiptの正しい署名だけではREADYにならない。P13 request/token/current-rootにも意味packetとpacket外rootを固定した。実quote/CASとproduction clock/anchor/current-root serviceは環境engineering backlogとして残る。real adapterと自動取得成果物の公開は個別Human承認まで進めない。
 
-形式的なrepo承認記録はP0–P10までである。P11–P21は監査対象のworking-tree候補であり、local統合へ進める
-前にP18 manifest/verification/authority-rootへHumanがrevision付きdecisionを署名する。既存P11–P17 PENDING票は
-履歴として変更しない。これは実環境・公開・scale承認ではない。
+editorial launch laneはこの順序から独立し、現在はL1 `domain: HOLD`である。再開順は
+`L1 domain GO → L2 P01–P12 Human実値入力・記事承認 → L3 index GO → L4 partner別CTA GO`とする。
+P15/P16/P18受理、field-level書面許諾、3社×6プランgold set、実利用可能3社を待たない。
+
+形式的なrepo承認記録はP0–P10までである。P11–P21はautomated data pathの監査対象working-tree候補であり、
+そのlaneのlocal統合前にP18 manifest/verification/authority-rootへHumanがrevision付きdecisionを署名する。
+既存P11–P17 PENDING票は履歴として変更しない。editorial laneはこの受理に依存せず、L1–L4の個別GOと
+記事・partner単位の条件だけで判定する。
+
+Automated data pathの残入力:
 
 1. 対象3–5社の優先順位。
 2. 各社rights回答または契約根拠。
-3. Affiliate承認結果と公開可能な条件（secret/ID本体はrepoへ入れない）。
+3. 対象partnerのAffiliate承認結果と公開可能な条件（secret/ID本体はrepoへ入れない）。
 4. 重複除去済み需要dataset。
-5. production時のdomain/account/billing/deploy承認と、P15 exact 11証拠を採取する実環境・role/KMS/anchor
+5. automated production時のaccount/billing/deploy承認と、P15 exact 11証拠を採取する実環境・role/KMS/anchor
    のidentity hash。
+
+Editorial launch laneの残入力は、domain GO、P01–P12のHuman実値と記事承認、index GO、partner別CTA GOである。
 
 これらがなくても再検証と保守はできるが、synthetic/local範囲を実環境・公開へ拡張しない。

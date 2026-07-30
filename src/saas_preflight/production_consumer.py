@@ -4158,7 +4158,12 @@ def _communicate_bounded(
         except subprocess.TimeoutExpired:
             def reap_after_authority_release() -> None:
                 try:
-                    process.wait()
+                    # Keep cleanup off the authority-critical path without an
+                    # unbounded Popen.wait().  poll() performs non-blocking
+                    # waitpid checks and still reaps the killed child once the
+                    # kernel publishes its terminal status.
+                    while process.poll() is None:
+                        time.sleep(0.01)
                 except BaseException:
                     pass
 

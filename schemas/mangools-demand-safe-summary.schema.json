@@ -1,0 +1,159 @@
+{
+  "$defs": {
+    "DemandCapacityDecision": {
+      "enum": [
+        "insufficient_even_at_full_capture",
+        "volume_floor_met_not_proven"
+      ],
+      "title": "DemandCapacityDecision",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "acquisition_method": {
+      "const": "human_ui_export",
+      "default": "human_ui_export",
+      "title": "Acquisition Method",
+      "type": "string"
+    },
+    "assumed_confirmed_epc_jpy": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+          "type": "string"
+        }
+      ],
+      "title": "Assumed Confirmed Epc Jpy"
+    },
+    "assumed_outbound_ctr": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "maximum": 1.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+          "type": "string"
+        }
+      ],
+      "title": "Assumed Outbound Ctr"
+    },
+    "capacity_decision": {
+      "$ref": "#/$defs/DemandCapacityDecision"
+    },
+    "country": {
+      "const": "JP",
+      "default": "JP",
+      "title": "Country",
+      "type": "string"
+    },
+    "frozen_universe_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Frozen Universe Sha256",
+      "type": "string"
+    },
+    "keyword_count": {
+      "const": 150,
+      "title": "Keyword Count",
+      "type": "integer"
+    },
+    "language": {
+      "const": "ja",
+      "default": "ja",
+      "title": "Language",
+      "type": "string"
+    },
+    "missing_volume_count": {
+      "const": 0,
+      "title": "Missing Volume Count",
+      "type": "integer"
+    },
+    "monthly_revenue_target_jpy": {
+      "exclusiveMinimum": 0,
+      "title": "Monthly Revenue Target Jpy",
+      "type": "integer"
+    },
+    "next_review_on": {
+      "format": "date",
+      "title": "Next Review On",
+      "type": "string"
+    },
+    "observed_on": {
+      "format": "date",
+      "title": "Observed On",
+      "type": "string"
+    },
+    "provider": {
+      "const": "mangools_kwfinder_human_csv",
+      "default": "mangools_kwfinder_human_csv",
+      "title": "Provider",
+      "type": "string"
+    },
+    "query_values_saved": {
+      "const": false,
+      "default": false,
+      "title": "Query Values Saved",
+      "type": "boolean"
+    },
+    "raw_csv_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Raw Csv Sha256",
+      "type": "string"
+    },
+    "raw_saved": {
+      "const": false,
+      "default": false,
+      "title": "Raw Saved",
+      "type": "boolean"
+    },
+    "required_confirmed_outbound_clicks": {
+      "exclusiveMinimum": 0,
+      "title": "Required Confirmed Outbound Clicks",
+      "type": "integer"
+    },
+    "required_sessions_at_assumed_ctr": {
+      "exclusiveMinimum": 0,
+      "title": "Required Sessions At Assumed Ctr",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope_expansion_recommended": {
+      "title": "Scope Expansion Recommended",
+      "type": "boolean"
+    },
+    "total_monthly_search_volume": {
+      "minimum": 0,
+      "title": "Total Monthly Search Volume",
+      "type": "integer"
+    }
+  },
+  "required": [
+    "keyword_count",
+    "missing_volume_count",
+    "total_monthly_search_volume",
+    "observed_on",
+    "next_review_on",
+    "raw_csv_sha256",
+    "frozen_universe_sha256",
+    "monthly_revenue_target_jpy",
+    "assumed_confirmed_epc_jpy",
+    "assumed_outbound_ctr",
+    "required_confirmed_outbound_clicks",
+    "required_sessions_at_assumed_ctr",
+    "capacity_decision",
+    "scope_expansion_recommended"
+  ],
+  "title": "MangoolsDemandSafeSummary",
+  "type": "object"
+}

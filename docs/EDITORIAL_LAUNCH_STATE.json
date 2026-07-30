@@ -1,0 +1,23 @@
+{
+  "schema_version": "ease-track-1",
+  "domain": null,
+  "domain_state": "HOLD",
+  "index_state": "HOLD",
+  "affiliate_cta": {
+    "Mangools": "HOLD"
+  },
+  "articles": {
+    "P01": "unreviewed",
+    "P02": "unreviewed",
+    "P03": "unreviewed",
+    "P04": "unreviewed",
+    "P05": "unreviewed",
+    "P06": "unreviewed",
+    "P07": "unreviewed",
+    "P08": "unreviewed",
+    "P09": "unreviewed",
+    "P10": "unreviewed",
+    "P11": "unreviewed",
+    "P12": "unreviewed"
+  }
+}

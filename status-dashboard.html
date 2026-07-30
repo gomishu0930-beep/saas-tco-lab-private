@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>SaaS TCO Lab — Status Dashboard</title>
+<style>
+  :root {
+    --bg: #0f1115;
+    --panel: #171a21;
+    --panel2: #1d212a;
+    --line: #2a2f3a;
+    --text: #e8eaf0;
+    --muted: #8b93a5;
+    --accent: #5b9dff;
+    --ok: #3ecf8e;
+    --warn: #f5b83d;
+    --stop: #f26d6d;
+    --hold: #8b93a5;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg); color: var(--text);
+    font-family: "Hiragino Sans", "Yu Gothic UI", "Noto Sans JP", -apple-system, sans-serif;
+    font-size: 14px; line-height: 1.6; padding: 24px;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; }
+  header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+  header h1 { font-size: 20px; font-weight: 700; }
+  header .asof { color: var(--muted); font-size: 12px; }
+  header .phase { margin-left: auto; font-size: 12px; padding: 4px 10px; border-radius: 999px; background: var(--panel2); border: 1px solid var(--line); color: var(--warn); }
+  h2 { font-size: 13px; font-weight: 600; color: var(--muted); letter-spacing: .08em; margin: 26px 0 10px; text-transform: uppercase; }
+  .grid { display: grid; gap: 10px; }
+  .kpi-grid { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+  .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .kpi .label { font-size: 11px; color: var(--muted); }
+  .kpi .value { font-size: 26px; font-weight: 700; margin-top: 2px; font-variant-numeric: tabular-nums; }
+  .kpi .sub { font-size: 11px; color: var(--muted); }
+  .rev-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .bar { background: var(--panel2); border-radius: 999px; height: 8px; overflow: hidden; margin-top: 8px; }
+  .bar > div { height: 100%; background: var(--accent); min-width: 2px; }
+  .big { font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .muted { color: var(--muted); font-size: 12px; }
+  .pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 2px 10px; border-radius: 999px; white-space: nowrap; }
+  .pill.go   { background: rgba(62,207,142,.15); color: var(--ok); }
+  .pill.hold { background: rgba(139,147,165,.15); color: var(--hold); }
+  .pill.warn { background: rgba(245,184,61,.15); color: var(--warn); }
+  .pill.stop { background: rgba(242,109,109,.15); color: var(--stop); }
+  .lane { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+  .lane .step { position: relative; }
+  .lane .step .num { font-size: 11px; color: var(--accent); font-weight: 700; }
+  .lane .step .name { font-weight: 600; margin: 2px 0 6px; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; color: var(--muted); font-size: 11px; font-weight: 600; padding: 8px 10px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 9px 10px; border-bottom: 1px solid var(--line); vertical-align: top; }
+  tr:last-child td { border-bottom: none; }
+  .tbl { padding: 4px 6px; overflow-x: auto; }
+  ul.flat { list-style: none; }
+  ul.flat li { padding: 7px 0; border-bottom: 1px solid var(--line); display: flex; gap: 10px; align-items: baseline; }
+  ul.flat li:last-child { border-bottom: none; }
+  ul.flat .date { color: var(--accent); font-size: 12px; min-width: 92px; font-variant-numeric: tabular-nums; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  @media (max-width: 800px) { .two-col { grid-template-columns: 1fr; } }
+  .note { font-size: 12px; color: var(--muted); margin-top: 24px; padding: 12px 16px; background: var(--panel); border: 1px solid var(--line); border-radius: 10px; }
+  .note code { background: var(--panel2); padding: 1px 6px; border-radius: 4px; font-size: 11px; }
+  .check { color: var(--ok); }
+  .funnel { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; }
+  .kpi-form { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; }
+  .kpi-form label { display: grid; gap: 4px; color: var(--muted); font-size: 11px; }
+  .kpi-form input { min-height: 40px; padding: 7px 9px; border: 1px solid var(--line); background: var(--panel2); color: var(--text); font: 700 13px ui-monospace, monospace; }
+  .form-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 12px; }
+  .form-actions button { min-height: 40px; padding: 7px 14px; border: 1px solid var(--accent); background: var(--accent); color: #08111f; font-weight: 800; cursor: pointer; }
+  .form-actions span { color: var(--muted); font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>SaaS TCO Lab — Status Dashboard</h1>
+    <span class="asof" id="asof"></span>
+    <span class="phase" id="phase"></span>
+  </header>
+
+  <h2>収益 KPI(月次正本5指標)</h2>
+  <div class="grid kpi-grid" id="kpis"></div>
+
+  <h2>収益目標への進捗</h2>
+  <div class="grid rev-grid" id="revenue"></div>
+
+  <h2>ファネル(当月)</h2>
+  <div class="funnel" id="funnel"></div>
+
+  <h2>Launch Lane(editorial track)</h2>
+  <div class="lane" id="lane"></div>
+
+  <h2>Launch Quarter(2026-08〜10)</h2>
+  <div class="grid rev-grid" id="quarter-summary"></div>
+  <div class="two-col">
+    <div class="card tbl"><table id="weekly-plan"></table></div>
+    <div class="card tbl"><table id="quarter-thresholds"></table></div>
+  </div>
+
+  <h2>Partner Pipeline(Affiliate × Rights)</h2>
+  <div class="card tbl"><table id="partners"></table></div>
+
+  <h2>月次KPI転記フォーム(ローカルのみ)</h2>
+  <form class="card" id="monthly-kpi-form">
+    <div class="kpi-form">
+      <label>対象月<input name="period" type="month" required></label>
+      <label>インデックス数<input name="indexed_articles" type="number" min="0" step="1" required></label>
+      <label>GSC clicks<input name="gsc_clicks" type="number" min="0" step="1" required></label>
+      <label>Outbound clicks<input name="outbound_clicks" type="number" min="0" step="1" required></label>
+      <label>確定報酬(JPY)<input name="confirmed_commissions_yen" type="number" min="0" step="1" required></label>
+      <label>Sessions<input name="sessions" type="number" min="0" step="1" required></label>
+      <label>Qualified sessions<input name="qualified_sessions" type="number" min="0" step="1" required></label>
+      <label>確定成約数<input name="confirmed_conversions" type="number" min="0" step="1" required></label>
+      <label>Pending報酬(JPY)<input name="pending_commissions_yen" type="number" min="0" step="1" required></label>
+    </div>
+    <div class="form-actions">
+      <button type="submit">CSVを保存</button>
+      <span id="monthly-form-status" aria-live="polite">外部送信はありません</span>
+    </div>
+  </form>
+
+  <div class="two-col">
+    <div>
+      <h2>作業キュー</h2>
+      <div class="card"><ul class="flat" id="work"></ul></div>
+    </div>
+    <div>
+      <h2>次の期日</h2>
+      <div class="card"><ul class="flat" id="deadlines"></ul></div>
+      <h2>リスク・ブロッカー</h2>
+      <div class="card"><ul class="flat" id="risks"></ul></div>
+    </div>
+  </div>
+
+  <div class="note">
+    Repo由来の値は <code>scripts/update_status_dashboard.py</code> が再生成します。外部KPIは上のformでCSVを保存し、
+    rawをrepositoryへ入れずlocal dropとして渡します。credential・tracking ID・query・明細行は記入しません。
+  </div>
+</div>
+
+<script>
+// DASHBOARD_DATA_START
+const DATA = {
+  "asOf": "2026-07-31",
+  "reportingPeriod": "2026-07",
+  "phase": "Launch Quarter準備— domain GO待ち",
+  "kpis": [
+    {
+      "label": "公開記事数",
+      "value": 0,
+      "target": 12,
+      "sub": "入力 3/12・承認 0/12"
+    },
+    {
+      "label": "インデックス数",
+      "value": 0,
+      "target": 12,
+      "sub": "index_go: HOLD"
+    },
+    {
+      "label": "GSC clicks(月)",
+      "value": 0,
+      "target": null,
+      "sub": "対象月 2026-07"
+    },
+    {
+      "label": "Outbound clicks(月)",
+      "value": 0,
+      "target": 3334,
+      "sub": "目標 3,334 / 月"
+    },
+    {
+      "label": "確定報酬(月)",
+      "value": 0,
+      "target": 200000,
+      "sub": "confirmed commissions(円)",
+      "yen": true
+    }
+  ],
+  "revenue": {
+    "monthlyTargetYen": 200000,
+    "confirmedYen": 0,
+    "pendingYen": 0,
+    "epcTargetYen": 60,
+    "epcActualYen": null,
+    "requiredClicks": 3334,
+    "actualClicks": 0,
+    "partnerBreakdown": []
+  },
+  "funnel": [
+    {
+      "label": "Sessions",
+      "value": 0
+    },
+    {
+      "label": "Qualified sessions",
+      "value": 0
+    },
+    {
+      "label": "Outbound clicks",
+      "value": 0
+    },
+    {
+      "label": "成約(confirmed)",
+      "value": 0
+    }
+  ],
+  "lane": [
+    {
+      "id": "L1",
+      "name": "独自domain取得",
+      "status": "HOLD",
+      "note": "domain day runbookとread-back"
+    },
+    {
+      "id": "L2",
+      "name": "記事実値入力・承認",
+      "status": "3/12入力・0/12承認",
+      "note": "有効contractとHuman記事承認だけを算入"
+    },
+    {
+      "id": "L3",
+      "name": "noindex解除",
+      "status": "HOLD",
+      "note": "承認済み記事だけ・別GO"
+    },
+    {
+      "id": "L4",
+      "name": "CTA有効化",
+      "status": "HOLD",
+      "note": "Affiliate承認・規約遵守・開示先行"
+    }
+  ],
+  "partners": [
+    {
+      "name": "Mangools",
+      "affiliate": "有効(紹介ID発行済)",
+      "affStatus": "go",
+      "rights": "未回答(7/26追送)",
+      "next": "editorial CTA候補。tier確認 毎月4日"
+    },
+    {
+      "name": "HubSpot",
+      "affiliate": "Impact審査待ち(7/26申請)",
+      "affStatus": "warn",
+      "rights": "未回答(7/26追送)",
+      "next": "審査結果待ち。公開実績が審査対策"
+    },
+    {
+      "name": "Semrush",
+      "affiliate": "Marketplace承認待ち(website認証済)",
+      "affStatus": "warn",
+      "rights": "自動取得系prohibited / editorial条件付き可",
+      "next": "Discover表示後に個別再申請"
+    },
+    {
+      "name": "SE Ranking",
+      "affiliate": "work email例外回答待ち",
+      "affStatus": "hold",
+      "rights": "未回答(ticket追送済)",
+      "next": "回答まで再登録しない"
+    },
+    {
+      "name": "Serpstat",
+      "affiliate": "未申請",
+      "affStatus": "hold",
+      "rights": "社内審査中",
+      "next": "項目別回答待ち"
+    }
+  ],
+  "work": [
+    {
+      "done": true,
+      "label": "Q1 F1–F3・E1–E10 completion audit"
+    },
+    {
+      "done": true,
+      "label": "Q2 取引意図記事の優先順"
+    },
+    {
+      "done": true,
+      "label": "Q3 TCO計算機embed"
+    },
+    {
+      "done": true,
+      "label": "Q4 Product・FAQ・Breadcrumb JSON-LD"
+    },
+    {
+      "done": true,
+      "label": "Q5 note・X再配信template"
+    },
+    {
+      "done": true,
+      "label": "Q6 日本ASP申請checklist"
+    },
+    {
+      "done": true,
+      "label": "Q7 拡張category slate・input contract"
+    },
+    {
+      "done": true,
+      "label": "Q8 90日判定閾値固定"
+    },
+    {
+      "done": true,
+      "label": "Q9 dashboard Launch Quarter更新"
+    }
+  ],
+  "deadlines": [
+    {
+      "date": "2026-07-31",
+      "label": "domain day判断"
+    },
+    {
+      "date": "2026-08 第1週",
+      "label": "P01–P03 Human記事承認"
+    },
+    {
+      "date": "2026-08 前半",
+      "label": "Mangools 150 query CSV"
+    },
+    {
+      "date": "2026-08-31",
+      "label": "約8本・Impact・W6・ASP申請可能状態"
+    },
+    {
+      "date": "2026-10-31",
+      "label": "90日固定判定・scope_expand判断"
+    },
+    {
+      "date": "2026-11",
+      "label": "Human予算を720分へ戻すか再判定"
+    }
+  ],
+  "risks": [
+    {
+      "level": "warn",
+      "label": "JP/ja需要規模が未検証(Mangools CSVで判定)"
+    },
+    {
+      "level": "warn",
+      "label": "独自domain未取得(L1で解消)"
+    },
+    {
+      "level": "hold",
+      "label": "承認済みFieldEvidence 0件(automated pathのみの制約)"
+    }
+  ],
+  "launchQuarter": {
+    "period": "2026-08〜2026-10",
+    "humanBudgetMinutesPerMonth": 2000,
+    "budgetReview": "2026-11",
+    "decisionDate": "2026-10-31",
+    "decisions": [
+      "D5 launch trackのHuman予算を月2,000分へ一時引上げ",
+      "D6 単価・需要・channel分散・取引意図集中を採用",
+      "D7 index・impressions・click成長で90日固定判定"
+    ],
+    "weeklyPlan": [
+      {
+        "date": "7/31–8/2",
+        "label": "domain day・P01–P03最終標本"
+      },
+      {
+        "date": "8/3–8/9",
+        "label": "第1弾記事承認・index準備"
+      },
+      {
+        "date": "8/10–8/16",
+        "label": "Mangools CTA gate・W6需要CSV"
+      },
+      {
+        "date": "8/17–8/31",
+        "label": "P06–P09中心に約8本・ASP申請可能化"
+      },
+      {
+        "date": "9月",
+        "label": "残記事・embed・note/X・Impact/ASP審査"
+      },
+      {
+        "date": "10/1–10/24",
+        "label": "取引意図記事改稿・内部導線"
+      },
+      {
+        "date": "10/25–10/31",
+        "label": "固定閾値で継続・拡張・縮小判定"
+      }
+    ],
+    "thresholds": [
+      {
+        "tier": "拡張",
+        "indexed": 10,
+        "impressions": 5000,
+        "clicks": 80,
+        "impressionGrowth": "+50%",
+        "clickGrowth": "+30%"
+      },
+      {
+        "tier": "継続",
+        "indexed": 8,
+        "impressions": 1500,
+        "clicks": 25,
+        "impressionGrowth": "+25%",
+        "clickGrowth": "0%以上"
+      },
+      {
+        "tier": "最低ライン",
+        "indexed": 4,
+        "impressions": 300,
+        "clicks": 5,
+        "impressionGrowth": "0%以上",
+        "clickGrowth": "0%以上"
+      }
+    ]
+  }
+};
+// DASHBOARD_DATA_END
+
+const yen = n => "¥" + n.toLocaleString("ja-JP");
+const el = (id) => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+el("asof").textContent = "as of " + DATA.asOf + "(リポジトリ実値)";
+el("phase").textContent = DATA.phase;
+
+el("kpis").innerHTML = DATA.kpis.map(k => {
+  const v = k.yen ? yen(k.value) : k.value.toLocaleString("ja-JP");
+  const pct = k.target ? Math.min(100, (k.value / k.target) * 100) : null;
+  return `<div class="card kpi">
+    <div class="label">${esc(k.label)}</div>
+    <div class="value">${v}</div>
+    <div class="sub">${esc(k.sub)}</div>
+    ${pct !== null ? `<div class="bar"><div style="width:${pct}%"></div></div>` : ""}
+  </div>`;
+}).join("");
+
+const r = DATA.revenue;
+const epc = r.epcActualYen === null ? "—" : yen(r.epcActualYen);
+const attain = Math.min(100, (r.confirmedYen / r.monthlyTargetYen) * 100);
+const clickPct = Math.min(100, (r.actualClicks / r.requiredClicks) * 100);
+el("revenue").innerHTML = `
+  <div class="card">
+    <div class="muted">月間目標(net基準の手前の確定報酬)</div>
+    <div class="big">${yen(r.confirmedYen)} <span class="muted">/ ${yen(r.monthlyTargetYen)}(${attain.toFixed(1)}%)</span></div>
+    <div class="bar"><div style="width:${attain}%"></div></div>
+    <div class="muted" style="margin-top:6px">保留(pending): ${yen(r.pendingYen)}</div>
+  </div>
+  <div class="card">
+    <div class="muted">必要クリック進捗(EPC ${yen(r.epcTargetYen)}前提)</div>
+    <div class="big">${r.actualClicks.toLocaleString("ja-JP")} <span class="muted">/ ${r.requiredClicks.toLocaleString("ja-JP")} clicks(${clickPct.toFixed(1)}%)</span></div>
+    <div class="bar"><div style="width:${clickPct}%"></div></div>
+    <div class="muted" style="margin-top:6px">実測EPC: ${epc}(confirmed ÷ outbound)</div>
+  </div>
+  ${r.partnerBreakdown.length ? `<div class="card">
+    <div class="muted">partner別報酬</div>
+    ${r.partnerBreakdown.map(p => `<div>${esc(p.name)}: ${yen(p.confirmedYen)} <span class="muted">(pending ${yen(p.pendingYen)})</span></div>`).join("")}
+  </div>` : ""}
+`;
+
+el("funnel").innerHTML = DATA.funnel.map((f, i) => {
+  const prev = i > 0 ? DATA.funnel[i - 1].value : null;
+  const rate = prev ? ((f.value / prev) * 100).toFixed(1) + "%" : (i > 0 ? "—" : "");
+  return `<div class="card kpi">
+    <div class="label">${esc(f.label)}</div>
+    <div class="value">${f.value.toLocaleString("ja-JP")}</div>
+    <div class="sub">${i > 0 ? "転換率 " + rate : "起点"}</div>
+  </div>`;
+}).join("");
+
+el("lane").innerHTML = DATA.lane.map(s => {
+  const cls = s.status === "GO" || s.status === "DONE" ? "go" : /\d+\/\d+/.test(s.status) ? "warn" : "hold";
+  return `<div class="card step">
+    <div class="num">${esc(s.id)}</div>
+    <div class="name">${esc(s.name)}</div>
+    <span class="pill ${cls}">${esc(s.status)}</span>
+    <div class="muted" style="margin-top:6px">${esc(s.note)}</div>
+  </div>`;
+}).join("");
+
+const quarter = DATA.launchQuarter;
+el("quarter-summary").innerHTML = `
+  <div class="card"><div class="muted">期間 / Human予算</div><div class="big">${esc(quarter.period)}</div><div class="muted">${quarter.humanBudgetMinutesPerMonth.toLocaleString("ja-JP")}分/月・${esc(quarter.budgetReview)}再判定</div></div>
+  <div class="card"><div class="muted">90日判定日</div><div class="big">${esc(quarter.decisionDate)}</div><div class="muted">閾値は実測前に固定済み</div></div>
+  <div class="card"><div class="muted">採用decision</div>${quarter.decisions.map(item => `<div>${esc(item)}</div>`).join("")}</div>
+`;
+el("weekly-plan").innerHTML = `<tr><th>期間</th><th>週次計画</th></tr>${quarter.weeklyPlan.map(item => `<tr><td>${esc(item.date)}</td><td>${esc(item.label)}</td></tr>`).join("")}`;
+el("quarter-thresholds").innerHTML = `<tr><th>判定</th><th>Index</th><th>Imp.</th><th>Clicks</th><th>Imp.成長</th><th>Click成長</th></tr>${quarter.thresholds.map(item => `<tr><td><strong>${esc(item.tier)}</strong></td><td>${item.indexed}</td><td>${item.impressions.toLocaleString("ja-JP")}</td><td>${item.clicks}</td><td>${esc(item.impressionGrowth)}</td><td>${esc(item.clickGrowth)}</td></tr>`).join("")}`;
+
+el("partners").innerHTML = `
+  <tr><th>Partner</th><th>Affiliate</th><th>Rights回答</th><th>次アクション</th></tr>
+  ${DATA.partners.map(p => `<tr>
+    <td><strong>${esc(p.name)}</strong></td>
+    <td><span class="pill ${esc(p.affStatus)}">${esc(p.affiliate)}</span></td>
+    <td>${esc(p.rights)}</td>
+    <td class="muted">${esc(p.next)}</td>
+  </tr>`).join("")}
+`;
+
+el("work").innerHTML = DATA.work.map(w =>
+  `<li><span class="${w.done ? "check" : "muted"}">${w.done ? "✔" : "○"}</span><span>${esc(w.label)}</span></li>`
+).join("");
+
+el("deadlines").innerHTML = DATA.deadlines.map(d =>
+  `<li><span class="date">${esc(d.date)}</span><span>${esc(d.label)}</span></li>`
+).join("");
+
+el("risks").innerHTML = DATA.risks.map(x =>
+  `<li><span class="pill ${esc(x.level)}">${x.level === "warn" ? "注意" : "待機"}</span><span>${esc(x.label)}</span></li>`
+).join("");
+
+const monthlyForm = el("monthly-kpi-form");
+const monthlyValues = {
+  period: DATA.reportingPeriod,
+  indexed_articles: DATA.kpis.find(k => k.label === "インデックス数")?.value ?? 0,
+  gsc_clicks: DATA.kpis.find(k => k.label === "GSC clicks(月)")?.value ?? 0,
+  outbound_clicks: DATA.kpis.find(k => k.label === "Outbound clicks(月)")?.value ?? 0,
+  confirmed_commissions_yen: DATA.revenue.confirmedYen,
+  sessions: DATA.funnel.find(f => f.label === "Sessions")?.value ?? 0,
+  qualified_sessions: DATA.funnel.find(f => f.label === "Qualified sessions")?.value ?? 0,
+  confirmed_conversions: DATA.funnel.find(f => f.label === "成約(confirmed)")?.value ?? 0,
+  pending_commissions_yen: DATA.revenue.pendingYen
+};
+Object.entries(monthlyValues).forEach(([name, value]) => {
+  const input = monthlyForm.elements.namedItem(name);
+  if (input instanceof HTMLInputElement) input.value = String(value);
+});
+monthlyForm.addEventListener("submit", event => {
+  event.preventDefault();
+  if (!monthlyForm.reportValidity()) return;
+  const names = ["period", "indexed_articles", "gsc_clicks", "outbound_clicks", "confirmed_commissions_yen", "sessions", "qualified_sessions", "confirmed_conversions", "pending_commissions_yen"];
+  const values = names.map(name => {
+    const input = monthlyForm.elements.namedItem(name);
+    return input instanceof HTMLInputElement ? input.value : "";
+  });
+  const csv = names.join(",") + "\n" + values.join(",") + "\n";
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `monthly-kpi-${values[0]}.csv`;
+  anchor.click();
+  URL.revokeObjectURL(url);
+  el("monthly-form-status").textContent = "CSVをローカルへ保存しました。外部送信はありません";
+});
+</script>
+</body>
+</html>

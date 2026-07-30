@@ -9,6 +9,7 @@ from saas_preflight.preflight import ArtifactExpiries
 from saas_preflight.readiness_builder import AffiliateDecisionBatch
 
 from test_preflight import _dossier
+from test_models import NOW
 from test_readiness_builder import (
     _affiliates,
     _cohort_evidence,
@@ -83,6 +84,8 @@ def test_assemble_readiness_cli_writes_v3_dossier_once(
             "example.test",
             "--output",
             str(output),
+            "--at",
+            NOW.isoformat(),
         ]
     )
 

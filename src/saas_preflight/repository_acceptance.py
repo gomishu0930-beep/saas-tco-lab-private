@@ -95,7 +95,7 @@ _SCOPE_PATHS_BY_PROFILE = {
         "e095b623274f1ce14d4b413bccc760bad1238effc4e63d4077a014e64a0f0bc6"
     ),
     SCOPE_PROFILE: (
-        "87584cb040ac8b3737eabc6f86de03d2278f5a7959b75aa2396c7d46bd787d43"
+        "47260506e120f0abd77514899f4133815e330559b272651bdc6e0f77d7be0657"
     ),
 }
 
@@ -105,12 +105,14 @@ _SCOPE_ROOT_FILES = (
     "AGENTS.md",
     "README.md",
     "pyproject.toml",
+    "status-dashboard.html",
     "uv.lock",
 )
 _SCOPE_ROOT_DIRECTORIES = (
     ".github",
     ".workflow/recipes",
     ".workflow/saas-affiliate-production-roadmap",
+    "artifacts/editorial-inputs",
     "artifacts/release-assurance",
     "docs",
     "examples",
@@ -161,6 +163,7 @@ _BASE_TEST_MODULES = frozenset(
         "tests/test_cli.py",
         "tests/test_control_cycle.py",
         "tests/test_economics.py",
+        "tests/test_editorial_input.py",
         "tests/test_end_to_end.py",
         "tests/test_external_actions.py",
         "tests/test_goldset.py",
@@ -169,6 +172,7 @@ _BASE_TEST_MODULES = frozenset(
         "tests/test_keyword_universe.py",
         "tests/test_launch_semantics.py",
         "tests/test_launch_semantics_security.py",
+        "tests/test_mangools_export.py",
         "tests/test_measurement.py",
         "tests/test_measurement_cli.py",
         "tests/test_measurement_integrity.py",
@@ -186,7 +190,9 @@ _BASE_TEST_MODULES = frozenset(
         "tests/test_sbom.py",
         "tests/test_source_access.py",
         "tests/test_storage.py",
+        "tests/test_status_dashboard.py",
         "tests/test_tco.py",
+        "tests/test_tco_golden.py",
         "tests/test_verified_runner.py",
     }
 )

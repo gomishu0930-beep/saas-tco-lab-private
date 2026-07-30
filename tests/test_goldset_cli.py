@@ -6,6 +6,7 @@ from pathlib import Path
 from saas_preflight.cli import run
 
 from test_goldset import full_fixture
+from test_models import NOW
 
 
 def test_evaluate_gold_set_cli_emits_hash_only_ready_report(
@@ -24,6 +25,8 @@ def test_evaluate_gold_set_cli_emits_hash_only_ready_report(
             str(goldset_path),
             "--candidates",
             str(candidates_path),
+            "--at",
+            NOW.isoformat(),
         ]
     ) == 0
 

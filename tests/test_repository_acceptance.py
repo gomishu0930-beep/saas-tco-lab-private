@@ -58,7 +58,7 @@ HUMAN_PRIVATE = Ed25519PrivateKey.generate()
 INTEGRATION_PRIVATE = Ed25519PrivateKey.generate()
 TCO_PRIVATE = Ed25519PrivateKey.generate()
 TEST_SCOPE_PATHS_SHA256 = (
-    "1197f1b4c22e020f0772d8504f979dd1153e2fb9647dc2c37f61a88402363cae"
+    "4956e85b06bb3d545f83effca01c0ae7f18ab34bfb32f031300bc6bca6e14de3"
 )
 
 
@@ -319,7 +319,7 @@ def test_inventory_is_deterministic_and_content_mode_bound(tmp_path) -> None:
     _seed_repository(root)
     first = build_repository_inventory(root)
     assert build_repository_inventory(root) == first
-    selected = root / "src" / "scope-10.txt"
+    selected = root / "src" / "scope-11.txt"
     selected.write_text("changed\n", encoding="utf-8")
     changed = build_repository_inventory(root)
     assert hash_repository_tree(changed) != hash_repository_tree(first)
@@ -334,7 +334,7 @@ def test_inventory_rejects_symlink_hardlink_secret_and_unknown_top_level(
     for attack in ("symlink", "hardlink", "secret", "unknown"):
         root = tmp_path / attack
         _seed_repository(root)
-        source = root / "src" / "scope-10.txt"
+        source = root / "src" / "scope-11.txt"
         if attack == "symlink":
             source.unlink()
             source.symlink_to(root / "README.md")

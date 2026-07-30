@@ -1,0 +1,367 @@
+{
+  "$defs": {
+    "EditorialBillingPeriod": {
+      "enum": [
+        "monthly",
+        "annual",
+        "one_time",
+        "per_usage",
+        "not_applicable",
+        "unknown"
+      ],
+      "title": "EditorialBillingPeriod",
+      "type": "string"
+    },
+    "EditorialCurrencyStatus": {
+      "enum": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "title": "EditorialCurrencyStatus",
+      "type": "string"
+    },
+    "EditorialReviewStatus": {
+      "enum": [
+        "unreviewed",
+        "approved",
+        "rejected"
+      ],
+      "title": "EditorialReviewStatus",
+      "type": "string"
+    },
+    "EditorialScopeKind": {
+      "enum": [
+        "vendor_plan",
+        "human_scenario"
+      ],
+      "title": "EditorialScopeKind",
+      "type": "string"
+    },
+    "EditorialTaxTreatment": {
+      "enum": [
+        "included",
+        "excluded",
+        "not_applicable",
+        "unknown"
+      ],
+      "title": "EditorialTaxTreatment",
+      "type": "string"
+    },
+    "EditorialValueKind": {
+      "enum": [
+        "price",
+        "quota",
+        "seat_count",
+        "tax_rate",
+        "exchange_rate",
+        "duration",
+        "usage",
+        "percentage",
+        "other"
+      ],
+      "title": "EditorialValueKind",
+      "type": "string"
+    },
+    "EditorialValueStatus": {
+      "enum": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "title": "EditorialValueStatus",
+      "type": "string"
+    },
+    "ExpansionCategory": {
+      "enum": [
+        "accounting",
+        "crm",
+        "forms",
+        "email_marketing",
+        "servers"
+      ],
+      "title": "ExpansionCategory",
+      "type": "string"
+    },
+    "HumanEditorialNumericField": {
+      "additionalProperties": false,
+      "description": "One Human-reviewed field for one vendor-plan or Human scenario.",
+      "properties": {
+        "acquisition_method": {
+          "enum": [
+            "manual_public_page",
+            "human_scenario_input"
+          ],
+          "title": "Acquisition Method",
+          "type": "string"
+        },
+        "billing_period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditorialBillingPeriod"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "currency_display": {
+          "anyOf": [
+            {
+              "maxLength": 20,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency Display"
+        },
+        "currency_status": {
+          "$ref": "#/$defs/EditorialCurrencyStatus",
+          "default": "not_applicable"
+        },
+        "currency_unknown_reason": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency Unknown Reason"
+        },
+        "entered_by": {
+          "const": "human",
+          "default": "human",
+          "title": "Entered By",
+          "type": "string"
+        },
+        "field": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "title": "Field",
+          "type": "string"
+        },
+        "next_review_on": {
+          "format": "date",
+          "title": "Next Review On",
+          "type": "string"
+        },
+        "observed_on": {
+          "format": "date",
+          "title": "Observed On",
+          "type": "string"
+        },
+        "plan_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Plan Id"
+        },
+        "review_status": {
+          "$ref": "#/$defs/EditorialReviewStatus",
+          "default": "unreviewed"
+        },
+        "rights_path": {
+          "const": "human_editorial",
+          "default": "human_editorial",
+          "title": "Rights Path",
+          "type": "string"
+        },
+        "scenario_basis": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scenario Basis"
+        },
+        "schema_version": {
+          "const": "2.1",
+          "default": "2.1",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope_kind": {
+          "$ref": "#/$defs/EditorialScopeKind"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "tax_treatment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditorialTaxTreatment"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "unknown_reason": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unknown Reason"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_kind": {
+          "$ref": "#/$defs/EditorialValueKind"
+        },
+        "value_status": {
+          "$ref": "#/$defs/EditorialValueStatus",
+          "default": "known"
+        },
+        "vendor_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vendor Id"
+        }
+      },
+      "required": [
+        "scope_kind",
+        "field",
+        "value_kind",
+        "observed_on",
+        "next_review_on",
+        "acquisition_method"
+      ],
+      "title": "HumanEditorialNumericField",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Candidate-only editorial input for a future scope expansion.\n\nThis is not a publication, index, Affiliate, or scope-expansion authority.\nNumeric observations reuse the rights-model-v2 Human field contract.",
+  "properties": {
+    "category_id": {
+      "$ref": "#/$defs/ExpansionCategory"
+    },
+    "numeric_fields": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/HumanEditorialNumericField"
+      },
+      "title": "Numeric Fields",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "state": {
+      "const": "candidate_only",
+      "default": "candidate_only",
+      "title": "State",
+      "type": "string"
+    },
+    "template_kind": {
+      "const": "pricing_tco",
+      "default": "pricing_tco",
+      "title": "Template Kind",
+      "type": "string"
+    }
+  },
+  "required": [
+    "category_id"
+  ],
+  "title": "CategoryExpansionInput",
+  "type": "object"
+}

@@ -1,0 +1,90 @@
+[
+  {
+    "name": "flat-monthly-jpy",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "base", "amount": "1000", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [], "usage": null, "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], "usageUnit": null},
+    "expected": {"listedMinor": "12000", "addedTaxMinor": "0", "totalMinor": "12000"}
+  },
+  {
+    "name": "annual-jpy",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "base", "amount": "12000", "currency": "JPY", "billingPeriod": "annual", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [], "usage": null, "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], "usageUnit": null},
+    "expected": {"listedMinor": "12000", "addedTaxMinor": "0", "totalMinor": "12000"}
+  },
+  {
+    "name": "per-seat-minimum-included",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "base", "amount": "100", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "per_seat", "minimumSeats": 5, "includedSeats": 2, "maximumSeats": null},
+      "addons": [], "usage": null, "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], "usageUnit": null},
+    "expected": {"listedMinor": "3600", "addedTaxMinor": "0", "totalMinor": "3600"}
+  },
+  {
+    "name": "tax-rounds-per-invoice",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "base", "amount": "5", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [], "usage": null, "tax": {"treatment": "excluded", "rate": "0.10"}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], "usageUnit": null},
+    "expected": {"listedMinor": "60", "addedTaxMinor": "12", "totalMinor": "72"}
+  },
+  {
+    "name": "fraction-rounds-per-invoice",
+    "quote": {
+      "currency": "USD", "minorUnitDigits": 2, "minimumCommitmentMonths": 1,
+      "base": {"name": "base", "amount": "0.005", "currency": "USD", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [], "usage": null, "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["0", "0"], "usageUnit": null},
+    "expected": {"listedMinor": "2", "addedTaxMinor": "0", "totalMinor": "2"}
+  },
+  {
+    "name": "monthly-usage-overage",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "base", "amount": "0", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [],
+      "usage": {"name": "events", "includedQuantity": "100", "includedBasis": "flat", "overageUnitPrice": "2", "currency": "JPY", "unit": "event", "billingPeriod": "monthly"},
+      "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["110", "110", "110", "110", "110", "110", "110", "110", "110", "110", "110", "110"], "usageUnit": "event"},
+    "expected": {"listedMinor": "240", "addedTaxMinor": "0", "totalMinor": "240"}
+  },
+  {
+    "name": "annual-usage-overage",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "base", "amount": "0", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [],
+      "usage": {"name": "events", "includedQuantity": "1200", "includedBasis": "flat", "overageUnitPrice": "2", "currency": "JPY", "unit": "event", "billingPeriod": "annual"},
+      "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["110", "110", "110", "110", "110", "110", "110", "110", "110", "110", "110", "110"], "usageUnit": "event"},
+    "expected": {"listedMinor": "240", "addedTaxMinor": "0", "totalMinor": "240"}
+  },
+  {
+    "name": "flat-and-seat-addons",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "base", "amount": "1000", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [
+        {"name": "support", "amount": "500", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+        {"name": "audit", "amount": "100", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "per_seat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null}
+      ],
+      "usage": null, "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 3, "monthlyUsage": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], "usageUnit": null},
+    "expected": {"listedMinor": "21600", "addedTaxMinor": "0", "totalMinor": "21600"}
+  }
+]

@@ -13,6 +13,8 @@ interface ProductionEnv {
   GA4_MEASUREMENT_ID?: string;
   GOOGLE_SITE_VERIFICATION?: string;
   IMPACT_SITE_VERIFICATION?: string;
+  INDEX_GO?: string;
+  INDEX_APPROVED_ARTICLES?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -43,6 +45,12 @@ const RESTRICTED_CONTENT_SECURITY_POLICY =
 const CONSENT_GATED_ANALYTICS_CONTENT_SECURITY_POLICY =
   "default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https://www.google-analytics.com https://region1.google-analytics.com; connect-src 'self' https://www.google-analytics.com https://region1.google-analytics.com; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
+const EMBEDDABLE_RESTRICTED_CONTENT_SECURITY_POLICY =
+  RESTRICTED_CONTENT_SECURITY_POLICY.replace("frame-ancestors 'none'", "frame-ancestors https:");
+
+const EMBEDDABLE_ANALYTICS_CONTENT_SECURITY_POLICY =
+  CONSENT_GATED_ANALYTICS_CONTENT_SECURITY_POLICY.replace("frame-ancestors 'none'", "frame-ancestors https:");
+
 const PUBLIC_ROUTES = new Set([
   "/",
   "/methodology",
@@ -50,27 +58,75 @@ const PUBLIC_ROUTES = new Set([
   "/pilot/annual-vs-monthly",
   "/pilot/migration-cost",
   "/pilot/evidence-method",
+  "/pilot/pricing-calculator",
+  "/pilot/plan-comparison",
+  "/pilot/alternatives",
+  "/pilot/small-team-fit",
+  "/pilot/enterprise-fit",
+  "/pilot/usage-overage",
+  "/pilot/addon-cost",
+  "/pilot/japan-tax",
+  "/pilot/break-even",
+  "/about",
+  "/operator-information",
+  "/privacy",
+  "/contact",
+  "/advertising-policy",
+  "/embed/tco-calculator",
 ]);
+
+const ARTICLE_PATH_TO_ID = new Map([
+  ["/pilot/pricing-calculator", "P01"],
+  ["/pilot/plan-comparison", "P02"],
+  ["/pilot/alternatives", "P03"],
+  ["/pilot/small-team-fit", "P04"],
+  ["/pilot/enterprise-fit", "P05"],
+  ["/pilot/annual-vs-monthly", "P06"],
+  ["/pilot/usage-overage", "P07"],
+  ["/pilot/addon-cost", "P08"],
+  ["/pilot/migration-cost", "P09"],
+  ["/pilot/japan-tax", "P10"],
+  ["/pilot/break-even", "P11"],
+  ["/pilot/evidence-method", "P12"],
+  ["/embed/tco-calculator", "P01"],
+]);
+
+function approvedIndexPaths(env: ProductionEnv): ReadonlySet<string> {
+  if (env.INDEX_GO?.trim() !== "GO") return new Set();
+  const values = (env.INDEX_APPROVED_ARTICLES ?? "").split(",").map((item) => item.trim()).filter(Boolean);
+  if (values.some((item) => !/^P(?:0[1-9]|1[0-2])$/.test(item)) || new Set(values).size !== values.length) {
+    return new Set();
+  }
+  const approved = new Set(values);
+  return new Set([...ARTICLE_PATH_TO_ID].filter(([, id]) => approved.has(id)).map(([path]) => path));
+}
 
 function normalizePath(pathname: string): string {
   return pathname === "/" ? pathname : pathname.replace(/\/+$/, "");
 }
 
-function securityHeaders(analyticsEnabled = false): Record<string, string> {
+function securityHeaders(
+  analyticsEnabled = false,
+  indexable = false,
+  embeddable = false,
+): Record<string, string> {
   return {
     ...BASE_SECURITY_HEADERS,
+    "X-Robots-Tag": indexable ? "index, follow" : BASE_SECURITY_HEADERS["X-Robots-Tag"],
     "Content-Security-Policy": analyticsEnabled
-      ? CONSENT_GATED_ANALYTICS_CONTENT_SECURITY_POLICY
-      : RESTRICTED_CONTENT_SECURITY_POLICY,
+      ? embeddable ? EMBEDDABLE_ANALYTICS_CONTENT_SECURITY_POLICY : CONSENT_GATED_ANALYTICS_CONTENT_SECURITY_POLICY
+      : embeddable ? EMBEDDABLE_RESTRICTED_CONTENT_SECURITY_POLICY : RESTRICTED_CONTENT_SECURITY_POLICY,
   };
 }
 
 function withSecurityHeaders(
   response: Response,
   analyticsEnabled = false,
+  indexable = false,
+  embeddable = false,
 ): Response {
   const headers = new Headers(response.headers);
-  for (const [name, value] of Object.entries(securityHeaders(analyticsEnabled))) {
+  for (const [name, value] of Object.entries(securityHeaders(analyticsEnabled, indexable, embeddable))) {
     headers.set(name, value);
   }
   return new Response(response.body, {
@@ -117,17 +173,24 @@ function runtimeHeadControls(env: ProductionEnv): RuntimeHeadControls {
 async function withRuntimeHeadControls(
   response: Response,
   controls: RuntimeHeadControls,
+  indexable: boolean,
 ): Promise<Response> {
   const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
   if (
     response.status !== 200 ||
     !contentType.includes("text/html") ||
-    !controls.markup
+    (!controls.markup && !indexable)
   ) {
     return response;
   }
 
-  const body = await response.text();
+  let body = await response.text();
+  if (indexable) {
+    body = body.replace(
+      /<meta\s+name=["']robots["'][^>]*>/i,
+      '<meta name="robots" content="index, follow">',
+    );
+  }
   const openingHead = body.match(/<head(?:\s[^>]*)?>/i);
   if (openingHead?.index === undefined) return response;
 
@@ -144,6 +207,12 @@ async function withRuntimeHeadControls(
   );
 }
 
+function embedLoaderScript(requestUrl: string): string {
+  const origin = new URL(requestUrl).origin;
+  const iframeUrl = `${origin}/embed/tco-calculator/`;
+  return `(()=>{const s=document.currentScript;if(!s)return;const f=document.createElement("iframe");f.src=${JSON.stringify(iframeUrl)};f.title="SaaS TCO Lab 12か月TCO計算機";f.loading="lazy";f.referrerPolicy="no-referrer";f.style.cssText="width:100%;height:"+(s.dataset.height||"760")+"px;border:0;display:block";s.insertAdjacentElement("afterend",f)})();`;
+}
+
 const worker = {
   async fetch(
     request: Request,
@@ -152,6 +221,8 @@ const worker = {
   ): Promise<Response> {
     const url = new URL(request.url);
     const runtimeControls = runtimeHeadControls(env);
+    const normalizedPath = normalizePath(url.pathname);
+    const indexPaths = approvedIndexPaths(env);
 
     if (url.pathname === "/healthz") {
       return new Response("ok\n", {
@@ -160,9 +231,21 @@ const worker = {
       });
     }
     if (url.pathname === "/robots.txt") {
-      return new Response("User-agent: *\nDisallow: /\n", {
+      const allowed = [...indexPaths].sort().map((path) => `Allow: ${path}$`).join("\n");
+      const body = allowed ? `User-agent: *\n${allowed}\nDisallow: /\n` : "User-agent: *\nDisallow: /\n";
+      return new Response(body, {
         status: 200,
         headers: { ...securityHeaders(), "Content-Type": "text/plain; charset=utf-8" },
+      });
+    }
+    if (normalizedPath === "/embed/tco-calculator.js") {
+      return new Response(embedLoaderScript(request.url), {
+        status: 200,
+        headers: {
+          ...securityHeaders(),
+          "Access-Control-Allow-Origin": "*",
+          "Content-Type": "application/javascript; charset=utf-8",
+        },
       });
     }
     if (url.pathname.startsWith("/assets/") || url.pathname === "/favicon.svg") {
@@ -186,11 +269,14 @@ const worker = {
       );
       return withSecurityHeaders(response);
     }
-    if (PUBLIC_ROUTES.has(normalizePath(url.pathname))) {
+    if (PUBLIC_ROUTES.has(normalizedPath)) {
       const response = await handler.fetch(request, env, ctx);
+      const embeddable = normalizedPath === "/embed/tco-calculator";
       return withSecurityHeaders(
-        await withRuntimeHeadControls(response, runtimeControls),
+        await withRuntimeHeadControls(response, runtimeControls, indexPaths.has(normalizedPath)),
         runtimeControls.analyticsEnabled,
+        indexPaths.has(normalizedPath),
+        embeddable,
       );
     }
     return new Response("Service Unavailable\n", {

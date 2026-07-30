@@ -176,6 +176,21 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     "/pilot/annual-vs-monthly",
     "/pilot/migration-cost",
     "/pilot/evidence-method",
+    "/pilot/pricing-calculator",
+    "/pilot/plan-comparison",
+    "/pilot/alternatives",
+    "/pilot/small-team-fit",
+    "/pilot/enterprise-fit",
+    "/pilot/usage-overage",
+    "/pilot/addon-cost",
+    "/pilot/japan-tax",
+    "/pilot/break-even",
+    "/about",
+    "/operator-information",
+    "/privacy",
+    "/contact",
+    "/advertising-policy",
+    "/embed/tco-calculator",
   ]) {
     const response = await fetch(`${baseUrl}${path}`);
     assert.equal(response.status, 200, path);
@@ -219,6 +234,11 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     const csp = response.headers.get("content-security-policy");
     assert.match(csp, /script-src[^;]*https:\/\/www\.googletagmanager\.com/i, path);
     assert.match(csp, /connect-src[^;]*https:\/\/www\.google-analytics\.com/i, path);
+    if (path === "/embed/tco-calculator") {
+      assert.match(csp, /frame-ancestors https:/i, path);
+    } else {
+      assert.match(csp, /frame-ancestors 'none'/i, path);
+    }
   }
 
   for (const path of [`/assets/${javascriptAsset}`, "/favicon.svg"]) {
@@ -231,7 +251,6 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     "/comparison",
     "/learning",
     "/pilot",
-    "/pilot/pricing-calculator",
     "/readiness",
     "/operator",
     "/missing",
@@ -244,6 +263,17 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     assert.doesNotMatch(body, /google-site-verification|googletagmanager|G-TEST123456/i, path);
     assert.equal(response.headers.get("cache-control"), "no-store", path);
   }
+});
+
+test("production exposes a deterministic tracking-free calculator loader", async () => {
+  const response = await fetch(`${baseUrl}/embed/tco-calculator.js`);
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("content-type"), /application\/javascript/i);
+  assert.equal(response.headers.get("access-control-allow-origin"), "*");
+  const body = await response.text();
+  assert.match(body, /\/embed\/tco-calculator\//);
+  assert.match(body, /document\.currentScript/);
+  assert.doesNotMatch(body, /utm_|affiliate|partner|clickid|subid|cookie/i);
 });
 
 test("actual production health exposes only a fixed non-sensitive response", async () => {

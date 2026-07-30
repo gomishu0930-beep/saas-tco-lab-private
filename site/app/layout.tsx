@@ -75,6 +75,11 @@ export default function RootLayout({
               <p>合成データのみ / 外部送客なし / robots noindex</p>
             </div>
             <nav aria-label="フッターナビゲーション">
+              <Link href="/about/">About</Link>
+              <Link href="/operator-information/">運営者情報</Link>
+              <Link href="/privacy/">プライバシー</Link>
+              <Link href="/contact/">お問い合わせ</Link>
+              <Link href="/advertising-policy/">広告ポリシー</Link>
               <Link href="/methodology/">算定方法</Link>
               <Link href="/disclosure/">広告表示</Link>
               {publicPrelaunch ? (

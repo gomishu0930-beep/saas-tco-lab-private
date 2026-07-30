@@ -1,10 +1,12 @@
 from __future__ import annotations
 
 import json
+from datetime import datetime, timedelta
 from pathlib import Path
 
 import pytest
 
+import saas_preflight.cli as cli_module
 from saas_preflight.cli import run
 from saas_preflight.readiness_builder import (
     CohortEvidence,
@@ -12,7 +14,14 @@ from saas_preflight.readiness_builder import (
     OperationsEvidence,
 )
 
-from test_measurement import _cohort_batch, _demand_batch, _operations_batch
+from test_measurement import NOW, _cohort_batch, _demand_batch, _operations_batch
+
+
+class _FrozenDateTime(datetime):
+    @classmethod
+    def now(cls, tz=None):
+        instant = NOW + timedelta(hours=2)
+        return instant if tz is None else instant.astimezone(tz)
 
 
 @pytest.mark.parametrize(
@@ -35,7 +44,9 @@ def test_measurement_cli_writes_typed_evidence_once(
     kind: str,
     tmp_path: Path,
     capsys,
+    monkeypatch,
 ) -> None:
+    monkeypatch.setattr(cli_module, "datetime", _FrozenDateTime)
     source = tmp_path / f"{kind}-summary.json"
     output = tmp_path / f"{kind}-evidence.json"
     source.write_text(batch.model_dump_json(indent=2), encoding="utf-8")

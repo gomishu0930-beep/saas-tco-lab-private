@@ -51,8 +51,9 @@ analytics scope拡張をこの承認へ含めない。
 - Search ConsoleはHTML tagで所有権を確認した。query、page、country、device、dateとexport UIを確認し、
   初日のため実データだけは「処理中（1日後に再確認）」である。
 - GA4は同意前と拒否後に外部script 0件、同意後だけGoogle tag 1件を読み込むことを確認した。
-- GA4 Realtimeで1 active user、`page_view` 1件を確認した。GA4自身のsystem eventである
-  `first_visit`と`session_start`も各1件発生した。
+- GA4 Realtimeで初回の`page_view`受信を確認した。2026-07-26の追加read-only確認では、過去30分の
+  active user 2、`page_view` 2、`qualified_session` 2を確認した。これは実装確認の訪問を含むため、
+  需要、CVR、収益実績へ算入しない。GA4自身の`first_visit`と`session_start`も発生している。
 - 拡張計測はOFF。内部traffic filterは不可逆な除外を避けるためtestのまま維持し、対象sourceを
   確定した別承認後だけactiveへ移す。
 
@@ -78,3 +79,22 @@ analytics scope拡張をこの承認へ含めない。
 - GSC: runtime verification値を撤去し、直前の検証済みversionへ戻す。
 - GA4: まずenable flagを外して新規送信を停止し、必要なら直前versionへrollbackする。
 - どちらもImpact verification、noindex、公開route allowlist、503境界を維持する。
+
+## 公開前30回監視
+
+1日1回、30回のthread heartbeatでGmail、GSC、GA4、local QA、Gate A–Cをread-only確認する。
+この監視は外部回答待ちの公開前監視であり、実shadow runの30日には算入しない。
+
+- Gmailは対象6社を`automated_ack / waiting / information_request / substantive_partial /
+  substantive_complete / affiliate_approved / rejected`へ分類する。送信、下書き、label変更、archiveは行わない。
+- 実質回答だけを`fetch / store_raw / send_to_ai / derive / publish / retain_history / quote`へ分解し、
+  回答にないfield、action、期限、attribution、retentionは`unreviewed`のままにする。
+- GSCはquery/page生成状態、GA4は`page_view`と`qualified_session`の受信有無だけを確認する。
+- rawメール、message ID、個人メール、PII、query、Affiliate URL・識別子を保存しない。
+- 正常かつ変化なしなら`変化なし・Human操作なし`だけを通知する。
+- 実質回答、承認・拒否、計測停止、test失敗、rights期限、重大誤記候補だけを通知する。
+- 未承認source取得、実データ取込、外部送信、filter変更、deploy、push、indexing、公開、CTA変更は禁止する。
+
+権利3社、Affiliate 3社、JP/ja需要、rights承認済み実データ、non-synthetic gold、開始日付き
+`shadow_run: GO`が揃った後だけ実shadowを開始する。開始後はjob 99%以上、重大誤記0、例外24件以下、
+自動化率80%以上、Human 720分以下、rollback fault合格を30日連続で検査する。

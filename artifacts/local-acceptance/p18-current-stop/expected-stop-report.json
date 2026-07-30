@@ -1,0 +1,27 @@
+{
+  "authority": "none",
+  "decision": "stop",
+  "evaluated_at": "2026-07-22T09:00:00Z",
+  "expected_tree_sha256": "1bace68fd054726d4abb87ec475f014b30c1744ec32ec14161a21af34e1c0dcb",
+  "external_mutation_authorized": false,
+  "first_external_gate": "rights_evidence",
+  "local_integration_accepted": false,
+  "manifest_sha256": "43b7fa3eb44ef5eecbfeb8fe92536e1e31b2570b9ec1e563f8ad6feed4a0bf0f",
+  "next_gate": "local_verification",
+  "observed_tree_sha256": "1bace68fd054726d4abb87ec475f014b30c1744ec32ec14161a21af34e1c0dcb",
+  "production_write_authorized": false,
+  "public_release_authorized": false,
+  "reasons": [
+    "receipt_missing",
+    "verification_attestation_missing",
+    "verification_synthetic",
+    "verification_trust_missing"
+  ],
+  "report_sha256": "8347fdfc983688654001b3fcbca94b14a449d45796c23391e7232b8b71c8cc91",
+  "required_inputs": [
+    "current_signed_verification_bundle"
+  ],
+  "scale_authorized": false,
+  "schema_version": "1.0",
+  "verification_bundle_sha256": "aaab5e668c121a5c5451046f1b505c2c6dba44929266b99f48871babaa88c188"
+}

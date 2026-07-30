@@ -13,7 +13,7 @@ import json
 import sys
 from collections.abc import Sequence
 from dataclasses import asdict
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 from pathlib import Path
@@ -61,6 +61,7 @@ from .launch_handoff import (
 )
 from .launch_semantics import LaunchSemanticAuthorityPins
 from .keyword_universe import load_keyword_universe, summarize_keyword_universe
+from .mangools_export import validate_mangools_human_export
 from .measurement import (
     CohortSummaryBatch,
     DemandSummaryBatch,
@@ -167,6 +168,18 @@ def _parser() -> argparse.ArgumentParser:
     keyword_universe.add_argument("--minimum-keywords", type=int, default=100)
     keyword_universe.add_argument("--maximum-keywords", type=int, default=200)
 
+    mangools_export = commands.add_parser(
+        "validate-mangools-export",
+        help="Validate one Human-exported KWFinder CSV and emit a safe aggregate only.",
+    )
+    mangools_export.add_argument("csv", type=Path)
+    mangools_export.add_argument("--universe", type=Path, required=True)
+    mangools_export.add_argument("--observed-on", type=date.fromisoformat, required=True)
+    mangools_export.add_argument("--next-review-on", type=date.fromisoformat, required=True)
+    mangools_export.add_argument("--monthly-revenue-target-jpy", type=int, default=200_000)
+    mangools_export.add_argument("--assumed-confirmed-epc-jpy", type=_decimal_argument, default=Decimal("60"))
+    mangools_export.add_argument("--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15"))
+
     store = commands.add_parser("store-plan", help="Append one validated plan to a local DB.")
     store.add_argument("plan", type=Path)
     store.add_argument("--db", type=Path, required=True)
@@ -214,6 +227,7 @@ def _parser() -> argparse.ArgumentParser:
     assemble.add_argument("--operations-evidence", type=Path, required=True)
     assemble.add_argument("--property-domain", required=True)
     assemble.add_argument("--output", type=Path, required=True)
+    assemble.add_argument("--at", type=_utc_datetime_argument)
 
     signed_assemble = commands.add_parser(
         "assemble-signed-readiness",
@@ -283,6 +297,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     goldset.add_argument("--gold-set", type=Path, required=True)
     goldset.add_argument("--candidates", type=Path, required=True)
+    goldset.add_argument("--at", type=_utc_datetime_argument)
 
     editorial = commands.add_parser(
         "evaluate-editorial-package",
@@ -744,6 +759,22 @@ def run(argv: Sequence[str] | None = None) -> int:
             _emit(summarize_keyword_universe(rows).as_dict())
             return 0
 
+        if args.command == "validate-mangools-export":
+            rows = load_keyword_universe(args.universe, minimum_keywords=150, maximum_keywords=150)
+            universe_summary = summarize_keyword_universe(rows)
+            summary = validate_mangools_human_export(
+                args.csv,
+                universe_rows=rows,
+                universe_sha256=universe_summary.sha256,
+                observed_on=args.observed_on,
+                next_review_on=args.next_review_on,
+                monthly_revenue_target_jpy=args.monthly_revenue_target_jpy,
+                assumed_confirmed_epc_jpy=args.assumed_confirmed_epc_jpy,
+                assumed_outbound_ctr=args.assumed_outbound_ctr,
+            )
+            _emit(summary.model_dump(mode="json"))
+            return 0
+
         if args.command == "store-plan":
             plan = _load_plan(args.plan)
             deadline = _earliest_history_delete_after(plan)
@@ -841,7 +872,7 @@ def run(argv: Sequence[str] | None = None) -> int:
                 operations=_load_model(
                     args.operations_evidence, OperationsEvidence
                 ),
-                at=now,
+                at=args.at or now,
             )
             with args.output.open("x", encoding="utf-8") as destination:
                 destination.write(dossier.model_dump_json(indent=2))
@@ -948,7 +979,7 @@ def run(argv: Sequence[str] | None = None) -> int:
             report = evaluate_goldset(
                 _load_model(args.gold_set, HumanGoldSet),
                 _load_model(args.candidates, CandidateBatch),
-                at=now,
+                at=args.at or now,
             )
             _emit(report.model_dump(mode="json"))
             return 0

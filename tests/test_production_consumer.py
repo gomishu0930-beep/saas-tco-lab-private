@@ -4267,25 +4267,41 @@ def test_timeout_kills_the_entire_adapter_process_group(
 
     def delay_unbounded_wait(process, timeout=None):
         if timeout is None:
-            release_unbounded_wait.wait(timeout=3)
+            release_unbounded_wait.wait()
         return real_wait(process, timeout=timeout)
 
     monkeypatch.setattr(subprocess.Popen, "wait", delay_unbounded_wait)
-    Thread(
-        target=lambda: (
-            time.sleep(2),
-            release_unbounded_wait.set(),
-        ),
-        daemon=True,
-    ).start()
     adapter._timeout = 1
-    started = time.monotonic()
-    with pytest.raises(
-        ProductionConsumerError, match="timed out|deadline is exhausted"
-    ):
-        _invoke_execute_through_store(case, token, adapter)
-    assert time.monotonic() - started < 1.8
-    release_unbounded_wait.set()
+    completed = Event()
+    outcomes: list[BaseException | None] = []
+
+    def invoke() -> None:
+        try:
+            _invoke_execute_through_store(case, token, adapter)
+        except BaseException as exc:
+            outcomes.append(exc)
+        else:
+            outcomes.append(None)
+        finally:
+            completed.set()
+
+    worker = Thread(target=invoke, daemon=True)
+    worker.start()
+    try:
+        # The adapter has a one-second deadline.  A generous completion bound
+        # keeps scheduler jitter out of the assertion while the unreleased
+        # Event makes any unbounded Popen.wait deterministically fail it.
+        assert completed.wait(timeout=2.5)
+    finally:
+        release_unbounded_wait.set()
+    worker.join(timeout=3)
+    assert worker.is_alive() is False
+    assert len(outcomes) == 1
+    assert isinstance(outcomes[0], ProductionConsumerError)
+    assert (
+        "timed out" in str(outcomes[0])
+        or "deadline is exhausted" in str(outcomes[0])
+    )
     time.sleep(2.2)
     assert marker.exists() is False
 

@@ -1,9 +1,25 @@
 # 現時点の導入 — あなたの操作表
 
-基準日: 2026-07-26（Asia/Tokyo）
+基準日: 2026-07-31（Asia/Tokyo）
 
-この表は新しい導入計画でHuman本人が行う箇所だけをまとめる。既存H1–H10のrights・Affiliate・
-Google Ads・公開手順は`docs/HUMAN_ACTION_MANUAL.md`を優先する。
+2026-07-28のHuman decision `DR-2026-07-28-REVENUE-TRACK`により、P0–P18はmaintenance only、
+人手予算はlaunch trackへ全振りする。rights model v2では、自動取得・価格DB・履歴DBはstrict gateを
+維持し、Human確認済み公開価格をvendor・plan識別子、出典URL・観測日・次回確認日付きで記事化するeditorial pathは
+field-level書面許諾をlaunch blockerにしない。
+
+2026-07-30の最終Human指示により、2026-08〜2026-10はHuman予算をlaunch track限定で月2,000分とし、
+取引意図記事、TCO embed、構造化data、note/X再配信、日本ASP申請準備を先行する。2026-10-31に固定済み閾値で
+継続・拡張・縮小を判定し、2026-11の通常720分へ戻すかを再判断する。
+
+2026-07-28(3)およびE9–E10のHuman指示により、現在のHuman作業は次の四つだけに集約する。下のA-H表と
+`docs/HUMAN_ACTION_MANUAL.md`は完了履歴またはtrigger後の参照であり、日常の追加作業ではない。
+
+1. `docs/DOMAIN_MIGRATION_CHECKLIST.md`をdomain dayに実行する。
+2. `docs/PRICE_CHECK_CHECKLIST.md`を見ながら`/operator`へ実値を入力する。価格ページ本文はlocal貼り付け解析で事前入力し、前回差分を見てHuman確定する。
+3. `docs/HUMAN_REPLY_CARD.md`からexact tokenを返す。Impact承認済みpartnerのfeed確認通知時だけ`docs/IMPACT_PRODUCT_FEED_CHECKLIST.md`も見る。
+4. `docs/MONTHLY_15_MIN_ROUTINE.md`を月一回実行する。
+
+それ以外のlocal検証、contract再検証、記事差込み、dashboard再生成、公開前QAはCodexが行う。
 
 2026-07-31まではカード不要モードとし、Google Workspace、domain購入、OpenAI API、外部AI課金、
 有料cloud・有料hosting・有料trialを保留する。カード不要でも外部送信・規約同意・account作成は対象別GOを必要とする。
@@ -11,7 +27,7 @@ Google Ads・公開手順は`docs/HUMAN_ACTION_MANUAL.md`を優先する。
 
 |ID|時期|本人が行うこと|完了の合図|Codexが続けること|共有禁止|
 |---|---|---|---|---|---|
-|A-H01|完了|private GitHub repositoryと初回baselineを作成|2026-07-26完了|`saas-tco-lab-private`のprivate設定、`main`、500-file baseline、remote CI全3jobをread-back済み|PAT/SSH秘密鍵|
+|A-H01|完了|GitHub repositoryと初回baselineを作成|2026-07-28公開化完了|`saas-tco-lab-private`はpublic。秘密scan後に匿名HTTP 200を確認済み。launch trackの未commit変更は未公開|PAT/SSH秘密鍵|
 |A-H02|完了|Google Drive pluginをinstall/connectし専用folderを選択|2026-07-26完了|`SaaS TCO Lab`と7分類を作成済み。safe-summaryだけを投入する|契約全文、PIIをchat・Driveへ貼らない|
 |A-H03|完了|Google Calendar pluginをconnectし専用calendarを選択|2026-07-26完了|非公開`SaaS TCO Lab`と5予定を作成・read-back済み|個人予定、calendar ID|
 |A-H04|完了|確定済みoriginのSearch Console URL-prefix propertyをHTML tagで所有確認済み。query/page/country/device/dateとexport UIをread-back済み|2026-07-26 `gsc_verification_deploy: GO`実行済み|初日の処理完了後に実測query/page exportを取得する|verification token|
@@ -21,7 +37,10 @@ Google Ads・公開手順は`docs/HUMAN_ACTION_MANUAL.md`を優先する。
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
 |A-H10|公開前版完了|カード不要Sitesを公開前originとして採用済み。実データ、indexing、CTA、DB、独自domainは別承認|2026-07-26 public-prelaunch GO|外部readbackとfail-closed経路を継続監視。実運用releaseはGate A–Cまで停止|cloud root credential|
-|A-H11|自データ取得開始前|Google Ads以外の承認済みJP/ja需要export、field evidence、初回15件以上のHuman gold labelを確認|`jp_ja_export: done`、`field_evidence: done`、`initial_gold_labels: done`|署名付き初期学習品質bundleを作り、低品質batchを開始前にSTOP|raw本文、PII、credential、tracking ID|
+|A-H11|記事入力開始時|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|記事別Human review|editorial schemaを検証し、unknownを保持しつつ計算・承認はSTOP|raw本文、PII、credential、tracking ID|
+|A-H12|カード解禁後|独自domainを決定する|`domain: GO <domain>`|DNS・GSC・GA4・redirect・Impact移行を実行前検査|registrar credential、支払情報|
+|A-H13|150 query export時|KWFinder正規画面からJP/ja CSVをHuman exportする|`mangools_csv: done`|rawを保存せずvalidatorでsafe-summaryだけ生成|account情報、raw CSVのrepo保存|
+|A-H14|記事承認後|index解除対象を確定する|`index_go: GO`|承認済み記事だけindex候補化。CTAは別GO|verification・tracking ID|
 
 ## Plugin画面での既定選択
 
@@ -48,7 +67,8 @@ private recordで確認済みだが、実名をrepo、Calendar、event、log、p
 
 候補優先順位は、`Mangools`、`HubSpot`、`SE Ranking`、`Semrush`、`Serpstat`の順とする。
 Google Ads／Keyword Plannerは2026-07-26のHuman判断でskipし、自動再試行しない。JP/ja需要は、
-権利承認済みの代替exportまたは公開後のSearch Console実測で満たす。
+Mangools KWFinderのHuman exportまたは公開後のSearch Console実測で満たす。Mangools CSVはinternal
+business purposeの需要判断に限定し、volumeのsafe-summaryだけをrepositoryへ保存できる。
 
 ## Affiliate提携とrights回答の現在地
 
@@ -60,6 +80,10 @@ Google Ads／Keyword Plannerは2026-07-26のHuman判断でskipし、自動再試
 |SE Ranking|work email例外回答待ち|未回答。ticket 112501へ2026-07-26追送済み|0|回答まで再登録しない|
 |Serpstat|未申請|回答あり・社内審査中。2026-07-26 due-diligence返信済み|0|authorized teamの8項目回答を待つ|
 
+E10のImpact product feed確認は、Impact上でAffiliateがactiveになったpartnerだけがtriggerである。現在は
+HubSpotが審査待ち、SemrushがMarketplace手続中であり、対象partnerは0社なのでHuman操作はまだ不要。
+active通知後に`docs/IMPACT_PRODUCT_FEED_CHECKLIST.md`を使い、catalog有無とA1利用scopeを確認する。
+
 HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。現在は
 審査待ちで、追加表示されたImpact Marketplace設定、税務情報、受取情報は未操作です。Semrushは
 2026-07-26に契約同意、Impact credential受付、SMS端末認証、既存Impact accountへのloginまで完了しました。同日、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User AgreementとMaster Program Agreementへ同意しました。税務workflowは値を記録せず完了し、SaaS TCO Lab限定の公開profileも保存済みです。media propertyはwebsite認証済みで、Impact Marketplace申請は受領済みです。Humanの`semrush_submit: GO`後にSemrush個別申請の送信を再試行しましたが、既存Impact accountへのsign-in後はHubSpot homeへ遷移し、Semrushの受付画面・通知・受付メールはいずれも確認できませんでした。再認証の失敗ではなく、Marketplace承認前の導線または既存account callbackの停止と判定します。Marketplace承認後に`Discover`から再開し、受付receiptを確認します。申請中も承認済みと数えず、Affiliate、data rights、対象site、
@@ -69,19 +93,21 @@ payoutの全条件が揃った会社だけを1社と数えます。
 
 第一候補を`Mangools KWFinderの正規画面からHumanが出力するCSV`へ確定します。既存のカード不要accountで、
 凍結済み150 queryを投入でき、location/languageを指定した検索量と月次volumeをCSVで出力できます。
-ただしMangools Termsはデータ利用をinternal business purposeとし、publicationにはattributionを求め、
-自動化はAPI経由を前提とします。照会回答がまだないため状態は`selected_pending_rights`であり、現時点の
-CSV取得・repository取込・記事利用はすべてSTOPです。
+Mangools Termsはデータ利用をinternal business purposeとし、publicationにはattributionを求め、自動化は
+API経由を前提とします。Humanが正規画面からexportし、rawをrepository外でvalidatorへ一度だけ渡す需要検証を
+本decisionで承認します。CSVのraw、query別volume、Mangools固有IDはrepositoryへ保存せず、150 query一致、
+合計volume、欠損、観測日、hashだけをsafe-summaryにします。API・browser自動取得は行いません。
 
 |順位|source|採用判断|役割|停止条件|
 |---:|---|---|---|---|
-|1|Mangools KWFinder Human CSV|`selected_pending_rights`|公開前bootstrapのJP/ja volume|field-level書面回答がない|
+|1|Mangools KWFinder Human CSV|`human_export_approved`|公開前bootstrapのJP/ja volume|自動取得、raw保存、150 query不一致|
 |2|Microsoft Advertising Keyword Planner|`contingency_unverified`|Mangools不許可時の代替|account作成GOなし、カード不要性未確認|
 |3|Search Console|`available_waiting_data`|公開後の自サイト実需要|所有確認済み。初日データ処理中で実測queryは未生成|
 |4|Google Trends|`supporting_only`|季節性・相対比較|絶対需要やCVRへ換算禁止|
 
-`jp_ja_export: done`はMangoolsから8権利の書面回答を得て、HumanがCSVを正規exportし、locale、欠損、
-重複、取得時刻、権利receiptを検証した後だけ使用します。
+`mangools_csv: done`はHumanがCSVを正規exportし、validatorでlocale、exact 150 query、欠損、重複、
+観測日を検証した合図です。field-level回答は自動取得trackで追跡を続けますが、このHuman exportによる
+internal demand検証を停止しません。
 
 ## field-level rights decision slate
 
@@ -107,8 +133,9 @@ vendorから未付与の利用権を生成せず、source activation、公開、
 
 - Semrush safe-summary SHA-256: `f560bbbc5d4d902767efba421ae5190636cbd13404cb1e710dbdb7aed4651f8e`
 - Serpstat safe-summary SHA-256: `be46d37c0df2cb547ba1436948fb32c1d1ee2ed6513811d4639bfcca4aa615b2`
-- 結論: 現時点で、価格・limit・TCO用の承認済み`FieldEvidence`は`0件`。禁止・未審査を
-  approvedへ補完せず、実データ取得を開始しません。
+- 結論: 自動取得・価格DB・履歴DB用の承認済み`FieldEvidence`は`0件`でありstrict STOPを維持します。
+  human editorial pathでは書面許諾を待たず、vendor・plan識別子、Human入力値または明示的unknown、出典URL、観測日、次回確認日を揃えたfieldを
+  証拠候補にできます。Humanシナリオはvendor観測と分離します。unknownを使う計算・記事承認と、禁止・未審査の自動取得権への補完は行いません。
 
 ## Human gold label — 15件の確認候補
 
@@ -205,7 +232,8 @@ PII、affiliate URL、測定ID、verification token、個人メールはartifact
 公開して所有確認した。query/page/country/device/dateとexport UIは利用可能で、初日の実測だけ処理中である。
 GA4は同originの`SaaS TCO Lab — Public Web`へ同意制御tagを公開した。runtime値がない場合はmarkupと
 Google向けCSP許可を出さず、有効時も訪問者の同意前と拒否後はGoogle scriptを読み込まない。
-同意後のRealtime `page_view`受信を確認済み。実行・検証・rollback手順は
+同意後のRealtime `page_view`受信を確認済み。2026-07-26の追加確認では`page_view` 2、
+`qualified_session` 2までread-backしたが、実装確認の訪問を含むため需要・CVR・収益へ算入しない。実行・検証・rollback手順は
 `docs/GSC_GA4_DEPLOYMENT_GATE.md`を正本とする。
 
 ```text
@@ -214,6 +242,11 @@ ga4_tag_deploy: GO / STOP
 ```
 
 上記2件は2026-07-26に`GO`受領・実行済みで、再返信は不要である。
+
+同日、直近14日の対象vendor・Affiliateメールをread-onlyで再確認した。追送後の新しい実質回答、
+Affiliate承認、拒否は0件で、受付確認・survey・既存審査中threadはGate A/Bへ算入しない。
+今後30回の日次確認は`docs/GSC_GA4_DEPLOYMENT_GATE.md`の公開前監視手順に従い、
+変化またはHuman判断が必要な時だけ通知する。
 
 ## 公開前originの現在地
 

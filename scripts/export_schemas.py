@@ -36,6 +36,11 @@ from saas_preflight.external_actions import (
     ExternalActionTrustStore,
     HumanExecutionApproval,
 )
+from saas_preflight.editorial_input import (
+    CategoryExpansionInput,
+    EditorialArticleInput,
+    HumanEditorialNumericField,
+)
 from saas_preflight.goldset import CandidateBatch, GoldSetReport, HumanGoldSet
 from saas_preflight.growth_system import (
     ClaimEvidenceLink,
@@ -146,6 +151,7 @@ from saas_preflight.measurement_integrity import (
     ProducerCoverage,
     SignedMeasurementRunPlan,
 )
+from saas_preflight.mangools_export import MangoolsDemandSafeSummary
 from saas_preflight.preview import PreviewPage
 from saas_preflight.repository_acceptance import (
     HumanRepositoryAcceptance,
@@ -322,6 +328,7 @@ SCHEMA_MODELS = {
     "cohort-evidence.schema.json": CohortEvidence,
     "operations-evidence.schema.json": OperationsEvidence,
     "demand-summary-batch.schema.json": DemandSummaryBatch,
+    "mangools-demand-safe-summary.schema.json": MangoolsDemandSafeSummary,
     "cohort-summary-batch.schema.json": CohortSummaryBatch,
     "operations-summary-batch.schema.json": OperationsSummaryBatch,
     "human-gold-set.schema.json": HumanGoldSet,
@@ -349,6 +356,9 @@ SCHEMA_MODELS = {
     "policy-memo.schema.json": PolicyMemo,
     "human-policy-decision-receipt.schema.json": HumanPolicyDecisionReceipt,
     "content-brief.schema.json": ContentBrief,
+    "editorial-article-input.schema.json": EditorialArticleInput,
+    "human-editorial-numeric-field.schema.json": HumanEditorialNumericField,
+    "category-expansion-input.schema.json": CategoryExpansionInput,
     "claim-evidence-link.schema.json": ClaimEvidenceLink,
     "editorial-draft.schema.json": EditorialDraft,
     "editorial-package.schema.json": EditorialPackage,

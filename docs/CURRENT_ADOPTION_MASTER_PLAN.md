@@ -53,7 +53,7 @@ flowchart LR
 |ID|項目|状態|Wave|owner|依存|完了条件|
 |---|---|---|---:|---|---|---|
 |F01|初回immutable Git baseline|existing|0|Codex + Human review|なし|2026-07-26にP18の500-file scopeをHuman確認後、初回commit済み|
-|F02|private GitHub remote|existing|1|Human|F01|2026-07-26に`saas-tco-lab-private`をprivateで作成し、baseline pushとremote CIをread-back済み|
+|F02|GitHub remote|existing|1|Human|F01|2026-07-28にsecret・著者情報を検査後public化し、匿名HTTP 200を確認済み。未commit変更は未公開|
 |F03|GitHub Actions/Dependabot/Gitleaks実稼働|existing|1|Codex + Human|F02|2026-07-26にremote CIのPython/Web/lock/schema/secret checksを全合格read-back済み|
 |P01|Google Drive plugin/evidence vault|existing|1|Human + Codex|なし|2026-07-26に専用folderと7分類を作成。safe-summaryだけを受け入れる|
 |P02|Gmail rights/Affiliate inbox|existing|1|Human + Codex|なし|専用label/query、送信前Human GO、返信監視|
