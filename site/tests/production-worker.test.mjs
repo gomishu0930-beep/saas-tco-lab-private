@@ -339,6 +339,7 @@ test("production robots and sitemap expose only the three approved articles", as
   assert.equal(
     await response.text(),
     "User-agent: *\n" +
+      "Allow: /sitemap.xml$\n" +
       "Allow: /pilot/alternatives$\n" +
       "Allow: /pilot/plan-comparison$\n" +
       "Allow: /pilot/pricing-calculator$\n" +

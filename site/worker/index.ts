@@ -260,7 +260,7 @@ const worker = {
     if (url.pathname === "/robots.txt") {
       const allowed = [...indexPaths].sort().map((path) => `Allow: ${path}$`).join("\n");
       const body = allowed
-        ? `User-agent: *\n${allowed}\nDisallow: /\nSitemap: ${CANONICAL_PUBLIC_ORIGIN}/sitemap.xml\n`
+        ? `User-agent: *\nAllow: /sitemap.xml$\n${allowed}\nDisallow: /\nSitemap: ${CANONICAL_PUBLIC_ORIGIN}/sitemap.xml\n`
         : "User-agent: *\nDisallow: /\n";
       return new Response(body, {
         status: 200,
