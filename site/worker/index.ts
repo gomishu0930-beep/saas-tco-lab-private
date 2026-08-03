@@ -37,6 +37,9 @@ const BASE_SECURITY_HEADERS = {
   "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet",
 };
 
+const LEGACY_PUBLIC_HOST = "saas-tco-lab-jp.shukun0930.chatgpt.site";
+const CANONICAL_PUBLIC_HOST = "saastcolab.jp";
+
 const RESTRICTED_CONTENT_SECURITY_POLICY =
   "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
@@ -152,6 +155,19 @@ const worker = {
   ): Promise<Response> {
     const url = new URL(request.url);
     const runtimeControls = runtimeHeadControls(env);
+
+    if (url.hostname.toLowerCase() === LEGACY_PUBLIC_HOST) {
+      const target = new URL(request.url);
+      target.protocol = "https:";
+      target.host = CANONICAL_PUBLIC_HOST;
+      return new Response(null, {
+        status: 301,
+        headers: {
+          ...securityHeaders(),
+          Location: target.toString(),
+        },
+      });
+    }
 
     if (url.pathname === "/healthz") {
       return new Response("ok\n", {

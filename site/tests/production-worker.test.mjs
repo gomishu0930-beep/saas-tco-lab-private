@@ -256,6 +256,33 @@ test("actual production health exposes only a fixed non-sensitive response", asy
   );
 });
 
+test("legacy public origin redirects once to the canonical host without changing route data", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("legacy-redirect", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const response = await worker.fetch(
+    new Request(
+      "https://saas-tco-lab-jp.shukun0930.chatgpt.site/pilot/evidence-method?view=source",
+    ),
+    {
+      ASSETS: {
+        fetch: async () => new Response("Not found", { status: 404 }),
+      },
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+
+  assert.equal(response.status, 301);
+  assert.equal(
+    response.headers.get("location"),
+    "https://saastcolab.jp/pilot/evidence-method?view=source",
+  );
+  assert.match(response.headers.get("x-robots-tag"), /\bnoindex\b/i);
+});
+
 test("actual production robots disallows the complete site", async () => {
   const response = await fetch(`${baseUrl}/robots.txt`);
   assert.equal(response.status, 200);
