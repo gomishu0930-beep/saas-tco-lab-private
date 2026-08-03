@@ -2,9 +2,9 @@
   "schema_version": "ease-track-1",
   "domain": "saastcolab.jp",
   "domain_state": "GO",
-  "index_state": "HOLD",
+  "index_state": "GO",
   "affiliate_cta": {
-    "Mangools": "HOLD"
+    "Mangools": "GO"
   },
   "articles": {
     "P01": "approved",

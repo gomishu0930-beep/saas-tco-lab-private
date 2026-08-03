@@ -44,7 +44,7 @@ Human Approver `omishu`の指示により、launch trackの現在地と次の処
 - 観測contract v2.3を適用する。価格表示分類は`none`、`annual_discount_permanent`、
   `time_limited_promo`、`unknown`の4値とし、計算HOLDは後二者だけとする。2026-08-02のHuman exact値指示で
   Mangoolsの年次price 5 observationを確定し、P01–P03のTCO節を再生成した。他vendorのunknownは維持する。
-- index、CTA、commit、push、公開はHOLDを維持する。
+- indexとCTAは個別Human GOまでHOLDする。2026-08-03にP01–P03のindex GOとMangools CTA GOを受領した。
 
 |Event|Trigger|処理|現在状態|
 |---|---|---|---|
@@ -52,9 +52,9 @@ Human Approver `omishu`の指示により、launch trackの現在地と次の処
 |S1|SSL Active read-back|外部read-back、GSC domain property、GA4新origin、旧origin 301、Impact再認証を順番に実施し記録|done — 2026-08-03|
 |S2|Mangools exact checkout値と再生成指示|contract確定、P01–P03価格・TCO節再生成、記事承認待ちを返す|done (Mangools scope)|
 |S3|`article_approve: P01,P02,P03`|承認記録と公開候補登録|done (2026-08-03)|
-|S4|`index_go: GO`|承認記事だけnoindex解除、robots／sitemap更新、GSC送信と外部read-back|waiting|
-|S5|`cta_go: GO mangools`|開示先行test後、Mangools CTAだけを有効化|waiting|
-|S6|公開24時間後|index、GA4、Impactを1回read-backしdashboardへ反映|waiting|
+|S4|`index_go: GO`|承認記事だけnoindex解除、robots／sitemap更新、GSC送信と外部read-back|done — P01–P03、2026-08-03|
+|S5|`cta_go: GO mangools`|開示先行test後、Mangools CTAだけを有効化|done — P01–P03、2026-08-03|
+|S6|公開24時間後|index、GA4、Impactを1回read-backしdashboardへ反映|waiting — 24時間後の自動read-back|
 
 `annual_discount_permanent`は、終了日・カウントダウン・クーポン・取消線priceのない恒常的な年払い・
 月払い差としてHumanが分類する。同一通貨・同一税条件の月払い価格と年次checkout総額がともに
@@ -76,12 +76,13 @@ Python正本とTypeScriptの固定式で再検証する。
 2026-08-02観測contractに基づく各記事の6章本文とTCO節である。contract内のknown／unknown、出典、
 観測日、次回確認日を含む表示境界を承認し、P01–P03を公開候補へ登録する。P03の未観測価格・移行費用を
 既知へ変更せず、該当する横断順位は引き続きSTOPする。index、CTA、deploy、push、公開は承認scope外であり、
-`index_go`受領までnoindexを維持する。
+`index_go`受領までnoindexを維持する。その後の2026-08-03 `index_go: GO`はP01–P03だけ、
+`cta_go: GO mangools`は同3記事のMangoolsだけをscopeとし、他記事・他partnerへ拡張しない。
 
 S1のSSL、DNS、GSC、GA4、Impact操作は画面別手順書を提示し、Humanが実行する。旧`chatgpt.site`
 originはImpactがVerifiedになるまで存続させ、その後も301を維持する。
 
-残りのHuman tokenは`index_go: GO`、`cta_go: GO mangools`、`mangools_csv: done`である。
+残りのHuman tokenは`mangools_csv: done`である。S6は公開24時間後にread-onlyで自動実行する。
 
 ## 変更しない境界
 

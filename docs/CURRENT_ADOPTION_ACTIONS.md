@@ -41,7 +41,7 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H11|P01–P03承認済み／P04–P12継続|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|2026-08-03 `article_approve: P01,P02,P03`受領|承認scopeをcontractへ固定し、unknown依存claimだけSTOP。P01–P03は公開候補、残記事はreview継続|raw本文、PII、credential、tracking ID|
 |A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|indexとCTAは別GOまでHOLDする|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
 |A-H13|150 query export時|KWFinder正規画面からJP/ja CSVをHuman exportする|`mangools_csv: done`|rawを保存せずvalidatorでsafe-summaryだけ生成|account情報、raw CSVのrepo保存|
-|A-H14|記事承認後|index解除対象を確定する|`index_go: GO`|承認済み記事だけindex候補化。CTAは別GO|verification・tracking ID|
+|A-H14|完了 — P01–P03|index解除対象を確定する|2026-08-03 `index_go: GO`受領|承認済みP01–P03だけindex可。P04–P12と他HTML routeはnoindex|verification・tracking ID|
 
 2026-08-02、Human ApproverがMangoolsの年次checkout総額452.40／632.40／1,172.40 USD、
 同planの月払い比較値61.00／81.00／141.00 USD、Japan選択時VAT 0表示を確認し、P01–P03の
@@ -49,7 +49,8 @@ TCO節再生成を明示指示した。Basic、Premium、Agencyの年次総額�
 37.70／52.70／97.70 USDと月払い比の約38%／35%／31%を固定式の派生値として記録した。
 P03のSE Ranking・Semrush年次総額と移行費用はunknownのまま横断順位から除外する。2026-08-03、
 Human Approver `omishu`がこの2026-08-02観測contractに基づく本文・TCO節を承認した。P01–P03は
-公開候補へ登録済みだが、`index_go`未受領のためnoindex・CTA無効を維持する。
+公開候補へ登録後、2026-08-03の`index_go: GO`と`cta_go: GO mangools`を受領した。P01–P03だけを
+index可・Mangools CTA有効とし、P04–P12、他HTML route、Mangools以外のCTAは無効を維持する。
 
 観測contract v2.3では価格表示を`none`、`annual_discount_permanent`、`time_limited_promo`、`unknown`の
 4区分とする。計算HOLDは期間限定promoとunknownだけである。2026-08-02にHuman token

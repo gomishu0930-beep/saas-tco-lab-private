@@ -131,6 +131,14 @@ before(async () => {
       "INDEX_GO:GO",
       "--var",
       "INDEX_APPROVED_ARTICLES:P01,P02,P03",
+      "--var",
+      "CTA_GO:GO",
+      "--var",
+      "CTA_APPROVED_PARTNER:mangools",
+      "--var",
+      "MANGOOLS_AFFILIATE_APPROVAL_CURRENT:true",
+      "--var",
+      "MANGOOLS_AFFILIATE_DESTINATION:https://mangools.com/#a1234567890bcdef123456789",
     ],
     {
       cwd: siteRoot,
@@ -199,6 +207,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     const response = await fetch(`${baseUrl}${path}`);
     assert.equal(response.status, 200, path);
     const body = await response.text();
+    const documentHtml = body.slice(0, body.lastIndexOf("</html>") + "</html>".length);
     assert.match(body, /SaaS TCO Lab/i, path);
     assert.match(
       body,
@@ -229,7 +238,6 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       `${path}: Impact verification must stay before GSC verification`,
     );
     assert.doesNotMatch(body, /href=["']\/(?:comparison|learning|readiness|operator|pilot)\/?["']/i, path);
-    assert.doesNotMatch(body, /<a\b[^>]*href=["']https?:\/\//i, path);
     const approvedArticlePaths = new Set([
       "/pilot/pricing-calculator",
       "/pilot/plan-comparison",
@@ -243,6 +251,25 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
         new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${path}">`, "i"),
         path,
       );
+      const disclosurePosition = documentHtml.indexOf('data-affiliate-disclosure-status="enabled"');
+      const ctaPosition = documentHtml.indexOf(
+        '<a class="cta-active" data-affiliate-cta-partner="mangools"',
+      );
+      assert.ok(disclosurePosition >= 0, `${path}: active disclosure`);
+      assert.ok(ctaPosition > disclosurePosition, `${path}: disclosure before CTA`);
+      assert.match(documentHtml, /この記事にはMangoolsのアフィリエイトリンクが含まれます。/i, path);
+      assert.match(documentHtml, /data-affiliate-cta-state="enabled">ACTIVE — MANGOOLS/i, path);
+      assert.match(
+        documentHtml,
+        /<a\b[^>]*class="cta-active"[^>]*data-affiliate-cta-partner="mangools"[^>]*href="https:\/\/mangools\.com\/#a1234567890bcdef123456789"[^>]*rel="sponsored noopener noreferrer"[^>]*>Mangools公式サイトを見る<\/a>/i,
+        path,
+      );
+      assert.match(documentHtml, /<script data-saastco-affiliate-cta>/i, path);
+      assert.doesNotMatch(
+        documentHtml,
+        /<span\b[^>]*data-affiliate-cta-placeholder|>CTA DISABLED</i,
+        path,
+      );
     } else {
       assert.equal(
         response.headers.get("x-robots-tag"),
@@ -250,6 +277,9 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
         path,
       );
       assert.doesNotMatch(body, /<link\s+rel=["']canonical["']/i, path);
+      assert.doesNotMatch(documentHtml, /rel=["'][^"']*sponsored|data-affiliate-cta-partner/i, path);
+      assert.doesNotMatch(documentHtml, /<a\b[^>]*href=["']https?:\/\//i, path);
+      assert.doesNotMatch(documentHtml, /data-saastco-affiliate-cta/i, path);
     }
     const csp = response.headers.get("content-security-policy");
     assert.match(csp, /script-src[^;]*https:\/\/www\.googletagmanager\.com/i, path);
@@ -409,4 +439,44 @@ test("missing or invalid index approval stays fail-closed", async () => {
   const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
   assert.equal(sitemap.status, 503);
   assert.match(sitemap.headers.get("x-robots-tag"), /\bnoindex\b/i);
+});
+
+test("missing, expired, or malformed Mangools approval stays CTA fail-closed", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("fail-closed-cta", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const baseEnv = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01",
+    CTA_GO: "GO",
+    CTA_APPROVED_PARTNER: "mangools",
+    MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "true",
+    MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/#a1234567890bcdef123456789",
+  };
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+
+  for (const override of [
+    { CTA_GO: "HOLD" },
+    { CTA_APPROVED_PARTNER: "semrush" },
+    { MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "false" },
+    { MANGOOLS_AFFILIATE_DESTINATION: "https://example.com/#a1234567890bcdef123456789" },
+    { MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/?ref=not-approved" },
+  ]) {
+    const response = await worker.fetch(
+      new Request("https://saastcolab.jp/pilot/pricing-calculator"),
+      { ...baseEnv, ...override },
+      ctx,
+    );
+    assert.equal(response.status, 200);
+    const body = await response.text();
+    assert.match(body, /CTA DISABLED/);
+    assert.match(body, /data-affiliate-disclosure-status="disabled"/);
+    assert.doesNotMatch(body, /rel=["'][^"']*sponsored|data-affiliate-cta-partner/i);
+  }
 });

@@ -65,17 +65,17 @@ Gate D、3社×6プランgold set、C1–C7の合格を入口条件にしない�
 |---:|---|---|---|---|
 |L1|完了 — 2026-08-03|2026-08-02 `domain: GO saastcolab.jp`受領。`saastcolab.jp`登録完了、Sites指定DNS保存・個別自動更新ON、2026-08-03 HTTPS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認済み|完了状態を維持し、index／CTAを別GOまでHOLD|domain切替とreadback合格|
 |L2|P01–P03承認済み・3/12公開候補|L1完了|P04–P12へvendor・plan別のHuman実値／unknownと出典・日付を入力し、Humanシナリオを分離して各記事を承認|12記事の公開候補が承認済み|
-|L3|`HOLD`|`index_go: GO`と対象記事の承認|承認済み記事だけnoindex解除。未承認記事とfilter/query routeはnoindex維持|承認記事のindexability readback合格|
-|L4|`HOLD`|partner別CTA GO|当該partnerのAffiliate承認、規約・表示遵守、開示先行、`rel="sponsored"`を確認してCTA有効化|承認partnerだけCTA稼働|
+|L3|P01–P03完了 — 2026-08-03|`index_go: GO`と対象記事の承認|承認済みP01–P03だけnoindex解除。未承認記事とfilter/query routeはnoindex維持|承認記事のindexability readback合格|
+|L4|Mangools完了 — 2026-08-03|`cta_go: GO mangools`|MangoolsのAffiliate承認、規約・表示遵守、開示先行、`rel="sponsored"`を確認してP01–P03だけCTA有効化|MangoolsだけCTA稼働|
 
-L1は`saastcolab.jp`の購入・DNS保存・個別自動更新ON・TLS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認まで完了した。P01–P03は2026-08-03に本文・TCO承認済みの公開候補、P04–P12は構造template段階である。Mangoolsはeditorial laneのAffiliate条件を満たすが、index GOとCTA GOは未受領であるため両方無効のまま維持する。
+L1は`saastcolab.jp`の購入・DNS保存・個別自動更新ON・TLS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認まで完了した。P01–P03は2026-08-03に本文・TCO承認、index GO、Mangools CTA GOを満たした。P04–P12は構造template段階のためnoindex・CTA無効を維持する。Mangools以外のpartner CTAも無効である。
 
 ### Launch最終シーケンス — event-driven
 
 2026-08-02のHuman指示により、S0–S6をtrigger受領順に処理する。S0の最小通貨単位で割り切れない
 月額派生値の非表示は実装済み。S2は2026-08-02のMangools exact checkout値と再生成指示により完了し、
-P01–P03はHuman記事承認済みの公開候補である。S1はSSL Active、S3は完了、S4はindex GO、S5はMangools
-CTA GO、S6は公開24時間経過をそれぞれ入口とし、先行実行しない。SE Ranking・Semrushの未観測値は
+P01–P03はHuman記事承認済みで、S1–S5は2026-08-03までに完了した。S6はMangools CTA公開から
+24時間経過を入口とし、先行実行しない。SE Ranking・Semrushの未観測値は
 unknownのまま関連する横断順位だけを停止し、記事・index・CTAは各Human gateを維持する。
 
 ## Launch Quarter 2026-08〜10

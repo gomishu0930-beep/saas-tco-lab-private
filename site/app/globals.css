@@ -108,6 +108,8 @@ td { min-width: 175px; font-size: 0.75rem; }
 .not-fit { background: #f4d9d4; color: #7a2d26; }
 .evidence-cell a { color: var(--green); font-weight: 800; text-underline-offset: 3px; }
 .cta-disabled { display: inline-block; padding: 5px 9px; border: 1px solid #a7aaa5; color: #6d726e; font: 800 0.65rem ui-monospace, monospace; }
+.cta-active { display: inline-block; width: fit-content; padding: 11px 15px; border: 2px solid var(--ink); background: var(--amber); color: var(--ink); font: 800 0.76rem ui-monospace, monospace; text-decoration: none; }
+.cta-active:hover, .cta-active:focus-visible { background: var(--ink); color: #fff; }
 
 .process-section { padding-block: 97px 108px; background: var(--green-dark); color: #f2f4ee; }
 .inverse .eyebrow { color: var(--lime); }

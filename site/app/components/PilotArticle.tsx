@@ -171,7 +171,7 @@ export function PilotArticle({
           <p>
             問いは「{page.question}」。Humanが公式公開画面で確認した値、出典、観測日と、
             確定できないunknownを同時に表示します。記事は{articleApproved ? "Human承認済み" : "未承認"}です。
-            検索公開とCTAは別ゲートで制御し、CTAは現在無効です。
+            検索公開とCTAは別ゲートで制御し、現在のCTA状態は記事末尾に表示します。
           </p>
         ) : (
           <p>
@@ -290,16 +290,22 @@ export function PilotArticle({
         <dl>
           <div><dt>Human入力</dt><dd>{contract ? "contract取込済み" : "未投入"}</dd></div>
           <div><dt>記事review</dt><dd>{articleApproved ? "承認済み・公開候補" : "未承認"}</dd></div>
-          <div><dt>CTA</dt><dd>DISABLED</dd></div>
+          <div><dt>CTA</dt><dd><span data-affiliate-cta-state="disabled">DISABLED</span></dd></div>
         </dl>
         <p>
           {contract && unknownFields > 0
             ? `unknownを含むfield ${unknownFields}件を保持中です。承認scopeどおり該当TCO・価格順位だけをSTOPし、unknownを明示した本文は公開候補として保持します。`
             : articleApproved
-              ? "本文・TCOはHuman承認済みです。index GO、CTA GO、期限確認は別gateとして維持します。"
+              ? "本文・TCOはHuman承認済みです。index、CTA、期限確認は独立したgateとして維持します。"
               : "自動取得権とeditorial pathを混同せず、期限切れ、推測値、未承認記事、CTA不一致でSTOPします。"}
         </p>
-        <span className="cta-disabled" aria-describedby="article-pr-disclosure">CTA DISABLED</span>
+        <span
+          className="cta-disabled"
+          aria-describedby="article-pr-disclosure"
+          data-affiliate-cta-placeholder="mangools"
+        >
+          CTA DISABLED
+        </span>
       </section>
 
       <section className="shell page-section">

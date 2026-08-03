@@ -241,10 +241,13 @@ index_go: HOLD
 affiliate_cta: HOLD Mangools
 ```
 
+2026-08-03追記: 後続の個別GOで`index_go: GO P01,P02,P03`、
+`affiliate_cta: GO Mangools P01,P02,P03`へ移行した。domain day当日のHOLD記録は入口状態として保持する。
+
 ### Read-back
 
 - [x] domain、TLS、route、GSC、GA4、Impactの結果を確認した。
-- [x] indexはHOLD、CTAはHOLD、未承認記事はNOINDEXである。
+- [x] domain day終了時点ではindex／CTAをHOLDした。後続GO後も未承認記事はNOINDEX・CTA無効である。
 - [x] credentialや識別子をrepositoryへ保存していない。
 
 ## Rollback
