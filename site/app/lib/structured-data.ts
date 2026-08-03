@@ -3,11 +3,14 @@ import type { PilotPage } from "./pilot-pages";
 
 type JsonLdObject = Record<string, unknown>;
 
+const OFFER_PRICE_FIELDS = new Set(["pricing.base_price", "plan.price", "alternative.price"]);
+
 function approvedOffers(contract: EditorialContract | null): JsonLdObject[] {
   if (!contract || contract.article_review_status !== "approved") return [];
   return contract.numeric_fields
     .filter((field) => (
       field.value_kind === "price"
+      && OFFER_PRICE_FIELDS.has(field.field)
       && field.scope_kind === "vendor_plan"
       && field.review_status === "approved"
       && field.value_status === "known"

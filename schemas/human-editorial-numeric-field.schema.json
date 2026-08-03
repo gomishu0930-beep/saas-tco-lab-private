@@ -12,6 +12,16 @@
       "title": "EditorialBillingPeriod",
       "type": "string"
     },
+    "EditorialBillingToggleState": {
+      "enum": [
+        "annual_selected",
+        "monthly_selected",
+        "not_present",
+        "unknown"
+      ],
+      "title": "EditorialBillingToggleState",
+      "type": "string"
+    },
     "EditorialCurrencyStatus": {
       "enum": [
         "known",
@@ -21,6 +31,17 @@
       "title": "EditorialCurrencyStatus",
       "type": "string"
     },
+    "EditorialObservedPriceBasis": {
+      "enum": [
+        "checkout_billed_total",
+        "displayed_price",
+        "human_scenario",
+        "not_applicable",
+        "unknown"
+      ],
+      "title": "EditorialObservedPriceBasis",
+      "type": "string"
+    },
     "EditorialReviewStatus": {
       "enum": [
         "unreviewed",
@@ -28,6 +49,16 @@
         "rejected"
       ],
       "title": "EditorialReviewStatus",
+      "type": "string"
+    },
+    "EditorialSaleBannerState": {
+      "enum": [
+        "none",
+        "annual_discount_permanent",
+        "time_limited_promo",
+        "unknown"
+      ],
+      "title": "EditorialSaleBannerState",
       "type": "string"
     },
     "EditorialScopeKind": {
@@ -79,6 +110,7 @@
     "acquisition_method": {
       "enum": [
         "manual_public_page",
+        "manual_checkout_review",
         "human_scenario_input"
       ],
       "title": "Acquisition Method",
@@ -94,6 +126,16 @@
         }
       ],
       "default": null
+    },
+    "billing_toggle_state": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EditorialBillingToggleState"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "currency": {
       "anyOf": [
@@ -140,6 +182,74 @@
       "default": null,
       "title": "Currency Unknown Reason"
     },
+    "derivation_method": {
+      "anyOf": [
+        {
+          "const": "annual_checkout_total_divided_by_12",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Derivation Method"
+    },
+    "derived_annual_discount_percent": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,3}|(?=[\\d.]{1,6}0*$)\\d{0,3}\\.\\d{0,2}0*$)",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Derived Annual Discount Percent"
+    },
+    "derived_monthly_unit": {
+      "anyOf": [
+        {
+          "const": "/ mo",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Derived Monthly Unit"
+    },
+    "derived_monthly_value": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "title": "Derived Monthly Value"
+    },
+    "discount_derivation_method": {
+      "anyOf": [
+        {
+          "const": "one_minus_annual_total_divided_by_monthly_price_times_12",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Discount Derivation Method"
+    },
     "entered_by": {
       "const": "human",
       "default": "human",
@@ -153,6 +263,35 @@
       "title": "Field",
       "type": "string"
     },
+    "monthly_reference_unit": {
+      "anyOf": [
+        {
+          "const": "/ mo",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Monthly Reference Unit"
+    },
+    "monthly_reference_value": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Monthly Reference Value"
+    },
     "next_review_on": {
       "format": "date",
       "title": "Next Review On",
@@ -162,6 +301,16 @@
       "format": "date",
       "title": "Observed On",
       "type": "string"
+    },
+    "observed_price_basis": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EditorialObservedPriceBasis"
+        },
+        {
+          "type": "null"
+        }
+      ]
     },
     "plan_id": {
       "anyOf": [
@@ -188,6 +337,16 @@
       "title": "Rights Path",
       "type": "string"
     },
+    "sale_banner_state": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/EditorialSaleBannerState"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
     "scenario_basis": {
       "anyOf": [
         {
@@ -203,8 +362,8 @@
       "title": "Scenario Basis"
     },
     "schema_version": {
-      "const": "2.1",
-      "default": "2.1",
+      "const": "2.3",
+      "default": "2.3",
       "title": "Schema Version",
       "type": "string"
     },
@@ -307,6 +466,12 @@
     "scope_kind",
     "field",
     "value_kind",
+    "billing_toggle_state",
+    "sale_banner_state",
+    "observed_price_basis",
+    "derived_monthly_value",
+    "derived_monthly_unit",
+    "derivation_method",
     "observed_on",
     "next_review_on",
     "acquisition_method"

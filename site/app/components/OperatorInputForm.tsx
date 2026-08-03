@@ -3,6 +3,8 @@
 import { useMemo, useState } from "react";
 
 import {
+  annualDiscountPercent,
+  annualMonthlyEquivalent,
   emptyEditorialField,
   emptyEditorialRow,
   extractPriceTextCandidates,
@@ -15,6 +17,7 @@ import {
   type ExtractedPriceCandidate,
   type PriceTextExtraction,
 } from "../lib/editorial-input-contract";
+import { editorialContract } from "../lib/editorial-contracts";
 import { pilotFieldScope, pilotPages, type PilotNumericField, type PilotPage } from "../lib/pilot-pages";
 
 function initialRows(page: PilotPage): EditorialRowFormValue[] {
@@ -48,7 +51,7 @@ function parseStoredContract(page: PilotPage, raw: string | null): EditorialCont
 }
 
 function storageKey(articleId: string) {
-  return `saas-tco-lab:confirmed-editorial-v2-1:${articleId}`;
+  return `saas-tco-lab:confirmed-editorial-v2-2:${articleId}`;
 }
 
 function rowIdentity(row: EditorialRowFormValue) {
@@ -57,7 +60,7 @@ function rowIdentity(row: EditorialRowFormValue) {
     : "Human scenario";
 }
 
-function fieldSummary(value: EditorialFieldFormValue | undefined) {
+function fieldSummary(value: EditorialFieldFormValue | undefined, row?: EditorialRowFormValue) {
   if (!value) return "未入力";
   const parts = [
     `状態 ${value.valueStatus}`,
@@ -68,6 +71,15 @@ function fieldSummary(value: EditorialFieldFormValue | undefined) {
     value.currencyDisplay,
     value.billingPeriod,
     value.taxTreatment,
+    value.observedPriceBasis,
+    value.monthlyReferenceValue && `月払い比較 ${value.monthlyReferenceValue} / mo`,
+    row?.scopeKind === "vendor_plan" && `toggle ${row.billingToggleState}`,
+    row?.scopeKind === "vendor_plan" && `sale ${row.saleBannerState}`,
+    value.billingPeriod === "annual" && value.value && (
+      annualMonthlyEquivalent(value.value, value.currencyStatus === "known" ? value.currency : "") === null
+        ? "月額派生 最小通貨単位で割り切れないため非表示"
+        : `月額派生 ${annualMonthlyEquivalent(value.value, value.currency)} / mo`
+    ),
     value.sourceUrl,
     value.observedOn && `観測 ${value.observedOn}`,
     value.nextReviewOn && `次回 ${value.nextReviewOn}`,
@@ -118,8 +130,8 @@ export function OperatorInputForm() {
   const rows = rowsByArticle[page.id] ?? initialRows(page);
   const validation = useMemo(() => validateEditorialInput(page, rows), [page, rows]);
   const json = confirmedContract ? `${JSON.stringify(confirmedContract, null, 2)}\n` : "";
-  const hasStarted = rows.some((row) => row.vendorId || row.planId || Object.values(row.values).some((field) => (
-    field.value || field.unit || field.unknownReason || field.sourceUrl || field.observedOn || field.nextReviewOn
+  const hasStarted = rows.some((row) => row.vendorId || row.planId || row.billingToggleState || row.saleBannerState || Object.values(row.values).some((field) => (
+    field.value || field.unit || field.unknownReason || field.monthlyReferenceValue || field.sourceUrl || field.observedOn || field.nextReviewOn
   )));
   const errorCount = Object.values(validation.errors).reduce((total, messages) => total + messages.length, 0);
   const previousRows = contractRowsByIdentity(page, previousContract);
@@ -141,7 +153,8 @@ export function OperatorInputForm() {
 
   function selectArticle(nextArticleId: string) {
     const nextPage = pilotPages.find((candidate) => candidate.id === nextArticleId) ?? pilotPages[0];
-    const stored = parseStoredContract(nextPage, window.localStorage.getItem(storageKey(nextPage.id)));
+    const stored = parseStoredContract(nextPage, window.localStorage.getItem(storageKey(nextPage.id)))
+      ?? editorialContract(nextPage);
     setRowsByArticle((current) => current[nextPage.id] ? current : { ...current, [nextPage.id]: initialRows(nextPage) });
     setArticleId(nextPage.id);
     setPreviousContract(stored);
@@ -152,7 +165,7 @@ export function OperatorInputForm() {
     resetConfirmation();
   }
 
-  function updateRow(rowId: string, key: "vendorId" | "planId" | "scenarioBasis", value: string) {
+  function updateRow(rowId: string, key: "vendorId" | "planId" | "scenarioBasis" | "billingToggleState" | "saleBannerState", value: string) {
     setCurrentRows((current) => current.map((row) => row.rowId === rowId ? { ...row, [key]: value } : row));
   }
 
@@ -168,8 +181,14 @@ export function OperatorInputForm() {
         next.currencyUnknownReason = "";
         next.billingPeriod = "not_applicable";
         next.taxTreatment = "not_applicable";
+        next.observedPriceBasis = "not_applicable";
+        next.monthlyReferenceValue = "";
       }
-      if (key === "valueStatus" && value === "unknown") next.value = "";
+      if (key === "valueStatus" && value === "unknown") {
+        next.value = "";
+        next.observedPriceBasis = "unknown";
+        next.monthlyReferenceValue = "";
+      }
       if (key === "currencyStatus" && value === "known") {
         next.currencyDisplay = "";
         next.currencyUnknownReason = "";
@@ -242,7 +261,8 @@ export function OperatorInputForm() {
   }
 
   function loadPrevious() {
-    const stored = parseStoredContract(page, window.localStorage.getItem(storageKey(page.id)));
+    const stored = parseStoredContract(page, window.localStorage.getItem(storageKey(page.id)))
+      ?? editorialContract(page);
     setPreviousContract(stored);
     setPreviousLookupState(stored ? "読込済み" : "前回値なし");
   }
@@ -285,8 +305,8 @@ export function OperatorInputForm() {
   return (
     <section className="operator-input-card" aria-labelledby="operator-input-title">
       <div className="operator-section-heading">
-        <div><p className="eyebrow">EDITORIAL INPUT 2.1</p><h2 id="operator-input-title">記事の実値を入力</h2></div>
-        <p>vendor・planごとに行を分け、Humanシナリオも別管理します。記事を切り替えてもブラウザを閉じるまでは入力を保持し、Human確認前の候補を保存・送信しません。</p>
+        <div><p className="eyebrow">EDITORIAL INPUT 2.3</p><h2 id="operator-input-title">記事の実値を入力</h2></div>
+        <p>vendor・planごとに行を分け、Humanシナリオも別管理します。年払いはcheckout請求総額を一次観測値とし、月額換算は12で最小通貨単位まで完全に割り切れる場合だけ派生表示します。価格表示は4区分で記録し、期間限定promoと不明だけを計算HOLDにします。Human確認前の候補を保存・送信しません。</p>
       </div>
 
       <div className="operator-article-picker">
@@ -333,8 +353,8 @@ export function OperatorInputForm() {
             <table className="operator-diff-table"><thead><tr><th>行 / field</th><th>前回確定値</th><th>現在値</th><th>差分</th></tr></thead><tbody>
               {rows.flatMap((row) => rowFields(page, row).map((field) => {
                 const previousRow = previousRows.get(rowIdentity(row));
-                const before = fieldSummary(previousRow?.values[field.key]);
-                const current = fieldSummary(row.values[field.key]);
+                const before = fieldSummary(previousRow?.values[field.key], previousRow);
+                const current = fieldSummary(row.values[field.key], row);
                 return <tr key={`${row.rowId}-${field.key}`}><th>{rowIdentity(row)} / {field.label}</th><td>{before}</td><td>{current}</td><td><span className={before === current ? "diff-same" : "diff-changed"}>{before === current ? "同じ" : "変更あり"}</span></td></tr>;
               }))}
             </tbody></table>
@@ -355,8 +375,12 @@ export function OperatorInputForm() {
             {row.scopeKind === "vendor_plan" ? <div className="operator-identity-grid">
               <label>vendor識別子<input value={row.vendorId} onChange={(event) => updateRow(row.rowId, "vendorId", event.target.value)} placeholder="mangools" autoComplete="off" /></label>
               <label>plan識別子<input value={row.planId} onChange={(event) => updateRow(row.rowId, "planId", event.target.value)} placeholder="basic" autoComplete="off" /></label>
+              <label>billing toggle位置<select value={row.billingToggleState} onChange={(event) => updateRow(row.rowId, "billingToggleState", event.target.value)}><option value="">選択</option><option value="annual_selected">年払い選択</option><option value="monthly_selected">月払い選択</option><option value="not_present">toggleなし</option><option value="unknown">不明</option></select></label>
+              <label>価格表示の分類<select value={row.saleBannerState} onChange={(event) => updateRow(row.rowId, "saleBannerState", event.target.value)}><option value="">選択</option><option value="none">なし</option><option value="annual_discount_permanent">年払い恒常割引</option><option value="time_limited_promo">期間限定promo</option><option value="unknown">不明</option></select><small>終了日・カウントダウン・クーポン・取消線priceのいずれかがあれば期間限定promo。恒常割引率は同条件の月払い価格×12と年次checkout総額が揃う場合だけ記事化します。</small></label>
               {errorMessages(validation.errors, `${row.rowId}.vendorId`, hasStarted)}
               {errorMessages(validation.errors, `${row.rowId}.planId`, hasStarted)}
+              {errorMessages(validation.errors, `${row.rowId}.billingToggleState`, hasStarted)}
+              {errorMessages(validation.errors, `${row.rowId}.saleBannerState`, hasStarted)}
               {errorMessages(validation.errors, `${row.rowId}.identity`, hasStarted)}
             </div> : <div className="operator-identity-grid one-column">
               <label>Humanシナリオ根拠<input value={row.scenarioBasis} onChange={(event) => updateRow(row.rowId, "scenarioBasis", event.target.value)} maxLength={300} /></label>
@@ -408,6 +432,10 @@ function EditorialFieldset({
   updateField: (rowId: string, fieldKey: string, key: keyof EditorialFieldFormValue, value: string) => void;
 }) {
   const current = row.values[field.key] ?? emptyEditorialField();
+  const monthlyEquivalent = annualMonthlyEquivalent(
+    current.value,
+    current.currencyStatus === "known" ? current.currency : "",
+  );
   const inputId = `${page.id}-${row.rowId}-${field.key.replaceAll(".", "-")}`;
   const prefix = `${row.rowId}.${field.key}`;
   const known = current.valueStatus === "known";
@@ -421,7 +449,7 @@ function EditorialFieldset({
     {errorMessages(validationErrors, `${prefix}.unknownReason`, showErrors)}
     <div className="operator-form-grid">
       <div className="operator-input-group">
-        <label htmlFor={`${inputId}-value`}>値</label>
+        <label htmlFor={`${inputId}-value`}>{field.valueKind === "price" && current.billingPeriod === "annual" ? "一次観測値（checkout請求総額）" : "値"}</label>
         <div className="operator-value-row">
           <input id={`${inputId}-value`} inputMode="decimal" value={current.value} disabled={!known} onChange={(event) => updateField(row.rowId, field.key, "value", event.target.value)} placeholder={known ? "数値だけ" : "不明は空欄"} />
           <input id={`${inputId}-unit`} value={current.unit} onChange={(event) => updateField(row.rowId, field.key, "unit", event.target.value)} placeholder={known ? "画面表記の単位" : "判明時のみ単位"} aria-label={`${field.label}の単位`} />
@@ -434,6 +462,12 @@ function EditorialFieldset({
           {current.currencyStatus === "unknown" ? <><label>画面の通貨表記{current.valueStatus === "known" ? "（必須）" : "（表示がある場合）"}<input value={current.currencyDisplay} onChange={(event) => updateField(row.rowId, field.key, "currencyDisplay", event.target.value)} placeholder={current.valueStatus === "known" ? "$" : "未掲載なら空欄"} maxLength={20} /></label><label>通貨不明の理由<input value={current.currencyUnknownReason} onChange={(event) => updateField(row.rowId, field.key, "currencyUnknownReason", event.target.value)} maxLength={300} /></label></> : null}
           <label>請求周期<select value={current.billingPeriod} onChange={(event) => updateField(row.rowId, field.key, "billingPeriod", event.target.value)}><option value="">選択</option><option value="monthly">月次</option><option value="annual">年次</option><option value="one_time">一回</option><option value="per_usage">従量</option><option value="not_applicable">該当なし</option><option value="unknown">不明</option></select></label>
           <label>税区分<select value={current.taxTreatment} onChange={(event) => updateField(row.rowId, field.key, "taxTreatment", event.target.value)}><option value="">選択</option><option value="included">税込</option><option value="excluded">税別</option><option value="not_applicable">該当なし</option><option value="unknown">不明</option></select></label>
+          {row.scopeKind === "vendor_plan" ? <label>価格の一次観測<select value={current.observedPriceBasis} onChange={(event) => updateField(row.rowId, field.key, "observedPriceBasis", event.target.value)}><option value="">選択</option><option value="checkout_billed_total">checkout請求総額</option><option value="displayed_price">公式画面の表示価格</option><option value="unknown">不明</option><option value="not_applicable">該当なし</option></select></label> : null}
+          {current.billingPeriod === "annual" && known ? <div className="operator-derived-value"><span>月額換算（派生値）</span><strong>{monthlyEquivalent === null ? "最小通貨単位で割り切れないため非表示" : `${monthlyEquivalent} / mo`}</strong><small>checkout請求総額 ÷ 12（最小通貨単位で完全に割り切れる場合のみ表示）</small></div> : null}
+          {current.billingPeriod === "annual" && known && row.saleBannerState === "annual_discount_permanent" ? <>
+            <label>同じplanの月払い比較値<input inputMode="decimal" value={current.monthlyReferenceValue} onChange={(event) => updateField(row.rowId, field.key, "monthlyReferenceValue", event.target.value)} placeholder="通貨記号なし（例: 61.00）" /><small>同じ通貨・税条件の月払い表示をHuman確認し、数値だけを入力します。単位は / mo 固定です。</small></label>
+            <div className="operator-derived-value"><span>年払い割引率（派生値）</span><strong>{annualDiscountPercent(current.value, current.monthlyReferenceValue) === null ? "月払い比較値の確認待ち" : `約${annualDiscountPercent(current.value, current.monthlyReferenceValue)}%`}</strong><small>1 − 年次checkout総額 ÷（月払い価格 × 12）、整数%へ四捨五入</small></div>
+          </> : null}
         </div> : null}
         {errorMessages(validationErrors, `${prefix}.currencyStatus`, showErrors)}
         {errorMessages(validationErrors, `${prefix}.currency`, showErrors)}
@@ -441,6 +475,8 @@ function EditorialFieldset({
         {errorMessages(validationErrors, `${prefix}.currencyUnknownReason`, showErrors)}
         {errorMessages(validationErrors, `${prefix}.billingPeriod`, showErrors)}
         {errorMessages(validationErrors, `${prefix}.taxTreatment`, showErrors)}
+        {errorMessages(validationErrors, `${prefix}.observedPriceBasis`, showErrors)}
+        {errorMessages(validationErrors, `${prefix}.monthlyReferenceValue`, showErrors)}
       </div>
 
       <div className="operator-input-group">

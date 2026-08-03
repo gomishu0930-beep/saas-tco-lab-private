@@ -63,13 +63,20 @@ Gate D、3社×6プランgold set、C1–C7の合格を入口条件にしない�
 
 |順序|現在状態|入口／GO|実装・Human処理|出口|
 |---:|---|---|---|---|
-|L1|`HOLD`|`domain: GO <domain>`|独自domain、DNS、GSC property、GA4 stream、redirect、Impact再verificationを個別確認|domain切替とreadback合格|
-|L2|template完成・実値待ち|L1完了|P01–P12へvendor・plan別のHuman実値／unknownと出典・日付を入力し、Humanシナリオを分離して各記事を承認|12記事の公開候補が承認済み|
+|L1|完了 — 2026-08-03|2026-08-02 `domain: GO saastcolab.jp`受領。`saastcolab.jp`登録完了、Sites指定DNS保存・個別自動更新ON、2026-08-03 HTTPS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認済み|完了状態を維持し、index／CTAを別GOまでHOLD|domain切替とreadback合格|
+|L2|P01–P03承認済み・3/12公開候補|L1完了|P04–P12へvendor・plan別のHuman実値／unknownと出典・日付を入力し、Humanシナリオを分離して各記事を承認|12記事の公開候補が承認済み|
 |L3|`HOLD`|`index_go: GO`と対象記事の承認|承認済み記事だけnoindex解除。未承認記事とfilter/query routeはnoindex維持|承認記事のindexability readback合格|
 |L4|`HOLD`|partner別CTA GO|当該partnerのAffiliate承認、規約・表示遵守、開示先行、`rel="sponsored"`を確認してCTA有効化|承認partnerだけCTA稼働|
 
-現在はL1が`HOLD`、P01–P12は構造templateまで、Mangoolsはeditorial laneのAffiliate条件を満たすが
-CTA GO未受領である。したがってindexとAffiliate CTAは無効のまま維持する。
+L1は`saastcolab.jp`の購入・DNS保存・個別自動更新ON・TLS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認まで完了した。P01–P03は2026-08-03に本文・TCO承認済みの公開候補、P04–P12は構造template段階である。Mangoolsはeditorial laneのAffiliate条件を満たすが、index GOとCTA GOは未受領であるため両方無効のまま維持する。
+
+### Launch最終シーケンス — event-driven
+
+2026-08-02のHuman指示により、S0–S6をtrigger受領順に処理する。S0の最小通貨単位で割り切れない
+月額派生値の非表示は実装済み。S2は2026-08-02のMangools exact checkout値と再生成指示により完了し、
+P01–P03はHuman記事承認済みの公開候補である。S1はSSL Active、S3は完了、S4はindex GO、S5はMangools
+CTA GO、S6は公開24時間経過をそれぞれ入口とし、先行実行しない。SE Ranking・Semrushの未観測値は
+unknownのまま関連する横断順位だけを停止し、記事・index・CTAは各Human gateを維持する。
 
 ## Launch Quarter 2026-08〜10
 
@@ -239,7 +246,7 @@ Exit: 自動取得・DB化するfieldの100%がapproved/prohibitedに確定し�
 
 #### A2 human editorial path（launch blockerから分離）
 
-Humanが公開価格を正規画面で確認し、vendor・plan識別子、入力値または明示的unknown、出典URL、観測日、次回確認日を記事入力contractへ記録する。seat数・利用量等のHumanシナリオはvendor観測から分離し、入力根拠と日付を記録する。この経路はfield-level書面許諾をlaunch blockerにしない。値の自動取得、raw保存、価格DB、履歴DB、禁止回答済み行為、推測補完は行わない。ベンダー照会と30/90/180日追跡は継続する。
+Humanが公開価格を正規画面で確認し、vendor・plan識別子、入力値または明示的unknown、billing toggle位置、価格表示分類、出典URL、観測日、次回確認日を観測contract v2.3へ記録する。価格表示分類は`none`、`annual_discount_permanent`、`time_limited_promo`、`unknown`の4値で、計算HOLDは後二者だけとする。年払いplanはcheckout請求総額を一次観測値とし、月額換算はその総額を12で最小通貨単位まで完全に割り切れる場合だけ派生値として分離する。割り切れない場合は一次総額を保持し、月額換算を非表示にする。checkout総額が確認できない年払い価格はunknownとする。`annual_discount_permanent`の割引率は、同一通貨・同一税条件のHuman確認済み月払い価格と年次checkout総額がそろう場合だけ、`1 - annual_total / (monthly_price * 12)`から約N%として記載できる。seat数・利用量等のHumanシナリオはvendor観測から分離し、入力根拠と日付を記録する。この経路はfield-level書面許諾をlaunch blockerにしない。値の自動取得、raw保存、価格DB、履歴DB、禁止回答済み行為、推測補完は行わない。ベンダー照会と30/90/180日追跡は継続する。
 
 Exit: 記事内の数値fieldがHuman入力contractを満たし、出典がcurrentで、記事とindexがHuman承認済みである。未承認fieldはunknownまたは非表示とする。
 
@@ -561,8 +568,8 @@ P17 bounded file-lock/anchor、authenticated plan storage v2を追加した。�
 typed task/activity evidenceによるautomation 80%・人手・運用TCO・純利益の再計算と、immutable P18 verification
 runner V2、Storage Auditor署名consumption receiptのP18→P16→P13 binding、store固定/durable-freeze replay consumer、credential-blind P17 broker、P13の署名clock/current-root再取得・provider後時刻・P18/P16実行直前再検証は実装した。P21はrightsからpublicationまでの型付き上流証拠を再計算し、P16 receiptの正しい署名だけではREADYにならない。P13 request/token/current-rootにも意味packetとpacket外rootを固定した。実quote/CASとproduction clock/anchor/current-root serviceは環境engineering backlogとして残る。real adapterと自動取得成果物の公開は個別Human承認まで進めない。
 
-editorial launch laneはこの順序から独立し、現在はL1 `domain: HOLD`である。再開順は
-`L1 domain GO → L2 P01–P12 Human実値入力・記事承認 → L3 index GO → L4 partner別CTA GO`とする。
+editorial launch laneはこの順序から独立し、L1 `domain: GO saastcolab.jp`は購入・DNS保存・個別自動更新ON・Sites／TLS・GSC・GA4・旧origin 301・Impact Connectedのread-backまで完了した。再開順は
+`L2 P04–P12 Human実値入力・記事承認 → L3 index GO → L4 partner別CTA GO`とする。
 P15/P16/P18受理、field-level書面許諾、3社×6プランgold set、実利用可能3社を待たない。
 
 形式的なrepo承認記録はP0–P10までである。P11–P21はautomated data pathの監査対象working-tree候補であり、

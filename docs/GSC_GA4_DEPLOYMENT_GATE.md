@@ -5,7 +5,8 @@
 ## 現在地
 
 - Search Consoleの中立origin URL-prefix propertyは作成・HTML tag所有確認済み。
-- GA4の中立origin専用streamは作成済み。任意data sharingは全OFF、event retentionは14か月。
+- GA4の専用streamは2026-08-03に`https://saastcolab.jp`へorigin更新済み。任意data sharingは全OFF、
+  event／user retentionは14か月、拡張計測はOFF、internal traffic filterはtestのままである。
 - GSC verification metaと同意制御GA4 bootstrapはSites version 5へdeploy・外部read-back済み。
 - GA4の拡張計測機能は2026-07-26にOFFへ変更し、下記の明示event以外を自動収集しない。
 - verification tokenとmeasurement IDはrepositoryへ保存せず、Sitesのruntime valueだけで渡す。

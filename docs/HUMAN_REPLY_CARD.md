@@ -4,16 +4,21 @@
 measurement ID、partner ID、tracking ID、支払情報、メール本文は追記しない。GOは書かれたscopeだけに有効で、
 domain GOからindex GOやCTA GOを推論しない。
 
+現在地: P01–P03は2026-08-03承認済み。次のrelease tokenは`index_go: GO / HOLD`であり、
+CTAは引き続き別tokenである。
+
 ## 今使うtoken
 
 |目的|返信token|記入例|意味|
 |---|---|---|---|
 |Domain開始|`domain: GO <domain> / HOLD`|`domain: GO example.jp`|exact domainのdomain dayだけを開始|
+|価格表示分類|`sale_banner_state: <class> <partner>`|`sale_banner_state: annual_discount_permanent mangools`|`none` / `annual_discount_permanent` / `time_limited_promo` / `unknown`のHuman分類を記録|
+|Checkout再観測完了（必要時）|`checkout_values: done`|`checkout_values: done`|既存確定値を更新する再観測時だけ使用。Mangools初回値は2026-08-02に取込済み|
 |記事入力完了|`article_input: done <P-ID>`|`article_input: done P01`|Operatorが出力したcontractの取込・再検証を依頼|
-|記事承認|`article_approve: <P-ID,...>`|`article_approve: P01,P02`|列挙した記事本文だけをHuman承認|
+|記事承認|`article_approve: <P-ID,...>`|`article_approve: P01,P02,P03`|列挙した記事本文だけをHuman承認|
 |記事修正|`article_revise: <P-ID> <修正点>`|`article_revise: P01 税区分を再確認`|対象記事をunreviewedへ戻す|
 |Index判断|`index_go: GO / HOLD`|`index_go: HOLD`|承認済み記事だけのindex可否。CTAには効かない|
-|Partner CTA|`affiliate_cta: GO <partner> / HOLD <partner>`|`affiliate_cta: GO Mangools`|当該partnerの承認済みCTAだけを対象化|
+|Partner CTA|`cta_go: GO <partner> / HOLD <partner>`|`cta_go: GO mangools`|当該partnerの承認済みCTAだけを対象化|
 |Impact feed有無|`impact_feed_check: <available\|unavailable\|unclear> <partner>`|`impact_feed_check: available HubSpot`|承認済みpartnerのcatalog表示有無だけを記録|
 |Impact feed A1登録|`impact_feed_a1: GO <partner> / HOLD <partner>`|`impact_feed_a1: HOLD HubSpot`|全利用scopeを確認したexact feedだけsource policy候補へ登録。取得は開始しない|
 |Mangools需要CSV|`mangools_csv: done / pending`|`mangools_csv: done`|凍結済みquery CSVのlocal検証を開始|

@@ -220,7 +220,11 @@ def _regenerate(
     approved = {
         article_id
         for article_id, status in state["articles"].items()
-        if status == "approved" and article_id in contracts
+        if (
+            status == "approved"
+            and article_id in contracts
+            and contracts[article_id].article_review_status.value == "approved"
+        )
     }
     input_count = len(contracts)
     approved_count = len(approved)
@@ -269,7 +273,7 @@ def _regenerate(
     data["work"] = _work_queue(root)
     data["launchQuarter"] = _launch_quarter()
     data["deadlines"] = [
-        {"date": "2026-07-31", "label": "domain day判断"},
+        {"date": "2026-08-01", "label": "exact domain選択・domain day開始"},
         {"date": "2026-08 第1週", "label": "P01–P03 Human記事承認"},
         {"date": "2026-08 前半", "label": "Mangools 150 query CSV"},
         {"date": "2026-08-31", "label": "約8本・Impact・W6・ASP申請可能状態"},

@@ -11,9 +11,15 @@ TCO計算や記事承認には使えない。
 2. 下の公式価格ページを新しいtabで開き、記事行のfieldだけを見る。
 3. `/operator`で同じP-IDを選び、vendor識別子とplan識別子を入力する。比較対象を増やす場合は`vendor・plan行を追加`する。
 4. 料金表の必要な行だけを貼り付けてlocal候補を抽出し、候補ごとにvendor・plan行と反映先fieldをHumanが選ぶ。
-5. 事前入力後、値・単位／価格条件・出典URL・観測日・次回確認日を公式画面と照合する。通貨が`$`だけならUSDと補完せず、通貨状態を`unknown`、画面表記を`$`とする。
-6. seat数・利用量などHumanが決める条件はvendor行へ入れず、Humanシナリオ行へ入力する。再確認時は前回確定値との差分も見る。
-7. 構造validation合格後に`Human確認して証拠contractを確定`を押した時だけJSONを保存する。unknownが残る場合はTCO計算・記事承認をHOLDする。
+5. 事前入力後、値・単位／価格条件・出典URL・観測日・次回確認日に加え、billing toggleの位置と価格表示分類を公式画面と照合する。分類は`none`（割引・promo表示なし）、`annual_discount_permanent`（年払い・月払い差の恒常表示）、`time_limited_promo`（終了日・カウントダウン・クーポン・取消線priceのいずれかあり）、`unknown`の4値だけを使う。通貨が`$`だけならUSDと補完せず、通貨状態を`unknown`、画面表記を`$`とする。
+6. 年払いplanは料金表の「月額換算」を一次値にしない。checkoutで支払直前に表示される年次請求総額を一次観測値として入力し、Operatorは`年次請求総額 ÷ 12`が最小通貨単位まで完全に割り切れる場合だけ月額派生値を表示する。割り切れない場合は総額を保持し、丸めず月額を非表示にする。checkout総額を安全に確認できなければ価格を`unknown`にする。account固有checkout URL、氏名、住所、メール、カード情報は入力せず、source URLには追跡parameterのない公式料金ページを使う。
+7. seat数・利用量などHumanが決める条件はvendor行へ入れず、Humanシナリオ行へ入力する。再確認時は前回確定値との差分も見る。
+8. 構造validation合格後に`Human確認して証拠contractを確定`を押した時だけJSONを保存する。unknownが残る場合はその値を使うTCO・順位claimをHOLDし、unknownを明示した記事本文はHuman reviewへ進める。
+
+`time_limited_promo`と`unknown`は計算HOLD、`none`と`annual_discount_permanent`は価格表示分類だけでは
+HOLDにしない。恒常割引率は、同一plan・同一通貨・同一税条件のHuman確認済み月払い価格と年次checkout総額が
+両方そろう場合だけ、`1 - 年次総額 ÷ (月払い価格 × 12)`から「年払いは月払い比で約N%割安」と記事化する。
+片方がunknown、条件不一致、または年次値がcheckout総額でない場合は割引率を出さない。
 
 貼り付け原文と候補のsource lineはcontractや端末へ保存されない。抽出は数値と、同じ行に明記された通貨・
 請求周期・税区分の事前入力を補助するだけで、単位、URL、日付、不明項目を推測しない。
@@ -38,7 +44,7 @@ TCO計算や記事承認には使えない。
 
 |優先|記事|対象vendor|公式画面で確認するfield|Operatorで必ず記録する項目|
 |---:|---|---|---|---|
-|第1弾|P01 料金計算|M / H / SE / SM / SR|vendor行: 基本料金、超過単価、税率。Human scenario行: seat数、月間利用量|vendor行にはvendor・plan識別子、数値またはunknown、単位、価格なら通貨状態・請求周期・税区分、出典URL、観測日、次回確認日。scenario行にはHuman入力根拠と日付|
+|第1弾|P01 料金計算|M / H / SE / SM / SR|vendor行: 基本料金、超過単価、税率。Human scenario行: seat数、月間利用量|vendor行にはvendor・plan識別子、billing toggle位置、価格表示の4区分、数値またはunknown、単位、価格なら一次観測区分・通貨状態・請求周期・税区分、出典URL、観測日、次回確認日。年払いはcheckout年次請求総額だけを一次値とする。scenario行にはHuman入力根拠と日付|
 |第1弾|P02 プラン比較|M / H / SE / SM / SR|各plan料金、最低seat数、利用上限、超過単価、契約月数|同上。planごとに条件を変えず、同じscenarioで記録|
 |第1弾|P03 代替候補|M / H / SE / SM / SR|各候補料金、利用上限、必須addon料金、公開されている移行費用|同上。移行費用が非公開なら未入力|
 |通常|P04 小規模チーム適合|M / H / SE / SM / SR|最低seat数、月額料金、公開されている運用／導入時間|同上。vendorが示さない時間を体験談で補完しない|
@@ -56,7 +62,8 @@ TCO計算や記事承認には使えない。
 - URLに`utm_`、`ref`、affiliate ID等が入っている。
 - login後だけ見える個別価格、営業見積、非公開報酬しかない。
 - vendorまたはplanを識別できない、あるいは不明理由を記録できない。
-- 同じ画面内で表示が矛盾する、regionを変えると条件が変わる、期限切れpromotionしかない。
+- 同じ画面内で表示が矛盾する、regionを変えると条件が変わる、または価格表示を4区分へ分類できない。
+- 年払いなのにcheckoutの年次請求総額を確認できず、料金表の月額換算値しかない。
 - CAPTCHA、403、地域制限、規約回避が必要である。
 
 通貨、税、請求周期、seat、quotaを画面から確定できない場合は、空欄やゼロへせずunknownと理由を記録する。

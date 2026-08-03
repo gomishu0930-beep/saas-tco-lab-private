@@ -145,15 +145,15 @@
 <script>
 // DASHBOARD_DATA_START
 const DATA = {
-  "asOf": "2026-07-31",
+  "asOf": "2026-08-03",
   "reportingPeriod": "2026-07",
-  "phase": "Launch Quarter準備— domain GO待ち",
+  "phase": "editorial launch—記事入力・承認中",
   "kpis": [
     {
       "label": "公開記事数",
       "value": 0,
       "target": 12,
-      "sub": "入力 3/12・承認 0/12"
+      "sub": "入力 3/12・承認 3/12"
     },
     {
       "label": "インデックス数",
@@ -213,13 +213,13 @@ const DATA = {
     {
       "id": "L1",
       "name": "独自domain取得",
-      "status": "HOLD",
+      "status": "GO",
       "note": "domain day runbookとread-back"
     },
     {
       "id": "L2",
       "name": "記事実値入力・承認",
-      "status": "3/12入力・0/12承認",
+      "status": "3/12入力・3/12承認",
       "note": "有効contractとHuman記事承認だけを算入"
     },
     {
@@ -312,8 +312,8 @@ const DATA = {
   ],
   "deadlines": [
     {
-      "date": "2026-07-31",
-      "label": "domain day判断"
+      "date": "2026-08-01",
+      "label": "exact domain選択・domain day開始"
     },
     {
       "date": "2026-08 第1週",

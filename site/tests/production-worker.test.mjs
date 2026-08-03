@@ -127,6 +127,10 @@ before(async () => {
       "GA4_ANALYTICS_ENABLED:true",
       "--var",
       "GA4_MEASUREMENT_ID:G-TEST123456",
+      "--var",
+      "INDEX_GO:GO",
+      "--var",
+      "INDEX_APPROVED_ARTICLES:P01,P02,P03",
     ],
     {
       cwd: siteRoot,
@@ -225,12 +229,28 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       `${path}: Impact verification must stay before GSC verification`,
     );
     assert.doesNotMatch(body, /href=["']\/(?:comparison|learning|readiness|operator|pilot)\/?["']/i, path);
-    assert.doesNotMatch(body, /href=["']https?:\/\//i, path);
-    assert.equal(
-      response.headers.get("x-robots-tag"),
-      "noindex, nofollow, noarchive, nosnippet",
-      path,
-    );
+    assert.doesNotMatch(body, /<a\b[^>]*href=["']https?:\/\//i, path);
+    const approvedArticlePaths = new Set([
+      "/pilot/pricing-calculator",
+      "/pilot/plan-comparison",
+      "/pilot/alternatives",
+    ]);
+    if (approvedArticlePaths.has(path)) {
+      assert.equal(response.headers.get("x-robots-tag"), "index, follow", path);
+      assert.match(body, /<meta name="robots" content="index, follow">/i, path);
+      assert.match(
+        body,
+        new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${path}">`, "i"),
+        path,
+      );
+    } else {
+      assert.equal(
+        response.headers.get("x-robots-tag"),
+        "noindex, nofollow, noarchive, nosnippet",
+        path,
+      );
+      assert.doesNotMatch(body, /<link\s+rel=["']canonical["']/i, path);
+    }
     const csp = response.headers.get("content-security-policy");
     assert.match(csp, /script-src[^;]*https:\/\/www\.googletagmanager\.com/i, path);
     assert.match(csp, /connect-src[^;]*https:\/\/www\.google-analytics\.com/i, path);
@@ -286,8 +306,77 @@ test("actual production health exposes only a fixed non-sensitive response", asy
   );
 });
 
-test("actual production robots disallows the complete site", async () => {
+test("legacy public origin redirects once to the canonical host without changing route data", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("legacy-redirect", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const response = await worker.fetch(
+    new Request(
+      "https://saas-tco-lab-jp.shukun0930.chatgpt.site/pilot/pricing-calculator?view=source",
+    ),
+    {
+      ASSETS: {
+        fetch: async () => new Response("Not found", { status: 404 }),
+      },
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+
+  assert.equal(response.status, 301);
+  assert.equal(
+    response.headers.get("location"),
+    "https://saastcolab.jp/pilot/pricing-calculator?view=source",
+  );
+  assert.match(response.headers.get("x-robots-tag"), /\bnoindex\b/i);
+});
+
+test("production robots and sitemap expose only the three approved articles", async () => {
   const response = await fetch(`${baseUrl}/robots.txt`);
   assert.equal(response.status, 200);
-  assert.equal(await response.text(), "User-agent: *\nDisallow: /\n");
+  assert.equal(
+    await response.text(),
+    "User-agent: *\n" +
+      "Allow: /pilot/alternatives$\n" +
+      "Allow: /pilot/plan-comparison$\n" +
+      "Allow: /pilot/pricing-calculator$\n" +
+      "Disallow: /\n" +
+      "Sitemap: https://saastcolab.jp/sitemap.xml\n",
+  );
+
+  const sitemap = await fetch(`${baseUrl}/sitemap.xml`);
+  assert.equal(sitemap.status, 200);
+  assert.match(sitemap.headers.get("content-type"), /application\/xml/i);
+  const xml = await sitemap.text();
+  const locations = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  assert.deepEqual(locations, [
+    "https://saastcolab.jp/pilot/pricing-calculator",
+    "https://saastcolab.jp/pilot/plan-comparison",
+    "https://saastcolab.jp/pilot/alternatives",
+  ]);
+  assert.doesNotMatch(xml, /embed|P0[4-9]|P1[0-2]|about|privacy|operator/i);
+});
+
+test("missing or invalid index approval stays fail-closed", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("fail-closed-index", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+  };
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+
+  const robots = await worker.fetch(new Request("https://saastcolab.jp/robots.txt"), env, ctx);
+  assert.equal(await robots.text(), "User-agent: *\nDisallow: /\n");
+
+  const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
+  assert.equal(sitemap.status, 503);
+  assert.match(sitemap.headers.get("x-robots-tag"), /\bnoindex\b/i);
 });

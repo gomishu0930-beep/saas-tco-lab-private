@@ -151,9 +151,9 @@ gsc_property: done <exact-domain>
 
 ### Read-back
 
-- [ ] property selectorにexact domainが表示される。
-- [ ] sitemap送信、URL inspectionのindex requestは実行していない。
-- [ ] token、property IDを返信していない。
+- [x] 2026-08-03、property selectorに`sc-domain:saastcolab.jp`が表示された。
+- [x] sitemap送信、URL inspectionのindex requestは実行していない。
+- [x] token、property IDをrepo・報告へ保存していない。DNS TXTは所有権維持のため残す。
 
 ## Step 6 — GA4 Web stream画面 — 10分
 
@@ -176,16 +176,19 @@ ga4_stream: done <exact-domain>
 
 ### Read-back
 
-- [ ] 同意前と拒否後はGoogle通信がない。
-- [ ] 同意後だけ`page_view`、表示継続後に`qualified_session`をRealtimeで確認できる。
-- [ ] query、PII、Affiliate識別子がevent parameterにない。
-- [ ] internal traffic filterはtestのままでactiveへ変更していない。
+- [x] 2026-08-03、既存専用Web streamのoriginを`https://saastcolab.jp`へ更新した。
+- [x] 公開HTMLを外部read-backし、同意前はGoogle tagを静的読込せず、同意bootstrapのdefault denyを維持した。
+- [x] 拡張計測OFF、event／user retention 14か月、任意data sharing全OFFを画面で確認した。
+- [x] internal traffic filterは`test`のままで`active`へ変更していない。
+- [ ] 同意後だけ`page_view`、表示継続後に`qualified_session`をRealtimeで確認する。S6の公開24時間後read-backで実施する。
+- [ ] query、PII、Affiliate識別子がevent parameterにないことをS6の受信標本で再確認する。
 
 ## Step 7 — Redirect画面 — 5分
 
 ### 画面
 
-Sites／旧originのredirect設定候補。設定値はCodexが生成したmappingをHumanが確認してから使う。
+Sites本番Worker。2026-08-03にHumanのexact mapping承認を受け、旧origin hostだけを新originへ301する
+限定versionを反映した。
 
 ### Human操作
 
@@ -199,9 +202,10 @@ redirect_map: approve <exact-domain> / HOLD
 
 ### Read-back
 
-- [ ] chainとloopがない。
-- [ ] 旧新の双方がNOINDEXを維持する。
-- [ ] 旧originはrollback用に削除していない。
+- [x] 旧originから新originへのredirectは1段で、chainとloopがない。
+- [x] 旧originの301 responseと新originの200 responseがNOINDEXを維持する。
+- [x] pathと既存queryは保持し、Affiliate parameterを新規付加しない。
+- [x] 旧originはrollback用に削除していない。
 
 ## Step 8 — Impact／Affiliate media property画面 — 10分
 
@@ -223,9 +227,9 @@ impact_domain_verification: done <exact-domain> / HOLD
 
 ### Read-back
 
-- [ ] websiteがVerified相当である。
-- [ ] 申請中をAffiliate承認済みとして数えていない。
-- [ ] partner ID、tracking ID、報酬画面を返信していない。
+- [x] 2026-08-03、`saastcolab.jp`がImpactのMy Channelsで`Connected`になった。
+- [x] 申請中をAffiliate承認済みとして数えていない。
+- [x] partner ID、tracking ID、報酬画面を返信していない。
 
 ## Step 9 — 終了判定 — 5分
 
@@ -239,9 +243,9 @@ affiliate_cta: HOLD Mangools
 
 ### Read-back
 
-- [ ] domain、TLS、route、GSC、GA4、Impactの結果を確認した。
-- [ ] indexはHOLD、CTAはHOLD、未承認記事はNOINDEXである。
-- [ ] credentialや識別子をrepositoryへ保存していない。
+- [x] domain、TLS、route、GSC、GA4、Impactの結果を確認した。
+- [x] indexはHOLD、CTAはHOLD、未承認記事はNOINDEXである。
+- [x] credentialや識別子をrepositoryへ保存していない。
 
 ## Rollback
 

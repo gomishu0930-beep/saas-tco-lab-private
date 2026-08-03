@@ -9,6 +9,7 @@ import {
   pilotPages,
 } from "../app/lib/pilot-pages.ts";
 import { articleStructuredData } from "../app/lib/structured-data.ts";
+import { hasUnknownFact } from "../app/lib/editorial-input-contract.ts";
 
 test("launch drafting prioritizes transaction intent while retaining P01-P03 release batch", () => {
   assert.deepEqual(
@@ -35,14 +36,14 @@ test("note and X templates are bounded, disclosed first, and remain Human-posted
 
 function contract(reviewStatus, fieldReviewStatus) {
   return {
-    schema_version: "2.1",
+    schema_version: "2.3",
     article_id: "P01",
     slug: "pricing-calculator",
     title: "料金計算",
     disclosure_version: "pr-affiliate-v1",
     article_review_status: reviewStatus,
     numeric_fields: [{
-      schema_version: "2.1",
+      schema_version: "2.3",
       scope_kind: "vendor_plan",
       vendor_id: "vendor",
       plan_id: "plan",
@@ -58,6 +59,12 @@ function contract(reviewStatus, fieldReviewStatus) {
       currency_unknown_reason: null,
       billing_period: "monthly",
       tax_treatment: "unknown",
+      billing_toggle_state: "monthly_selected",
+      sale_banner_state: "none",
+      observed_price_basis: "displayed_price",
+      derived_monthly_value: null,
+      derived_monthly_unit: null,
+      derivation_method: null,
       source_url: "https://example.com/pricing",
       scenario_basis: null,
       observed_on: "2026-07-30",
@@ -86,4 +93,14 @@ test("structured data emits an Offer only for Human-approved price fields", () =
 
   const fieldHeld = articleStructuredData(page, contract("approved", "unreviewed"));
   assert.equal("offers" in fieldHeld["@graph"][0], false);
+});
+
+test("v2.3 treats only time-limited or unknown price display classes as held facts", () => {
+  const field = contract("approved", "approved").numeric_fields[0];
+  for (const state of ["none", "annual_discount_permanent"]) {
+    assert.equal(hasUnknownFact({ ...field, sale_banner_state: state, tax_treatment: "included" }), false);
+  }
+  for (const state of ["time_limited_promo", "unknown"]) {
+    assert.equal(hasUnknownFact({ ...field, sale_banner_state: state, tax_treatment: "included" }), true);
+  }
 });

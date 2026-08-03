@@ -22,3 +22,19 @@ test("P01-P03 are the explicit first batch", () => {
     assert.equal(articleDraft(page).priority, Number(page.id.slice(1)) <= 3 ? "first" : "standard");
   }
 });
+
+test("P02 and P03 name unlike quota fields without implying equivalence", () => {
+  const p02 = pilotPages.find(page => page.id === "P02");
+  const p03 = pilotPages.find(page => page.id === "P03");
+  assert.equal(p02?.numericFields.find(field => field.key === "plan.usage_quota")?.label, "keyword検索回数 / 24h");
+  assert.equal(p03?.numericFields.find(field => field.key === "alternative.usage_quota")?.label, "追跡keyword数（候補別単位）");
+  assert.match(articleDraft(p03).sections.find(section => section.title === "料金と上限")?.body ?? "", /checkout請求総額を一次観測値/);
+});
+
+test("P06 permits an approximate annual discount fact only from v2.3 permanent evidence", () => {
+  const p06 = pilotPages.find(page => page.id === "P06");
+  const pricing = articleDraft(p06).sections.find(section => section.title === "料金と上限")?.body ?? "";
+  assert.match(pricing, /annual_discount_permanent/);
+  assert.match(pricing, /同一通貨・同一税条件/);
+  assert.match(pricing, /年払いは月払い比で約N%割安/);
+});

@@ -1,15 +1,15 @@
 {
   "schema_version": "ease-track-1",
-  "domain": null,
-  "domain_state": "HOLD",
+  "domain": "saastcolab.jp",
+  "domain_state": "GO",
   "index_state": "HOLD",
   "affiliate_cta": {
     "Mangools": "HOLD"
   },
   "articles": {
-    "P01": "unreviewed",
-    "P02": "unreviewed",
-    "P03": "unreviewed",
+    "P01": "approved",
+    "P02": "approved",
+    "P03": "approved",
     "P04": "unreviewed",
     "P05": "unreviewed",
     "P06": "unreviewed",

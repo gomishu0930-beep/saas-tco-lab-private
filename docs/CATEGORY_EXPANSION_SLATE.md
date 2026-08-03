@@ -6,7 +6,7 @@ authority: `candidate_only`
 
 これはW6のJP/ja実需要が月20万円の逆算経路へ届かない場合に備えた入力準備であり、需要が確認済みという
 主張ではない。カテゴリ選定、公開、ASP申請、価格取得、CTAは開始しない。既存のrights model v2、
-Human確認値・出典URL・観測日・次回確認日、unknown保持をそのまま使う。
+Human確認値・画面状態・出典URL・観測日・次回確認日、unknown保持をそのまま使う。年払いはcheckout請求総額を一次観測値、12分の1を月額派生値とするv2.2 contractに従う。
 
 ## 候補と記事構造
 

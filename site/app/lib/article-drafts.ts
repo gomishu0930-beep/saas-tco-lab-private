@@ -12,17 +12,17 @@ export type ArticleDraft = {
 };
 
 const sourceBlock =
-  "各fieldはvendor・plan識別子、入力contractの値、出典URL、観測日、次回確認日を同じ行に表示する。Human scenarioはvendor行と分離する。期限切れ、未入力、未承認、計算不能なunknownを推測で補わない。";
+  "各fieldはvendor・plan、値、toggle位置、価格表示分類、出典URL、観測日、次回日を同じ行に表示する。Human scenarioはvendor行と分離する。期限切れ、未入力、未承認、計算不能なunknownを推測で補わない。";
 
 const drafts: Readonly<Record<PilotPage["id"], ArticleDraft>> = {
   P01: {
     priority: "first",
     reviewVoices: ["analyst", "editor", "skeptical_buyer"],
     sections: [
-      { title: "結論", body: "料金は表示額だけで決めず、下表の基本料金、Human指定のseat数、月間利用量を同じ条件へそろえて判断する。通貨・税・超過単価がunknownの間は、最安・割安や12か月総額を断定しない。" },
+      { title: "結論", body: "年次checkout総額を12か月TCOの一次値とし、Basic 1ユーザー・月400 lookupに当てはめる。月額換算と年払い差は派生値、未確認費用は計算外とする。" },
       { title: "前提scenario", body: "利用地域、通貨、請求周期、税区分はvendor・plan行、seatと利用量はHuman scenario行から読み込む。読者の条件が異なる場合は計算機で差し替え、元の観測値を上書きしない。" },
-      { title: "料金と上限", body: "基本料金と超過単価は、vendor・plan、画面表記の単位、通貨状態、課金周期を隣接表示する。公式画面で確認できない料金・税・上限はunknownとして保持する。" },
-      { title: "対象期間TCO", body: "対象期間の総額はcontract値を計算機へ渡し、基本料金、seat、利用量、超過、税の内訳を分けて示す。丸めは計算機の規則に従い、本文で別計算しない。" },
+      { title: "料金と上限", body: "基本料金と超過単価は、vendor・plan、billing toggle位置、価格表示分類、表示単位、通貨状態、課金周期を隣接表示する。年払いplanはcheckout請求総額を一次観測値とし、料金表の月額表示を一次値へ置き換えない。" },
+      { title: "対象期間TCO", body: "TCO表は年次checkout総額を一次値にする。月額換算は最小通貨単位で12分割できる時だけ、年払い差は同じplan・通貨・税条件の月払い価格×12と比較できる時だけ表示する。" },
       { title: "反証と注意点", body: "税区分、超過条件、最低契約、必須addonのどれかが未確認なら総額を確定しない。公式画面の地域・請求周期が読者条件と違う場合も比較対象外とする。" },
       { title: "出典と更新", body: sourceBlock },
     ],
@@ -33,8 +33,8 @@ const drafts: Readonly<Record<PilotPage["id"], ArticleDraft>> = {
     sections: [
       { title: "結論", body: "プラン名だけでなく、下表の料金、最低seat数、利用上限をvendor・plan行ごとに同じscenarioへ置いて選ぶ。必要条件を満たさないプランは価格が低くても候補から外す。" },
       { title: "前提scenario", body: "地域、通貨、税、契約期間、必要seat、利用量を先に固定する。各プランへ同じ入力を適用できない場合は横並びの差額を出さない。" },
-      { title: "料金と上限", body: "各plan料金、最低seat、利用上限、超過単価をcontract参照で並べる。含有機能と有料addonの境界が確認できない項目は空欄ではなくunknownとする。" },
-      { title: "対象期間TCO", body: "下表の契約月数を含む条件で総額を計算し、支払額と利用上限を別の列にする。通貨・税・超過単価がunknownの間は総額も適合順位も確定しない。" },
+      { title: "料金と上限", body: "各plan料金、最低seat、利用上限、超過単価をcontract参照で並べる。billing toggle位置と価格表示分類を併記し、年払いはcheckout請求総額を一次観測値、12分の1を月額派生値として分離する。" },
+      { title: "対象期間TCO", body: "3プランの年次checkout請求総額、請求上の月額換算、同条件の月払い比較値、年払い差を同じ表へ分離する。最低seat数がunknownのplanには適合順位を付けないが、確認済み支払総額は表示する。" },
       { title: "反証と注意点", body: "年払い表示、初回割引、最低seat、超過課金が比較結果を逆転させないか確認する。期間限定表示は恒常価格として扱わない。" },
       { title: "出典と更新", body: sourceBlock },
     ],
@@ -45,8 +45,8 @@ const drafts: Readonly<Record<PilotPage["id"], ArticleDraft>> = {
     sections: [
       { title: "結論", body: "代替候補は安さではなく、必要機能、利用上限、addon、移行負担を満たすものだけ残す。下表で料金または通貨がunknownのvendor・plan行には価格順位を付けない。" },
       { title: "前提scenario", body: "置き換え前の必須機能、利用量、運用担当、移行期限を言語化する。候補ごとに条件を変えず、満たせない要件を先に表示する。" },
-      { title: "料金と上限", body: "候補料金、利用上限、必須addon料金をvendor・plan行ごとに並べる。機能名が似ていても上限や課金単位を同一と推測しない。" },
-      { title: "対象期間TCO", body: "通常利用の費用に下表の移行費用を加える。移行費用、重複契約、教育のいずれかがunknownなら、総額へゼロとして混ぜず計算外へ分離する。" },
+      { title: "料金と上限", body: "候補料金、追跡keyword数、domain上限、必須addon料金をvendor・plan行ごとに並べる。年払いはcheckout請求総額を一次観測値、12分の1を月額派生値として表示し、billing toggle位置、価格表示分類、税区分を隣接させる。機能名が似ていても上限や課金単位を同一と推測しない。" },
+      { title: "対象期間TCO", body: "Mangools Basicの確認済み年次checkout総額だけを表示し、SE RankingとSemrushはcheckout総額がunknownのため横断価格順位から外す。移行費用、重複契約、教育のunknownはゼロとして混ぜず計算外へ分離する。" },
       { title: "反証と注意点", body: "移行できないデータ、権限差、サポート条件、解約制約が候補を失格にしないか確認する。公式説明が曖昧なら同等機能と断定しない。" },
       { title: "出典と更新", body: sourceBlock },
     ],
@@ -81,7 +81,7 @@ const drafts: Readonly<Record<PilotPage["id"], ArticleDraft>> = {
     sections: [
       { title: "結論", body: "年契約の表示上の割引と、途中解約できない負担を分けて判断する。月契約と年契約の請求単位が一致しない場合は単純差額を出さない。" },
       { title: "前提scenario", body: "利用開始日、想定利用期間、支払周期、解約可能性を固定する。期間が不確実なら短い契約を選ぶ価値も金額外の条件として示す。" },
-      { title: "料金と上限", body: "{{contract:billing.monthly_contract_price.value}}と{{contract:billing.annual_contract_price.value}}を、それぞれの請求周期・税区分付きで表示する。" },
+      { title: "料金と上限", body: "{{contract:billing.monthly_contract_price.value}}と{{contract:billing.annual_contract_price.value}}を請求周期・税区分付きで表示する。annual_discount_permanentかつ同一通貨・同一税条件のHuman確認済み月払い価格と年次checkout総額がそろう場合だけ、1−年次総額÷（月払い価格×12）を「年払いは月払い比で約N%割安」と記載する。" },
       { title: "対象期間TCO", body: "{{contract:billing.minimum_commitment_months.value}}と{{contract:billing.termination_cost.value}}を使い、利用停止後も残る支払いを対象期間へ含める。" },
       { title: "反証と注意点", body: "自動更新、返金不可、割引終了、契約途中のseat変更条件を確認する。規約にない解約費用を推測しない。" },
       { title: "出典と更新", body: sourceBlock },

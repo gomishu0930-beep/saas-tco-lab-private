@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { editorialContract } from "../lib/editorial-contracts";
 import { firstReleasePilotIds, launchPriorityPages } from "../lib/pilot-pages";
 
 export const metadata: Metadata = {
@@ -16,18 +17,19 @@ export default function PilotIndexPage() {
       <header className="shell page-header">
         <p className="eyebrow">12 EDITORIAL TEMPLATES / NOINDEX</p>
         <h1>高意図記事を、公開前に12本組み立てる。</h1>
-        <p>本文下書きは12本完成し、第1弾はP01–P03です。作業順は取引意図の強いP01、P06、P07、P08、P09を先行し、P10・P12を最後にします。すべてrobots noindex、CTA無効で、Human入力値・出典URL・観測日・次回確認日が揃うまで実在価格を表示しません。</p>
+        <p>本文下書きは12本完成し、第1弾P01–P03はHuman承認済みの公開候補です。P04–P12は入力・reviewを継続します。index GO未受領のため、すべてrobots noindex、CTA無効のままです。</p>
       </header>
       <section className="shell page-section" aria-labelledby="pilot-list-title">
         <div className="section-heading"><p className="eyebrow">PILOT MANIFEST</p><h2 id="pilot-list-title">記事構造一覧</h2></div>
         <div className="policy-cards">
-          {orderedPages.map((page, index) => (
-            <article key={page.slug}>
-              <span>{page.id} / 優先 {String(index + 1).padStart(2, "0")}{firstRelease.has(page.id as (typeof firstReleasePilotIds)[number]) ? " / 公開第1弾" : ""}</span>
+          {orderedPages.map((page, index) => {
+            const approvedCandidate = editorialContract(page)?.article_review_status === "approved";
+            return <article key={page.slug}>
+              <span>{page.id} / 優先 {String(index + 1).padStart(2, "0")}{firstRelease.has(page.id as (typeof firstReleasePilotIds)[number]) ? " / 公開第1弾" : ""}{approvedCandidate ? " / 承認済み公開候補" : ""}</span>
               <h2><Link href={`/pilot/${page.slug}/`}>{page.title}</Link></h2>
               <p>{page.question}</p>
-            </article>
-          ))}
+            </article>;
+          })}
         </div>
       </section>
     </main>

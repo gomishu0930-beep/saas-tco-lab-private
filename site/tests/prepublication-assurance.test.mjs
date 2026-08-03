@@ -180,8 +180,13 @@ test("every P01-P12 article renders PR disclosure before a disabled CTA", () => 
   }
 });
 
-test("every P01-P12 article renders safe Product, FAQ, and Breadcrumb JSON-LD", () => {
+test("structured data includes only Human-approved known prices while every article remains noindex", () => {
   assert.equal(ARTICLE_ROUTES.length, 12);
+  const approvedOfferCounts = new Map([
+    ["/pilot/pricing-calculator", 1],
+    ["/pilot/plan-comparison", 3],
+    ["/pilot/alternatives", 1],
+  ]);
   for (const path of ARTICLE_ROUTES) {
     const html = pages.get(path);
     const payloads = [...html.matchAll(
@@ -194,8 +199,14 @@ test("every P01-P12 article renders safe Product, FAQ, and Breadcrumb JSON-LD", 
       ["Product", "FAQPage", "BreadcrumbList"],
       `${path}: required structured-data types`,
     );
-    assert.equal("offers" in graph[0], false, `${path}: unapproved price excluded`);
-    assert.doesNotMatch(JSON.stringify(payloads[0]), /"price"\s*:/i, `${path}: no price markup`);
+    const expectedOffers = approvedOfferCounts.get(path) ?? 0;
+    if (expectedOffers > 0) {
+      assert.equal(graph[0].offers.length, expectedOffers, `${path}: approved price count`);
+      assert.ok(graph[0].offers.every((offer) => offer.price && offer.priceCurrency), `${path}: known approved prices only`);
+    } else {
+      assert.equal("offers" in graph[0], false, `${path}: unapproved price excluded`);
+      assert.doesNotMatch(JSON.stringify(payloads[0]), /"price"\s*:/i, `${path}: no price markup`);
+    }
   }
 });
 

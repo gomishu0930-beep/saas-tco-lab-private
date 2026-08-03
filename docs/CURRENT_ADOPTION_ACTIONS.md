@@ -1,10 +1,10 @@
 # 現時点の導入 — あなたの操作表
 
-基準日: 2026-07-31（Asia/Tokyo）
+基準日: 2026-08-01（Asia/Tokyo）
 
 2026-07-28のHuman decision `DR-2026-07-28-REVENUE-TRACK`により、P0–P18はmaintenance only、
 人手予算はlaunch trackへ全振りする。rights model v2では、自動取得・価格DB・履歴DBはstrict gateを
-維持し、Human確認済み公開価格をvendor・plan識別子、出典URL・観測日・次回確認日付きで記事化するeditorial pathは
+維持し、Human確認済み公開価格をvendor・plan識別子、画面状態、出典URL・観測日・次回確認日付きで記事化するeditorial pathは
 field-level書面許諾をlaunch blockerにしない。
 
 2026-07-30の最終Human指示により、2026-08〜2026-10はHuman予算をlaunch track限定で月2,000分とし、
@@ -15,14 +15,15 @@ field-level書面許諾をlaunch blockerにしない。
 `docs/HUMAN_ACTION_MANUAL.md`は完了履歴またはtrigger後の参照であり、日常の追加作業ではない。
 
 1. `docs/DOMAIN_MIGRATION_CHECKLIST.md`をdomain dayに実行する。
-2. `docs/PRICE_CHECK_CHECKLIST.md`を見ながら`/operator`へ実値を入力する。価格ページ本文はlocal貼り付け解析で事前入力し、前回差分を見てHuman確定する。
+2. `docs/PRICE_CHECK_CHECKLIST.md`を見ながら`/operator`へ実値・billing toggle位置・価格表示の4区分を入力する。年払いはcheckout請求総額を一次値とし、前回差分を見てHuman確定する。
 3. `docs/HUMAN_REPLY_CARD.md`からexact tokenを返す。Impact承認済みpartnerのfeed確認通知時だけ`docs/IMPACT_PRODUCT_FEED_CHECKLIST.md`も見る。
 4. `docs/MONTHLY_15_MIN_ROUTINE.md`を月一回実行する。
 
 それ以外のlocal検証、contract再検証、記事差込み、dashboard再生成、公開前QAはCodexが行う。
 
-2026-07-31まではカード不要モードとし、Google Workspace、domain購入、OpenAI API、外部AI課金、
-有料cloud・有料hosting・有料trialを保留する。カード不要でも外部送信・規約同意・account作成は対象別GOを必要とする。
+カード不要モードは2026-07-31で終了した。domain購入は開始カードのexact token
+`domain: GO <domain>`、購入対象・初年度価格・更新価格のread-back、購入直前のHuman確認を満たした場合だけ進める。
+その他の外部送信・規約同意・account作成・課金も対象別GOを必要とする。
 例外として、2026-07-26のHuman指示により、実データ・Affiliate CTAを含まないSites公開前版だけを本番originへ公開した。
 
 |ID|時期|本人が行うこと|完了の合図|Codexが続けること|共有禁止|
@@ -37,10 +38,24 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
 |A-H10|公開前版完了|カード不要Sitesを公開前originとして採用済み。実データ、indexing、CTA、DB、独自domainは別承認|2026-07-26 public-prelaunch GO|外部readbackとfail-closed経路を継続監視。実運用releaseはGate A–Cまで停止|cloud root credential|
-|A-H11|記事入力開始時|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|記事別Human review|editorial schemaを検証し、unknownを保持しつつ計算・承認はSTOP|raw本文、PII、credential、tracking ID|
-|A-H12|カード解禁後|独自domainを決定する|`domain: GO <domain>`|DNS・GSC・GA4・redirect・Impact移行を実行前検査|registrar credential、支払情報|
+|A-H11|P01–P03承認済み／P04–P12継続|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|2026-08-03 `article_approve: P01,P02,P03`受領|承認scopeをcontractへ固定し、unknown依存claimだけSTOP。P01–P03は公開候補、残記事はreview継続|raw本文、PII、credential、tracking ID|
+|A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|indexとCTAは別GOまでHOLDする|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
 |A-H13|150 query export時|KWFinder正規画面からJP/ja CSVをHuman exportする|`mangools_csv: done`|rawを保存せずvalidatorでsafe-summaryだけ生成|account情報、raw CSVのrepo保存|
 |A-H14|記事承認後|index解除対象を確定する|`index_go: GO`|承認済み記事だけindex候補化。CTAは別GO|verification・tracking ID|
+
+2026-08-02、Human ApproverがMangoolsの年次checkout総額452.40／632.40／1,172.40 USD、
+同planの月払い比較値61.00／81.00／141.00 USD、Japan選択時VAT 0表示を確認し、P01–P03の
+TCO節再生成を明示指示した。Basic、Premium、Agencyの年次総額を一次観測値へ昇格し、月額換算
+37.70／52.70／97.70 USDと月払い比の約38%／35%／31%を固定式の派生値として記録した。
+P03のSE Ranking・Semrush年次総額と移行費用はunknownのまま横断順位から除外する。2026-08-03、
+Human Approver `omishu`がこの2026-08-02観測contractに基づく本文・TCO節を承認した。P01–P03は
+公開候補へ登録済みだが、`index_go`未受領のためnoindex・CTA無効を維持する。
+
+観測contract v2.3では価格表示を`none`、`annual_discount_permanent`、`time_limited_promo`、`unknown`の
+4区分とする。計算HOLDは期間限定promoとunknownだけである。2026-08-02にHuman token
+`sale_banner_state: annual_discount_permanent mangools`を受領し、P01–P03のMangools 22 fieldへ反映した。
+後続のexact値指示によりMangoolsの年次price 5 observationは確定済みである。他vendorのunknownから
+値を推測せず、関連claimだけを停止する。
 
 ## Plugin画面での既定選択
 
@@ -75,17 +90,18 @@ business purposeの需要判断に限定し、volumeのsafe-summaryだけをrepo
 |会社|Affiliate現在地|rights回答|統合gateへの算入|次の本人操作|
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答。2026-07-26追送済み|0|rights回答を待つ。紹介IDは共有しない|
-|HubSpot|2026-07-26 Impact申請送信済み・審査待ち|未回答。2026-07-26追送済み|0|審査結果とrights回答を待つ。申請中を承認済みと数えない|
+|HubSpot|2026-08-03 Impact画面でDeclined（low reach）を確認|未回答。2026-07-26追送済み|0|公開・流入実績を作るまで再申請しない。拒否を承認済みと数えない|
 |Semrush|Impact Marketplace申請受領・website認証済み。個別申請の送信を試行したが未受領|回答あり|0|Marketplace承認を待つ。`Discover`表示後にSemrushを再申請し、受付receiptを確認する|
 |SE Ranking|work email例外回答待ち|未回答。ticket 112501へ2026-07-26追送済み|0|回答まで再登録しない|
 |Serpstat|未申請|回答あり・社内審査中。2026-07-26 due-diligence返信済み|0|authorized teamの8項目回答を待つ|
 
 E10のImpact product feed確認は、Impact上でAffiliateがactiveになったpartnerだけがtriggerである。現在は
-HubSpotが審査待ち、SemrushがMarketplace手続中であり、対象partnerは0社なのでHuman操作はまだ不要。
+HubSpotはlow reachでDeclined、SemrushはMarketplace手続中であり、対象partnerは0社なのでHuman操作はまだ不要。
 active通知後に`docs/IMPACT_PRODUCT_FEED_CHECKLIST.md`を使い、catalog有無とA1利用scopeを確認する。
 
-HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。現在は
-審査待ちで、追加表示されたImpact Marketplace設定、税務情報、受取情報は未操作です。Semrushは
+HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。2026-08-03に
+Impact画面でlow reachを理由とするDeclinedを確認しました。公開・流入実績を作るまで再申請せず、追加表示された
+Impact Marketplace設定、税務情報、受取情報は未操作です。Semrushは
 2026-07-26に契約同意、Impact credential受付、SMS端末認証、既存Impact accountへのloginまで完了しました。同日、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User AgreementとMaster Program Agreementへ同意しました。税務workflowは値を記録せず完了し、SaaS TCO Lab限定の公開profileも保存済みです。media propertyはwebsite認証済みで、Impact Marketplace申請は受領済みです。Humanの`semrush_submit: GO`後にSemrush個別申請の送信を再試行しましたが、既存Impact accountへのsign-in後はHubSpot homeへ遷移し、Semrushの受付画面・通知・受付メールはいずれも確認できませんでした。再認証の失敗ではなく、Marketplace承認前の導線または既存account callbackの停止と判定します。Marketplace承認後に`Discover`から再開し、受付receiptを確認します。申請中も承認済みと数えず、Affiliate、data rights、対象site、
 payoutの全条件が揃った会社だけを1社と数えます。
 

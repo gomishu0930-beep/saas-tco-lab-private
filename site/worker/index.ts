@@ -39,6 +39,10 @@ const BASE_SECURITY_HEADERS = {
   "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet",
 };
 
+const LEGACY_PUBLIC_HOST = "saas-tco-lab-jp.shukun0930.chatgpt.site";
+const CANONICAL_PUBLIC_HOST = "saastcolab.jp";
+const CANONICAL_PUBLIC_ORIGIN = `https://${CANONICAL_PUBLIC_HOST}`;
+
 const RESTRICTED_CONTENT_SECURITY_POLICY =
   "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 
@@ -88,7 +92,6 @@ const ARTICLE_PATH_TO_ID = new Map([
   ["/pilot/japan-tax", "P10"],
   ["/pilot/break-even", "P11"],
   ["/pilot/evidence-method", "P12"],
-  ["/embed/tco-calculator", "P01"],
 ]);
 
 function approvedIndexPaths(env: ProductionEnv): ReadonlySet<string> {
@@ -174,6 +177,7 @@ async function withRuntimeHeadControls(
   response: Response,
   controls: RuntimeHeadControls,
   indexable: boolean,
+  canonicalPath: string,
 ): Promise<Response> {
   const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
   if (
@@ -195,16 +199,26 @@ async function withRuntimeHeadControls(
   if (openingHead?.index === undefined) return response;
 
   const insertionPoint = openingHead.index + openingHead[0].length;
+  const canonicalMarkup = indexable
+    ? `<link rel="canonical" href="${CANONICAL_PUBLIC_ORIGIN}${canonicalPath}">`
+    : "";
   const headers = new Headers(response.headers);
   headers.delete("content-length");
   return new Response(
-    `${body.slice(0, insertionPoint)}${controls.markup}${body.slice(insertionPoint)}`,
+    `${body.slice(0, insertionPoint)}${canonicalMarkup}${controls.markup}${body.slice(insertionPoint)}`,
     {
       status: response.status,
       statusText: response.statusText,
       headers,
     },
   );
+}
+
+function sitemapXml(indexPaths: ReadonlySet<string>): string {
+  const urls = [...indexPaths]
+    .map((path) => `  <url><loc>${CANONICAL_PUBLIC_ORIGIN}${path}</loc></url>`)
+    .join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
 }
 
 function embedLoaderScript(requestUrl: string): string {
@@ -224,6 +238,19 @@ const worker = {
     const normalizedPath = normalizePath(url.pathname);
     const indexPaths = approvedIndexPaths(env);
 
+    if (url.hostname.toLowerCase() === LEGACY_PUBLIC_HOST) {
+      const target = new URL(request.url);
+      target.protocol = "https:";
+      target.host = CANONICAL_PUBLIC_HOST;
+      return new Response(null, {
+        status: 301,
+        headers: {
+          ...securityHeaders(),
+          Location: target.toString(),
+        },
+      });
+    }
+
     if (url.pathname === "/healthz") {
       return new Response("ok\n", {
         status: 200,
@@ -232,10 +259,24 @@ const worker = {
     }
     if (url.pathname === "/robots.txt") {
       const allowed = [...indexPaths].sort().map((path) => `Allow: ${path}$`).join("\n");
-      const body = allowed ? `User-agent: *\n${allowed}\nDisallow: /\n` : "User-agent: *\nDisallow: /\n";
+      const body = allowed
+        ? `User-agent: *\n${allowed}\nDisallow: /\nSitemap: ${CANONICAL_PUBLIC_ORIGIN}/sitemap.xml\n`
+        : "User-agent: *\nDisallow: /\n";
       return new Response(body, {
         status: 200,
         headers: { ...securityHeaders(), "Content-Type": "text/plain; charset=utf-8" },
+      });
+    }
+    if (url.pathname === "/sitemap.xml") {
+      if (indexPaths.size === 0) {
+        return new Response("Service Unavailable\n", {
+          status: 503,
+          headers: { ...securityHeaders(), "Content-Type": "text/plain; charset=utf-8" },
+        });
+      }
+      return new Response(sitemapXml(indexPaths), {
+        status: 200,
+        headers: { ...securityHeaders(), "Content-Type": "application/xml; charset=utf-8" },
       });
     }
     if (normalizedPath === "/embed/tco-calculator.js") {
@@ -273,7 +314,12 @@ const worker = {
       const response = await handler.fetch(request, env, ctx);
       const embeddable = normalizedPath === "/embed/tco-calculator";
       return withSecurityHeaders(
-        await withRuntimeHeadControls(response, runtimeControls, indexPaths.has(normalizedPath)),
+        await withRuntimeHeadControls(
+          response,
+          runtimeControls,
+          indexPaths.has(normalizedPath),
+          normalizedPath,
+        ),
         runtimeControls.analyticsEnabled,
         indexPaths.has(normalizedPath),
         embeddable,

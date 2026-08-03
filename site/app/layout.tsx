@@ -60,7 +60,7 @@ export default function RootLayout({
               )}
               <Link href="/disclosure/">広告表示</Link>
             </nav>
-            <span className="noindex-badge">NOINDEX</span>
+            <span className="noindex-badge">CONTROLLED</span>
           </div>
         </header>
         {children}
@@ -71,8 +71,8 @@ export default function RootLayout({
               <p>根拠・権利・期限を先にする、データ駆動型SaaS比較。</p>
             </div>
             <div>
-              <p className="footer-label">PRE-PUBLIC CONTROL</p>
-              <p>合成データのみ / 外部送客なし / robots noindex</p>
+              <p className="footer-label">PUBLICATION CONTROL</p>
+              <p>Human review / index gate / CTA gate</p>
             </div>
             <nav aria-label="フッターナビゲーション">
               <Link href="/about/">About</Link>

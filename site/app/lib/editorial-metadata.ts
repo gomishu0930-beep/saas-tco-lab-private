@@ -17,8 +17,8 @@ export function editorialMetadata(page: PilotPage): Metadata {
     disclosureBeforeCta: true,
   });
   return {
-    title: `記事template・${page.title}`,
-    description: `${page.question}をHuman確認値と出典日付で検証する記事template。`,
+    title: page.title,
+    description: `${page.question}をHuman確認値・公式出典・観測日付きで検証します。`,
     robots: {
       index: decision.indexable,
       follow: decision.indexable,

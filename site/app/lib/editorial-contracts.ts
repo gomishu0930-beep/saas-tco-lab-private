@@ -6,6 +6,8 @@ import type { EditorialContract } from "./editorial-input-contract";
 import { validateEditorialInput, valuesFromContract } from "./editorial-input-contract";
 import type { PilotPage } from "./pilot-pages";
 
+export { hasUnknownFact } from "./editorial-input-contract";
+
 const importedContracts: Readonly<Record<string, unknown>> = {
   P01: p01ContractJson,
   P02: p02ContractJson,
@@ -21,7 +23,7 @@ export function editorialContract(page: PilotPage): EditorialContract | null {
   const candidate = importedContracts[page.id] as EditorialContract | undefined;
   if (!candidate) return null;
   if (
-    candidate.schema_version !== "2.1"
+    candidate.schema_version !== "2.3"
     || candidate.article_id !== page.id
     || candidate.slug !== page.slug
     || candidate.title !== page.title
@@ -37,11 +39,4 @@ export function editorialContract(page: PilotPage): EditorialContract | null {
     throw new Error(`${page.id}: imported editorial contract failed site validation`);
   }
   return candidate;
-}
-
-export function hasUnknownFact(field: EditorialContract["numeric_fields"][number]): boolean {
-  return field.value_status === "unknown"
-    || field.currency_status === "unknown"
-    || field.billing_period === "unknown"
-    || field.tax_treatment === "unknown";
 }

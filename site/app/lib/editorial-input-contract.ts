@@ -4,6 +4,9 @@ export type EditorialScopeKind = "vendor_plan" | "human_scenario";
 export type EditorialValueStatus = "known" | "unknown" | "not_applicable";
 export type EditorialCurrencyStatus = "known" | "unknown" | "not_applicable";
 export type EditorialReviewStatus = "unreviewed" | "approved" | "rejected";
+export type EditorialBillingToggleState = "annual_selected" | "monthly_selected" | "not_present" | "unknown";
+export type EditorialSaleBannerState = "none" | "annual_discount_permanent" | "time_limited_promo" | "unknown";
+export type EditorialObservedPriceBasis = "checkout_billed_total" | "displayed_price" | "human_scenario" | "not_applicable" | "unknown";
 
 export type EditorialFieldFormValue = {
   valueStatus: EditorialValueStatus;
@@ -16,6 +19,8 @@ export type EditorialFieldFormValue = {
   currencyUnknownReason: string;
   billingPeriod: string;
   taxTreatment: string;
+  observedPriceBasis: EditorialObservedPriceBasis | "";
+  monthlyReferenceValue: string;
   sourceUrl: string;
   observedOn: string;
   nextReviewOn: string;
@@ -27,17 +32,19 @@ export type EditorialRowFormValue = {
   vendorId: string;
   planId: string;
   scenarioBasis: string;
+  billingToggleState: EditorialBillingToggleState | "";
+  saleBannerState: EditorialSaleBannerState | "";
   values: Record<string, EditorialFieldFormValue>;
 };
 
 export type EditorialContract = {
-  schema_version: "2.1";
+  schema_version: "2.3";
   article_id: PilotPage["id"];
   slug: string;
   title: string;
   disclosure_version: "pr-affiliate-v1";
   numeric_fields: Array<{
-    schema_version: "2.1";
+    schema_version: "2.3";
     scope_kind: EditorialScopeKind;
     vendor_id: string | null;
     plan_id: string | null;
@@ -53,12 +60,22 @@ export type EditorialContract = {
     currency_unknown_reason: string | null;
     billing_period: string | null;
     tax_treatment: string | null;
+    billing_toggle_state: EditorialBillingToggleState | null;
+    sale_banner_state: EditorialSaleBannerState | null;
+    observed_price_basis: EditorialObservedPriceBasis | null;
+    derived_monthly_value: string | null;
+    derived_monthly_unit: "/ mo" | null;
+    derivation_method: "annual_checkout_total_divided_by_12" | null;
+    monthly_reference_value: string | null;
+    monthly_reference_unit: "/ mo" | null;
+    derived_annual_discount_percent: string | null;
+    discount_derivation_method: "one_minus_annual_total_divided_by_monthly_price_times_12" | null;
     source_url: string | null;
     scenario_basis: string | null;
     observed_on: string;
     next_review_on: string;
     entered_by: "human";
-    acquisition_method: "manual_public_page" | "human_scenario_input";
+    acquisition_method: "manual_public_page" | "manual_checkout_review" | "human_scenario_input";
     rights_path: "human_editorial";
     review_status: EditorialReviewStatus;
   }>;
@@ -70,6 +87,17 @@ export type EditorialValidation = {
   calculationBlockers: readonly string[];
   contract: EditorialContract | null;
 };
+
+export function hasUnknownFact(field: EditorialContract["numeric_fields"][number]): boolean {
+  return field.value_status === "unknown"
+    || field.currency_status === "unknown"
+    || field.billing_period === "unknown"
+    || field.tax_treatment === "unknown"
+    || field.billing_toggle_state === "unknown"
+    || field.sale_banner_state === "unknown"
+    || field.sale_banner_state === "time_limited_promo"
+    || field.observed_price_basis === "unknown";
+}
 
 export type ExtractedPriceCandidate = {
   id: string;
@@ -94,6 +122,9 @@ const safeQueryKeys = new Set([
 const trackingMarkers = ["affiliate", "aff", "clickid", "partner", "ref", "subid", "tracking", "utm_"];
 const billingPeriods = new Set(["monthly", "annual", "one_time", "per_usage", "not_applicable", "unknown"]);
 const taxTreatments = new Set(["included", "excluded", "not_applicable", "unknown"]);
+const billingToggleStates = new Set(["annual_selected", "monthly_selected", "not_present", "unknown"]);
+const saleBannerStates = new Set(["none", "annual_discount_permanent", "time_limited_promo", "unknown"]);
+const observedPriceBases = new Set(["checkout_billed_total", "displayed_price", "human_scenario", "not_applicable", "unknown"]);
 const slugPattern = /^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$/;
 const dayMilliseconds = 86_400_000;
 const maximumPasteCharacters = 100_000;
@@ -154,6 +185,8 @@ export function emptyEditorialField(): EditorialFieldFormValue {
     currencyUnknownReason: "",
     billingPeriod: "",
     taxTreatment: "",
+    observedPriceBasis: "",
+    monthlyReferenceValue: "",
     sourceUrl: "",
     observedOn: "",
     nextReviewOn: "",
@@ -171,6 +204,8 @@ export function emptyEditorialRow(
     vendorId: "",
     planId: "",
     scenarioBasis: scopeKind === "human_scenario" ? "Humanが設定した記事計算scenario" : "",
+    billingToggleState: "",
+    saleBannerState: "",
     values: Object.fromEntries(
       page.numericFields
         .filter((field) => pilotFieldScope(field) === scopeKind)
@@ -180,6 +215,77 @@ export function emptyEditorialRow(
         }]),
     ),
   };
+}
+
+const zeroMinorUnitCurrencies = new Set([
+  "BIF", "CLP", "DJF", "GNF", "ISK", "JPY", "KMF", "KRW", "PYG", "RWF", "UGX", "UYI", "VND", "VUV", "XAF", "XOF", "XPF",
+]);
+const threeMinorUnitCurrencies = new Set(["BHD", "IQD", "JOD", "KWD", "LYD", "OMR", "TND"]);
+const fourMinorUnitCurrencies = new Set(["CLF", "UYW"]);
+
+function currencyMinorUnitDigits(currency: string): number | null {
+  const normalized = currency.trim().toUpperCase();
+  if (!/^[A-Z]{3}$/.test(normalized)) return null;
+  if (zeroMinorUnitCurrencies.has(normalized)) return 0;
+  if (threeMinorUnitCurrencies.has(normalized)) return 3;
+  if (fourMinorUnitCurrencies.has(normalized)) return 4;
+  return 2;
+}
+
+/** Match Python exact minor-unit division. Never round a derived monthly value. */
+export function annualMonthlyEquivalent(value: string, currency: string): string | null {
+  const match = /^([+-]?)(\d+)(?:\.(\d+))?$/.exec(value.trim());
+  if (!match) return null;
+  const minorUnitDigits = currencyMinorUnitDigits(currency);
+  if (minorUnitDigits === null) return null;
+  const sign = match[1] === "-" ? -1n : 1n;
+  const fraction = match[3] ?? "";
+  if (fraction.length > minorUnitDigits && /[1-9]/.test(fraction.slice(minorUnitDigits))) return null;
+  const scale = 10n ** BigInt(minorUnitDigits);
+  const fractionInMinorUnits = BigInt((fraction.slice(0, minorUnitDigits) || "0").padEnd(minorUnitDigits, "0"));
+  const annualMinorUnits = sign * (BigInt(match[2]) * scale + fractionInMinorUnits);
+  if (annualMinorUnits % 12n !== 0n) return null;
+  const monthlyMinorUnits = annualMinorUnits / 12n;
+  const negative = monthlyMinorUnits < 0n;
+  const absolute = negative ? -monthlyMinorUnits : monthlyMinorUnits;
+  const whole = absolute / scale;
+  const decimals = minorUnitDigits === 0
+    ? ""
+    : (absolute % scale).toString().padStart(minorUnitDigits, "0").replace(/0+$/, "");
+  const normalized = decimals ? `${whole}.${decimals}` : whole.toString();
+  return negative && absolute !== 0n ? `-${normalized}` : normalized;
+}
+
+function unsignedDecimalParts(value: string): { coefficient: bigint; scaleDigits: number } | null {
+  const match = /^(\d+)(?:\.(\d+))?$/.exec(value.trim());
+  if (!match) return null;
+  const fraction = match[2] ?? "";
+  if (fraction.length > 8) return null;
+  return {
+    coefficient: BigInt(`${match[1]}${fraction}`),
+    scaleDigits: fraction.length,
+  };
+}
+
+/** Match Python ROUND_HALF_UP to the nearest whole percent without floating-point drift. */
+export function annualDiscountPercent(
+  annualTotal: string,
+  monthlyReference: string,
+): string | null {
+  const annual = unsignedDecimalParts(annualTotal);
+  const monthly = unsignedDecimalParts(monthlyReference);
+  if (!annual || !monthly || monthly.coefficient <= 0n) return null;
+  const scaleDigits = Math.max(annual.scaleDigits, monthly.scaleDigits);
+  const annualCoefficient = annual.coefficient * (10n ** BigInt(scaleDigits - annual.scaleDigits));
+  const monthlyTwelveCoefficient = monthly.coefficient
+    * (10n ** BigInt(scaleDigits - monthly.scaleDigits))
+    * 12n;
+  if (annualCoefficient >= monthlyTwelveCoefficient) return null;
+  const discountNumerator = (monthlyTwelveCoefficient - annualCoefficient) * 100n;
+  let rounded = discountNumerator / monthlyTwelveCoefficient;
+  const remainder = discountNumerator % monthlyTwelveCoefficient;
+  if (remainder * 2n >= monthlyTwelveCoefficient) rounded += 1n;
+  return rounded.toString();
 }
 
 function exactlyOne(values: readonly string[], warning: string, warnings: string[]) {
@@ -315,7 +421,7 @@ function fieldsForRow(page: PilotPage, row: EditorialRowFormValue) {
 }
 
 export function valuesFromContract(page: PilotPage, contract: EditorialContract): EditorialRowFormValue[] | null {
-  if (contract.schema_version !== "2.1" || contract.article_id !== page.id) return null;
+  if (contract.schema_version !== "2.3" || contract.article_id !== page.id) return null;
   const groups = new Map<string, EditorialRowFormValue>();
   for (const stored of contract.numeric_fields) {
     const field = page.numericFields.find((candidate) => candidate.key === stored.field);
@@ -329,8 +435,14 @@ export function valuesFromContract(page: PilotPage, contract: EditorialContract)
       vendorId: stored.vendor_id ?? "",
       planId: stored.plan_id ?? "",
       scenarioBasis: stored.scenario_basis ?? "",
+      billingToggleState: stored.billing_toggle_state ?? "",
+      saleBannerState: stored.sale_banner_state ?? "",
       values: {},
     };
+    if (
+      row.billingToggleState !== (stored.billing_toggle_state ?? "")
+      || row.saleBannerState !== (stored.sale_banner_state ?? "")
+    ) return null;
     row.values[stored.field] = {
       valueStatus: stored.value_status,
       value: stored.value ?? "",
@@ -342,6 +454,8 @@ export function valuesFromContract(page: PilotPage, contract: EditorialContract)
       currencyUnknownReason: stored.currency_unknown_reason ?? "",
       billingPeriod: stored.billing_period ?? "",
       taxTreatment: stored.tax_treatment ?? "",
+      observedPriceBasis: stored.observed_price_basis ?? "",
+      monthlyReferenceValue: stored.monthly_reference_value ?? "",
       sourceUrl: stored.source_url ?? "",
       observedOn: stored.observed_on,
       nextReviewOn: stored.next_review_on,
@@ -379,7 +493,12 @@ export function validateEditorialInput(
     if (row.scopeKind === "vendor_plan") {
       if (!slugPattern.test(vendorId)) addError(errors, `${rowPrefix}.vendorId`, "vendor識別子は英小文字・数字・ハイフンで入力してください（例: mangools）。");
       if (!slugPattern.test(planId)) addError(errors, `${rowPrefix}.planId`, "plan識別子は英小文字・数字・ハイフンで入力してください（例: basic）。");
+      if (!billingToggleStates.has(row.billingToggleState)) addError(errors, `${rowPrefix}.billingToggleState`, "確認時のbilling toggle位置を選択してください。見当たらなければ「toggleなし」、判別不能なら「不明」です。");
+      if (!saleBannerStates.has(row.saleBannerState)) addError(errors, `${rowPrefix}.saleBannerState`, "価格表示を「なし・年払い恒常割引・期間限定promo・不明」の4区分から選択してください。");
       identity = `vendor_plan:${vendorId}:${planId}`;
+      if (row.billingToggleState === "unknown") calculationBlockers.push(`${identity} / screen: billing toggle unknown`);
+      if (row.saleBannerState === "unknown") calculationBlockers.push(`${identity} / screen: sale banner unknown`);
+      if (row.saleBannerState === "time_limited_promo") calculationBlockers.push(`${identity} / screen: time-limited promo`);
     } else {
       if (!scenarioBasis || scenarioBasis.length > 300) addError(errors, `${rowPrefix}.scenarioBasis`, "Humanシナリオの根拠を300文字以内で入力してください。個人情報は入れません。");
       identity = "human_scenario";
@@ -426,10 +545,19 @@ export function validateEditorialInput(
       let currencyUnknownReason: string | null = null;
       let billingPeriod: string | null = null;
       let taxTreatment: string | null = null;
+      let observedPriceBasis: EditorialObservedPriceBasis | null = null;
+      let derivedMonthlyValue: string | null = null;
+      let derivedMonthlyUnit: "/ mo" | null = null;
+      let derivationMethod: "annual_checkout_total_divided_by_12" | null = null;
+      let monthlyReferenceValue: string | null = null;
+      let monthlyReferenceUnit: "/ mo" | null = null;
+      let derivedAnnualDiscountPercent: string | null = null;
+      let discountDerivationMethod: "one_minus_annual_total_divided_by_monthly_price_times_12" | null = null;
       if (field.valueKind === "price") {
         currencyStatus = current.currencyStatus;
         billingPeriod = current.billingPeriod;
         taxTreatment = current.taxTreatment;
+        observedPriceBasis = row.scopeKind === "human_scenario" ? "human_scenario" : current.observedPriceBasis || null;
         if (valueStatus === "not_applicable") {
           if (currencyStatus !== "not_applicable") addError(errors, `${prefix}.currencyStatus`, "該当なし価格では通貨状態も「該当なし」にしてください。");
           if (billingPeriod !== "not_applicable") addError(errors, `${prefix}.billingPeriod`, "該当なし価格では請求周期も「該当なし」にしてください。");
@@ -450,6 +578,51 @@ export function validateEditorialInput(
         }
         if (!billingPeriods.has(billingPeriod ?? "")) addError(errors, `${prefix}.billingPeriod`, "請求周期を選択してください。不明なら「不明」を選びます。");
         if (!taxTreatments.has(taxTreatment ?? "")) addError(errors, `${prefix}.taxTreatment`, "税込・税別を選択してください。不明なら「不明」を選びます。");
+        if (!observedPriceBases.has(observedPriceBasis ?? "")) addError(errors, `${prefix}.observedPriceBasis`, "価格の一次観測区分を選択してください。年払いはcheckout請求総額だけを選べます。");
+        if (valueStatus === "not_applicable" && observedPriceBasis !== "not_applicable") addError(errors, `${prefix}.observedPriceBasis`, "該当なし価格では一次観測区分も「該当なし」にしてください。");
+        else if (valueStatus === "unknown" && observedPriceBasis !== "unknown") addError(errors, `${prefix}.observedPriceBasis`, "不明価格では一次観測区分も「不明」にしてください。");
+        else if (row.scopeKind === "human_scenario" && observedPriceBasis !== "human_scenario") addError(errors, `${prefix}.observedPriceBasis`, "Humanシナリオ価格は公式価格の一次観測として扱いません。");
+        else if (row.scopeKind === "vendor_plan" && valueStatus === "known" && billingPeriod === "annual") {
+          if (observedPriceBasis !== "checkout_billed_total") addError(errors, `${prefix}.observedPriceBasis`, "年払いplanの値にはcheckoutで確認した請求総額を入力してください。料金表の月額換算表示は一次観測値にできません。");
+          if (row.billingToggleState !== "annual_selected") addError(errors, `${prefix}.billingPeriod`, "年払いcheckout総額では画面状態を「年払い選択」にしてください。");
+          derivedMonthlyValue = annualMonthlyEquivalent(contractValue ?? "", currency ?? "");
+          if (derivedMonthlyValue !== null) {
+            derivedMonthlyUnit = "/ mo";
+            derivationMethod = "annual_checkout_total_divided_by_12";
+          }
+          if (row.saleBannerState === "annual_discount_permanent") {
+            monthlyReferenceValue = current.monthlyReferenceValue.trim();
+            const decimalMatch = /^\d+(?:\.\d+)?$/.exec(monthlyReferenceValue);
+            if (!monthlyReferenceValue) {
+              addError(errors, `${prefix}.monthlyReferenceValue`, "恒常年払い割引には、同じplanの月払い価格を入力してください。");
+            } else if (!decimalMatch) {
+              addError(errors, `${prefix}.monthlyReferenceValue`, "月払い比較値は通貨記号を除いた数値だけで入力してください。");
+            } else {
+              const [whole, fraction = ""] = monthlyReferenceValue.split(".");
+              if (`${whole}${fraction}`.length > 30 || fraction.length > 8) {
+                addError(errors, `${prefix}.monthlyReferenceValue`, "月払い比較値は合計30桁・小数8桁以内にしてください。");
+              }
+              derivedAnnualDiscountPercent = annualDiscountPercent(
+                contractValue ?? "",
+                monthlyReferenceValue,
+              );
+              if (derivedAnnualDiscountPercent === null) {
+                addError(errors, `${prefix}.monthlyReferenceValue`, "年次checkout総額より月払い価格×12が大きい、同一条件の正の月払い価格を確認してください。");
+              } else {
+                monthlyReferenceUnit = "/ mo";
+                discountDerivationMethod = "one_minus_annual_total_divided_by_monthly_price_times_12";
+              }
+            }
+          } else if (current.monthlyReferenceValue.trim()) {
+            addError(errors, `${prefix}.monthlyReferenceValue`, "月払い比較値は価格表示分類が「年払い恒常割引」の時だけ入力できます。");
+          }
+        } else if (
+          row.scopeKind === "vendor_plan"
+          && valueStatus === "known"
+          && !["displayed_price", "checkout_billed_total"].includes(observedPriceBasis ?? "")
+        ) addError(errors, `${prefix}.observedPriceBasis`, "確認済み価格の一次観測区分を選択してください。");
+        if (billingPeriod === "monthly" && row.billingToggleState === "annual_selected") addError(errors, `${prefix}.billingPeriod`, "月払い価格に「年払い選択」の画面状態は使えません。");
+        if (billingPeriod === "annual" && row.billingToggleState === "monthly_selected") addError(errors, `${prefix}.billingPeriod`, "年払い価格に「月払い選択」の画面状態は使えません。");
         if (billingPeriod === "unknown") calculationBlockers.push(`${identity} / ${field.key}: billing period unknown`);
         if (taxTreatment === "unknown") calculationBlockers.push(`${identity} / ${field.key}: tax treatment unknown`);
       }
@@ -471,7 +644,7 @@ export function validateEditorialInput(
       }
 
       numericFields.push({
-        schema_version: "2.1",
+        schema_version: "2.3",
         scope_kind: row.scopeKind,
         vendor_id: row.scopeKind === "vendor_plan" ? vendorId : null,
         plan_id: row.scopeKind === "vendor_plan" ? planId : null,
@@ -487,12 +660,26 @@ export function validateEditorialInput(
         currency_unknown_reason: currencyUnknownReason,
         billing_period: billingPeriod,
         tax_treatment: taxTreatment,
+        billing_toggle_state: row.scopeKind === "vendor_plan" ? row.billingToggleState as EditorialBillingToggleState : null,
+        sale_banner_state: row.scopeKind === "vendor_plan" ? row.saleBannerState as EditorialSaleBannerState : null,
+        observed_price_basis: observedPriceBasis,
+        derived_monthly_value: derivedMonthlyValue,
+        derived_monthly_unit: derivedMonthlyUnit,
+        derivation_method: derivationMethod,
+        monthly_reference_value: monthlyReferenceValue,
+        monthly_reference_unit: monthlyReferenceUnit,
+        derived_annual_discount_percent: derivedAnnualDiscountPercent,
+        discount_derivation_method: discountDerivationMethod,
         source_url: sourceUrl,
         scenario_basis: row.scopeKind === "human_scenario" ? scenarioBasis : null,
         observed_on: current.observedOn,
         next_review_on: current.nextReviewOn,
         entered_by: "human",
-        acquisition_method: row.scopeKind === "vendor_plan" ? "manual_public_page" : "human_scenario_input",
+        acquisition_method: row.scopeKind === "human_scenario"
+          ? "human_scenario_input"
+          : observedPriceBasis === "checkout_billed_total"
+            ? "manual_checkout_review"
+            : "manual_public_page",
         rights_path: "human_editorial",
         review_status: "unreviewed",
       });
@@ -503,7 +690,7 @@ export function validateEditorialInput(
     errors,
     calculationBlockers: [...new Set(calculationBlockers)],
     contract: Object.keys(errors).length ? null : {
-      schema_version: "2.1",
+      schema_version: "2.3",
       article_id: page.id,
       slug: page.slug,
       title: page.title,

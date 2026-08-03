@@ -11,13 +11,13 @@ export const metadata: Metadata = {
 const remainingHumanWork = [
   {
     id: "H1",
-    timing: "domain取得日",
-    title: "画面別runbookを上から実行",
+    timing: "SSL Active確認後",
+    title: "domain移行runbookの後半を実行",
     minutes: "当日のみ",
-    status: "domain GO待ち",
+    status: "購入・DNS・自動更新完了 / SSL待ち",
     why: "購入、DNS、GSC、GA4、Impactの本人画面だけを順番に操作します。credentialやverification値はこの画面へ貼りません。",
     steps: ["DOMAIN_MIGRATION_CHECKLISTを開く", "各画面のread-back欄だけ確認する", "失敗時は次へ進まずHOLDを返す"],
-    done: "domain: GO <domain> / HOLD",
+    done: "domain_readback: done saastcolab.jp / HOLD saastcolab.jp",
     next: "Codexがroute・noindex・計測境界を検証",
   },
   {
@@ -25,11 +25,11 @@ const remainingHumanWork = [
     timing: "記事準備時",
     title: "公式価格を見て、この画面へ入力",
     minutes: "記事ごと",
-    status: "P01–P03を優先",
+    status: "P01–P03承認済み / P04–P12継続",
     why: "価格確認checklistの公式URLをHumanが開き、必要箇所を貼り付けて候補抽出できます。候補はHuman確認前にcontractへ入りません。",
     steps: ["記事とvendorを選ぶ", "料金表を貼り付けて候補を事前入力する", "出典・観測日・次回確認日と前回差分を確認する", "Human確認後のJSONを保存し、本文標本を確認する"],
-    done: "article_approve: P01,P02",
-    next: "Codexがcontract再検証・記事差込み・公開前QA",
+    done: "article_approve: <P-ID,...>",
+    next: "P01–P03はindex GO待ち。残記事はcontract再検証・公開前QA",
   },
   {
     id: "H3",
@@ -139,7 +139,7 @@ export default function OperatorPage() {
           <p>複数記事はカンマ区切りで返せます。indexとCTAは記事承認から自動では有効になりません。</p>
         </div>
         <pre>{`記事承認:
-article_approve: P01,P02
+article_approve: P01,P02,P03
 
 domain:
 domain: GO <domain> / HOLD

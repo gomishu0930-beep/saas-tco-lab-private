@@ -33,6 +33,56 @@ Q8は90日閾値固定、Q9はdashboard更新である。外部申請、domain�
 - P01のseat数・月間利用量はHumanシナリオであり、公式料金から補完せずvendor行から分離する。
 - 通貨記号だけが表示される場合はISO通貨を断定せず、画面表記と不明理由を保持する。明示的unknownは証拠contractへ記録できるが、TCO計算・記事承認を許可しない。
 
+## 2026-08-02追加決定 — Launch最終シーケンス
+
+Human Approver `omishu`の指示により、launch trackの現在地と次の処理順をイベント駆動で固定する。
+新しい方針判断はイベント発生時だけ照会し、完了済みstepを再実行しない。
+
+- `saastcolab.jp`は購入、DNS保存・解決、個別自動更新ON、SitesのSSL Active read-back、
+  GSC domain propertyのDNS TXT検証、GA4 streamの新origin更新、旧originからの301 read-backまで完了した。
+  2026-08-03時点のS1次工程はImpact website再認証である。
+- 観測contract v2.3を適用する。価格表示分類は`none`、`annual_discount_permanent`、
+  `time_limited_promo`、`unknown`の4値とし、計算HOLDは後二者だけとする。2026-08-02のHuman exact値指示で
+  Mangoolsの年次price 5 observationを確定し、P01–P03のTCO節を再生成した。他vendorのunknownは維持する。
+- index、CTA、commit、push、公開はHOLDを維持する。
+
+|Event|Trigger|処理|現在状態|
+|---|---|---|---|
+|S0|本指示|年次checkout総額が12で最小通貨単位まで割り切れない場合、一次値を保持し月額派生値だけを非表示にする。丸め値を作らない|done|
+|S1|SSL Active read-back|外部read-back、GSC domain property、GA4新origin、旧origin 301、Impact再認証を順番に実施し記録|done — 2026-08-03|
+|S2|Mangools exact checkout値と再生成指示|contract確定、P01–P03価格・TCO節再生成、記事承認待ちを返す|done (Mangools scope)|
+|S3|`article_approve: P01,P02,P03`|承認記録と公開候補登録|done (2026-08-03)|
+|S4|`index_go: GO`|承認記事だけnoindex解除、robots／sitemap更新、GSC送信と外部read-back|waiting|
+|S5|`cta_go: GO mangools`|開示先行test後、Mangools CTAだけを有効化|waiting|
+|S6|公開24時間後|index、GA4、Impactを1回read-backしdashboardへ反映|waiting|
+
+`annual_discount_permanent`は、終了日・カウントダウン・クーポン・取消線priceのない恒常的な年払い・
+月払い差としてHumanが分類する。同一通貨・同一税条件の月払い価格と年次checkout総額がともに
+Human確認済みである場合だけ、`1 - annual_total / (monthly_price * 12)`から「年払いは月払い比で約N%割安」
+という事実記載を許可する。Mangoolsの旧`present`候補は分類を推測せず`unknown`へ移行し、Humanの4値分類を待つ。
+
+2026-08-02、Human Approver `omishu`から
+`sale_banner_state: annual_discount_permanent mangools`を受領した。P01–P03のMangools vendor fieldは
+`annual_discount_permanent`へ昇格する。年次checkout総額、通貨・税、価格値、記事承認、index、CTAの
+承認を価格表示分類tokenだけから推論しない。後続のHuman exact値指示で、同一plan・通貨・税条件の
+月払い値と年次checkout総額をcontractへ確定し、記事承認待ちへ進めた。
+
+同日の画面分類根拠は、終了日、カウントダウン、クーポン、取消線priceがいずれもないという
+Human確認である。月払い61.00／81.00／141.00 USDの12か月分と年次checkout総額
+452.40／632.40／1,172.40 USDの差が、約38%／35%／31%の恒常年払い差と整合することを
+Python正本とTypeScriptの固定式で再検証する。
+
+2026-08-03、Human Approver `omishu`から`article_approve: P01,P02,P03`を受領した。承認scopeは
+2026-08-02観測contractに基づく各記事の6章本文とTCO節である。contract内のknown／unknown、出典、
+観測日、次回確認日を含む表示境界を承認し、P01–P03を公開候補へ登録する。P03の未観測価格・移行費用を
+既知へ変更せず、該当する横断順位は引き続きSTOPする。index、CTA、deploy、push、公開は承認scope外であり、
+`index_go`受領までnoindexを維持する。
+
+S1のSSL、DNS、GSC、GA4、Impact操作は画面別手順書を提示し、Humanが実行する。旧`chatgpt.site`
+originはImpactがVerifiedになるまで存続させ、その後も301を維持する。
+
+残りのHuman tokenは`index_go: GO`、`cta_go: GO mangools`、`mangools_csv: done`である。
+
 ## 変更しない境界
 
 - credential、PII、tracking ID、非公開報酬はrepositoryへ保存しない。

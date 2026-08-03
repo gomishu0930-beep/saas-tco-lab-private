@@ -10,9 +10,11 @@ from pathlib import Path
 
 from saas_preflight.editorial_input import (
     EditorialArticleInput,
+    EditorialBillingToggleState,
     EditorialCurrencyStatus,
     EditorialReviewStatus,
     EditorialScopeKind,
+    EditorialSaleBannerState,
     EditorialValueKind,
     EditorialValueStatus,
     HumanEditorialNumericField,
@@ -134,6 +136,12 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
                 value=Decimal("90"),
                 unit="日",
                 currency_status=EditorialCurrencyStatus.NOT_APPLICABLE,
+                billing_toggle_state=EditorialBillingToggleState.NOT_PRESENT,
+                sale_banner_state=EditorialSaleBannerState.NONE,
+                observed_price_basis=None,
+                derived_monthly_value=None,
+                derived_monthly_unit=None,
+                derivation_method=None,
                 source_url="https://example.com/pricing",
                 observed_on=date(2026, 7, 29),
                 next_review_on=date(2026, 10, 27),
@@ -144,6 +152,18 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     )
     (contracts / "P12-editorial-input.json").write_text(
         contract.model_dump_json(indent=2), encoding="utf-8"
+    )
+    result = _run(dashboard, state, contracts, "--no-prompt")
+    assert result.returncode == 0, result.stderr
+    data = _dashboard_data(dashboard)
+    assert data["kpis"][0]["value"] == 0
+    assert data["lane"][1]["status"] == "1/12入力・0/12承認"
+
+    approved_contract = contract.model_copy(
+        update={"article_review_status": EditorialReviewStatus.APPROVED}
+    )
+    (contracts / "P12-editorial-input.json").write_text(
+        approved_contract.model_dump_json(indent=2), encoding="utf-8"
     )
     result = _run(dashboard, state, contracts, "--no-prompt")
     assert result.returncode == 0, result.stderr

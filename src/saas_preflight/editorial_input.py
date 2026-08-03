@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import math
 from datetime import date, timedelta
-from decimal import Decimal
+from decimal import ROUND_HALF_UP, Decimal
 from enum import Enum
 from typing import Literal, Self
 from urllib.parse import parse_qsl
@@ -71,6 +71,28 @@ class EditorialCurrencyStatus(str, Enum):
     NOT_APPLICABLE = "not_applicable"
 
 
+class EditorialBillingToggleState(str, Enum):
+    ANNUAL_SELECTED = "annual_selected"
+    MONTHLY_SELECTED = "monthly_selected"
+    NOT_PRESENT = "not_present"
+    UNKNOWN = "unknown"
+
+
+class EditorialSaleBannerState(str, Enum):
+    NONE = "none"
+    ANNUAL_DISCOUNT_PERMANENT = "annual_discount_permanent"
+    TIME_LIMITED_PROMO = "time_limited_promo"
+    UNKNOWN = "unknown"
+
+
+class EditorialObservedPriceBasis(str, Enum):
+    CHECKOUT_BILLED_TOTAL = "checkout_billed_total"
+    DISPLAYED_PRICE = "displayed_price"
+    HUMAN_SCENARIO = "human_scenario"
+    NOT_APPLICABLE = "not_applicable"
+    UNKNOWN = "unknown"
+
+
 _SAFE_QUERY_KEYS = frozenset(
     {"billing", "country", "currency", "edition", "lang", "locale", "period", "plan", "region"}
 )
@@ -85,11 +107,65 @@ _TRACKING_QUERY_MARKERS = (
     "utm_",
 )
 
+_ZERO_MINOR_UNIT_CURRENCIES = frozenset(
+    {"BIF", "CLP", "DJF", "GNF", "ISK", "JPY", "KMF", "KRW", "PYG", "RWF", "UGX", "UYI", "VND", "VUV", "XAF", "XOF", "XPF"}
+)
+_THREE_MINOR_UNIT_CURRENCIES = frozenset(
+    {"BHD", "IQD", "JOD", "KWD", "LYD", "OMR", "TND"}
+)
+_FOUR_MINOR_UNIT_CURRENCIES = frozenset({"CLF", "UYW"})
+
+
+def _currency_minor_unit_digits(currency: CurrencyCode | None) -> int | None:
+    if currency is None:
+        return None
+    if currency in _ZERO_MINOR_UNIT_CURRENCIES:
+        return 0
+    if currency in _THREE_MINOR_UNIT_CURRENCIES:
+        return 3
+    if currency in _FOUR_MINOR_UNIT_CURRENCIES:
+        return 4
+    return 2
+
+
+def _exact_annual_monthly_equivalent(
+    annual_total: Decimal, currency: CurrencyCode | None
+) -> Decimal | None:
+    """Return a monthly value only when the annual total divides into exact minor units."""
+
+    digits = _currency_minor_unit_digits(currency)
+    if digits is None:
+        return None
+    scale = Decimal(10) ** digits
+    minor_units = annual_total * scale
+    integral_minor_units = minor_units.to_integral_value()
+    if minor_units != integral_minor_units:
+        return None
+    minor_units_integer = int(integral_minor_units)
+    if minor_units_integer % 12 != 0:
+        return None
+    return (Decimal(minor_units_integer // 12) / scale).normalize()
+
+
+def _rounded_annual_discount_percent(
+    annual_total: Decimal, monthly_reference: Decimal
+) -> Decimal | None:
+    """Return the nearest whole discount percent for a same-plan monthly reference."""
+
+    if monthly_reference <= 0 or annual_total < 0:
+        return None
+    monthly_twelve_month_total = monthly_reference * Decimal(12)
+    if annual_total >= monthly_twelve_month_total:
+        return None
+    return (
+        (Decimal(1) - annual_total / monthly_twelve_month_total) * Decimal(100)
+    ).quantize(Decimal("1"), rounding=ROUND_HALF_UP)
+
 
 class HumanEditorialNumericField(StrictModel):
     """One Human-reviewed field for one vendor-plan or Human scenario."""
 
-    schema_version: Literal["2.1"] = "2.1"
+    schema_version: Literal["2.3"] = "2.3"
     scope_kind: EditorialScopeKind
     vendor_id: Slug | None = None
     plan_id: Slug | None = None
@@ -105,16 +181,36 @@ class HumanEditorialNumericField(StrictModel):
     currency_unknown_reason: str | None = Field(default=None, min_length=1, max_length=300)
     billing_period: EditorialBillingPeriod | None = None
     tax_treatment: EditorialTaxTreatment | None = None
+    billing_toggle_state: EditorialBillingToggleState | None
+    sale_banner_state: EditorialSaleBannerState | None
+    observed_price_basis: EditorialObservedPriceBasis | None
+    derived_monthly_value: Decimal | None = Field(max_digits=30, decimal_places=8)
+    derived_monthly_unit: Literal["/ mo"] | None
+    derivation_method: Literal["annual_checkout_total_divided_by_12"] | None
+    monthly_reference_value: Decimal | None = Field(
+        default=None, max_digits=30, decimal_places=8
+    )
+    monthly_reference_unit: Literal["/ mo"] | None = None
+    derived_annual_discount_percent: Decimal | None = Field(
+        default=None, max_digits=5, decimal_places=2
+    )
+    discount_derivation_method: Literal[
+        "one_minus_annual_total_divided_by_monthly_price_times_12"
+    ] | None = None
     source_url: AnyHttpUrl | None = None
     scenario_basis: str | None = Field(default=None, min_length=1, max_length=300)
     observed_on: date
     next_review_on: date
     entered_by: Literal["human"] = "human"
-    acquisition_method: Literal["manual_public_page", "human_scenario_input"]
+    acquisition_method: Literal[
+        "manual_public_page", "manual_checkout_review", "human_scenario_input"
+    ]
     rights_path: Literal["human_editorial"] = "human_editorial"
     review_status: EditorialReviewStatus = EditorialReviewStatus.UNREVIEWED
 
-    @field_validator("value")
+    @field_validator(
+        "value", "derived_monthly_value", "monthly_reference_value", "derived_annual_discount_percent"
+    )
     @classmethod
     def require_finite_value(cls, value: Decimal | None) -> Decimal | None:
         if value is not None and not math.isfinite(float(value)):
@@ -173,8 +269,10 @@ class HumanEditorialNumericField(StrictModel):
                 raise ValueError("vendor_plan scope requires a public source_url")
             if self.scenario_basis is not None:
                 raise ValueError("scenario_basis is only valid for human_scenario scope")
-            if self.acquisition_method != "manual_public_page":
-                raise ValueError("vendor_plan scope requires manual_public_page acquisition")
+            if self.acquisition_method not in {"manual_public_page", "manual_checkout_review"}:
+                raise ValueError("vendor_plan scope requires an approved manual acquisition method")
+            if self.billing_toggle_state is None or self.sale_banner_state is None:
+                raise ValueError("vendor_plan scope requires billing toggle and sale banner state")
         else:
             if self.vendor_id is not None or self.plan_id is not None:
                 raise ValueError("human_scenario scope cannot carry vendor_id or plan_id")
@@ -184,6 +282,8 @@ class HumanEditorialNumericField(StrictModel):
                 raise ValueError("human_scenario scope requires scenario_basis")
             if self.acquisition_method != "human_scenario_input":
                 raise ValueError("human_scenario scope requires human_scenario_input acquisition")
+            if self.billing_toggle_state is not None or self.sale_banner_state is not None:
+                raise ValueError("human_scenario scope cannot carry vendor screen state")
 
         if self.value_status is EditorialValueStatus.KNOWN:
             if self.value is None or self.unit is None:
@@ -197,6 +297,37 @@ class HumanEditorialNumericField(StrictModel):
                 raise ValueError("unknown or not_applicable values require unknown_reason")
 
         if self.value_kind is EditorialValueKind.PRICE:
+            if self.scope_kind is EditorialScopeKind.HUMAN_SCENARIO:
+                if self.observed_price_basis is not EditorialObservedPriceBasis.HUMAN_SCENARIO:
+                    raise ValueError("human scenario price requires human_scenario price basis")
+            elif self.value_status is EditorialValueStatus.NOT_APPLICABLE:
+                if self.observed_price_basis is not EditorialObservedPriceBasis.NOT_APPLICABLE:
+                    raise ValueError("not_applicable price requires not_applicable price basis")
+            elif self.value_status is EditorialValueStatus.UNKNOWN:
+                if self.observed_price_basis is not EditorialObservedPriceBasis.UNKNOWN:
+                    raise ValueError("unknown price requires unknown price basis")
+            elif self.billing_period is EditorialBillingPeriod.ANNUAL:
+                if self.observed_price_basis is not EditorialObservedPriceBasis.CHECKOUT_BILLED_TOTAL:
+                    raise ValueError("annual price must use checkout billed total as the primary observation")
+            elif self.observed_price_basis not in {
+                EditorialObservedPriceBasis.DISPLAYED_PRICE,
+                EditorialObservedPriceBasis.CHECKOUT_BILLED_TOTAL,
+            }:
+                raise ValueError("known vendor price requires an observed price basis")
+
+            if (
+                self.scope_kind is EditorialScopeKind.VENDOR_PLAN
+                and self.observed_price_basis is EditorialObservedPriceBasis.CHECKOUT_BILLED_TOTAL
+                and self.acquisition_method != "manual_checkout_review"
+            ):
+                raise ValueError("checkout billed total requires manual_checkout_review acquisition")
+            if (
+                self.scope_kind is EditorialScopeKind.VENDOR_PLAN
+                and self.observed_price_basis is not EditorialObservedPriceBasis.CHECKOUT_BILLED_TOTAL
+                and self.acquisition_method != "manual_public_page"
+            ):
+                raise ValueError("non-checkout vendor observation requires manual_public_page acquisition")
+
             if self.value_status is EditorialValueStatus.NOT_APPLICABLE:
                 if self.currency_status is not EditorialCurrencyStatus.NOT_APPLICABLE:
                     raise ValueError("not_applicable price requires not_applicable currency_status")
@@ -225,7 +356,97 @@ class HumanEditorialNumericField(StrictModel):
                 raise ValueError("price requires an explicit billing_period, including unknown")
             if self.tax_treatment is None:
                 raise ValueError("price requires an explicit tax_treatment, including unknown")
+
+            derived_items = (
+                self.derived_monthly_value,
+                self.derived_monthly_unit,
+                self.derivation_method,
+            )
+            discount_items = (
+                self.monthly_reference_value,
+                self.monthly_reference_unit,
+                self.derived_annual_discount_percent,
+                self.discount_derivation_method,
+            )
+            if (
+                self.scope_kind is EditorialScopeKind.VENDOR_PLAN
+                and self.value_status is EditorialValueStatus.KNOWN
+                and self.billing_period is EditorialBillingPeriod.ANNUAL
+            ):
+                assert self.value is not None
+                expected = _exact_annual_monthly_equivalent(self.value, self.currency)
+                if expected is None:
+                    if any(item is not None for item in derived_items):
+                        raise ValueError(
+                            "annual monthly equivalent must be omitted when the checkout total "
+                            "does not divide exactly into currency minor units"
+                        )
+                else:
+                    if self.derived_monthly_value != expected:
+                        raise ValueError("annual monthly equivalent must equal exact checkout total divided by 12")
+                    if self.derived_monthly_unit != "/ mo":
+                        raise ValueError("annual monthly equivalent requires / mo unit")
+                    if self.derivation_method != "annual_checkout_total_divided_by_12":
+                        raise ValueError("annual monthly equivalent requires the fixed derivation method")
+                if self.billing_toggle_state is not EditorialBillingToggleState.ANNUAL_SELECTED:
+                    raise ValueError("annual checkout total requires annual_selected billing toggle")
+            elif any(item is not None for item in derived_items):
+                raise ValueError("monthly equivalent is only valid for a known annual checkout total")
+
+            requires_discount_evidence = (
+                self.scope_kind is EditorialScopeKind.VENDOR_PLAN
+                and self.value_status is EditorialValueStatus.KNOWN
+                and self.billing_period is EditorialBillingPeriod.ANNUAL
+                and self.sale_banner_state
+                is EditorialSaleBannerState.ANNUAL_DISCOUNT_PERMANENT
+            )
+            if requires_discount_evidence:
+                if any(item is None for item in discount_items):
+                    raise ValueError(
+                        "known permanent annual discount requires monthly reference and derived percent"
+                    )
+                assert self.value is not None
+                assert self.monthly_reference_value is not None
+                expected_discount = _rounded_annual_discount_percent(
+                    self.value, self.monthly_reference_value
+                )
+                if expected_discount is None:
+                    raise ValueError(
+                        "annual checkout total must be lower than the positive monthly reference times 12"
+                    )
+                if self.monthly_reference_unit != "/ mo":
+                    raise ValueError("monthly discount reference requires / mo unit")
+                if self.derived_annual_discount_percent != expected_discount:
+                    raise ValueError(
+                        "annual discount percent must match the fixed Human-evidence derivation"
+                    )
+                if self.discount_derivation_method != (
+                    "one_minus_annual_total_divided_by_monthly_price_times_12"
+                ):
+                    raise ValueError("annual discount requires the fixed derivation method")
+            elif any(item is not None for item in discount_items):
+                raise ValueError(
+                    "annual discount evidence is only valid for a known permanent annual discount"
+                )
+
+            if (
+                self.scope_kind is EditorialScopeKind.VENDOR_PLAN
+                and self.billing_period is EditorialBillingPeriod.MONTHLY
+                and self.billing_toggle_state is EditorialBillingToggleState.ANNUAL_SELECTED
+            ):
+                raise ValueError("monthly price cannot use annual_selected billing toggle")
+            if (
+                self.scope_kind is EditorialScopeKind.VENDOR_PLAN
+                and self.billing_period is EditorialBillingPeriod.ANNUAL
+                and self.billing_toggle_state is EditorialBillingToggleState.MONTHLY_SELECTED
+            ):
+                raise ValueError("annual price cannot use monthly_selected billing toggle")
         else:
+            if (
+                self.scope_kind is EditorialScopeKind.VENDOR_PLAN
+                and self.acquisition_method != "manual_public_page"
+            ):
+                raise ValueError("non-price vendor observation requires manual_public_page acquisition")
             if self.currency_status is not EditorialCurrencyStatus.NOT_APPLICABLE:
                 raise ValueError("currency_status is only applicable to price values")
             if any(
@@ -236,6 +457,14 @@ class HumanEditorialNumericField(StrictModel):
                     self.currency_unknown_reason,
                     self.billing_period,
                     self.tax_treatment,
+                    self.observed_price_basis,
+                    self.derived_monthly_value,
+                    self.derived_monthly_unit,
+                    self.derivation_method,
+                    self.monthly_reference_value,
+                    self.monthly_reference_unit,
+                    self.derived_annual_discount_percent,
+                    self.discount_derivation_method,
                 )
             ):
                 raise ValueError("currency and billing metadata are only valid for price values")
@@ -245,7 +474,7 @@ class HumanEditorialNumericField(StrictModel):
 class EditorialArticleInput(StrictModel):
     """Human-reviewable input slate for one P01–P12 article template."""
 
-    schema_version: Literal["2.1"] = "2.1"
+    schema_version: Literal["2.3"] = "2.3"
     article_id: str = Field(pattern=r"^P(?:0[1-9]|1[0-2])$")
     slug: Slug
     title: str = Field(min_length=1, max_length=180)
