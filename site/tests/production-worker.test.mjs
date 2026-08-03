@@ -296,6 +296,33 @@ test("production exposes a deterministic tracking-free calculator loader", async
   assert.doesNotMatch(body, /utm_|affiliate|partner|clickid|subid|cookie/i);
 });
 
+test("Googlebot can fetch every asset referenced by an approved article", async () => {
+  const article = await fetch(`${baseUrl}/pilot/pricing-calculator`);
+  assert.equal(article.status, 200);
+  const html = await article.text();
+  const assetPaths = [...new Set(
+    [...html.matchAll(/(?:href|src)=["'](\/assets\/[^"']+)["']/g)].map((match) => match[1]),
+  )];
+  assert.ok(assetPaths.some((path) => path.endsWith(".css")), "approved article must reference CSS");
+  assert.ok(assetPaths.some((path) => path.endsWith(".js")), "approved article must reference JavaScript");
+
+  for (const path of [...assetPaths, "/favicon.svg"]) {
+    const response = await fetch(`${baseUrl}${path}`, {
+      headers: { "User-Agent": "Googlebot" },
+    });
+    assert.equal(response.status, 200, path);
+    assert.match(
+      response.headers.get("content-type") ?? "",
+      path.endsWith(".css")
+        ? /text\/css/i
+        : path.endsWith(".js")
+          ? /(?:text|application)\/javascript/i
+          : /image\/svg\+xml/i,
+      path,
+    );
+  }
+});
+
 test("actual production health exposes only a fixed non-sensitive response", async () => {
   const response = await fetch(`${baseUrl}/healthz`);
   assert.equal(response.status, 200);
@@ -339,6 +366,8 @@ test("production robots and sitemap expose only the three approved articles", as
   assert.equal(
     await response.text(),
     "User-agent: *\n" +
+      "Allow: /assets/\n" +
+      "Allow: /favicon.svg$\n" +
       "Allow: /sitemap.xml$\n" +
       "Allow: /pilot/alternatives$\n" +
       "Allow: /pilot/plan-comparison$\n" +
