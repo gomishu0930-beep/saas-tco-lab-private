@@ -96,6 +96,11 @@ Python正本とTypeScriptの固定式で再検証する。
 `index_go`受領までnoindexを維持する。その後の2026-08-03 `index_go: GO`はP01–P03だけ、
 `cta_go: GO mangools`は同3記事のMangoolsだけをscopeとし、他記事・他partnerへ拡張しない。
 
+2026-08-08、Human Approver `omishu`は最優先残タスクについて承認系を一括GOとした。既に本文と
+contractが承認済みのP06/P07に限り、deploy、index追加、既存の承認済みMangools CTAを同じrelease境界へ
+拡張する。P04・P05・P08–P12、servers記事、Mangools以外のCTAには拡張しない。公開反映は
+`CHECK-ALL: PASS`と外部read-backを必要とする。
+
 2026-08-06、Human Approver `omishu`から改稿版について
 `article_approve: P01,P02,P03`を再受領した。承認scopeはR1–R6の読者向け本文、
 contract駆動SEO／OGメタ、関連記事、計算機prefill、人間可読JSON-LDである。

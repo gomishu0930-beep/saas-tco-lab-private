@@ -212,9 +212,9 @@
         "status": "restricted_dashboard_only",
         "percent": null
       },
-      "partnership_status": "pending",
+      "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、リスティング広告禁止を含むA8.netとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-07",
+      "checked_on": "2026-08-08",
       "affiliate_approval_runtime_secret": "A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION"
     },
@@ -344,15 +344,15 @@
         "unit": null
       },
       "commission_basis": "single_rate",
-      "performance_condition": "商品購入を成果条件として検索結果概要で確認した。詳細条件は再認証後に個別画面で再確認する。",
-      "condition_review_status": "summary_only",
+      "performance_condition": "Webサイトからの新規申込と決済完了を成果条件として個別画面で確認した。翌月の利用確認後に確定し、不正・重複・登録不備・キャンセル・クーリングオフ・自己申込は対象外。商標、会社名、サービス名を使う検索広告は禁止。",
+      "condition_review_status": "detail_reviewed",
       "confirmation_rate": {
         "status": "unknown",
         "percent": null
       },
-      "partnership_status": "not_applied",
+      "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、バリューコマースとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-07",
+      "checked_on": "2026-08-08",
       "affiliate_approval_runtime_secret": "VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION"
     }

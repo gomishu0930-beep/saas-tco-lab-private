@@ -6,12 +6,16 @@
   "deployed_articles": [
     "P01",
     "P02",
-    "P03"
+    "P03",
+    "P06",
+    "P07"
   ],
   "index_approved_articles": [
     "P01",
     "P02",
-    "P03"
+    "P03",
+    "P06",
+    "P07"
   ],
   "affiliate_cta": {
     "Mangools": "GO"

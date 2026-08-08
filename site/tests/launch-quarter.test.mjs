@@ -15,7 +15,7 @@ import {
 import { articleStructuredData } from "../app/lib/structured-data.ts";
 import { hasUnknownFact } from "../app/lib/editorial-input-contract.ts";
 
-test("partner ledger keeps Japanese ASP account evidence exact and CTA ineligible", async () => {
+test("partner ledger keeps Japanese ASP account and program approval evidence exact", async () => {
   const ledgerUrl = new URL("../../docs/AFFILIATE_PARTNER_LEDGER.json", import.meta.url);
   const source = await readFile(ledgerUrl, "utf8");
   const ledger = JSON.parse(source);
@@ -72,11 +72,18 @@ test("partner ledger keeps Japanese ASP account evidence exact and CTA ineligibl
   );
   assert.equal(
     ledger.program_research.filter((entry) => entry.partnership_status === "pending").length,
-    1,
+    0,
+  );
+  assert.equal(
+    ledger.program_research.filter((entry) => entry.partnership_status === "approved").length,
+    2,
   );
   assert.ok(
     ledger.program_research
-      .filter((entry) => entry.research_id !== "a8net-xserver-business")
+      .filter((entry) => !new Set([
+        "a8net-xserver-business",
+        "valuecommerce-ablenet-shared-server",
+      ]).has(entry.research_id))
       .every((entry) => entry.partnership_status === "not_applied"),
   );
   assert.ok(ledger.program_research.every((entry) => entry.commission_amount.value === null));
@@ -89,7 +96,9 @@ test("partner ledger keeps Japanese ASP account evidence exact and CTA ineligibl
   const researched = Object.fromEntries(
     ledger.program_research.map((entry) => [entry.research_id, entry]),
   );
-  assert.equal(researched["a8net-xserver-business"].partnership_status, "pending");
+  assert.equal(researched["a8net-xserver-business"].partnership_status, "approved");
+  assert.equal(researched["valuecommerce-ablenet-shared-server"].partnership_status, "approved");
+  assert.equal(researched["valuecommerce-ablenet-shared-server"].condition_review_status, "detail_reviewed");
   assert.equal(researched["a8net-xserver-business"].condition_review_status, "detail_reviewed");
   assert.equal(researched["moshimo-lolipop-rental-server"].condition_review_status, "detail_reviewed");
   assert.deepEqual(

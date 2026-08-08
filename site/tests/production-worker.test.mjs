@@ -130,7 +130,7 @@ before(async () => {
       "--var",
       "INDEX_GO:GO",
       "--var",
-      "INDEX_APPROVED_ARTICLES:P01,P02,P03",
+      "INDEX_APPROVED_ARTICLES:P01,P02,P03,P06,P07",
       "--var",
       "CTA_GO:GO",
       "--var",
@@ -242,6 +242,8 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       "/pilot/pricing-calculator",
       "/pilot/plan-comparison",
       "/pilot/alternatives",
+      "/pilot/annual-vs-monthly",
+      "/pilot/usage-overage",
     ]);
     if (approvedArticlePaths.has(path)) {
       assert.equal(response.headers.get("x-robots-tag"), "index, follow", path);
@@ -268,8 +270,8 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       const nextReadingPosition = documentHtml.indexOf('class="shell page-section next-reading"');
       assert.ok(nextReadingPosition > ctaPosition, `${path}: next-to-read after CTA`);
       const nextReading = documentHtml.slice(nextReadingPosition, documentHtml.indexOf("</section>", nextReadingPosition));
-      assert.match(nextReading, /href="\/pilot\/(?:pricing-calculator|plan-comparison|alternatives)\/"/i, path);
-      assert.doesNotMatch(nextReading, /small-team-fit|enterprise-fit|annual-vs-monthly|usage-overage/i, path);
+      assert.match(nextReading, /href="\/pilot\/(?:pricing-calculator|plan-comparison|alternatives|annual-vs-monthly|usage-overage)\/"/i, path);
+      assert.doesNotMatch(nextReading, /small-team-fit|enterprise-fit|addon-cost|migration-cost/i, path);
       assert.doesNotMatch(
         documentHtml,
         /<span\b[^>]*data-affiliate-cta-placeholder|>CTA DISABLED</i,
@@ -395,7 +397,7 @@ test("legacy public origin redirects once to the canonical host without changing
   assert.match(response.headers.get("x-robots-tag"), /\bnoindex\b/i);
 });
 
-test("production robots and sitemap expose only the three approved articles", async () => {
+test("production robots and sitemap expose only the five approved articles", async () => {
   const response = await fetch(`${baseUrl}/robots.txt`);
   assert.equal(response.status, 200);
   assert.equal(
@@ -405,8 +407,10 @@ test("production robots and sitemap expose only the three approved articles", as
       "Allow: /favicon.svg$\n" +
       "Allow: /sitemap.xml$\n" +
       "Allow: /pilot/alternatives$\n" +
+      "Allow: /pilot/annual-vs-monthly$\n" +
       "Allow: /pilot/plan-comparison$\n" +
       "Allow: /pilot/pricing-calculator$\n" +
+      "Allow: /pilot/usage-overage$\n" +
       "Disallow: /\n" +
       "Sitemap: https://saastcolab.jp/sitemap.xml\n",
   );
@@ -420,8 +424,10 @@ test("production robots and sitemap expose only the three approved articles", as
     "https://saastcolab.jp/pilot/pricing-calculator",
     "https://saastcolab.jp/pilot/plan-comparison",
     "https://saastcolab.jp/pilot/alternatives",
+    "https://saastcolab.jp/pilot/annual-vs-monthly",
+    "https://saastcolab.jp/pilot/usage-overage",
   ]);
-  assert.doesNotMatch(xml, /embed|P0[4-9]|P1[0-2]|about|privacy|operator/i);
+  assert.doesNotMatch(xml, /embed|small-team-fit|enterprise-fit|addon-cost|migration-cost|japan-tax|break-even|evidence-method|about|privacy|operator/i);
 });
 
 test("missing or invalid index approval stays fail-closed", async () => {

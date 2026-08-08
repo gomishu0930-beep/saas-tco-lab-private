@@ -188,7 +188,7 @@ Humanが採用したのは`balanced`である。表は実行優先順位の助�
 
 |category|A8.net検索語|もしも検索語|バリューコマース検索語|現在状態|
 |---|---|---|---|---|
-|servers|レンタルサーバー / VPS / ホスティング|レンタルサーバー / VPS|レンタルサーバー / ホスティング|`A8: XServerビジネス申請済み・審査待ち / もしも: ロリポップ申請結果未確認 / ValueCommerce: 本登録待ち`|
+|servers|レンタルサーバー / VPS / ホスティング|レンタルサーバー / VPS|レンタルサーバー / ホスティング|`A8: XServerビジネス承認済み / もしも: ロリポップ結果未確認（公開5記事待ち） / ValueCommerce: ABLENET承認済み`|
 |accounting|会計ソフト / クラウド会計|会計ソフト / 確定申告|会計ソフト / クラウド会計|`unknown / Human確認待ち`|
 |crm|CRM / 顧客管理 / SFA|CRM / 顧客管理|CRM / SFA / 顧客管理|`unknown / Human確認待ち`|
 |forms|フォーム / アンケート / 予約|フォーム / アンケート|フォーム / 予約 / 決済|`unknown / Human確認待ち`|
@@ -233,7 +233,7 @@ authorityを持たない。数値は将来のHuman観測値だけを受け入れ
 1. Humanが対象slateのKWFinder exportを行う別GOを返す。
 2. rawをrepo外に置いたまま、query count可変のsafe-summary intakeを後方互換で検証する。
 3. serversはHuman選定済みのため、`docs/PRICE_CHECK_CHECKLIST.md`に沿って1 vendor・1 planずつ価格を観測する。
-4. XServerビジネスの提携申請、記事承認、公開、index、CTAはそれぞれ別GOとする。
+4. XServerビジネスとABLENETの提携は承認済みだが、記事承認、公開、index、runtime destination、partner別CTA gateはそれぞれ独立して満たす。
 5. accounting / forms / crm / email_marketingは需要未観測のためunknownを維持し、有望と判定しない。
 
 R1–R6、P06–P09、既存ASP申請準備の優先順位は変更しない。

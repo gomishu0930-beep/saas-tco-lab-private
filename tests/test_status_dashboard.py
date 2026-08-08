@@ -122,9 +122,9 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         "拡張", "継続", "最低ライン"
     ]
     assert data["serverPartnerPolicy"] == {
-        "approvedPartnerCount": 0,
-        "ctaMode": "disabled",
-        "dependencyStatus": "not_measurable",
+        "approvedPartnerCount": 2,
+        "ctaMode": "comparison",
+        "dependencyStatus": "confirmed_commission_share_unobserved",
         "dominantSharePercent": None,
         "warningThresholdPercent": 80,
         "warning": False,

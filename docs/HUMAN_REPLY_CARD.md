@@ -5,8 +5,9 @@ measurement ID、partner ID、tracking ID、支払情報、メール本文は追
 domain GOからindex GOやCTA GOを推論しない。
 
 現在地: P01–P03のR1–R6読者向け改稿版は2026-08-08に公開済みで、Mangools CTAも稼働中。P06/P07は2026-08-07に記事承認済みで、
-deploy・index・CTAは未承認のままである。serversはSVR01 candidate-only contractをlocal保存済み、XServer
-ビジネスは提携審査待ちで、価格のcanonical採用・公開は未承認である。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。
+2026-08-08の最優先タスク一括承認によりdeploy・index・Mangools CTAのrelease対象へ追加した。serversはSVR01
+candidate-only contractをlocal保存済みで、XServerビジネスとABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
+価格のcanonical採用・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。
 
 ## 今使うtoken
 
