@@ -236,6 +236,11 @@ test("servers operator and first article remain candidate-only and fail closed",
   assert.match(operator, /共通の画面情報を11 fieldへ一括適用/);
   assert.match(operator, /共通情報を全fieldへ適用/);
   assert.match(operator, /値、通貨、税、請求周期、確認状態は変更しません/);
+  assert.match(operator, /保存済みSVR01候補から再開/);
+  assert.match(operator, /候補JSONをローカル読込/);
+  assert.match(operator, /Human選択後だけブラウザメモリへ読み/);
+  assert.match(operator, /公式価格ページの必要行だけを解析/);
+  assert.match(operator, /抽出値は事前入力だけです/);
   assert.match(operator, /pricing\.initial_fee/);
   assert.match(operator, /servers\.campaign_period_months/);
   assert.doesNotMatch(operator, /候補JSONを保存/);

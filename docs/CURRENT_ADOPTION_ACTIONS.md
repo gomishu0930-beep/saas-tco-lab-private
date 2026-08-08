@@ -233,6 +233,10 @@ repositoryのeditorial contractには採用していません。2026-08-07、受
 初期費用・月額費用0円、Web・mail・MySQL各14日分保持と表示されました。一方、更新用シミュレーションは
 plan・12か月選択後も金額が`--`表示でした。これらはHuman確認前の候補であり、既存contractのHuman入力値を
 上書きせず、基本料金・backup料金の確定と更新料unknownの維持をOperatorでHumanが確認するまでcanonical採用しません。
+2026-08-09、`/operator/servers/`へ保存済みcandidate-only JSONのローカル再読込と価格テキストの候補抽出を追加した。
+JSONと貼り付け原文はHuman選択後だけブラウザメモリで処理し、公開前HTML、端末保存、外部通信へ含めない。
+Safariでは既存SVR01の11 fieldを復元し、上記の年次請求総額とbackup月額0円を候補として事前入力した。
+構造validationは合格しているが、**SVR01追加候補はHuman確認待ち**であり、確定・download・canonical採用は行っていない。
 
 同日、`asp_program_apply: GO A8.net XServerビジネス`のscopeで提携申請完了画面を確認しました。台帳は
 `pending`へ更新しました。2026-08-08、A8.netの参加中プログラム一覧でXServerビジネスの提携日と終了日未定を

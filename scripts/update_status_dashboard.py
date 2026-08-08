@@ -276,6 +276,12 @@ def _external_action_queue(
                 else "server_price_input: done SVR01"
             ),
         })
+    elif "SVR01追加候補はHuman確認待ち" in adoption:
+        actions.append({
+            "label": "SVR01年次総額・backup追加候補の再確認",
+            "status": "Human確認待ち",
+            "token": "server_price_input: done SVR01",
+        })
     reviews_complete = all(
         state["articles"][article_id] == "approved"
         and article_id in contracts

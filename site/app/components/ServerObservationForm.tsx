@@ -3,12 +3,19 @@
 import { useMemo, useState } from "react";
 
 import {
+  emptyEditorialField,
   emptyEditorialRow,
+  extractPriceTextCandidates,
+  prefillExtractedCandidate,
   validateEditorialInput,
+  valuesFromContract,
   type EditorialBillingToggleState,
+  type EditorialContract,
   type EditorialFieldFormValue,
   type EditorialRowFormValue,
   type EditorialSaleBannerState,
+  type ExtractedPriceCandidate,
+  type PriceTextExtraction,
 } from "../lib/editorial-input-contract";
 import type { PilotPage } from "../lib/pilot-pages";
 
@@ -42,6 +49,8 @@ type ServerCategoryContract = {
   state: "candidate_only";
   numeric_fields: NonNullable<ReturnType<typeof validateEditorialInput>["contract"]>["numeric_fields"];
 };
+
+const emptyExtraction: PriceTextExtraction = { error: null, candidates: [] };
 
 type ServerCommonMetadata = {
   sourceUrl: string;
@@ -85,6 +94,34 @@ function ServerCommonMetadataForm({ onApply }: { onApply: (metadata: ServerCommo
 
 function freshRow(index: number): EditorialRowFormValue {
   return emptyEditorialRow(serverObservationPage, "vendor_plan", `server-vendor-${index}`);
+}
+
+function rowsFromSavedCandidate(candidate: ServerCategoryContract): EditorialRowFormValue[] | null {
+  if (
+    candidate.schema_version !== "1.0"
+    || candidate.category_id !== "servers"
+    || candidate.template_kind !== "pricing_tco"
+    || candidate.state !== "candidate_only"
+    || candidate.numeric_fields.length !== serverObservationPage.numericFields.length
+  ) return null;
+  return valuesFromContract(serverObservationPage, {
+    schema_version: "2.3",
+    article_id: "P01",
+    slug: "server-observation-candidate",
+    title: "servers価格観測候補",
+    disclosure_version: "pr-affiliate-v1",
+    numeric_fields: candidate.numeric_fields,
+    article_review_status: "unreviewed",
+  } satisfies EditorialContract);
+}
+
+function candidateTarget(rowId: string, fieldKey: string) {
+  return `${rowId}|${fieldKey}`;
+}
+
+function splitCandidateTarget(value: string) {
+  const separator = value.indexOf("|");
+  return separator === -1 ? ["", ""] : [value.slice(0, separator), value.slice(separator + 1)];
 }
 
 function setField(
@@ -178,8 +215,15 @@ function FieldInput({
 export function ServerObservationForm() {
   const [rows, setRows] = useState<EditorialRowFormValue[]>([freshRow(1)]);
   const [confirmed, setConfirmed] = useState<ServerCategoryContract | null>(null);
+  const [candidateImportState, setCandidateImportState] = useState("未読込");
+  const [pastedText, setPastedText] = useState("");
+  const [extraction, setExtraction] = useState<PriceTextExtraction>(emptyExtraction);
+  const [candidateTargets, setCandidateTargets] = useState<Record<string, string>>({});
   const validation = useMemo(() => validateEditorialInput(serverObservationPage, rows), [rows]);
   const errors = Object.values(validation.errors).flat();
+  const priceTargets = useMemo(() => rows.flatMap((row) => serverObservationPage.numericFields
+    .filter((field) => field.valueKind === "price")
+    .map((field) => ({ row, field }))), [rows]);
 
   function updateRow(rowId: string, key: "vendorId" | "planId", value: string) {
     setRows((current) => current.map((row) => row.rowId === rowId ? { ...row, [key]: value } : row));
@@ -222,6 +266,54 @@ export function ServerObservationForm() {
     });
   }
 
+  async function restoreSavedCandidate(file: File | undefined) {
+    if (!file) return;
+    if (file.size > 1_000_000) {
+      setCandidateImportState("読込失敗: JSONは1MB以内にしてください");
+      return;
+    }
+    try {
+      const parsed = JSON.parse(await file.text()) as ServerCategoryContract;
+      const restored = rowsFromSavedCandidate(parsed);
+      if (!restored) throw new Error("invalid candidate");
+      setRows(restored);
+      setConfirmed(null);
+      setCandidateImportState("読込済み: 11 fieldを現在欄へ復元");
+    } catch {
+      setCandidateImportState("読込失敗: servers candidate-only JSONを選んでください");
+    }
+  }
+
+  function analyzePaste() {
+    const result = extractPriceTextCandidates(pastedText);
+    setExtraction(result);
+    const firstTarget = priceTargets[0]
+      ? candidateTarget(priceTargets[0].row.rowId, priceTargets[0].field.key)
+      : "";
+    setCandidateTargets(Object.fromEntries(result.candidates.map((candidate) => [candidate.id, firstTarget])));
+  }
+
+  function applyCandidate(candidate: ExtractedPriceCandidate) {
+    const firstTarget = priceTargets[0]
+      ? candidateTarget(priceTargets[0].row.rowId, priceTargets[0].field.key)
+      : "";
+    const [rowId, fieldKey] = splitCandidateTarget(candidateTargets[candidate.id] ?? firstTarget);
+    const field = serverObservationPage.numericFields.find((item) => item.key === fieldKey);
+    if (!rowId || !field || field.valueKind !== "price") return;
+    setRows((current) => current.map((row) => row.rowId === rowId ? {
+      ...row,
+      values: {
+        ...row.values,
+        [field.key]: prefillExtractedCandidate(
+          field,
+          row.values[field.key] ?? emptyEditorialField(),
+          candidate,
+        ),
+      },
+    } : row));
+    setConfirmed(null);
+  }
+
   function download() {
     if (!confirmed) return;
     const url = URL.createObjectURL(new Blob([`${JSON.stringify(confirmed, null, 2)}\n`], { type: "application/json" }));
@@ -239,6 +331,39 @@ export function ServerObservationForm() {
         <p>最初はXServerビジネスの共有サーバー1プランだけを入力します。公開、提携申請、index、CTAはこの画面から実行されません。</p>
       </div>
       <p className="operator-extraction-error">年払いはcheckout請求総額だけを一次値にし、キャンペーン期限・更新額・ドメイン特典を通常料金へ混ぜないでください。</p>
+      <section className="operator-previous" aria-labelledby="server-previous-title">
+        <div className="operator-previous-heading">
+          <div><p className="eyebrow">RECONFIRMATION</p><h3 id="server-previous-title">保存済みSVR01候補から再開</h3></div>
+          <label>候補JSONをローカル読込<input type="file" accept="application/json,.json" onChange={(event) => { void restoreSavedCandidate(event.target.files?.[0]); event.currentTarget.value = ""; }} /></label>
+        </div>
+        <p>保存済みcandidate-only JSONはHuman選択後だけブラウザメモリへ読み、外部送信・端末保存を行いません。追加観測は該当fieldだけ更新し、再度Human確認するまでcontractへ確定しません。</p>
+        <p aria-live="polite">{candidateImportState}</p>
+      </section>
+      <section className="operator-paste-parser" aria-labelledby="server-paste-title">
+        <div className="operator-paste-heading">
+          <div><p className="eyebrow">LOCAL PASTE ANALYSIS</p><h3 id="server-paste-title">公式価格ページの必要行だけを解析</h3></div>
+          <p>公開ページの必要範囲だけを貼り付けます。account画面、氏名、メール、credential、tracking URLは貼り付けないでください。</p>
+        </div>
+        <label htmlFor="server-price-paste">コピーテキスト</label>
+        <textarea id="server-price-paste" value={pastedText} onChange={(event) => setPastedText(event.target.value)} maxLength={100_000} rows={6} autoComplete="off" placeholder="料金と税・請求周期が同じ行で分かる必要範囲だけを貼り付け" />
+        <div className="operator-paste-actions">
+          <button type="button" onClick={analyzePaste}>ローカルで候補を抽出</button>
+          <button type="button" onClick={() => { setPastedText(""); setExtraction(emptyExtraction); setCandidateTargets({}); }}>貼り付け原文を消去</button>
+          <span>抽出値は事前入力だけです。原文はcontract・端末保存・外部通信へ含めません。</span>
+        </div>
+        {extraction.error ? <p className="operator-extraction-error" role="status">{extraction.error}</p> : null}
+        {extraction.candidates.length ? <div className="operator-candidate-list" aria-label="serversの抽出候補">
+          {extraction.candidates.map((candidate) => <article key={candidate.id} className="operator-candidate">
+            <div><strong>{candidate.value}</strong><small>行 {candidate.lineNumber}</small></div>
+            <blockquote>{candidate.sourceLine}</blockquote>
+            {candidate.warnings.length ? <ul>{candidate.warnings.map((warning) => <li key={warning}>{warning}</li>)}</ul> : null}
+            <label>反映先<select value={candidateTargets[candidate.id] ?? ""} onChange={(event) => setCandidateTargets((current) => ({ ...current, [candidate.id]: event.target.value }))}>
+              {priceTargets.map(({ row, field }) => <option key={candidateTarget(row.rowId, field.key)} value={candidateTarget(row.rowId, field.key)}>{row.vendorId || "vendor未入力"} / {row.planId || "plan未入力"} — {field.label}</option>)}
+            </select></label>
+            <button type="button" onClick={() => applyCandidate(candidate)}>この候補を事前入力</button>
+          </article>)}
+        </div> : null}
+      </section>
       <div className="operator-row-stack">
         {rows.map((row, rowIndex) => <section className="operator-entry-row" key={row.rowId}>
           <header className="operator-row-header"><div><p className="eyebrow">VENDOR / PLAN {rowIndex + 1}</p><h3>{row.vendorId || "vendor未入力"} / {row.planId || "plan未入力"}</h3></div></header>
