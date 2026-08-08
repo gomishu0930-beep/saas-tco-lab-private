@@ -33,6 +33,30 @@ ARTICLE_REVIEW_FIELD_LABELS = {
     "usage.overage_unit_size": "従量超過単位",
     "usage.overage_price": "従量超過単価",
     "usage.monthly_volume": "Human月間利用量",
+    "team.minimum_users": "最低利用者数",
+    "team.monthly_admin_hours": "月間運用時間",
+    "team.onboarding_hours": "導入時間",
+    "enterprise.included_manager_seats": "含まれる管理者数",
+    "enterprise.agency_pack_price": "Agency Pack料金",
+    "enterprise.audit_pages_per_month": "毎月の監査ページ上限",
+    "enterprise.migration_support_price": "移行支援費",
+    "addon.base_price": "基本料金",
+    "addon.required_addon_price": "必須addon料金",
+    "addon.required_seats": "必要利用者数",
+    "addon.billing_unit": "addon課金単位",
+    "migration.support_price": "移行支援料金",
+    "migration.overlap_months": "重複契約月数",
+    "migration.work_hours": "移行作業時間",
+    "migration.training_hours": "教育時間",
+    "migration.hourly_cost": "Human時間単価",
+    "localization.display_price": "表示価格",
+    "localization.tax_rate": "税率",
+    "localization.jpy_rate": "JPY換算レート",
+    "break_even.monthly_hours_saved": "月間削減時間",
+    "break_even.hourly_cost": "Human時間価値",
+    "break_even.implementation_cost": "導入費用",
+    "break_even.monthly_tco": "月額TCO",
+    "evidence.review_interval_days": "根拠確認間隔",
 }
 KPI_FIELDS = (
     "indexed_articles",
@@ -250,6 +274,20 @@ def _external_action_queue(
                 else "asp_program_apply: GO もしも ロリポップ！レンタルサーバー"
             ),
         })
+    if "`plan upgrade required`" in adoption:
+        actions.append({
+            "label": "KWFinder拡張需要150語の一時upgrade・export",
+            "status": "payment_approval_required",
+            "token": "mangools_upgrade: GO Basic monthly 61.00 USD max_total 61.00 USD cancel_after_export / HOLD",
+        })
+    missing_contracts = [article_id for article_id in PILOT_IDS if article_id not in contracts]
+    if missing_contracts:
+        joined = ",".join(missing_contracts)
+        actions.append({
+            "label": f"{joined} editorial contract入力",
+            "status": "contract_input_required",
+            "token": f"article_input: done {joined}",
+        })
     a8 = programs["a8net-xserver-business"]
     if a8.partnership_status.value == "not_applied":
         actions.append({
@@ -286,17 +324,39 @@ def _external_action_queue(
             "status": "Human確認待ち",
             "token": "server_price_input: done SVR01",
         })
-    reviews_complete = all(
-        state["articles"][article_id] == "approved"
-        and article_id in contracts
-        and contracts[article_id].article_review_status.value == "approved"
-        for article_id in ("P06", "P07")
-    )
-    if not reviews_complete:
+    if "現在のSVR01はTCOと用途判定の" in adoption and "両方がHOLD" in adoption:
         actions.append({
-            "label": "P06・P07記事標本のHuman承認",
+            "label": "SVR01の更新料・campaign・domain特典・用途上限を確認",
+            "status": "field_review_required",
+            "token": "server_price_input: done SVR01",
+        })
+    unreviewed_contracts = [
+        article_id
+        for article_id in PILOT_IDS
+        if article_id in contracts
+        and contracts[article_id].article_review_status.value == "unreviewed"
+    ]
+    review_ready = [
+        article_id
+        for article_id in unreviewed_contracts
+        if any(field.value_status.value == "known" for field in contracts[article_id].numeric_fields)
+    ]
+    evidence_required = [
+        article_id for article_id in unreviewed_contracts if article_id not in review_ready
+    ]
+    if review_ready:
+        joined = ",".join(review_ready)
+        actions.append({
+            "label": f"{joined}記事標本のHuman承認",
             "status": "Human承認待ち",
-            "token": "article_approve: P06,P07",
+            "token": f"article_approve: {joined}",
+        })
+    if evidence_required:
+        joined = ",".join(evidence_required)
+        actions.append({
+            "label": f"{joined}の確認済み実値取得",
+            "status": "evidence_required",
+            "token": f"article_evidence: pending {joined}",
         })
     if not r1_release_done:
         actions.append({
@@ -319,7 +379,7 @@ def _article_review_queue(
     """Build a non-secret, contract-driven Human review card for pending articles."""
 
     queue: list[dict[str, Any]] = []
-    for article_id in ("P06", "P07"):
+    for article_id in PILOT_IDS:
         contract = contracts.get(article_id)
         if contract is None or contract.article_review_status.value != "unreviewed":
             continue
@@ -341,6 +401,7 @@ def _article_review_queue(
                 unresolved.append(
                     f"{label}: {field.value_status.value}（{reason}）"
                 )
+        ready_for_approval = bool(confirmed)
         queue.append(
             {
                 "articleId": article_id,
@@ -350,7 +411,12 @@ def _article_review_queue(
                 "unresolved": unresolved,
                 "observedOn": min(observed).isoformat(),
                 "nextReviewOn": min(next_reviews).isoformat(),
-                "token": f"article_approve: {article_id}",
+                "reviewState": "approval_ready" if ready_for_approval else "evidence_required",
+                "token": (
+                    f"article_approve: {article_id}"
+                    if ready_for_approval
+                    else f"article_evidence: pending {article_id}"
+                ),
             }
         )
     return queue

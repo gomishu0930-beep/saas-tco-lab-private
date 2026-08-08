@@ -64,7 +64,7 @@ Gate D、3社×6プランgold set、C1–C7の合格を入口条件にしない�
 |順序|現在状態|入口／GO|実装・Human処理|出口|
 |---:|---|---|---|---|
 |L1|完了 — 2026-08-03|2026-08-02 `domain: GO saastcolab.jp`受領。`saastcolab.jp`登録完了、Sites指定DNS保存・個別自動更新ON、2026-08-03 HTTPS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認済み|完了状態を維持し、index／CTAを別GOまでHOLD|domain切替とreadback合格|
-|L2|P01–P03・P06・P07承認・公開済み、5/12完了|L1完了|P04・P05・P08–P12へvendor・plan別のHuman実値／unknownと出典・日付を入力し、Humanシナリオを分離して各記事を承認|12記事の公開候補が承認済み|
+|L2|12/12入力・8/12承認・5/12公開|L1完了|P05/P09/P11/P12の確認済み実値を取得して承認する。P04/P08/P10は承認済みだがrelease scope未受領のためnoindex・CTA無効を維持|12記事の公開候補が承認済み|
 |L3|P01–P03・P06・P07完了 — 2026-08-08|`index_go: GO`と対象記事の承認|承認済み5記事だけnoindex解除し、sitemap 5件・他route noindexを外部read-back済み|承認記事のindexability readback合格|
 |L4|Mangools 5記事で稼働 — 2026-08-08|`cta_go: GO mangools`と記事release承認|開示先行、Mangools送客先host、`rel="sponsored noopener noreferrer"`を外部read-back済み|MangoolsだけCTA稼働|
 

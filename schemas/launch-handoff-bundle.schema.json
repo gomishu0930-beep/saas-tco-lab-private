@@ -8047,7 +8047,7 @@
           "type": "string"
         },
         "scope_profile": {
-          "default": "p11-p21-launch-track-local-candidate-v7",
+          "default": "p11-p21-editorial-contracts-local-candidate-v8",
           "enum": [
             "p11-p18-local-candidate-v1",
             "p11-p20-local-candidate-v2",
@@ -8055,7 +8055,8 @@
             "p11-p21-growth-local-candidate-v4",
             "p11-p21-owned-learning-local-candidate-v5",
             "p11-p21-measurement-deploy-ready-local-candidate-v6",
-            "p11-p21-launch-track-local-candidate-v7"
+            "p11-p21-launch-track-local-candidate-v7",
+            "p11-p21-editorial-contracts-local-candidate-v8"
           ],
           "title": "Scope Profile",
           "type": "string"
@@ -8217,7 +8218,7 @@
           "type": "string"
         },
         "scope_profile": {
-          "default": "p11-p21-launch-track-local-candidate-v7",
+          "default": "p11-p21-editorial-contracts-local-candidate-v8",
           "enum": [
             "p11-p18-local-candidate-v1",
             "p11-p20-local-candidate-v2",
@@ -8225,7 +8226,8 @@
             "p11-p21-growth-local-candidate-v4",
             "p11-p21-owned-learning-local-candidate-v5",
             "p11-p21-measurement-deploy-ready-local-candidate-v6",
-            "p11-p21-launch-track-local-candidate-v7"
+            "p11-p21-launch-track-local-candidate-v7",
+            "p11-p21-editorial-contracts-local-candidate-v8"
           ],
           "title": "Scope Profile",
           "type": "string"

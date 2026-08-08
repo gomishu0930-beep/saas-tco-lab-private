@@ -489,9 +489,13 @@ test("servers promotion assessment accepts explicit approved values and not-appl
 
 test("remaining articles reuse only approved same-type evidence as unreviewed form candidates", () => {
   const expected = new Map([
-    ["P04", ["team.minimum_seats", "team.monthly_price"]],
-    ["P08", ["addon.base_price", "addon.price", "addon.required_seats"]],
-    ["P10", ["localization.displayed_price", "localization.tax_rate"]],
+    ["P04", { approved: ["team.minimum_seats", "team.monthly_price"], unknown: ["team.monthly_operation_hours", "team.onboarding_hours"] }],
+    ["P05", { approved: [], unknown: ["enterprise.included_manager_seats", "enterprise.agency_pack_price", "enterprise.audit_pages_per_month", "enterprise.migration_support_price"] }],
+    ["P08", { approved: ["addon.base_price", "addon.price", "addon.required_seats"], unknown: ["addon.billing_unit_size"] }],
+    ["P09", { approved: [], unknown: ["migration.overlap_months", "migration.work_hours", "migration.hourly_cost", "migration.training_hours", "migration.support_price"] }],
+    ["P10", { approved: ["localization.displayed_price", "localization.tax_rate"], unknown: ["localization.exchange_rate"] }],
+    ["P11", { approved: [], unknown: ["break_even.monthly_hours_saved", "break_even.hourly_cost", "break_even.implementation_cost", "break_even.monthly_tco"] }],
+    ["P12", { approved: [], unknown: ["evidence.review_interval_days"] }],
   ]);
 
   for (const [articleId, expectedFields] of expected) {
@@ -499,22 +503,50 @@ test("remaining articles reuse only approved same-type evidence as unreviewed fo
     assert.ok(page);
     const reusable = reusableEditorialEvidence(page, approvedSourceContracts);
     assert.ok(reusable);
-    assert.deepEqual(reusable.appliedFields, expectedFields);
+    assert.deepEqual(reusable.appliedFields, expectedFields.approved);
+    assert.deepEqual(reusable.explicitUnknownFields, expectedFields.unknown);
     const vendor = reusable.rows.find((row) => row.scopeKind === "vendor_plan");
-    assert.equal(vendor?.vendorId, "mangools");
-    assert.equal(vendor?.planId, "basic");
-    for (const field of expectedFields) {
+    if (page.numericFields.some((field) => (field.inputScope ?? "vendor_plan") === "vendor_plan")) {
+      assert.equal(vendor?.vendorId, "mangools");
+      assert.equal(vendor?.planId, "basic");
+    }
+    if (articleId === "P04") {
+      const scenario = reusable.rows.find((row) => row.scopeKind === "human_scenario");
+      assert.ok(scenario);
+      assert.ok(scenario.values["team.monthly_operation_hours"]);
+      assert.ok(scenario.values["team.onboarding_hours"]);
+      assert.equal(vendor?.values["team.monthly_operation_hours"], undefined);
+      assert.equal(vendor?.values["team.onboarding_hours"], undefined);
+    }
+    for (const field of expectedFields.approved) {
       assert.ok(vendor?.values[field]?.sourceUrl.startsWith("https://"));
       assert.ok(vendor?.values[field]?.observedOn);
       assert.ok(vendor?.values[field]?.nextReviewOn);
     }
     const validation = validateEditorialInput(page, reusable.rows);
-    assert.equal(validation.contract, null, "unfilled target fields must keep the article unreviewed");
+    assert.ok(validation.contract);
+    assert.equal(validation.contract.article_review_status, "unreviewed");
+    assert.ok(validation.contract.numeric_fields.every((field) => field.review_status === "unreviewed"));
+    for (const field of expectedFields.unknown) {
+      const candidate = validation.contract.numeric_fields.find((item) => item.field === field);
+      assert.equal(candidate?.value_status, "unknown");
+      assert.equal(candidate?.value, null);
+      assert.ok(candidate?.unknown_reason);
+      if (candidate?.value_kind === "price") {
+        assert.equal(candidate.currency_status, "unknown");
+        assert.equal(candidate.billing_period, "unknown");
+        assert.equal(candidate.tax_treatment, "unknown");
+        assert.equal(
+          candidate.observed_price_basis,
+          candidate.scope_kind === "human_scenario" ? "human_scenario" : "unknown",
+        );
+      }
+    }
   }
 });
 
 test("articles without exact semantic reuse rules receive no suggested evidence", () => {
-  for (const articleId of ["P05", "P09", "P11", "P12"]) {
+  for (const articleId of ["P01", "P02", "P03", "P06", "P07"]) {
     const page = pilotPages.find((candidate) => candidate.id === articleId);
     assert.ok(page);
     assert.equal(reusableEditorialEvidence(page, approvedSourceContracts), null);

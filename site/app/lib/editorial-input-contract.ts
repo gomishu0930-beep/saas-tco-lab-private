@@ -109,8 +109,190 @@ const editorialEvidenceReuseRules: readonly EditorialEvidenceReuseRule[] = [
   { sourceArticleId: "P01", sourceField: "pricing.tax_rate", targetArticleId: "P10", targetField: "localization.tax_rate", vendorId: "mangools", planId: "basic" },
 ] as const;
 
+type EditorialExplicitUnknownRule = {
+  targetArticleId: PilotPage["id"];
+  targetField: string;
+  unknownReason: string;
+  sourceUrl?: string;
+  observedOn: string;
+  nextReviewOn: string;
+  billingToggleState?: EditorialBillingToggleState;
+  saleBannerState?: EditorialSaleBannerState;
+  scenarioBasis?: string;
+  currencyUnknownReason?: string;
+};
+
+const editorialExplicitUnknownRules: readonly EditorialExplicitUnknownRule[] = [
+  {
+    targetArticleId: "P04",
+    targetField: "team.monthly_operation_hours",
+    unknownReason: "SaaS TCO Labの実運用による月間運用時間をまだ観測していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labで実運用を開始した後に月間運用時間と初回導入時間を測定する。現時点は自データ未取得。",
+  },
+  {
+    targetArticleId: "P04",
+    targetField: "team.onboarding_hours",
+    unknownReason: "SaaS TCO Labの初回導入に要したHuman作業時間をまだ観測していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labで実運用を開始した後に月間運用時間と初回導入時間を測定する。現時点は自データ未取得。",
+  },
+  {
+    targetArticleId: "P05",
+    targetField: "enterprise.included_manager_seats",
+    unknownReason: "公式価格ページで組織利用に含まれる管理者数を確認できていない",
+    sourceUrl: "https://mangools.com/plans-and-pricing",
+    observedOn: "2026-08-01",
+    nextReviewOn: "2026-08-31",
+    billingToggleState: "annual_selected",
+    saleBannerState: "annual_discount_permanent",
+  },
+  {
+    targetArticleId: "P05",
+    targetField: "enterprise.agency_pack_price",
+    unknownReason: "記事で扱うAgency Packと同一条件のcheckout請求総額を確認できていない",
+    sourceUrl: "https://mangools.com/plans-and-pricing",
+    observedOn: "2026-08-01",
+    nextReviewOn: "2026-08-31",
+    billingToggleState: "annual_selected",
+    saleBannerState: "annual_discount_permanent",
+    currencyUnknownReason: "対象packageの金額自体が未確認のためISO通貨を確定していない",
+  },
+  {
+    targetArticleId: "P05",
+    targetField: "enterprise.audit_pages_per_month",
+    unknownReason: "公式価格ページで組織監査に使える月間ページ上限を確認できていない",
+    sourceUrl: "https://mangools.com/plans-and-pricing",
+    observedOn: "2026-08-01",
+    nextReviewOn: "2026-08-31",
+    billingToggleState: "annual_selected",
+    saleBannerState: "annual_discount_permanent",
+  },
+  {
+    targetArticleId: "P05",
+    targetField: "enterprise.migration_support_price",
+    unknownReason: "公式価格ページで組織向け移行支援の料金を確認できていない",
+    sourceUrl: "https://mangools.com/plans-and-pricing",
+    observedOn: "2026-08-01",
+    nextReviewOn: "2026-08-31",
+    billingToggleState: "annual_selected",
+    saleBannerState: "annual_discount_permanent",
+    currencyUnknownReason: "移行支援料金自体が未確認のためISO通貨を確定していない",
+  },
+  {
+    targetArticleId: "P08",
+    targetField: "addon.billing_unit_size",
+    unknownReason: "公式価格ページで別売の必須addonに対する課金単位を確認できていない",
+    sourceUrl: "https://mangools.com/plans-and-pricing",
+    observedOn: "2026-08-01",
+    nextReviewOn: "2026-08-31",
+    billingToggleState: "annual_selected",
+    saleBannerState: "annual_discount_permanent",
+  },
+  {
+    targetArticleId: "P09",
+    targetField: "migration.overlap_months",
+    unknownReason: "SaaS TCO Labで実移行をまだ行っておらず、重複契約期間を観測していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labの実移行後に重複契約、作業、教育、時間単価を測定する。現時点は自データ未取得。",
+  },
+  {
+    targetArticleId: "P09",
+    targetField: "migration.work_hours",
+    unknownReason: "SaaS TCO Labで実移行をまだ行っておらず、移行作業時間を観測していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labの実移行後に重複契約、作業、教育、時間単価を測定する。現時点は自データ未取得。",
+  },
+  {
+    targetArticleId: "P09",
+    targetField: "migration.hourly_cost",
+    unknownReason: "移行担当者の時間単価をHumanシナリオとしてまだ確定していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labの実移行後に重複契約、作業、教育、時間単価を測定する。現時点は自データ未取得。",
+    currencyUnknownReason: "移行シナリオの時間単価と通貨をまだ選定していない",
+  },
+  {
+    targetArticleId: "P09",
+    targetField: "migration.training_hours",
+    unknownReason: "SaaS TCO Labで実移行をまだ行っておらず、教育時間を観測していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labの実移行後に重複契約、作業、教育、時間単価を測定する。現時点は自データ未取得。",
+  },
+  {
+    targetArticleId: "P09",
+    targetField: "migration.support_price",
+    unknownReason: "公式価格ページで移行支援料金を確認できていない",
+    sourceUrl: "https://mangools.com/plans-and-pricing",
+    observedOn: "2026-08-01",
+    nextReviewOn: "2026-08-31",
+    billingToggleState: "annual_selected",
+    saleBannerState: "annual_discount_permanent",
+    currencyUnknownReason: "移行支援料金自体が未確認のためISO通貨を確定していない",
+  },
+  {
+    targetArticleId: "P10",
+    targetField: "localization.exchange_rate",
+    unknownReason: "公式価格画面はUSD表示で、記事用のJPY換算レートをHuman確認していない",
+    sourceUrl: "https://mangools.com/subscriptions/checkout",
+    observedOn: "2026-08-02",
+    nextReviewOn: "2026-08-31",
+    billingToggleState: "annual_selected",
+    saleBannerState: "annual_discount_permanent",
+  },
+  {
+    targetArticleId: "P11",
+    targetField: "break_even.monthly_hours_saved",
+    unknownReason: "SaaS TCO Labの導入前後で月間削減時間をまだ比較観測していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labの実運用開始後に導入前後の時間、時間単価、導入費、月額TCOを同じ期間で測定する。現時点は自データ未取得。",
+  },
+  {
+    targetArticleId: "P11",
+    targetField: "break_even.hourly_cost",
+    unknownReason: "損益分岐に使う担当者の時間単価をHumanシナリオとしてまだ確定していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labの実運用開始後に導入前後の時間、時間単価、導入費、月額TCOを同じ期間で測定する。現時点は自データ未取得。",
+    currencyUnknownReason: "損益分岐シナリオの時間単価と通貨をまだ選定していない",
+  },
+  {
+    targetArticleId: "P11",
+    targetField: "break_even.implementation_cost",
+    unknownReason: "SaaS TCO Labの導入作業費をHumanシナリオとしてまだ確定していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labの実運用開始後に導入前後の時間、時間単価、導入費、月額TCOを同じ期間で測定する。現時点は自データ未取得。",
+    currencyUnknownReason: "導入費シナリオの通貨をまだ選定していない",
+  },
+  {
+    targetArticleId: "P11",
+    targetField: "break_even.monthly_tco",
+    unknownReason: "損益分岐用の月額TCOをHumanシナリオとしてまだ確定していない",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "SaaS TCO Labの実運用開始後に導入前後の時間、時間単価、導入費、月額TCOを同じ期間で測定する。現時点は自データ未取得。",
+    currencyUnknownReason: "損益分岐シナリオの月額TCO通貨をまだ選定していない",
+  },
+  {
+    targetArticleId: "P12",
+    targetField: "evidence.review_interval_days",
+    unknownReason: "全field共通の単一確認間隔は定めず、各観測の次回確認日を個別に管理している",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    scenarioBasis: "価格・税・利用上限ごとに観測日と次回確認日を記録し、共通日数を推測して補完しない。",
+  },
+] as const;
+
 export type ReusableEditorialEvidence = {
   appliedFields: readonly string[];
+  explicitUnknownFields: readonly string[];
   rows: readonly EditorialRowFormValue[];
 };
 
@@ -683,8 +865,8 @@ export function validateEditorialInput(
         if (!taxTreatments.has(taxTreatment ?? "")) addError(errors, `${prefix}.taxTreatment`, "税込・税別を選択してください。不明なら「不明」を選びます。");
         if (!observedPriceBases.has(observedPriceBasis ?? "")) addError(errors, `${prefix}.observedPriceBasis`, "価格の一次観測区分を選択してください。年払いはcheckout請求総額だけを選べます。");
         if (valueStatus === "not_applicable" && observedPriceBasis !== "not_applicable") addError(errors, `${prefix}.observedPriceBasis`, "該当なし価格では一次観測区分も「該当なし」にしてください。");
-        else if (valueStatus === "unknown" && observedPriceBasis !== "unknown") addError(errors, `${prefix}.observedPriceBasis`, "不明価格では一次観測区分も「不明」にしてください。");
         else if (row.scopeKind === "human_scenario" && observedPriceBasis !== "human_scenario") addError(errors, `${prefix}.observedPriceBasis`, "Humanシナリオ価格は公式価格の一次観測として扱いません。");
+        else if (row.scopeKind === "vendor_plan" && valueStatus === "unknown" && observedPriceBasis !== "unknown") addError(errors, `${prefix}.observedPriceBasis`, "不明価格では一次観測区分も「不明」にしてください。");
         else if (row.scopeKind === "vendor_plan" && valueStatus === "known" && billingPeriod === "annual") {
           if (observedPriceBasis !== "checkout_billed_total") addError(errors, `${prefix}.observedPriceBasis`, "年払いplanの値にはcheckoutで確認した請求総額を入力してください。料金表の月額換算表示は一次観測値にできません。");
           if (billingToggleState !== "annual_selected") addError(errors, `${prefix}.billingPeriod`, "年払いcheckout総額では画面状態を「年払い選択」にしてください。");
@@ -839,7 +1021,8 @@ export function reusableEditorialEvidence(
   sourceContracts: readonly EditorialContract[],
 ): ReusableEditorialEvidence | null {
   const rules = editorialEvidenceReuseRules.filter((rule) => rule.targetArticleId === page.id);
-  if (!rules.length) return null;
+  const unknownRules = editorialExplicitUnknownRules.filter((rule) => rule.targetArticleId === page.id);
+  if (!rules.length && !unknownRules.length) return null;
 
   const scopes = new Set(page.numericFields.map(pilotFieldScope));
   const rows: EditorialRowFormValue[] = [
@@ -847,10 +1030,10 @@ export function reusableEditorialEvidence(
     ...(scopes.has("human_scenario") ? [emptyEditorialRow(page, "human_scenario", "scenario-1")] : []),
   ];
   const vendorRow = rows.find((row) => row.scopeKind === "vendor_plan");
-  if (!vendorRow) return null;
 
   const appliedFields: string[] = [];
   for (const rule of rules) {
+    if (!vendorRow) continue;
     const sourceContract = sourceContracts.find((candidate) => candidate.article_id === rule.sourceArticleId);
     if (!sourceContract || sourceContract.article_review_status !== "approved") continue;
     const source = sourceContract.numeric_fields.find((field) => (
@@ -868,5 +1051,44 @@ export function reusableEditorialEvidence(
     appliedFields.push(target.key);
   }
 
-  return appliedFields.length ? { appliedFields, rows } : null;
+  const explicitUnknownFields: string[] = [];
+  for (const rule of unknownRules) {
+    const target = page.numericFields.find((field) => field.key === rule.targetField);
+    if (!target) continue;
+    const scopeKind = pilotFieldScope(target);
+    const row = rows.find((candidate) => candidate.scopeKind === scopeKind);
+    const field = row?.values[target.key];
+    if (!row || !field) continue;
+    if (scopeKind === "vendor_plan") {
+      row.vendorId = "mangools";
+      row.planId = "basic";
+    } else if (rule.scenarioBasis) {
+      row.scenarioBasis = rule.scenarioBasis;
+    }
+    Object.assign(field, {
+      billingToggleState: rule.billingToggleState ?? "",
+      saleBannerState: rule.saleBannerState ?? "",
+      valueStatus: "unknown",
+      value: "",
+      unit: "",
+      unknownReason: rule.unknownReason,
+      currencyStatus: target.valueKind === "price" ? "unknown" : "not_applicable",
+      currencyUnknownReason: target.valueKind === "price"
+        ? rule.currencyUnknownReason ?? "対象金額自体が未確認のためISO通貨を確定していない"
+        : "",
+      billingPeriod: target.valueKind === "price" ? "unknown" : "",
+      taxTreatment: target.valueKind === "price" ? "unknown" : "",
+      observedPriceBasis: target.valueKind === "price"
+        ? scopeKind === "human_scenario" ? "human_scenario" : "unknown"
+        : "",
+      sourceUrl: rule.sourceUrl ?? "",
+      observedOn: rule.observedOn,
+      nextReviewOn: rule.nextReviewOn,
+    });
+    explicitUnknownFields.push(target.key);
+  }
+
+  return appliedFields.length || explicitUnknownFields.length
+    ? { appliedFields, explicitUnknownFields, rows }
+    : null;
 }

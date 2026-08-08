@@ -158,7 +158,7 @@ const DATA = {
       "label": "公開記事数",
       "value": 5,
       "target": 12,
-      "sub": "入力 5/12・承認 5/12"
+      "sub": "入力 12/12・承認 8/12"
     },
     {
       "label": "インデックス数",
@@ -224,7 +224,7 @@ const DATA = {
     {
       "id": "L2",
       "name": "記事実値入力・承認",
-      "status": "5/12入力・5/12承認",
+      "status": "12/12入力・8/12承認",
       "note": "有効contractとHuman記事承認だけを算入"
     },
     {
@@ -365,7 +365,7 @@ const DATA = {
     {
       "riskId": "editorial-coverage",
       "level": "warn",
-      "label": "編集記事は5/12承認。未承認記事はnoindex・CTA無効を維持"
+      "label": "編集記事は8/12承認。未承認記事はnoindex・CTA無効を維持"
     },
     {
       "riskId": "server-candidate-only",
@@ -479,9 +479,90 @@ const DATA = {
       "label": "もしも ロリポップ！レンタルサーバー提携申請",
       "status": "human_legal_attestation_required",
       "token": "moshimo_media_attestation: done"
+    },
+    {
+      "priority": 2,
+      "label": "KWFinder拡張需要150語の一時upgrade・export",
+      "status": "payment_approval_required",
+      "token": "mangools_upgrade: GO Basic monthly 61.00 USD max_total 61.00 USD cancel_after_export / HOLD"
+    },
+    {
+      "priority": 3,
+      "label": "SVR01の更新料・campaign・domain特典・用途上限を確認",
+      "status": "field_review_required",
+      "token": "server_price_input: done SVR01"
+    },
+    {
+      "priority": 4,
+      "label": "P05,P09,P11,P12の確認済み実値取得",
+      "status": "evidence_required",
+      "token": "article_evidence: pending P05,P09,P11,P12"
     }
   ],
-  "articleReviews": []
+  "articleReviews": [
+    {
+      "articleId": "P05",
+      "title": "組織利用適合",
+      "previewUrl": "http://localhost:3000/pilot/enterprise-fit",
+      "confirmed": [],
+      "unresolved": [
+        "含まれる管理者数: unknown（公式価格ページで組織利用に含まれる管理者数を確認できていない）",
+        "Agency Pack料金: unknown（記事で扱うAgency Packと同一条件のcheckout請求総額を確認できていない）",
+        "毎月の監査ページ上限: unknown（公式価格ページで組織監査に使える月間ページ上限を確認できていない）",
+        "移行支援費: unknown（公式価格ページで組織向け移行支援の料金を確認できていない）"
+      ],
+      "observedOn": "2026-08-01",
+      "nextReviewOn": "2026-08-31",
+      "reviewState": "evidence_required",
+      "token": "article_evidence: pending P05"
+    },
+    {
+      "articleId": "P09",
+      "title": "移行コスト",
+      "previewUrl": "http://localhost:3000/pilot/migration-cost",
+      "confirmed": [],
+      "unresolved": [
+        "移行支援料金: unknown（公式価格ページで移行支援料金を確認できていない）",
+        "重複契約月数: unknown（SaaS TCO Labで実移行をまだ行っておらず、重複契約期間を観測していない）",
+        "移行作業時間: unknown（SaaS TCO Labで実移行をまだ行っておらず、移行作業時間を観測していない）",
+        "Human時間単価: unknown（移行担当者の時間単価をHumanシナリオとしてまだ確定していない）",
+        "教育時間: unknown（SaaS TCO Labで実移行をまだ行っておらず、教育時間を観測していない）"
+      ],
+      "observedOn": "2026-08-01",
+      "nextReviewOn": "2026-08-31",
+      "reviewState": "evidence_required",
+      "token": "article_evidence: pending P09"
+    },
+    {
+      "articleId": "P11",
+      "title": "損益分岐",
+      "previewUrl": "http://localhost:3000/pilot/break-even",
+      "confirmed": [],
+      "unresolved": [
+        "月間削減時間: unknown（SaaS TCO Labの導入前後で月間削減時間をまだ比較観測していない）",
+        "Human時間価値: unknown（損益分岐に使う担当者の時間単価をHumanシナリオとしてまだ確定していない）",
+        "導入費用: unknown（SaaS TCO Labの導入作業費をHumanシナリオとしてまだ確定していない）",
+        "月額TCO: unknown（損益分岐用の月額TCOをHumanシナリオとしてまだ確定していない）"
+      ],
+      "observedOn": "2026-08-09",
+      "nextReviewOn": "2026-09-07",
+      "reviewState": "evidence_required",
+      "token": "article_evidence: pending P11"
+    },
+    {
+      "articleId": "P12",
+      "title": "根拠の検証",
+      "previewUrl": "http://localhost:3000/pilot/evidence-method",
+      "confirmed": [],
+      "unresolved": [
+        "根拠確認間隔: unknown（全field共通の単一確認間隔は定めず、各観測の次回確認日を個別に管理している）"
+      ],
+      "observedOn": "2026-08-09",
+      "nextReviewOn": "2026-09-07",
+      "reviewState": "evidence_required",
+      "token": "article_evidence: pending P12"
+    }
+  ]
 };
 // DASHBOARD_DATA_END
 
@@ -581,7 +662,7 @@ el("article-reviews").innerHTML = DATA.articleReviews.length ? `
     <td>${item.unresolved.length ? item.unresolved.map(value => `<div>${esc(value)}</div>`).join("") : "なし"}</td>
     <td><div>観測 ${esc(item.observedOn)}</div><div>次回 ${esc(item.nextReviewOn)}</div><code>${esc(item.token)}</code></td>
   </tr>`).join("")}
-` : `<tr><td class="muted">現在、P06/P07の承認待ちはありません。</td></tr>`;
+` : `<tr><td class="muted">現在、記事のHuman確認待ちはありません。</td></tr>`;
 
 el("external-actions").innerHTML = `
   <tr><th>優先</th><th>残タスク</th><th>状態</th><th>返信token</th></tr>

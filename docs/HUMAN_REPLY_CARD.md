@@ -4,8 +4,10 @@
 measurement ID、partner ID、tracking ID、支払情報、メール本文は追記しない。GOは書かれたscopeだけに有効で、
 domain GOからindex GOやCTA GOを推論しない。
 
-現在地: P01–P03のR1–R6読者向け改稿版とP06/P07は2026-08-08に公開済みで、5記事のMangools CTAも稼働中。
-外部read-backで5記事だけのindex・sitemap、他記事のnoindex、開示先行を確認済み。serversはSVR01
+現在地: P01–P12は12/12入力済み、P01–P04・P06–P08・P10の8記事を承認済みです。
+P01–P03のR1–R6読者向け改稿版とP06/P07は2026-08-08に公開済みで、5記事のMangools CTAも稼働中。
+外部read-backで5記事だけのindex・sitemap、他記事のnoindex、開示先行を確認済み。P05/P09/P11/P12は
+確認済み実値が0件のため承認せず、P04/P08/P10を含む未公開記事はnoindex・CTA無効です。serversはSVR01
 candidate-only contractをlocal保存済みで、XServerビジネスとABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
 価格のcanonical採用・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。
 
@@ -17,6 +19,7 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |価格表示分類|`sale_banner_state: <class> <partner>`|`sale_banner_state: annual_discount_permanent mangools`|`none` / `annual_discount_permanent` / `time_limited_promo` / `unknown`のHuman分類を記録|
 |Checkout再観測完了（必要時）|`checkout_values: done`|`checkout_values: done`|既存確定値を更新する再観測時だけ使用。Mangools初回値は2026-08-02に取込済み|
 |記事入力完了|`article_input: done <P-ID>`|`article_input: done P01`|Operatorが出力したcontractの取込・再検証を依頼|
+|記事証拠不足|`article_evidence: pending <P-ID,...>`|`article_evidence: pending P05,P09`|contractは構造合格だが確認済み実値がなく、記事承認・公開へ進めない状態を記録|
 |記事承認|`article_approve: <P-IDまたはSVR-ID,...>`|`article_approve: P01,P02,P03`|列挙した記事本文だけをHuman承認。serversは価格・TCO・用途判定がREADYのSVR-IDだけ有効|
 |記事修正|`article_revise: <P-ID> <修正点>`|`article_revise: P01 税区分を再確認`|対象記事をunreviewedへ戻す|
 |Index判断|`index_go: GO / HOLD`|`index_go: HOLD`|承認済み記事だけのindex可否。CTAには効かない|
@@ -24,6 +27,7 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |Impact feed有無|`impact_feed_check: <available\|unavailable\|unclear> <partner>`|`impact_feed_check: available HubSpot`|承認済みpartnerのcatalog表示有無だけを記録|
 |Impact feed A1登録|`impact_feed_a1: GO <partner> / HOLD <partner>`|`impact_feed_a1: HOLD HubSpot`|全利用scopeを確認したexact feedだけsource policy候補へ登録。取得は開始しない|
 |Mangools需要CSV|`mangools_csv: done / pending`|`mangools_csv: done`|凍結済みquery CSVのlocal検証を開始|
+|Mangools一時upgrade|`mangools_upgrade: GO Basic monthly 61.00 USD max_total 61.00 USD cancel_after_export / HOLD`|`mangools_upgrade: HOLD`|残り150語のHuman exportに限りBasic月払いを購入し、完了後に自動更新を停止する。checkout総額が上限を超える場合は購入せずHOLD|
 |Scope拡大準備|`scope_expand: GO (準備scope) / HOLD`|`scope_expand: GO (準備scope)`|2026-08-05受領済み。query・checklist・template準備だけで、公開・申請・照会は許可しない|
 |優先カテゴリ|`category_primary: GO <category> / HOLD`|`category_primary: GO servers`|2026-08-06受領済み。serversのlocal記事・観測表・計算機準備だけを許可|
 |日本ASP申請|`asp_signup: GO <ASP> / HOLD <ASP>`|`asp_signup: GO A8.net`|列挙したASPのHuman申請だけを開始|

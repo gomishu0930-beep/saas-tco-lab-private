@@ -105,11 +105,16 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert all(item["done"] for item in data["work"])
     assert any(item["label"] == "SVR01–SVR20 noindex候補view" for item in data["work"])
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
-    assert [item["priority"] for item in data["externalActions"]] == [1, 2]
+    assert [item["priority"] for item in data["externalActions"]] == [1, 2, 3, 4]
     assert data["externalActions"][0]["status"] == "human_legal_attestation_required"
     assert data["externalActions"][0]["token"] == "moshimo_media_attestation: done"
-    assert data["externalActions"][1]["token"] == "article_approve: P06,P07"
-    assert data["externalActions"][-1]["token"] == "article_approve: P06,P07"
+    assert data["externalActions"][1]["status"] == "payment_approval_required"
+    assert data["externalActions"][2]["status"] == "contract_input_required"
+    assert data["externalActions"][3]["status"] == "field_review_required"
+    assert all(
+        not item["token"].startswith("article_approve:")
+        for item in data["externalActions"]
+    )
     assert all("独自domain未取得" not in item["label"] for item in data["risks"])
     assert all("JP/ja需要規模が未検証" not in item["label"] for item in data["risks"])
     assert any(item.get("riskId") == "editorial-coverage" for item in data["risks"])
@@ -250,7 +255,33 @@ def test_pending_p06_p07_review_cards_are_contract_driven(tmp_path: Path) -> Non
         "Human月間利用量: 400 ルックアップ/月",
     ]
     assert len(cards[1]["unresolved"]) == 2
+    assert cards[1]["reviewState"] == "approval_ready"
     assert cards[1]["token"] == "article_approve: P07"
+
+
+def test_unknown_only_contract_requires_evidence_instead_of_article_approval(tmp_path: Path) -> None:
+    dashboard = tmp_path / "dashboard.html"
+    dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())
+    state = tmp_path / "state.json"
+    state.write_bytes((ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_bytes())
+    contracts = tmp_path / "contracts"
+    contracts.mkdir()
+    source = ROOT / "artifacts" / "editorial-inputs" / "P05-editorial-input.json"
+    (contracts / source.name).write_bytes(source.read_bytes())
+
+    result = _run(dashboard, state, contracts, "--no-prompt")
+
+    assert result.returncode == 0, result.stderr
+    data = _dashboard_data(dashboard)
+    assert data["articleReviews"][0]["articleId"] == "P05"
+    assert data["articleReviews"][0]["confirmed"] == []
+    assert data["articleReviews"][0]["reviewState"] == "evidence_required"
+    assert data["articleReviews"][0]["token"] == "article_evidence: pending P05"
+    assert any(
+        action["status"] == "evidence_required"
+        and action["token"] == "article_evidence: pending P05"
+        for action in data["externalActions"]
+    )
 
 
 def test_csv_with_unapproved_extra_column_is_rejected(tmp_path: Path) -> None:

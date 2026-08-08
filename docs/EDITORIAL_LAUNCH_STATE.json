@@ -24,13 +24,13 @@
     "P01": "approved",
     "P02": "approved",
     "P03": "approved",
-    "P04": "unreviewed",
+    "P04": "approved",
     "P05": "unreviewed",
     "P06": "approved",
     "P07": "approved",
-    "P08": "unreviewed",
+    "P08": "approved",
     "P09": "unreviewed",
-    "P10": "unreviewed",
+    "P10": "approved",
     "P11": "unreviewed",
     "P12": "unreviewed"
   }

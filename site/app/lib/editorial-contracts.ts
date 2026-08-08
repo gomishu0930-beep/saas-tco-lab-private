@@ -1,8 +1,15 @@
 import p01ContractJson from "../../../artifacts/editorial-inputs/P01-editorial-input.json";
 import p02ContractJson from "../../../artifacts/editorial-inputs/P02-editorial-input.json";
 import p03ContractJson from "../../../artifacts/editorial-inputs/P03-editorial-input.json";
+import p04ContractJson from "../../../artifacts/editorial-inputs/P04-editorial-input.json";
+import p05ContractJson from "../../../artifacts/editorial-inputs/P05-editorial-input.json";
 import p06ContractJson from "../../../artifacts/editorial-inputs/P06-editorial-input.json";
 import p07ContractJson from "../../../artifacts/editorial-inputs/P07-editorial-input.json";
+import p08ContractJson from "../../../artifacts/editorial-inputs/P08-editorial-input.json";
+import p09ContractJson from "../../../artifacts/editorial-inputs/P09-editorial-input.json";
+import p10ContractJson from "../../../artifacts/editorial-inputs/P10-editorial-input.json";
+import p11ContractJson from "../../../artifacts/editorial-inputs/P11-editorial-input.json";
+import p12ContractJson from "../../../artifacts/editorial-inputs/P12-editorial-input.json";
 
 import type { EditorialContract } from "./editorial-input-contract";
 import { validateEditorialInput, valuesFromContract } from "./editorial-input-contract";
@@ -14,8 +21,15 @@ const importedContracts: Readonly<Record<string, unknown>> = {
   P01: p01ContractJson,
   P02: p02ContractJson,
   P03: p03ContractJson,
+  P04: p04ContractJson,
+  P05: p05ContractJson,
   P06: p06ContractJson,
   P07: p07ContractJson,
+  P08: p08ContractJson,
+  P09: p09ContractJson,
+  P10: p10ContractJson,
+  P11: p11ContractJson,
+  P12: p12ContractJson,
 };
 
 /**

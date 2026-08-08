@@ -378,7 +378,7 @@ export function OperatorInputForm() {
         <div>
           <p className="eyebrow">APPROVED EVIDENCE REUSE</p>
           <h3 id="operator-reuse-title">承認済み証拠を再入力せず候補化</h3>
-          <p>{reusableEvidence.appliedFields.length} fieldを、同じvendor・planの承認済み観測から事前入力できます。対象記事では必ずunreviewedへ戻り、未入力fieldやHumanシナリオは補完しません。</p>
+          <p>{reusableEvidence.appliedFields.length} fieldを同じvendor・planの承認済み観測から再利用し、{reusableEvidence.explicitUnknownFields.length} fieldを数値なしのunknown候補として事前入力できます。unknown候補はHuman確認前に確定せず、対象記事は必ずunreviewedへ戻ります。</p>
         </div>
         <button type="button" onClick={applyReusableEvidence} disabled={hasStarted}>
           {hasStarted ? "入力開始後は再利用できません" : "承認済み証拠を候補へ反映"}

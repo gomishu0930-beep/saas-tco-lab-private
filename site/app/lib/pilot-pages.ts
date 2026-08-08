@@ -124,7 +124,7 @@ export const pilotPages: readonly PilotPage[] = [
     { key: "alternative.price", label: "各候補の料金", valueKind: "price" }, { key: "alternative.usage_quota", label: "追跡キーワード数（候補別単位）", valueKind: "quota" }, { key: "alternative.required_addon_price", label: "必須の追加機能料金", valueKind: "price" }, { key: "alternative.migration_cost", label: "移行費用", valueKind: "price" },
   ] },
   { id: "P04", slug: "small-team-fit", title: "小規模チーム適合", intent: "fit_check", pageType: "use_case_fit", question: "少人数運用で固定費と人手を抑えられるか", readerOutcome: "少人数で使う場合の固定費と運用時間を見積もれる", numericFields: [
-    { key: "team.minimum_seats", label: "最低利用者数", valueKind: "seat_count" }, { key: "team.monthly_price", label: "月額料金", valueKind: "price" }, { key: "team.monthly_operation_hours", label: "月間運用時間", valueKind: "duration" }, { key: "team.onboarding_hours", label: "導入時間", valueKind: "duration" },
+    { key: "team.minimum_seats", label: "最低利用者数", valueKind: "seat_count" }, { key: "team.monthly_price", label: "月額料金", valueKind: "price" }, { key: "team.monthly_operation_hours", label: "月間運用時間", valueKind: "duration", inputScope: "human_scenario" }, { key: "team.onboarding_hours", label: "導入時間", valueKind: "duration", inputScope: "human_scenario" },
   ] },
   { id: "P05", slug: "enterprise-fit", title: "組織利用適合", intent: "fit_check", pageType: "use_case_fit", question: "権限・監査・運用費を含めて組織要件に合うか", readerOutcome: "組織向け必須条件と追加費用を切り分けられる", numericFields: [
     { key: "enterprise.included_manager_seats", label: "含まれる管理者数", valueKind: "seat_count" }, { key: "enterprise.agency_pack_price", label: "Agency Pack料金", valueKind: "price" }, { key: "enterprise.audit_pages_per_month", label: "毎月の監査ページ上限", valueKind: "quota" }, { key: "enterprise.migration_support_price", label: "移行支援費", valueKind: "price" },
