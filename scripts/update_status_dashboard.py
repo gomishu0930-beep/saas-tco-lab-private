@@ -203,7 +203,8 @@ def _work_queue(root: Path) -> list[dict[str, Any]]:
         ("Q8 90日判定閾値固定", root / "docs/PRODUCTION_ROADMAP.md"),
         ("Q9 dashboard Launch Quarter更新", root / "scripts/update_status_dashboard.py"),
         ("SVR01 servers価格観測Operator", root / "site/app/operator/servers/page.tsx"),
-        ("SVR01 noindex記事標本", root / "site/app/servers/business-server-pricing/page.tsx"),
+        ("SVR01–SVR20 noindex候補view", root / "site/app/servers/business-server-pricing/page.tsx"),
+        ("servers 20記事候補一覧", root / "site/app/operator/servers/page.tsx"),
     )
     return [{"done": path.is_file(), "label": label} for label, path in requirements]
 

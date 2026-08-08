@@ -396,7 +396,7 @@ export function ServerArticleTemplate({
         ) : ctaPolicy.mode === "single" ? (
           <p>承認済みpartnerは1社です。単独CTAだけを扱い、比較表示にはしません。</p>
         ) : (
-          <p>承認済みpartnerがないためCTAは無効です。</p>
+          <p>公開条件をすべて通過したpartnerがないためCTAは無効です。</p>
         )}
       </section>
       <section className="shell page-section" data-server-template-step="evidence" aria-label="価格の根拠表">{evidence}</section>

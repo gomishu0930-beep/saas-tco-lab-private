@@ -2,6 +2,29 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test, { before } from "node:test";
 
+const SERVER_CANDIDATE_ROUTES = [
+  "business-server-pricing",
+  "small-business-server",
+  "ec-server-cost",
+  "server-first-year-total",
+  "server-renewal-cost",
+  "server-migration-cost",
+  "business-rental-server",
+  "ec-server-requirements",
+  "business-mail-server",
+  "managed-server-cost",
+  "business-rental-server-comparison",
+  "small-business-server-comparison",
+  "ec-server-comparison",
+  "business-mail-server-comparison",
+  "managed-server-comparison",
+  "wordpress-server-cost",
+  "server-transfer-cost",
+  "server-backup-cost",
+  "small-corporate-server",
+  "server-cancellation-terms",
+].map((_, index) => `/servers/business-server-pricing?candidate=SVR${String(index + 1).padStart(2, "0")}`);
+
 const ROUTES = [
   "/",
   "/comparison",
@@ -25,7 +48,7 @@ const ROUTES = [
   "/operator",
   "/operator/servers",
   "/operator/derivatives",
-  "/servers/business-server-pricing",
+  ...SERVER_CANDIDATE_ROUTES,
   "/embed/tco-calculator",
   "/about",
   "/operator-information",
@@ -34,7 +57,7 @@ const ROUTES = [
   "/advertising-policy",
 ];
 const ARTICLE_ROUTES = ROUTES.filter((path) => path.startsWith("/pilot/"));
-const ROUTE_PATHS = new Set(ROUTES);
+const ROUTE_PATHS = new Set(ROUTES.map(normalizedRoute));
 const pages = new Map();
 
 async function render(path) {
@@ -179,6 +202,21 @@ test("every P01-P12 article renders PR disclosure before a disabled CTA", () => 
     assert.ok(disclosurePosition >= 0, `${path}: PR disclosure`);
     assert.ok(ctaPosition > disclosurePosition, `${path}: disclosure before CTA`);
     assert.doesNotMatch(html, /rel=["'][^"']*sponsored/i, path);
+  }
+});
+
+test("every servers candidate stays noindex, zero-value, CTA-disabled, and disclosure-first", () => {
+  assert.equal(SERVER_CANDIDATE_ROUTES.length, 20);
+  for (const path of SERVER_CANDIDATE_ROUTES) {
+    const html = pages.get(path);
+    const disclosurePosition = html.indexOf('id="article-pr-disclosure"');
+    const calculatorPosition = html.indexOf('data-server-template-step="calculator"');
+    const ctaPosition = html.indexOf('data-server-template-step="cta_slot"');
+    assert.ok(disclosurePosition >= 0 && disclosurePosition < calculatorPosition, `${path}: disclosure first`);
+    assert.ok(calculatorPosition < ctaPosition, `${path}: calculator before CTA`);
+    assert.match(html, /承認済みのservers価格contractはまだありません/, path);
+    assert.match(html, /公開条件をすべて通過したpartnerがないためCTAは無効/, path);
+    assert.doesNotMatch(html, /data-server-cta-mode="(?:single|comparison)"|rel=["'][^"']*sponsored/i, path);
   }
 });
 

@@ -1,6 +1,29 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 
+const SERVER_CANDIDATE_PATHS = [
+  "business-server-pricing",
+  "small-business-server",
+  "ec-server-cost",
+  "server-first-year-total",
+  "server-renewal-cost",
+  "server-migration-cost",
+  "business-rental-server",
+  "ec-server-requirements",
+  "business-mail-server",
+  "managed-server-cost",
+  "business-rental-server-comparison",
+  "small-business-server-comparison",
+  "ec-server-comparison",
+  "business-mail-server-comparison",
+  "managed-server-comparison",
+  "wordpress-server-cost",
+  "server-transfer-cost",
+  "server-backup-cost",
+  "small-corporate-server",
+  "server-cancellation-terms",
+].map((_, index) => `/servers/business-server-pricing?candidate=SVR${String(index + 1).padStart(2, "0")}`);
+
 async function render(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}-${path}`);
@@ -229,7 +252,7 @@ test("operator route reduces Human work to form input and exact reply tokens", a
   assert.match(html, /href="\/servers\/business-server-pricing\//);
 });
 
-test("servers operator and first article remain candidate-only and fail closed", async () => {
+test("servers operator and all twenty article routes remain candidate-only and fail closed", async () => {
   const operator = await (await render("/operator/servers")).text();
   assert.match(operator, /SERVERS \/ CANDIDATE ONLY/);
   assert.match(operator, /Human確認してservers候補contractを確定/);
@@ -245,13 +268,21 @@ test("servers operator and first article remain candidate-only and fail closed",
   assert.match(operator, /servers\.campaign_period_months/);
   assert.doesNotMatch(operator, /候補JSONを保存/);
 
-  const article = await (await render("/servers/business-server-pricing")).text();
-  assert.match(article, /data-server-article-state="candidate_only"/);
-  assert.match(article, /承認済みのservers価格contractはまだありません/);
-  assert.match(article, /承認済みpartnerがないためCTAは無効/);
-  assert.ok(article.indexOf("article-pr-disclosure") < article.indexOf("data-server-template-step=\"calculator\""));
-  assert.ok(article.indexOf("data-server-template-step=\"calculator\"") < article.indexOf("data-server-template-step=\"cta_slot\""));
-  assert.doesNotMatch(article, /rel="sponsored|https?:\/\/[^\s<]*affiliate/i);
+  assert.match(operator, /data-server-candidate-index="20"/);
+  assert.match(operator, /href="\/servers\/business-server-pricing\/\?candidate=SVR01"/);
+  assert.match(operator, /href="\/servers\/business-server-pricing\/\?candidate=SVR20"/);
+
+  assert.equal(SERVER_CANDIDATE_PATHS.length, 20);
+  for (const path of SERVER_CANDIDATE_PATHS) {
+    const article = await (await render(path)).text();
+    assert.match(article, /data-server-article-state="candidate_only"/, path);
+    assert.match(article, /承認済みのservers価格contractはまだありません/, path);
+    assert.match(article, /公開条件をすべて通過したpartnerがないためCTAは無効/, path);
+    assert.ok(article.indexOf("article-pr-disclosure") < article.indexOf("data-server-template-step=\"calculator\""), path);
+    assert.ok(article.indexOf("data-server-template-step=\"calculator\"") < article.indexOf("data-server-template-step=\"cta_slot\""), path);
+    assert.match(article, /href="\/operator\/servers\//, path);
+    assert.doesNotMatch(article, /rel="sponsored|https?:\/\/[^\s<]*affiliate/i, path);
+  }
 });
 
 test("calculator embed is zero-input gated and links to the methodology detail mode", async () => {

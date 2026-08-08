@@ -203,6 +203,12 @@ unknown、未承認、用途対象外は順位から除外し、unknownは`未�
 `/servers/business-server-pricing/`にはSVR01のnoindex標本を追加しました。実価格0件、CTA 0件、順位なしを維持し、
 価格入力、記事承認、index、partner CTAはそれぞれ別gateです。
 
+2026-08-09、既存の固定acceptance scopeを増やさず、SVR02–SVR20をSVR01と同じfail-closed rendererで
+切り替えるlocal候補viewを追加し、`/operator/servers/`へ20本の確認待ち一覧を作成しました。
+各routeはPR表示を最初に置き、zero-input計算機は承認済み価格0件、
+CTAはgate通過partner 0件、実額・順位・推奨0件、`noindex, nofollow`です。記事別の価格観測・Human承認・
+index・runtime destination・partner別CTAは未実行であり、production deployもこのlocal実装には含めません。
+
 同日のexternal read-backでは、A8.netのXServerビジネスprogramは第一申請候補ですが、申請時の掲載siteが旧mediaを
 指していました。2026-08-06の`a8_reauth: done`後、A8の登録site `SaaS TCO Lab`を主サイトへ変更し、
 画面read-backで反映を確認しました。XServerビジネスの個別提携申請は同日の対象名付きGOにより送信済みです。

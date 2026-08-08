@@ -17,6 +17,29 @@ let baseUrl;
 let serverProcess;
 let serverOutput = "";
 
+const SERVER_CANDIDATE_PATHS = [
+  "business-server-pricing",
+  "small-business-server",
+  "ec-server-cost",
+  "server-first-year-total",
+  "server-renewal-cost",
+  "server-migration-cost",
+  "business-rental-server",
+  "ec-server-requirements",
+  "business-mail-server",
+  "managed-server-cost",
+  "business-rental-server-comparison",
+  "small-business-server-comparison",
+  "ec-server-comparison",
+  "business-mail-server-comparison",
+  "managed-server-comparison",
+  "wordpress-server-cost",
+  "server-transfer-cost",
+  "server-backup-cost",
+  "small-corporate-server",
+  "server-cancellation-terms",
+].map((_, index) => `/servers/business-server-pricing?candidate=SVR${String(index + 1).padStart(2, "0")}`);
+
 function signalServerGroup(signal) {
   if (!serverProcess?.pid) return;
   try {
@@ -203,7 +226,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     "/contact",
     "/advertising-policy",
     "/embed/tco-calculator",
-    "/servers/business-server-pricing",
+    ...SERVER_CANDIDATE_PATHS,
   ]) {
     const response = await fetch(`${baseUrl}${path}`);
     assert.equal(response.status, 200, path);
@@ -358,6 +381,11 @@ test("Googlebot can fetch every asset referenced by an approved article", async 
           : /image\/svg\+xml/i,
       path,
     );
+    if (path.startsWith("/servers/")) {
+      assert.match(body, /data-server-article-state="candidate_only"/, path);
+      assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i, path);
+      assert.doesNotMatch(body, /rel=["'][^"']*sponsored/i, path);
+    }
   }
 });
 
