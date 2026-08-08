@@ -90,6 +90,79 @@ export type EditorialValidation = {
   contract: EditorialContract | null;
 };
 
+export type ServerPromotionAssessment = {
+  tcoReady: boolean;
+  suitabilityReady: boolean;
+  contractPromotionReady: boolean;
+  tcoBlockers: readonly string[];
+  suitabilityBlockers: readonly string[];
+  reviewBlockers: readonly string[];
+};
+
+const serverTcoFields = new Set([
+  "pricing.initial_fee",
+  "pricing.base_price",
+  "pricing.renewal_fee",
+  "servers.campaign_price",
+  "servers.campaign_period_months",
+  "servers.domain_benefit_amount",
+  "servers.domain_benefit_period_months",
+  "servers.backup_price",
+]);
+
+const serverSuitabilityFields = new Set([
+  "servers.compute_hours",
+  "servers.storage_gb",
+  "servers.data_transfer_gb",
+]);
+
+function serverFieldReadinessBlockers(
+  field: EditorialContract["numeric_fields"][number],
+): string[] {
+  if (field.value_status === "not_applicable") return [];
+  const blockers: string[] = [];
+  if (field.value_status === "unknown") blockers.push(`${field.field}: 値が未確認`);
+  if (field.billing_toggle_state === "unknown") blockers.push(`${field.field}: 支払周期表示が不明`);
+  if (field.sale_banner_state === "unknown") blockers.push(`${field.field}: 価格表示分類が不明`);
+  if (field.sale_banner_state === "time_limited_promo") blockers.push(`${field.field}: 期間限定価格`);
+  if (field.value_kind === "price" && field.value_status === "known") {
+    if (field.currency_status !== "known") blockers.push(`${field.field}: ISO通貨が未確認`);
+    if (!field.billing_period || field.billing_period === "unknown") blockers.push(`${field.field}: 請求周期が未確認`);
+    if (!field.tax_treatment || field.tax_treatment === "unknown") blockers.push(`${field.field}: 税区分が未確認`);
+    if (!field.observed_price_basis || field.observed_price_basis === "unknown") blockers.push(`${field.field}: 一次観測区分が未確認`);
+  }
+  return blockers;
+}
+
+/**
+ * Classify a validated servers candidate without promoting or mutating it.
+ * Article approval, index and CTA remain separate Human gates even when this is ready.
+ */
+export function assessServerPromotionCandidate(
+  numericFields: readonly EditorialContract["numeric_fields"][number][],
+): ServerPromotionAssessment {
+  const tcoBlockers = numericFields
+    .filter((field) => serverTcoFields.has(field.field))
+    .flatMap(serverFieldReadinessBlockers);
+  const suitabilityBlockers = numericFields
+    .filter((field) => serverSuitabilityFields.has(field.field))
+    .flatMap(serverFieldReadinessBlockers);
+  const reviewBlockers = numericFields
+    .filter((field) => field.review_status !== "approved")
+    .map((field) => `${field.field}: ${field.review_status === "rejected" ? "却下済み" : "Human field確認待ち"}`);
+
+  return {
+    tcoReady: tcoBlockers.length === 0,
+    suitabilityReady: suitabilityBlockers.length === 0,
+    contractPromotionReady: tcoBlockers.length === 0
+      && suitabilityBlockers.length === 0
+      && reviewBlockers.length === 0,
+    tcoBlockers: [...new Set(tcoBlockers)],
+    suitabilityBlockers: [...new Set(suitabilityBlockers)],
+    reviewBlockers: [...new Set(reviewBlockers)],
+  };
+}
+
 export function hasUnknownFact(field: EditorialContract["numeric_fields"][number]): boolean {
   return field.value_status === "unknown"
     || field.currency_status === "unknown"

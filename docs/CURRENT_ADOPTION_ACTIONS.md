@@ -246,6 +246,11 @@ Safariでは既存SVR01の11 fieldを復元し、上記の年次請求総額とb
 `SVR01-servers-category-expansion-input-v2-2026-08-08.json`として追記保存した。**SVR01追加候補のHuman確認完了**。
 正本modelで11 field、known 4、unknown 7を再検証済みである。candidate-onlyは維持し、更新料等のunknownを
 0へ補完せず、記事承認・index・CTA・順位にはまだ採用しない。
+同日、Operatorにcandidate-onlyからの準備判定を追加し、TCO field、用途判定field、Human field確認を
+別々に`READY / HOLD`表示するようにした。`not_applicable`は理由付き明示値として扱う一方、unknown、
+期間限定価格、通貨・税・請求周期・一次観測区分の不明はfail-closedを維持する。3判定がREADYになっても
+自動昇格はせず、記事承認・index・CTAは従来どおり別のHuman gateである。現在のSVR01はTCOと用途判定の
+両方がHOLDで、canonical価格、zero-input計算、順位、記事公開へは未採用である。
 
 同日、`asp_program_apply: GO A8.net XServerビジネス`のscopeで提携申請完了画面を確認しました。台帳は
 `pending`へ更新しました。2026-08-08、A8.netの参加中プログラム一覧でXServerビジネスの提携日と終了日未定を

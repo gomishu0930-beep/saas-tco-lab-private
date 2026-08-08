@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 
 import {
+  assessServerPromotionCandidate,
   emptyEditorialField,
   emptyEditorialRow,
   extractPriceTextCandidates,
@@ -220,6 +221,10 @@ export function ServerObservationForm() {
   const [extraction, setExtraction] = useState<PriceTextExtraction>(emptyExtraction);
   const [candidateTargets, setCandidateTargets] = useState<Record<string, string>>({});
   const validation = useMemo(() => validateEditorialInput(serverObservationPage, rows), [rows]);
+  const promotionAssessment = useMemo(
+    () => validation.contract ? assessServerPromotionCandidate(validation.contract.numeric_fields) : null,
+    [validation.contract],
+  );
   const errors = Object.values(validation.errors).flat();
   const priceTargets = useMemo(() => rows.flatMap((row) => serverObservationPage.numericFields
     .filter((field) => field.valueKind === "price")
@@ -382,6 +387,17 @@ export function ServerObservationForm() {
       <div className={`operator-validation-summary ${confirmed ? "is-valid" : "is-waiting"}`} aria-live="polite">
         <strong>{confirmed ? "候補contract確定" : validation.contract ? "構造は合格・Human確認待ち" : `修正が必要です（${errors.length}件）`}</strong>
         <p>{validation.calculationBlockers.length ? `未確認fieldを${validation.calculationBlockers.length}件保持します。該当計算と順位はHOLDです。` : "入力はcandidate_onlyです。記事承認と計算機採用は別に行います。"}</p>
+        {promotionAssessment ? <div aria-label="servers候補の昇格準備判定">
+          <p><strong>TCO: {promotionAssessment.tcoReady ? "READY" : "HOLD"}</strong>{promotionAssessment.tcoBlockers.length ? ` — ${promotionAssessment.tcoBlockers.slice(0, 3).join(" / ")}${promotionAssessment.tcoBlockers.length > 3 ? ` / ほか${promotionAssessment.tcoBlockers.length - 3}件` : ""}` : " — TCO fieldは明示済み"}</p>
+          <p><strong>用途判定: {promotionAssessment.suitabilityReady ? "READY" : "HOLD"}</strong>{promotionAssessment.suitabilityBlockers.length ? ` — ${promotionAssessment.suitabilityBlockers.slice(0, 3).join(" / ")}${promotionAssessment.suitabilityBlockers.length > 3 ? ` / ほか${promotionAssessment.suitabilityBlockers.length - 3}件` : ""}` : " — 用途fieldは明示済み"}</p>
+          <p><strong>contract昇格: {promotionAssessment.contractPromotionReady ? "READY" : "HOLD"}</strong>{promotionAssessment.reviewBlockers.length ? ` — Human field確認待ち ${promotionAssessment.reviewBlockers.length}件` : " — field確認済み"}</p>
+          <p>READYでも記事承認・index・CTAは別のHuman gateです。HOLDのfieldは公式画面で確認し、該当しない場合は理由付き「該当なし」にしてください。</p>
+        </div> : <div aria-label="servers候補の昇格準備判定">
+          <p><strong>TCO: HOLD</strong> — 入力構造の修正待ち</p>
+          <p><strong>用途判定: HOLD</strong> — 入力構造の修正待ち</p>
+          <p><strong>contract昇格: HOLD</strong> — validation合格とHuman field確認待ち</p>
+          <p>READYでも記事承認・index・CTAは別のHuman gateです。HOLDのfieldは公式画面で確認し、該当しない場合は理由付き「該当なし」にしてください。</p>
+        </div>}
         {errors.length && rows.some((row) => row.vendorId || row.planId) ? <ul className="operator-field-errors">{[...new Set(errors)].slice(0, 12).map((error) => <li key={error}>{error}</li>)}</ul> : null}
         <button type="button" disabled={!validation.contract || Boolean(confirmed)} onClick={confirm}>Human確認してservers候補contractを確定</button>
       </div>

@@ -256,6 +256,10 @@ test("servers operator and all twenty article routes remain candidate-only and f
   const operator = await (await render("/operator/servers")).text();
   assert.match(operator, /SERVERS \/ CANDIDATE ONLY/);
   assert.match(operator, /Human確認してservers候補contractを確定/);
+  assert.match(operator, /TCO: HOLD/);
+  assert.match(operator, /用途判定: HOLD/);
+  assert.match(operator, /contract昇格: HOLD/);
+  assert.match(operator, /記事承認・index・CTAは別のHuman gate/);
   assert.match(operator, /共通の画面情報を11 fieldへ一括適用/);
   assert.match(operator, /共通情報を全fieldへ適用/);
   assert.match(operator, /値、通貨、税、請求周期、確認状態は変更しません/);

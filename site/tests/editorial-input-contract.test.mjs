@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 
 import {
+  assessServerPromotionCandidate,
   annualDiscountPercent,
   annualMonthlyEquivalent,
   emptyEditorialField,
@@ -375,4 +376,106 @@ test("ambiguous currency candidate prefill keeps the dollar display without infe
 test("paste analysis is bounded and does not emit a candidate for empty text", () => {
   assert.match(extractPriceTextCandidates("").error, /貼り付け/);
   assert.match(extractPriceTextCandidates("1".repeat(100_001)).error, /100,000文字以内/);
+});
+
+function serverAssessmentField(field, valueKind, overrides = {}) {
+  return {
+    schema_version: "2.3",
+    scope_kind: "vendor_plan",
+    vendor_id: "xserver-business",
+    plan_id: "shared-standard",
+    field,
+    value_kind: valueKind,
+    value_status: "known",
+    value: "1",
+    unit: valueKind === "price" ? "JPY" : "GB",
+    unknown_reason: null,
+    currency_status: valueKind === "price" ? "known" : "not_applicable",
+    currency: valueKind === "price" ? "JPY" : null,
+    currency_display: null,
+    currency_unknown_reason: null,
+    billing_period: valueKind === "price" ? "monthly" : null,
+    tax_treatment: valueKind === "price" ? "included" : null,
+    billing_toggle_state: "not_present",
+    sale_banner_state: "none",
+    observed_price_basis: valueKind === "price" ? "displayed_price" : null,
+    derived_monthly_value: null,
+    derived_monthly_unit: null,
+    derivation_method: null,
+    monthly_reference_value: null,
+    monthly_reference_unit: null,
+    derived_annual_discount_percent: null,
+    discount_derivation_method: null,
+    source_url: "https://example.com/pricing",
+    scenario_basis: null,
+    observed_on: "2026-08-08",
+    next_review_on: "2026-09-08",
+    entered_by: "human",
+    acquisition_method: "manual_public_page",
+    rights_path: "human_editorial",
+    review_status: "approved",
+    ...overrides,
+  };
+}
+
+test("servers promotion assessment separates TCO, suitability and Human review blockers", () => {
+  const fields = [
+    serverAssessmentField("pricing.base_price", "price", { sale_banner_state: "time_limited_promo", review_status: "unreviewed" }),
+    serverAssessmentField("pricing.renewal_fee", "price", {
+      value_status: "unknown", value: null, currency_status: "unknown", currency: null,
+      billing_period: "unknown", tax_treatment: "unknown", observed_price_basis: "unknown",
+      review_status: "unreviewed",
+    }),
+    serverAssessmentField("servers.storage_gb", "quota"),
+    serverAssessmentField("servers.data_transfer_gb", "quota", {
+      value_status: "unknown", value: null, unknown_reason: "公式確認待ち", review_status: "unreviewed",
+    }),
+  ];
+  const assessment = assessServerPromotionCandidate(fields);
+  assert.equal(assessment.tcoReady, false);
+  assert.equal(assessment.suitabilityReady, false);
+  assert.equal(assessment.contractPromotionReady, false);
+  assert.ok(assessment.tcoBlockers.some((item) => item.includes("期間限定価格")));
+  assert.ok(assessment.tcoBlockers.some((item) => item.includes("pricing.renewal_fee: 値が未確認")));
+  assert.deepEqual(assessment.suitabilityBlockers, ["servers.data_transfer_gb: 値が未確認"]);
+  assert.equal(assessment.reviewBlockers.length, 3);
+});
+
+test("servers promotion assessment accepts explicit approved values and not-applicable fields", () => {
+  const fields = [
+    serverAssessmentField("pricing.initial_fee", "price"),
+    serverAssessmentField("pricing.base_price", "price"),
+    serverAssessmentField("pricing.renewal_fee", "price", {
+      value_status: "not_applicable", value: null, unit: null, currency_status: "not_applicable",
+      currency: null, billing_period: "not_applicable", tax_treatment: "not_applicable",
+      observed_price_basis: "not_applicable", unknown_reason: "更新料なしを公式画面で確認",
+    }),
+    serverAssessmentField("servers.campaign_price", "price", {
+      value_status: "not_applicable", value: null, unit: null, currency_status: "not_applicable",
+      currency: null, billing_period: "not_applicable", tax_treatment: "not_applicable",
+      observed_price_basis: "not_applicable", unknown_reason: "キャンペーンなしを公式画面で確認",
+    }),
+    serverAssessmentField("servers.campaign_period_months", "duration", {
+      value_status: "not_applicable", value: null, unit: null, unknown_reason: "キャンペーンなしを公式画面で確認",
+    }),
+    serverAssessmentField("servers.domain_benefit_amount", "price", {
+      value_status: "not_applicable", value: null, unit: null, currency_status: "not_applicable",
+      currency: null, billing_period: "not_applicable", tax_treatment: "not_applicable",
+      observed_price_basis: "not_applicable", unknown_reason: "金額換算しない特典",
+    }),
+    serverAssessmentField("servers.domain_benefit_period_months", "duration", {
+      value_status: "not_applicable", value: null, unit: null, unknown_reason: "金額換算しない特典",
+    }),
+    serverAssessmentField("servers.compute_hours", "usage", {
+      value_status: "not_applicable", value: null, unit: null, unknown_reason: "時間上限なしを公式画面で確認",
+    }),
+    serverAssessmentField("servers.storage_gb", "quota"),
+    serverAssessmentField("servers.data_transfer_gb", "quota"),
+    serverAssessmentField("servers.backup_price", "price"),
+  ];
+  const assessment = assessServerPromotionCandidate(fields);
+  assert.equal(assessment.tcoReady, true);
+  assert.equal(assessment.suitabilityReady, true);
+  assert.equal(assessment.contractPromotionReady, true);
+  assert.deepEqual(assessment.reviewBlockers, []);
 });
