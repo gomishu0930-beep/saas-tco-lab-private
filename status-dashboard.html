@@ -355,16 +355,18 @@ const DATA = {
   ],
   "risks": [
     {
-      "level": "warn",
-      "label": "JP/ja需要規模が未検証(Mangools CSVで判定)"
-    },
-    {
-      "level": "warn",
-      "label": "独自domain未取得(L1で解消)"
-    },
-    {
       "level": "hold",
       "label": "承認済みFieldEvidence 0件(automated pathのみの制約)"
+    },
+    {
+      "riskId": "editorial-coverage",
+      "level": "warn",
+      "label": "編集記事は5/12承認。未承認記事はnoindex・CTA無効を維持"
+    },
+    {
+      "riskId": "server-candidate-only",
+      "level": "warn",
+      "label": "servers価格はcandidate-only。記事承認・index・partner別CTAは未実行"
     }
   ],
   "launchQuarter": {
@@ -473,12 +475,6 @@ const DATA = {
       "label": "もしも ロリポップ！レンタルサーバー提携申請",
       "status": "human_legal_attestation_required",
       "token": "moshimo_media_attestation: done"
-    },
-    {
-      "priority": 2,
-      "label": "SVR01年次総額・backup追加候補の再確認",
-      "status": "Human確認待ち",
-      "token": "server_price_input: done SVR01"
     }
   ],
   "articleReviews": []

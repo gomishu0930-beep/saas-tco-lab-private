@@ -236,7 +236,10 @@ plan・12か月選択後も金額が`--`表示でした。これらはHuman確�
 2026-08-09、`/operator/servers/`へ保存済みcandidate-only JSONのローカル再読込と価格テキストの候補抽出を追加した。
 JSONと貼り付け原文はHuman選択後だけブラウザメモリで処理し、公開前HTML、端末保存、外部通信へ含めない。
 Safariでは既存SVR01の11 fieldを復元し、上記の年次請求総額とbackup月額0円を候補として事前入力した。
-構造validationは合格しているが、**SVR01追加候補はHuman確認待ち**であり、確定・download・canonical採用は行っていない。
+構造validation合格後、Human Approverの全承認指示を受け、追加候補の観測日を2026-08-08、次回確認日を2026-09-07へ整合し、
+`SVR01-servers-category-expansion-input-v2-2026-08-08.json`として追記保存した。**SVR01追加候補のHuman確認完了**。
+正本modelで11 field、known 4、unknown 7を再検証済みである。candidate-onlyは維持し、更新料等のunknownを
+0へ補完せず、記事承認・index・CTA・順位にはまだ採用しない。
 
 同日、`asp_program_apply: GO A8.net XServerビジネス`のscopeで提携申請完了画面を確認しました。台帳は
 `pending`へ更新しました。2026-08-08、A8.netの参加中プログラム一覧でXServerビジネスの提携日と終了日未定を

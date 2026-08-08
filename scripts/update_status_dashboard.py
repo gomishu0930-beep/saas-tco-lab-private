@@ -276,7 +276,10 @@ def _external_action_queue(
                 else "server_price_input: done SVR01"
             ),
         })
-    elif "SVR01追加候補はHuman確認待ち" in adoption:
+    elif (
+        "SVR01追加候補はHuman確認待ち" in adoption
+        and "SVR01追加候補のHuman確認完了" not in adoption
+    ):
         actions.append({
             "label": "SVR01年次総額・backup追加候補の再確認",
             "status": "Human確認待ち",
@@ -454,6 +457,10 @@ def _regenerate(
     deployed = set(state["deployed_articles"])
     index_approved = set(state["index_approved_articles"])
     published_count = len(approved & deployed)
+    server_contract_ready = any(
+        path.name.startswith("SVR01")
+        for path in (root / "artifacts" / "category-expansion-inputs").glob("*.json")
+    )
     cta_count = sum(value in {"GO", "DONE"} for value in state["affiliate_cta"].values())
     domain_state = state["domain_state"]
     index_state = state["index_state"]
@@ -510,10 +517,32 @@ def _regenerate(
         {"date": "2026-11", "label": "Human予算を720分へ戻すか再判定"},
         {"date": "2026-12-31", "label": "20本・GSC clicks 300/月・confirmed 1件の固定撤退判定"},
     ]
+    obsolete_risk_labels = {
+        "JP/ja需要規模が未検証(Mangools CSVで判定)",
+        "独自domain未取得(L1で解消)",
+    }
+    generated_risk_ids = {
+        "editorial-coverage",
+        "server-candidate-only",
+        "server-partner-dependency",
+    }
     dynamic_risks = [
         item for item in data.get("risks", [])
-        if item.get("riskId") != "server-partner-dependency"
+        if item.get("riskId") not in generated_risk_ids
+        and item.get("label") not in obsolete_risk_labels
     ]
+    if approved_count < 12:
+        dynamic_risks.append({
+            "riskId": "editorial-coverage",
+            "level": "warn",
+            "label": f"編集記事は{approved_count}/12承認。未承認記事はnoindex・CTA無効を維持",
+        })
+    if server_contract_ready:
+        dynamic_risks.append({
+            "riskId": "server-candidate-only",
+            "level": "warn",
+            "label": "servers価格はcandidate-only。記事承認・index・partner別CTAは未実行",
+        })
     if server_partner_policy["warning"]:
         dynamic_risks.append({
             "riskId": "server-partner-dependency",
