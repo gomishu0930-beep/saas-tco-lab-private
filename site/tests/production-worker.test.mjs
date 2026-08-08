@@ -525,3 +525,101 @@ test("missing, expired, or malformed Mangools approval stays CTA fail-closed", a
     assert.doesNotMatch(body, /rel=["'][^"']*sponsored|data-affiliate-cta-partner/i);
   }
 });
+
+test("approved SVR01 can expose only runtime-validated server partners", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("server-cta", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01",
+    INDEX_APPROVED_SERVER_ARTICLES: "SVR01",
+    CTA_GO: "GO",
+    SERVER_CTA_GO: "a8net-xserver-business,valuecommerce-ablenet-shared-server",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
+    VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT: "true",
+    VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION: "https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=synthetic&pid=synthetic",
+  };
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+
+  const response = await worker.fetch(
+    new Request("https://saastcolab.jp/servers/business-server-pricing"),
+    env,
+    ctx,
+  );
+  assert.equal(response.status, 200);
+  assert.equal(response.headers.get("x-robots-tag"), "index, follow");
+  const body = await response.text();
+  const disclosurePosition = body.indexOf('data-affiliate-disclosure-status="enabled"');
+  const xserverPosition = body.indexOf('data-server-affiliate-cta-partner="a8net-xserver-business"');
+  const ablenetPosition = body.indexOf('data-server-affiliate-cta-partner="valuecommerce-ablenet-shared-server"');
+  assert.ok(disclosurePosition >= 0);
+  assert.ok(xserverPosition > disclosurePosition);
+  assert.ok(ablenetPosition > disclosurePosition);
+  assert.match(body, /data-server-cta-mode="comparison"/);
+  assert.match(body, /href="https:\/\/px\.a8\.net\/svt\/ejp\?a8mat=synthetic"/);
+  assert.match(body, /href="https:\/\/ck\.jp\.ap\.valuecommerce\.com\/servlet\/referral\?sid=synthetic&amp;pid=synthetic"/);
+  assert.equal((body.match(/rel="sponsored noopener noreferrer"/g) ?? []).length, 2);
+  assert.doesNotMatch(body, /data-affiliate-cta-partner="mangools"/);
+});
+
+test("server query variants and incomplete partner gates remain fail-closed", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("server-cta-fail-closed", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const baseEnv = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_SERVER_ARTICLES: "SVR01",
+    CTA_GO: "GO",
+    SERVER_CTA_GO: "a8net-xserver-business,valuecommerce-ablenet-shared-server",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
+    VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT: "true",
+    VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION: "https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=synthetic&pid=synthetic",
+  };
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+
+  const variant = await worker.fetch(
+    new Request("https://saastcolab.jp/servers/business-server-pricing?candidate=SVR02"),
+    baseEnv,
+    ctx,
+  );
+  assert.match(variant.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i);
+  assert.doesNotMatch(await variant.text(), /rel="sponsored noopener noreferrer"/);
+
+  for (const override of [
+    { INDEX_APPROVED_SERVER_ARTICLES: "" },
+    { CTA_GO: "HOLD" },
+    { SERVER_CTA_GO: "a8net-xserver-business,a8net-xserver-business" },
+    {
+      A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://example.com/redirect?x=1",
+      VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION: "https://example.com/redirect?x=1",
+    },
+    {
+      A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "false",
+      VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT: "false",
+    },
+  ]) {
+    const response = await worker.fetch(
+      new Request("https://saastcolab.jp/servers/business-server-pricing"),
+      { ...baseEnv, ...override },
+      ctx,
+    );
+    const body = await response.text();
+    assert.match(body, /data-server-affiliate-cta-state="disabled"/);
+    assert.doesNotMatch(body, /rel="sponsored noopener noreferrer"/);
+  }
+});

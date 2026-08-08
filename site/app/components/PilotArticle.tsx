@@ -398,6 +398,27 @@ export function ServerArticleTemplate({
         ) : (
           <p>公開条件をすべて通過したpartnerがないためCTAは無効です。</p>
         )}
+        <p>
+          <span data-server-affiliate-cta-state="disabled">
+            サーバー紹介リンクは無効です
+          </span>
+        </p>
+        <div className="server-cta-options" aria-label="承認済みサーバー候補">
+          <span
+            className="cta-disabled"
+            aria-describedby="article-pr-disclosure"
+            data-server-affiliate-cta-placeholder="a8net-xserver-business"
+          >
+            XServerビジネス紹介リンクは無効です
+          </span>
+          <span
+            className="cta-disabled"
+            aria-describedby="article-pr-disclosure"
+            data-server-affiliate-cta-placeholder="valuecommerce-ablenet-shared-server"
+          >
+            ABLENET紹介リンクは無効です
+          </span>
+        </div>
       </section>
       <section className="shell page-section" data-server-template-step="evidence" aria-label="価格の根拠表">{evidence}</section>
     </main>

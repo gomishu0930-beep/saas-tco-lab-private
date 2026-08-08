@@ -17,7 +17,7 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |価格表示分類|`sale_banner_state: <class> <partner>`|`sale_banner_state: annual_discount_permanent mangools`|`none` / `annual_discount_permanent` / `time_limited_promo` / `unknown`のHuman分類を記録|
 |Checkout再観測完了（必要時）|`checkout_values: done`|`checkout_values: done`|既存確定値を更新する再観測時だけ使用。Mangools初回値は2026-08-02に取込済み|
 |記事入力完了|`article_input: done <P-ID>`|`article_input: done P01`|Operatorが出力したcontractの取込・再検証を依頼|
-|記事承認|`article_approve: <P-ID,...>`|`article_approve: P01,P02,P03`|列挙した記事本文だけをHuman承認|
+|記事承認|`article_approve: <P-IDまたはSVR-ID,...>`|`article_approve: P01,P02,P03`|列挙した記事本文だけをHuman承認。serversは価格・TCO・用途判定がREADYのSVR-IDだけ有効|
 |記事修正|`article_revise: <P-ID> <修正点>`|`article_revise: P01 税区分を再確認`|対象記事をunreviewedへ戻す|
 |Index判断|`index_go: GO / HOLD`|`index_go: HOLD`|承認済み記事だけのindex可否。CTAには効かない|
 |Partner CTA|`cta_go: GO <partner> / HOLD <partner>`|`cta_go: GO mangools`|当該partnerの承認済みCTAだけを対象化|
@@ -36,6 +36,7 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |もしもメディア適法性確認|`moshimo_media_attestation: done`|`moshimo_media_attestation: done`|SaaS TCO Labが権利を侵害していないことをHuman本人が画面で確認し「はい」を押した後だけ使用。Codexは代行しない|
 |バリューコマース本登録完了|`valuecommerce_registration: done`|`valuecommerce_registration: done`|本登録案内メールの期限内URLからHumanが手続きを完了した後、ABLENET候補の個別条件をread-onlyで再確認|
 |servers候補入力|`server_price_input: done <SVR-ID>`|`server_price_input: done SVR01`|`/operator/servers/`の候補値をHumanが確認し、確定ボタンを押して保存したcandidate-only JSONをlocal検証。公開・CTAには効かない|
+|servers記事承認|`article_approve: <SVR-ID>`|`article_approve: SVR01`|TCO・用途判定・Human確認がすべてREADYの本文だけを承認。index・CTAには効かない|
 |localhost候補JSON download許可|`local_download_permission: GO localhost <SVR-ID> / HOLD`|`local_download_permission: GO localhost SVR01`|Safariの一回のlocalhost download許可だけを承認。外部送信・公開・CTA・ASP申請には効かない|
 |P01 note修正|`note_edit_go: GO P01 PR先頭追記 / HOLD`|`note_edit_go: GO P01 PR先頭追記`|既存noteの先頭へlocal templateのPR表示だけを追記する外部編集を許可|
 |SaaS専用X（完了記録）|`account_repurpose: GO <旧handle> retire_fanza`|`account_repurpose: GO @fanza_poll_lab retire_fanza`|2026-08-06受領・完了済み。再実行しない|

@@ -73,8 +73,8 @@ query別volume、Mangools固有IDはrepositoryへ保存しない。v1.1の150語
 |category|取得行|safe-summary|known / no_data / rejected|known合計 / no_data率|判断|
 |---|---:|---|---|---|---|
 |servers|40 / 40|`artifacts/editorial-inputs/demand-safe-summaries/servers-2026-08-06.json`|14 / 26 / 0|28,220 / 0.65000000|必要22,227のknown下限は超えるが、拡張目安5万未満。候補維持|
-|accounting|30 / 40|未生成|未判定|未判定|検索回数上限で残り10語待ち。部分合計は需要判断へ使わない|
-|crm|0 / 40|未生成|未判定|未判定|検索回数回復待ち|
+|accounting|40 / 40|本表（P18固定scope維持のため新規artifactなし）|9 / 31 / 0|6,320 / 0.77500000|known下限は必要22,227を下回り、no_data率も高い。現時点では拡張しない|
+|crm|30 / 40|未生成|未判定|未判定|2026-08-09に30語取得。残り10語は検索回数回復待ち。部分合計は需要判断へ使わない|
 |forms|0 / 40|未生成|未判定|未判定|検索回数回復待ち|
 |email_marketing|0 / 40|未生成|未判定|未判定|検索回数回復待ち|
 |seo_tools_v2_extension|0 / 60|未生成|未判定|未判定|検索回数回復待ち|

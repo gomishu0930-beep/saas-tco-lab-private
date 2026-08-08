@@ -191,6 +191,12 @@ XServerビジネスの個別提携は2026-08-08に承認済みをread-backした
 有望と判定しません。serversの比較CTAは承認partner 2社以上、1社なら単独CTAとし、構造上の1社依存100%を
 dashboardで警告します。2026-12-31の固定撤退ラインは公開20本、GSC clicks 300/月、confirmed 1件の全達成です。
 
+2026-08-09、accountingはKWFinder正規画面のJapan指定で40/40を再取得し、凍結slate完全一致を
+validatorで確認しました。known 9、no_data 31、rejected 0、known合計6,320/月、no_data率77.5%で、
+必要22,227 sessionのknown下限を下回ります。したがってaccountingは現時点で拡張せず、P18固定scopeを増やさないため
+safe-summaryは既存のカテゴリ表へ記録しました。CRMは同日に30/40まで取得しましたが、完全一致前の部分合計は採用せず、残り10語を
+検索回数枠の回復後に取得します。forms、email_marketing、SEO追加60語は引き続き未観測です。
+
 Z6–Z7としてservers記事の計算機をzero-inputへ固定しました。記事には承認済みcontractから事前計算する
 総額表と、12/24/36か月・用途区分のbuttonだけを置き、金額、seat、価格基準、税区分の入力欄は置きません。
 unknown、未承認、用途対象外は順位から除外し、unknownは`未確認`と表示します。従来の任意入力式計算機は
@@ -264,6 +270,12 @@ Humanが画面上の「はい」を押すまではメディア登録、ロリポ
 同日、ValueCommerceのABLENET共用サーバーは個別条件の確認後に提携申請し、「提携済み」をread-backしました。
 serversカテゴリの承認済みprogramはXServerビジネスとABLENETの2件です。ただしconfirmed commission shareは
 未観測であり、両partnerともruntime destination・記事承認・開示先行・個別`cta_go`がそろうまでCTAへ出しません。
+
+2026-08-09、上記2件のCTAをrepositoryへURL保存せず実行時だけ有効化するserver runtime gateを実装しました。
+SVR01のexact承認、`INDEX_GO`、`CTA_GO`、partner別`SERVER_CTA_GO`、提携有効フラグ、ASP固有host/pathの
+runtime destinationがすべて成立したpartnerだけを表示します。1社だけ成立した場合は単独CTA、2社成立時は
+比較CTAとし、PR開示より前には挿入しません。query付きSVR02–SVR20候補はSVR01が承認されてもnoindex・CTA無効を
+維持します。現productionにはserver承認・destination・server CTA GOを設定していないため、公開状態は変わりません。
 
 P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go: GO P01 PR先頭追記`により、
 公開記事の本文先頭へ`[PR]`を追記し、公開read-backで反映を確認しました。localの再配信templateは

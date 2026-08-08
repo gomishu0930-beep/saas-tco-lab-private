@@ -15,10 +15,16 @@ interface ProductionEnv {
   IMPACT_SITE_VERIFICATION?: string;
   INDEX_GO?: string;
   INDEX_APPROVED_ARTICLES?: string;
+  INDEX_APPROVED_SERVER_ARTICLES?: string;
   CTA_GO?: string;
   CTA_APPROVED_PARTNER?: string;
   MANGOOLS_AFFILIATE_APPROVAL_CURRENT?: string;
   MANGOOLS_AFFILIATE_DESTINATION?: string;
+  SERVER_CTA_GO?: string;
+  A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT?: string;
+  A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION?: string;
+  VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT?: string;
+  VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -99,6 +105,10 @@ const ARTICLE_PATH_TO_ID = new Map([
   ["/pilot/evidence-method", "P12"],
 ]);
 
+const SERVER_ARTICLE_PATH_TO_ID = new Map([
+  ["/servers/business-server-pricing", "SVR01"],
+]);
+
 function approvedIndexPaths(env: ProductionEnv): ReadonlySet<string> {
   if (env.INDEX_GO?.trim() !== "GO") return new Set();
   const values = (env.INDEX_APPROVED_ARTICLES ?? "").split(",").map((item) => item.trim()).filter(Boolean);
@@ -106,7 +116,20 @@ function approvedIndexPaths(env: ProductionEnv): ReadonlySet<string> {
     return new Set();
   }
   const approved = new Set(values);
-  return new Set([...ARTICLE_PATH_TO_ID].filter(([, id]) => approved.has(id)).map(([path]) => path));
+  const paths = new Set([...ARTICLE_PATH_TO_ID].filter(([, id]) => approved.has(id)).map(([path]) => path));
+  const serverValues = (env.INDEX_APPROVED_SERVER_ARTICLES ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  if (
+    serverValues.some((item) => !/^SVR(?:0[1-9]|1[0-9]|20)$/.test(item))
+    || new Set(serverValues).size !== serverValues.length
+  ) return paths;
+  const approvedServers = new Set(serverValues);
+  for (const [path, id] of SERVER_ARTICLE_PATH_TO_ID) {
+    if (approvedServers.has(id)) paths.add(path);
+  }
+  return paths;
 }
 
 function normalizePath(pathname: string): string {
@@ -154,6 +177,27 @@ interface AffiliateCtaControls {
   destination: string | null;
   enabled: boolean;
 }
+
+type ServerAffiliatePartnerId =
+  | "a8net-xserver-business"
+  | "valuecommerce-ablenet-shared-server";
+
+interface ServerAffiliatePartnerControl {
+  destination: string;
+  id: ServerAffiliatePartnerId;
+  label: string;
+}
+
+interface ServerAffiliateCtaControls {
+  enabled: boolean;
+  mode: "disabled" | "single" | "comparison";
+  partners: readonly ServerAffiliatePartnerControl[];
+}
+
+const SERVER_AFFILIATE_PARTNER_IDS: readonly ServerAffiliatePartnerId[] = [
+  "a8net-xserver-business",
+  "valuecommerce-ablenet-shared-server",
+];
 
 function consentGatedAnalyticsBootstrap(measurementId: string): string {
   return `<script data-saastco-analytics-consent>(()=>{const m=${JSON.stringify(measurementId)},k="saas_tco_lab_analytics_consent_v1",p=location.pathname;let l=false,q=false;const g=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)},u=()=>location.origin+location.pathname,e=(n,v={})=>g("event",n,{content_path:p,...v}),s=()=>{if(q||document.visibilityState!=="visible")return;q=true;e("qualified_session",{qualification_seconds:30})},o=()=>{if(l)return;l=true;g("consent","default",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",wait_for_update:500});g("consent","update",{analytics_storage:"granted"});g("js",new Date);g("config",m,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,page_location:u(),page_referrer:""});const t=document.createElement("script");t.async=true;t.src="https://www.googletagmanager.com/gtag/js?id="+encodeURIComponent(m);t.referrerPolicy="no-referrer";document.head.appendChild(t);e("page_view",{page_location:u(),page_title:document.title});setTimeout(s,30000);document.addEventListener("visibilitychange",s,{passive:true});document.addEventListener("click",t=>{const a=t.target instanceof Element?t.target.closest("a[href],button,[role=button]"):null;if(!a||a.closest("[data-analytics-consent-ui]"))return;if(a instanceof HTMLAnchorElement){const h=new URL(a.href,location.href);if(h.origin!==location.origin){e("outbound_click",{link_domain:h.hostname});return}}if(a.closest('[data-analytics-scope="comparison"]')||a.getAttribute("data-analytics-event")==="comparison_interaction")e("comparison_interaction",{interaction_type:a.tagName.toLowerCase()})},{passive:true})},c=v=>{localStorage.setItem(k,v);document.querySelector("[data-analytics-consent-banner]")?.remove();if(v==="granted")o()},b=()=>{if(document.querySelector("[data-analytics-consent-banner]"))return;const d=document.createElement("div");d.dataset.analyticsConsentBanner="";d.dataset.analyticsConsentUi="";d.setAttribute("role","dialog");d.setAttribute("aria-label","アクセス解析の同意");d.style.cssText="position:fixed;z-index:2147483647;right:16px;bottom:16px;max-width:360px;padding:16px;border:1px solid #1d2420;background:#fff;color:#1d2420;box-shadow:4px 4px 0 #1d2420;font:14px/1.55 system-ui,sans-serif";d.innerHTML='<strong>アクセス解析について</strong><p style="margin:8px 0 12px">改善のため匿名の利用状況を計測します。同意するまでGoogleへの通信は行いません。</p><button type="button" data-consent="granted" style="margin-right:8px">同意する</button><button type="button" data-consent="denied">拒否する</button>';d.addEventListener("click",t=>{const v=t.target instanceof Element?t.target.getAttribute("data-consent"):null;if(v==="granted"||v==="denied")c(v)});document.body.appendChild(d)},r=()=>{let x=document.querySelector("[data-analytics-settings]");if(x)return;x=document.createElement("button");x.type="button";x.dataset.analyticsSettings="";x.dataset.analyticsConsentUi="";x.textContent="アクセス解析設定";x.style.cssText="position:fixed;z-index:2147483646;left:12px;bottom:12px;padding:6px 8px;border:1px solid #1d2420;background:#fff;color:#1d2420;font:12px system-ui,sans-serif";x.addEventListener("click",b);document.body.appendChild(x)};addEventListener("DOMContentLoaded",()=>{r();const v=localStorage.getItem(k);if(v==="granted")o();else if(v!=="denied")b()},{once:true})})();</script>`;
@@ -220,6 +264,81 @@ function affiliateCtaControls(
   } catch {
     return { approvedPaths: [], destination: null, enabled: false };
   }
+}
+
+function validatedServerAffiliateDestination(
+  partnerId: ServerAffiliatePartnerId,
+  rawDestination: string | undefined,
+): string | null {
+  const raw = rawDestination?.trim();
+  if (!raw) return null;
+  try {
+    const destination = new URL(raw);
+    if (
+      destination.protocol !== "https:"
+      || destination.username !== ""
+      || destination.password !== ""
+      || destination.hash !== ""
+      || destination.search === ""
+    ) return null;
+    if (
+      partnerId === "a8net-xserver-business"
+      && destination.hostname.toLowerCase() === "px.a8.net"
+      && destination.pathname === "/svt/ejp"
+    ) return destination.href;
+    if (
+      partnerId === "valuecommerce-ablenet-shared-server"
+      && destination.hostname.toLowerCase() === "ck.jp.ap.valuecommerce.com"
+      && destination.pathname === "/servlet/referral"
+    ) return destination.href;
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function serverAffiliateCtaControls(
+  env: ProductionEnv,
+  indexPaths: ReadonlySet<string>,
+  path: string,
+): ServerAffiliateCtaControls {
+  if (!indexPaths.has(path) || env.CTA_GO?.trim() !== "GO") {
+    return { enabled: false, mode: "disabled", partners: [] };
+  }
+  const requested = (env.SERVER_CTA_GO ?? "")
+    .split(",")
+    .map((item) => item.trim().toLowerCase())
+    .filter(Boolean);
+  if (
+    requested.length === 0
+    || new Set(requested).size !== requested.length
+    || requested.some((item) => !SERVER_AFFILIATE_PARTNER_IDS.includes(item as ServerAffiliatePartnerId))
+  ) return { enabled: false, mode: "disabled", partners: [] };
+
+  const partners: ServerAffiliatePartnerControl[] = [];
+  for (const partnerId of requested as ServerAffiliatePartnerId[]) {
+    if (partnerId === "a8net-xserver-business") {
+      if (env.A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT?.trim().toLowerCase() !== "true") continue;
+      const destination = validatedServerAffiliateDestination(
+        partnerId,
+        env.A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION,
+      );
+      if (destination) partners.push({ destination, id: partnerId, label: "XServerビジネス公式サイトを見る" });
+      continue;
+    }
+    if (env.VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT?.trim().toLowerCase() !== "true") continue;
+    const destination = validatedServerAffiliateDestination(
+      partnerId,
+      env.VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION,
+    );
+    if (destination) partners.push({ destination, id: partnerId, label: "ABLENET公式サイトを見る" });
+  }
+  if (partners.length === 0) return { enabled: false, mode: "disabled", partners: [] };
+  return {
+    enabled: true,
+    mode: partners.length >= 2 ? "comparison" : "single",
+    partners,
+  };
 }
 
 function escapeHtmlAttribute(value: string): string {
@@ -360,6 +479,71 @@ async function withAffiliateCta(
   });
 }
 
+async function withServerAffiliateCta(
+  response: Response,
+  controls: ServerAffiliateCtaControls,
+): Promise<Response> {
+  const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+  if (!controls.enabled || response.status !== 200 || !contentType.includes("text/html")) {
+    return response;
+  }
+
+  const originalBody = await response.text();
+  const disclosurePattern = /<span\s+data-affiliate-disclosure-status=["']disabled["']>[^<]*<\/span>/i;
+  const statePattern = /<span\s+data-server-affiliate-cta-state=["']disabled["']>[\s\S]*?<\/span>/i;
+  const disclosureMatch = originalBody.match(disclosurePattern);
+  const stateMatch = originalBody.match(statePattern);
+  const placeholderMatches = controls.partners.map((partner) => {
+    const pattern = new RegExp(
+      `<span\\b(?=[^>]*data-server-affiliate-cta-placeholder=["']${partner.id}["'])[^>]*>[\\s\\S]*?<\\/span>`,
+      "i",
+    );
+    return { match: originalBody.match(pattern), partner, pattern };
+  });
+  if (
+    disclosureMatch?.index === undefined
+    || stateMatch?.index === undefined
+    || disclosureMatch.index >= stateMatch.index
+    || originalBody.match(new RegExp(disclosurePattern.source, "gi"))?.length !== 1
+    || originalBody.match(new RegExp(statePattern.source, "gi"))?.length !== 1
+    || placeholderMatches.some(({ match, pattern }) => (
+      match?.index === undefined
+      || disclosureMatch.index! >= match.index
+      || originalBody.match(new RegExp(pattern.source, "gi"))?.length !== 1
+    ))
+  ) {
+    return new Response(originalBody, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
+  }
+
+  let body = originalBody
+    .replace(
+      disclosurePattern,
+      '<span data-affiliate-disclosure-status="enabled">この記事には承認済みサーバーサービスのアフィリエイトリンクが含まれます。</span>',
+    )
+    .replace(
+      statePattern,
+      `<span data-server-affiliate-cta-state="enabled">ACTIVE — ${controls.mode.toUpperCase()}</span>`,
+    )
+    .replace(/data-server-cta-mode=["']disabled["']/i, `data-server-cta-mode="${controls.mode}"`);
+  for (const { partner, pattern } of placeholderMatches) {
+    body = body.replace(
+      pattern,
+      `<a class="cta-active" data-server-affiliate-cta-partner="${partner.id}" href="${escapeHtmlAttribute(partner.destination)}" target="_blank" rel="sponsored noopener noreferrer" aria-describedby="article-pr-disclosure">${partner.label}</a>`,
+    );
+  }
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  return new Response(body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 async function withRuntimeHeadControls(
   response: Response,
   controls: RuntimeHeadControls,
@@ -424,7 +608,10 @@ const worker = {
     const runtimeControls = runtimeHeadControls(env);
     const normalizedPath = normalizePath(url.pathname);
     const indexPaths = approvedIndexPaths(env);
-    const ctaControls = affiliateCtaControls(env, indexPaths, normalizedPath);
+    const indexable = url.search === "" && indexPaths.has(normalizedPath);
+    const gatedPath = indexable ? normalizedPath : "";
+    const ctaControls = affiliateCtaControls(env, indexPaths, gatedPath);
+    const serverCtaControls = serverAffiliateCtaControls(env, indexPaths, gatedPath);
 
     if (url.hostname.toLowerCase() === LEGACY_PUBLIC_HOST) {
       const target = new URL(request.url);
@@ -502,21 +689,24 @@ const worker = {
       const response = await handler.fetch(request, env, ctx);
       const embeddable = normalizedPath === "/embed/tco-calculator";
       return withSecurityHeaders(
-        await withAffiliateCta(
-          await withNextReading(
-            await withRuntimeHeadControls(
-              response,
-              runtimeControls,
-              indexPaths.has(normalizedPath),
+        await withServerAffiliateCta(
+          await withAffiliateCta(
+            await withNextReading(
+              await withRuntimeHeadControls(
+                response,
+                runtimeControls,
+                indexable,
+                normalizedPath,
+              ),
+              indexable ? indexPaths : new Set(),
               normalizedPath,
             ),
-            indexPaths,
-            normalizedPath,
+            ctaControls,
           ),
-          ctaControls,
+          serverCtaControls,
         ),
         runtimeControls.analyticsEnabled,
-        indexPaths.has(normalizedPath),
+        indexable,
         embeddable,
       );
     }

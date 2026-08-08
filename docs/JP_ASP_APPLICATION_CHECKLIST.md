@@ -67,10 +67,10 @@ servers候補として台帳へ追加した。バリューコマースではABLE
 |カテゴリ|W6 known需要/月|最高単価案件|必要成約数|必要sessions（CVR 1%仮定）|判定|
 |---|---:|---|---:|---:|---|
 |servers|28,220（14/40 known、no_data率65%）|XServerビジネス|`restricted`|`restricted`|2026-08-06 Human選定のprimary。需要単独では5万/月未満で、収益性確定とは扱わない|
-|accounting|`unknown`（30/40の部分結果は不採用）|マネーフォワード クラウド会計|`restricted`|`restricted`|需要CSV完了待ち|
+|accounting|6,320（9/40 known、no_data率77.5%）|マネーフォワード クラウド会計|`restricted`|`restricted`|必要22,227 sessionのknown下限未達。現時点では拡張しない|
 |forms|`unknown`|formrun|`restricted`|`restricted`|需要CSV未取得のため判定しない|
 |email_marketing|`unknown`|WiLL Mail|`restricted`|`restricted`|需要CSV未取得のため判定しない|
-|crm|`unknown`|A8.net直接program未確認|`unknown`|`unknown`|もしも・バリューコマースと需要CSVの両方を待つ|
+|crm|`unknown`（30/40の部分結果は不採用）|A8.net直接program未確認|`unknown`|`unknown`|残り10語と、もしも・バリューコマースのprogram確認を待つ|
 
 ### Evidence-gated next step
 
@@ -81,7 +81,8 @@ servers候補として台帳へ追加した。バリューコマースではABLE
 |aggressive|5カテゴリを同時申請・同時公開する|需要unknownかつ提携未承認のため`ineligible`|現状は開始しない|
 
 2026-08-06のHuman decisionで`balanced`を採用した。これはserversのlocal準備だけを許可し、申請・公開・CTAを許可しない。
-accounting / forms / crm / email_marketingは需要unknownのまま、有望と判定しない。
+accountingは40/40実測でknown下限が必要sessionを下回ったため拡張しない。forms / crm / email_marketingは
+完全slate未取得のまま、有望と判定しない。
 
 ## 2026-08-07 readiness read-back
 
