@@ -11,6 +11,7 @@ import {
   prefillExtractedCandidate,
   validateEditorialInput,
   valuesFromContract,
+  reusableEditorialEvidence,
   type EditorialContract,
   type EditorialFieldFormValue,
   type EditorialRowFormValue,
@@ -131,6 +132,13 @@ export function OperatorInputForm() {
   const page = pilotPages.find((candidate) => candidate.id === articleId) ?? pilotPages[0];
   const rows = rowsByArticle[page.id] ?? initialRows(page);
   const validation = useMemo(() => validateEditorialInput(page, rows), [page, rows]);
+  const sourceContracts = useMemo(() => pilotPages
+    .map((candidate) => editorialContract(candidate))
+    .filter((candidate): candidate is EditorialContract => candidate !== null), []);
+  const reusableEvidence = useMemo(
+    () => reusableEditorialEvidence(page, sourceContracts),
+    [page, sourceContracts],
+  );
   const json = confirmedContract ? `${JSON.stringify(confirmedContract, null, 2)}\n` : "";
   const hasStarted = rows.some((row) => row.vendorId || row.planId || row.billingToggleState || row.saleBannerState || Object.values(row.values).some((field) => (
     field.billingToggleState || field.saleBannerState || field.value || field.unit || field.unknownReason || field.monthlyReferenceValue || field.sourceUrl || field.observedOn || field.nextReviewOn
@@ -280,6 +288,12 @@ export function OperatorInputForm() {
     resetConfirmation();
   }
 
+  function applyReusableEvidence() {
+    if (!reusableEvidence || hasStarted) return;
+    setRowsByArticle((current) => ({ ...current, [page.id]: [...reusableEvidence.rows] }));
+    resetConfirmation();
+  }
+
   function loadPrevious() {
     const stored = parseStoredContract(page, window.localStorage.getItem(storageKey(page.id)))
       ?? editorialContract(page);
@@ -359,6 +373,17 @@ export function OperatorInputForm() {
         </select>
         <p>{page.question}</p>
       </div>
+
+      {reusableEvidence ? <section className="operator-reuse" aria-labelledby="operator-reuse-title">
+        <div>
+          <p className="eyebrow">APPROVED EVIDENCE REUSE</p>
+          <h3 id="operator-reuse-title">承認済み証拠を再入力せず候補化</h3>
+          <p>{reusableEvidence.appliedFields.length} fieldを、同じvendor・planの承認済み観測から事前入力できます。対象記事では必ずunreviewedへ戻り、未入力fieldやHumanシナリオは補完しません。</p>
+        </div>
+        <button type="button" onClick={applyReusableEvidence} disabled={hasStarted}>
+          {hasStarted ? "入力開始後は再利用できません" : "承認済み証拠を候補へ反映"}
+        </button>
+      </section> : null}
 
       <form onSubmit={(event) => event.preventDefault()} noValidate>
         <section className="operator-paste-parser" aria-labelledby="operator-paste-title">

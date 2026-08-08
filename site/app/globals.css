@@ -275,6 +275,11 @@ body:has(.embed-page) > .skip-link { display: none; }
 .operator-article-picker label, .operator-input-group > label { color: var(--muted); font-size: 0.7rem; font-weight: 800; }
 .operator-article-picker select, .operator-input-group input, .operator-input-group select { width: 100%; min-height: 43px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 0; background: white; color: var(--ink); font: 700 0.78rem ui-monospace, monospace; }
 .operator-article-picker p { margin: 0; color: var(--muted); font-size: 0.76rem; }
+.operator-reuse { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 22px; align-items: center; margin: -12px 0 28px; padding: 18px 20px; border: 1px solid var(--line); background: #eef0e9; }
+.operator-reuse h3 { margin: 0 0 6px; font: 500 1.25rem/1.2 Georgia, "Yu Mincho", serif; }
+.operator-reuse p:not(.eyebrow) { max-width: 820px; margin: 0; color: var(--muted); font-size: 0.72rem; }
+.operator-reuse button { min-height: 42px; padding-inline: 15px; border: 1px solid var(--ink); background: var(--green); color: white; font-weight: 800; cursor: pointer; }
+.operator-reuse button:disabled { cursor: not-allowed; opacity: 0.55; }
 .operator-field-stack { display: grid; gap: 16px; }
 .operator-field-stack fieldset { margin: 0; padding: 24px; border: 1px solid var(--line); }
 .operator-field-stack legend { padding-inline: 8px; font-family: Georgia, "Yu Mincho", serif; font-size: 1.35rem; }
@@ -466,7 +471,7 @@ body:has(.embed-page) > .skip-link { display: none; }
   .derivative-list summary { grid-template-columns: 52px 1fr; }
   .derivative-list summary small { grid-column: 2; }
   .operator-input-card { padding: 20px; }
-  .operator-timebox, .operator-article-picker, .operator-form-grid, .operator-identity-grid, .operator-identity-grid.one-column, .operator-status-row { grid-template-columns: 1fr; }
+  .operator-timebox, .operator-article-picker, .operator-reuse, .operator-form-grid, .operator-identity-grid, .operator-identity-grid.one-column, .operator-status-row { grid-template-columns: 1fr; }
   .operator-timebox dl { grid-template-columns: 1fr; }
   .operator-timebox dl div + div { border-left: 0; border-top: 1px solid var(--line); }
   .operator-article-picker p { grid-column: 1; }

@@ -90,6 +90,30 @@ export type EditorialValidation = {
   contract: EditorialContract | null;
 };
 
+type EditorialEvidenceReuseRule = {
+  sourceArticleId: PilotPage["id"];
+  sourceField: string;
+  targetArticleId: PilotPage["id"];
+  targetField: string;
+  vendorId: string;
+  planId: string;
+};
+
+const editorialEvidenceReuseRules: readonly EditorialEvidenceReuseRule[] = [
+  { sourceArticleId: "P02", sourceField: "plan.minimum_seats", targetArticleId: "P04", targetField: "team.minimum_seats", vendorId: "mangools", planId: "basic" },
+  { sourceArticleId: "P06", sourceField: "billing.monthly_contract_price", targetArticleId: "P04", targetField: "team.monthly_price", vendorId: "mangools", planId: "basic" },
+  { sourceArticleId: "P01", sourceField: "pricing.base_price", targetArticleId: "P08", targetField: "addon.base_price", vendorId: "mangools", planId: "basic" },
+  { sourceArticleId: "P03", sourceField: "alternative.required_addon_price", targetArticleId: "P08", targetField: "addon.price", vendorId: "mangools", planId: "basic" },
+  { sourceArticleId: "P02", sourceField: "plan.minimum_seats", targetArticleId: "P08", targetField: "addon.required_seats", vendorId: "mangools", planId: "basic" },
+  { sourceArticleId: "P01", sourceField: "pricing.base_price", targetArticleId: "P10", targetField: "localization.displayed_price", vendorId: "mangools", planId: "basic" },
+  { sourceArticleId: "P01", sourceField: "pricing.tax_rate", targetArticleId: "P10", targetField: "localization.tax_rate", vendorId: "mangools", planId: "basic" },
+] as const;
+
+export type ReusableEditorialEvidence = {
+  appliedFields: readonly string[];
+  rows: readonly EditorialRowFormValue[];
+};
+
 export type ServerPromotionAssessment = {
   tcoReady: boolean;
   suitabilityReady: boolean;
@@ -778,4 +802,71 @@ export function validateEditorialInput(
       article_review_status: "unreviewed",
     },
   };
+}
+
+function reusableFieldFormValue(
+  field: EditorialContract["numeric_fields"][number],
+): EditorialFieldFormValue {
+  return {
+    billingToggleState: field.billing_toggle_state ?? "",
+    saleBannerState: field.sale_banner_state ?? "",
+    valueStatus: field.value_status,
+    value: field.value ?? "",
+    unit: field.unit ?? "",
+    unknownReason: field.unknown_reason ?? "",
+    currencyStatus: field.currency_status,
+    currency: field.currency ?? "",
+    currencyDisplay: field.currency_display ?? "",
+    currencyUnknownReason: field.currency_unknown_reason ?? "",
+    billingPeriod: field.billing_period ?? "",
+    taxTreatment: field.tax_treatment ?? "",
+    observedPriceBasis: field.observed_price_basis ?? "",
+    monthlyReferenceValue: field.monthly_reference_value ?? "",
+    sourceUrl: field.source_url ?? "",
+    observedOn: field.observed_on,
+    nextReviewOn: field.next_review_on,
+  };
+}
+
+/**
+ * Build prefill-only rows from already approved evidence.
+ *
+ * The target form still creates unreviewed fields and an unreviewed article.
+ * No source value is inferred, recalculated, promoted, or written automatically.
+ */
+export function reusableEditorialEvidence(
+  page: PilotPage,
+  sourceContracts: readonly EditorialContract[],
+): ReusableEditorialEvidence | null {
+  const rules = editorialEvidenceReuseRules.filter((rule) => rule.targetArticleId === page.id);
+  if (!rules.length) return null;
+
+  const scopes = new Set(page.numericFields.map(pilotFieldScope));
+  const rows: EditorialRowFormValue[] = [
+    ...(scopes.has("vendor_plan") ? [emptyEditorialRow(page, "vendor_plan", "reused-vendor-1")] : []),
+    ...(scopes.has("human_scenario") ? [emptyEditorialRow(page, "human_scenario", "scenario-1")] : []),
+  ];
+  const vendorRow = rows.find((row) => row.scopeKind === "vendor_plan");
+  if (!vendorRow) return null;
+
+  const appliedFields: string[] = [];
+  for (const rule of rules) {
+    const sourceContract = sourceContracts.find((candidate) => candidate.article_id === rule.sourceArticleId);
+    if (!sourceContract || sourceContract.article_review_status !== "approved") continue;
+    const source = sourceContract.numeric_fields.find((field) => (
+      field.scope_kind === "vendor_plan"
+      && field.vendor_id === rule.vendorId
+      && field.plan_id === rule.planId
+      && field.field === rule.sourceField
+      && field.review_status === "approved"
+    ));
+    const target = page.numericFields.find((field) => field.key === rule.targetField);
+    if (!source || !target || source.value_kind !== target.valueKind) continue;
+    vendorRow.vendorId = rule.vendorId;
+    vendorRow.planId = rule.planId;
+    vendorRow.values[target.key] = reusableFieldFormValue(source);
+    appliedFields.push(target.key);
+  }
+
+  return appliedFields.length ? { appliedFields, rows } : null;
 }

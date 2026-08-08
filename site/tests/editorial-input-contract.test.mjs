@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import {
@@ -9,10 +10,16 @@ import {
   emptyEditorialRow,
   extractPriceTextCandidates,
   prefillExtractedCandidate,
+  reusableEditorialEvidence,
   validateEditorialInput,
   valuesFromContract,
 } from "../app/lib/editorial-input-contract.ts";
 import { pilotFieldScope, pilotPages } from "../app/lib/pilot-pages.ts";
+
+const approvedSourceContracts = ["P01", "P02", "P03", "P06", "P07"].map((articleId) => JSON.parse(readFileSync(
+  new URL(`../../artifacts/editorial-inputs/${articleId}-editorial-input.json`, import.meta.url),
+  "utf8",
+)));
 
 function oneFieldPage(field) {
   return {
@@ -478,4 +485,38 @@ test("servers promotion assessment accepts explicit approved values and not-appl
   assert.equal(assessment.suitabilityReady, true);
   assert.equal(assessment.contractPromotionReady, true);
   assert.deepEqual(assessment.reviewBlockers, []);
+});
+
+test("remaining articles reuse only approved same-type evidence as unreviewed form candidates", () => {
+  const expected = new Map([
+    ["P04", ["team.minimum_seats", "team.monthly_price"]],
+    ["P08", ["addon.base_price", "addon.price", "addon.required_seats"]],
+    ["P10", ["localization.displayed_price", "localization.tax_rate"]],
+  ]);
+
+  for (const [articleId, expectedFields] of expected) {
+    const page = pilotPages.find((candidate) => candidate.id === articleId);
+    assert.ok(page);
+    const reusable = reusableEditorialEvidence(page, approvedSourceContracts);
+    assert.ok(reusable);
+    assert.deepEqual(reusable.appliedFields, expectedFields);
+    const vendor = reusable.rows.find((row) => row.scopeKind === "vendor_plan");
+    assert.equal(vendor?.vendorId, "mangools");
+    assert.equal(vendor?.planId, "basic");
+    for (const field of expectedFields) {
+      assert.ok(vendor?.values[field]?.sourceUrl.startsWith("https://"));
+      assert.ok(vendor?.values[field]?.observedOn);
+      assert.ok(vendor?.values[field]?.nextReviewOn);
+    }
+    const validation = validateEditorialInput(page, reusable.rows);
+    assert.equal(validation.contract, null, "unfilled target fields must keep the article unreviewed");
+  }
+});
+
+test("articles without exact semantic reuse rules receive no suggested evidence", () => {
+  for (const articleId of ["P05", "P09", "P11", "P12"]) {
+    const page = pilotPages.find((candidate) => candidate.id === articleId);
+    assert.ok(page);
+    assert.equal(reusableEditorialEvidence(page, approvedSourceContracts), null);
+  }
 });

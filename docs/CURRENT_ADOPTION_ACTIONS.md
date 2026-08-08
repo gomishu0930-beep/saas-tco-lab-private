@@ -277,6 +277,17 @@ runtime destinationがすべて成立したpartnerだけを表示します。1�
 比較CTAとし、PR開示より前には挿入しません。query付きSVR02–SVR20候補はSVR01が承認されてもnoindex・CTA無効を
 維持します。現productionにはserver承認・destination・server CTA GOを設定していないため、公開状態は変わりません。
 
+同日、XServerビジネスの正規公開画面を追加でread-only確認しました。機能一覧は共有serverについて
+「転送量課金なし」「転送量無制限」を明示しています。一方、契約更新simulationは共有スタンダードと12か月を
+選択しても`--円/月`のままで、更新時請求総額を確定できませんでした。したがって転送量は数値上限なしの
+`not_applicable`候補、更新料は`unknown`候補ですが、Human field確認前のため既存candidate-only contractへは
+書き込まず、TCO・用途判定HOLDを維持します。
+
+既存のHuman承認済みMangools観測を別記事で再入力しないため、`/operator`へ証拠再利用prefillを追加しました。
+P04は最低利用者数と月契約料金、P08は基本料金・必須addon料金・必要利用者数、P10は表示価格と税fieldだけを
+同じvendor・planかつ同じ値型の承認済みfieldから候補化します。対象記事では全fieldを`unreviewed`へ戻し、
+未入力field、Human scenario、意味が異なるfieldは補完しません。これは記事承認・index・CTA authorityを持ちません。
+
 P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go: GO P01 PR先頭追記`により、
 公開記事の本文先頭へ`[PR]`を追記し、公開read-backで反映を確認しました。localの再配信templateは
 確認済み実額・公式記事URL・冒頭PR表示を含む版です。2026-08-06のHuman承認
