@@ -81,6 +81,7 @@ const PUBLIC_ROUTES = new Set([
   "/contact",
   "/advertising-policy",
   "/embed/tco-calculator",
+  "/servers/business-server-pricing",
 ]);
 
 const ARTICLE_PATH_TO_ID = new Map([

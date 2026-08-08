@@ -203,6 +203,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     "/contact",
     "/advertising-policy",
     "/embed/tco-calculator",
+    "/servers/business-server-pricing",
   ]) {
     const response = await fetch(`${baseUrl}${path}`);
     assert.equal(response.status, 200, path);

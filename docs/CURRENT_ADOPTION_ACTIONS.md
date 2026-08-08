@@ -38,10 +38,10 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
 |A-H10|公開前版完了|カード不要Sitesを公開前originとして採用済み。実データ、indexing、CTA、DB、独自domainは別承認|2026-07-26 public-prelaunch GO|外部readbackとfail-closed経路を継続監視。実運用releaseはGate A–Cまで停止|cloud root credential|
-|A-H11|進行中 — 5/12承認・release対象|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P03 R1–R6公開済み。2026-08-08の最優先タスク一括承認によりP06/P07もdeploy・index・Mangools CTAのrelease対象へ追加|承認済み5記事を維持し、unknown依存claimだけSTOP|raw本文、PII、credential、tracking ID|
+|A-H11|進行中 — 5/12承認・公開済み|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P03 R1–R6とP06/P07を2026-08-08にdeployし、5記事をindex・Mangools CTA対象として外部read-back済み|承認済み5記事を維持し、unknown依存claimだけSTOP|raw本文、PII、credential、tracking ID|
 |A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|indexとCTAは別GOまでHOLDする|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
 |A-H13|完了 — v1.1分類済み|KWFinder正規画面からJP/ja CSVをHuman exportする|2026-08-05 batch-e/fを含む150件をexport・検証済み|rawをrepositoryへ保存せず、known/no_data/rejectedを分離したsafe-summaryだけを扱う|account情報、raw CSVのrepo保存、no_dataの0補完|
-|A-H14|進行中 — P01–P03公開済み、P06/P07反映中|index解除対象を確定する|2026-08-03 `index_go: GO`、2026-08-08最優先タスク一括承認を受領|承認済みP01–P03・P06・P07だけindex可。その他記事と他HTML routeはnoindex|verification・tracking ID|
+|A-H14|完了 — 5記事index境界確認済み|index解除対象を確定する|2026-08-03 `index_go: GO`、2026-08-08最優先タスク一括承認を受領|承認済みP01–P03・P06・P07だけindex可。その他記事と他HTML routeはnoindex|verification・tracking ID|
 
 2026-08-02、Human ApproverがMangoolsの年次checkout総額452.40／632.40／1,172.40 USD、
 同planの月払い比較値61.00／81.00／141.00 USD、Japan選択時VAT 0表示を確認し、P01–P03の
@@ -69,7 +69,13 @@ unknownのまま総額から除外する。P07は100 keyword research requests /
 公式表示なし、Human scenario 400 lookup/月を分けて表示する。両記事とも新しい値を推測せず、
 2026-08-07、Human Approver `omishu`から`article_approve: P06,P07`を受領し、本文と既存contractを承認済みにした。
 2026-08-08の最優先タスク一括承認により、P06/P07をdeploy・index・既存の承認済みMangools CTAのrelease対象へ
-追加した。公開反映と外部read-backが完了するまでは本番到達を主張しない。P04/P05/P08–P12はnoindex・CTA無効を維持する。
+追加した。同日、`CHECK-ALL: PASS`（Python 841件、schema export/diff、site tests、secret scan）後に
+commit `793fdf3`をprivate remoteへpushし、Sites version 12・runtime環境revision 6を本番deployした。
+外部read-backではP01–P03・P06・P07がHTTP 200かつ`index, follow`、各記事の開示がMangools CTAより前、
+CTA送客先hostが`mangools.com`、`rel="sponsored noopener noreferrer"`であることを確認した。
+P04/P05/P08–P12は`noindex, nofollow`かつCTA 0件、sitemapは上記5記事だけ、robotsは承認記事と
+`/assets/`・faviconを許可し、Googlebot user agentで参照assetがHTTP 200だった。Search Consoleの既存sitemapは
+「成功しました」だが、最終読み込み2026-08-06・検出3ページのままであり、新しい5ページ版の再読込待ちである。
 
 観測contract v2.3では価格表示を`none`、`annual_discount_permanent`、`time_limited_promo`、`unknown`の
 4区分とする。計算HOLDは期間限定promoとunknownだけである。2026-08-02にHuman token
@@ -222,13 +228,20 @@ repositoryのeditorial contractには採用していません。2026-08-07、受
 `local_download_permission: GO localhost SVR01`に基づきHuman確認と候補JSON保存を実行しました。候補は
 `artifacts/category-expansion-inputs/`へ分離し、正本modelで検証済みです。既知値は初期費用16,500円（税込）と
 容量700GB、残る9 fieldはunknownです。candidate-onlyのため、総額・順位・CTA・indexのHOLDを維持します。
+2026-08-08の追加Browser観測候補では、公式料金シミュレーションに共有スタンダード12か月の一括前払額
+50,160円（税込）、初期費用16,500円（別途）が表示され、公式機能ページには自動バックアップが全plan標準、
+初期費用・月額費用0円、Web・mail・MySQL各14日分保持と表示されました。一方、更新用シミュレーションは
+plan・12か月選択後も金額が`--`表示でした。これらはHuman確認前の候補であり、既存contractのHuman入力値を
+上書きせず、基本料金・backup料金の確定と更新料unknownの維持をOperatorでHumanが確認するまでcanonical採用しません。
 
 同日、`asp_program_apply: GO A8.net XServerビジネス`のscopeで提携申請完了画面を確認しました。台帳は
 `pending`へ更新しました。2026-08-08、A8.netの参加中プログラム一覧でXServerビジネスの提携日と終了日未定を
 read-backし、台帳を`approved`へ更新しました。非公開報酬、確定率、program IDは保存していません。
 `asp_program_apply: GO もしも ロリポップ！レンタルサーバー`では
 申請ボタン押下後にsessionが失効し、結果画面を確認できませんでした。重複送信を避けるため台帳は
-`not_applied`のまま保守的に維持し、再認証後のread-only状態確認を待ちます。
+`not_applied`のまま保守的に維持しました。2026-08-08の再認証後、SaaS TCO Labのメディア登録途中にある
+著作権・肖像権・翻訳権・翻案権の非侵害確認画面まで到達しました。この事実確認はHuman本人だけが行い、
+Humanが画面上の「はい」を押すまではメディア登録、ロリポップの状態確認、再申請を進めません。
 
 同日、ValueCommerceのABLENET共用サーバーは個別条件の確認後に提携申請し、「提携済み」をread-backしました。
 serversカテゴリの承認済みprogramはXServerビジネスとABLENETの2件です。ただしconfirmed commission shareは
@@ -372,6 +385,12 @@ Google向けCSP許可を出さず、有効時も訪問者の同意前と拒否�
 同意後のRealtime `page_view`受信を確認済み。2026-07-26の追加確認では`page_view` 2、
 `qualified_session` 2までread-backしたが、実装確認の訪問を含むため需要・CVR・収益へ算入しない。実行・検証・rollback手順は
 `docs/GSC_GA4_DEPLOYMENT_GATE.md`を正本とする。
+
+2026-08-09のS6再確認では、Search Consoleのdomain propertyでsitemapは引き続き`成功しました`、
+最終読み込み2026-08-06、検出3ページであり、公開sitemapの5件への再読込待ちです。再送信やURL検査登録は
+行っていません。GA4 Realtimeの過去30分は0件で、過去28日イベント表では`page_view` 7、
+`qualified_session` 7、`outbound_click`は行自体がありませんでした。実装確認訪問を含むため、これらを
+月次需要・CVR・収益へ算入しません。
 
 ```text
 gsc_verification_deploy: GO / STOP

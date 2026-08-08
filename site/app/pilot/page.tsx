@@ -17,7 +17,7 @@ export default function PilotIndexPage() {
       <header className="shell page-header">
         <p className="eyebrow">12 EDITORIAL TEMPLATES / NOINDEX</p>
         <h1>高意図記事を、公開前に12本組み立てる。</h1>
-        <p>本文下書きは12本完成し、第1弾P01–P03はHuman承認済みの公開候補です。P04–P12は入力・reviewを継続します。index GO未受領のため、すべてrobots noindex、CTA無効のままです。</p>
+        <p>本文下書きは12本完成し、P01–P03・P06・P07の5本はHuman承認後に公開済みです。P04・P05・P08–P12は入力・reviewを継続し、承認と個別releaseを満たすまではnoindex・CTA無効を維持します。</p>
       </header>
       <section className="shell page-section" aria-labelledby="pilot-list-title">
         <div className="section-heading"><p className="eyebrow">PILOT MANIFEST</p><h2 id="pilot-list-title">記事構造一覧</h2></div>

@@ -4,8 +4,8 @@
 measurement ID、partner ID、tracking ID、支払情報、メール本文は追記しない。GOは書かれたscopeだけに有効で、
 domain GOからindex GOやCTA GOを推論しない。
 
-現在地: P01–P03のR1–R6読者向け改稿版は2026-08-08に公開済みで、Mangools CTAも稼働中。P06/P07は2026-08-07に記事承認済みで、
-2026-08-08の最優先タスク一括承認によりdeploy・index・Mangools CTAのrelease対象へ追加した。serversはSVR01
+現在地: P01–P03のR1–R6読者向け改稿版とP06/P07は2026-08-08に公開済みで、5記事のMangools CTAも稼働中。
+外部read-backで5記事だけのindex・sitemap、他記事のnoindex、開示先行を確認済み。serversはSVR01
 candidate-only contractをlocal保存済みで、XServerビジネスとABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
 価格のcanonical採用・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。
 
@@ -33,6 +33,7 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |ASP個別program申請|`asp_program_apply: GO <ASP> <program名> / HOLD <ASP> <program名>`|`asp_program_apply: GO A8.net formrun`|対象program一件だけの提携申請を許可。CTA・広告link取得は別GO|
 |A8再認証完了（確認済み）|`a8_reauth: done`|`a8_reauth: done`|2026-08-07にSaaS TCO Lab選択済みのprogram詳細をread-back済み。再返信不要|
 |もしも再認証・結果確認|`moshimo_reauth: done`|`moshimo_reauth: done`|ロリポップ！申請操作後にsessionが失効したため、Human再ログイン後に提携状態だけをread-only確認。重複申請しない|
+|もしもメディア適法性確認|`moshimo_media_attestation: done`|`moshimo_media_attestation: done`|SaaS TCO Labが権利を侵害していないことをHuman本人が画面で確認し「はい」を押した後だけ使用。Codexは代行しない|
 |バリューコマース本登録完了|`valuecommerce_registration: done`|`valuecommerce_registration: done`|本登録案内メールの期限内URLからHumanが手続きを完了した後、ABLENET候補の個別条件をread-onlyで再確認|
 |servers候補入力|`server_price_input: done <SVR-ID>`|`server_price_input: done SVR01`|`/operator/servers/`の候補値をHumanが確認し、確定ボタンを押して保存したcandidate-only JSONをlocal検証。公開・CTAには効かない|
 |localhost候補JSON download許可|`local_download_permission: GO localhost <SVR-ID> / HOLD`|`local_download_permission: GO localhost SVR01`|Safariの一回のlocalhost download許可だけを承認。外部送信・公開・CTA・ASP申請には効かない|

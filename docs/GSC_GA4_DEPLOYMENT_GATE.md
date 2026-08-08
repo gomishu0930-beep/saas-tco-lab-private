@@ -55,10 +55,16 @@ analytics scope拡張をこの承認へ含めない。
 - 2026-08-04のread-only再確認では、domain property `saastcolab.jp`の`/sitemap.xml`は
   `成功しました`、送信日2026-08-03、最終読み込み2026-08-04、検出ページ3、検出動画0である。
   再送信、URL検査登録、設定変更は行っていない。
+- 2026-08-09のS6再確認でもsitemapは`成功しました`、送信日2026-08-03、最終読み込み
+  2026-08-06、検出ページ3、検出動画0である。公開sitemapは5 URLなのでGoogle側の再読込待ちとし、
+  再送信、URL検査登録、設定変更は行っていない。
 - GA4は同意前と拒否後に外部script 0件、同意後だけGoogle tag 1件を読み込むことを確認した。
 - GA4 Realtimeで初回の`page_view`受信を確認した。2026-07-26の追加read-only確認では、過去30分の
   active user 2、`page_view` 2、`qualified_session` 2を確認した。これは実装確認の訪問を含むため、
   需要、CVR、収益実績へ算入しない。GA4自身の`first_visit`と`session_start`も発生している。
+- 2026-08-09のS6再確認ではRealtime過去30分は0件で、過去28日イベント表は`page_view` 7、
+  `qualified_session` 7、`outbound_click`は未生成だった。実装確認訪問を分離できないため、月次KPIへ
+  転記せず、confirmed成果やCVRを推測しない。
 - 拡張計測はOFF。内部traffic filterは不可逆な除外を避けるためtestのまま維持し、対象sourceを
   確定した別承認後だけactiveへ移す。
 

@@ -230,12 +230,21 @@ def _external_action_queue(
     actions: list[dict[str, Any]] = []
     moshimo = programs["moshimo-lolipop-rental-server"]
     if moshimo.partnership_status.value == "not_applied":
+        legal_attestation_waiting = "Humanが画面上の「はい」を押すまでは" in adoption
         result_unverified = "申請ボタン押下後にsessionが失効" in adoption
         actions.append({
             "label": "もしも ロリポップ！レンタルサーバー提携申請",
-            "status": "result_unverified" if result_unverified else moshimo.partnership_status.value,
+            "status": (
+                "human_legal_attestation_required"
+                if legal_attestation_waiting
+                else "result_unverified"
+                if result_unverified
+                else moshimo.partnership_status.value
+            ),
             "token": (
-                "moshimo_reauth: done"
+                "moshimo_media_attestation: done"
+                if legal_attestation_waiting
+                else "moshimo_reauth: done"
                 if result_unverified
                 else "asp_program_apply: GO もしも ロリポップ！レンタルサーバー"
             ),
