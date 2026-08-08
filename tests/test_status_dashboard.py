@@ -103,11 +103,11 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     }
     assert len(data["work"]) == 11
     assert all(item["done"] for item in data["work"])
-    assert [item["priority"] for item in data["externalActions"]] == [1, 2, 3, 4]
+    assert [item["priority"] for item in data["externalActions"]] == [1, 2]
     assert data["externalActions"][0]["status"] == "result_unverified"
     assert data["externalActions"][0]["token"] == "moshimo_reauth: done"
     assert data["externalActions"][1]["token"] == "article_approve: P06,P07"
-    assert data["externalActions"][-1]["token"] == "x_post: GO P01"
+    assert data["externalActions"][-1]["token"] == "article_approve: P06,P07"
     assert data["launchQuarter"]["humanBudgetMinutesPerMonth"] == 2000
     assert data["launchQuarter"]["decisionDate"] == "2026-10-31"
     assert data["launchQuarter"]["scopeExpansion"] == {

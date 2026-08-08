@@ -38,7 +38,7 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
 |A-H10|公開前版完了|カード不要Sitesを公開前originとして採用済み。実データ、indexing、CTA、DB、独自domainは別承認|2026-07-26 public-prelaunch GO|外部readbackとfail-closed経路を継続監視。実運用releaseはGate A–Cまで停止|cloud root credential|
-|A-H11|P01–P03の公開中版・R1改稿版を承認済み|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|2026-08-06にR1–R6改稿版の`article_approve: P01,P02,P03`を再受領|R1–R6のlocal previewは別deploy GOまで公開しない。unknown依存claimだけSTOP|raw本文、PII、credential、tracking ID|
+|A-H11|完了 — P01–P03 R1–R6公開中|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|2026-08-08 `repository_update_push: GO` / `deploy_update: GO P01,P02,P03 R1-R6`完了|P01–P03の読者向け改稿を維持し、unknown依存claimだけSTOP|raw本文、PII、credential、tracking ID|
 |A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|indexとCTAは別GOまでHOLDする|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
 |A-H13|完了 — v1.1分類済み|KWFinder正規画面からJP/ja CSVをHuman exportする|2026-08-05 batch-e/fを含む150件をexport・検証済み|rawをrepositoryへ保存せず、known/no_data/rejectedを分離したsafe-summaryだけを扱う|account情報、raw CSVのrepo保存、no_dataの0補完|
 |A-H14|完了 — P01–P03|index解除対象を確定する|2026-08-03 `index_go: GO`受領|承認済みP01–P03だけindex可。P04–P12と他HTML routeはnoindex|verification・tracking ID|
@@ -57,7 +57,10 @@ index可・Mangools CTA有効とし、P04–P12、他HTML route、Mangools以外
 公開中本文とは異なる改稿版であるため、P01–P03は再度の`article_approve`を受けるまでcommit・push・deployしない。
 数値証拠そのもののreview statusは変更せず、改稿で新しい価格・税・通貨・課金周期を追加していない。
 2026-08-06、Human Approver `omishu`から改稿版の`article_approve: P01,P02,P03`を受領した。
-local公開候補への登録を完了し、commit、push、deployは別GOまでHOLDを維持する。
+2026-08-08の`repository_update_push: GO`と`deploy_update: GO P01,P02,P03 R1-R6`に基づき、
+commit `494c211`をpushし、Sites version 11へ公開した。外部read-backでP01–P03のみ
+`index, follow`、OG/Twitter meta、承認記事間リンク、JSON-LD、開示先行、MangoolsのみのCTAを確認し、
+P04–P12と他HTML routeのnoindex、他partner CTA無効を維持した。
 
 P06とP07はP01–P03のHuman確認済みMangools観測を記事別contractへ再配置したlocal標本である。
 P06は月払い61.00 USD、年次checkout総額452.40 USD、最低契約12か月を表示し、途中解約時の費用は
@@ -228,8 +231,9 @@ P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go:
 表示名は`SaaS TCO Lab`、handleは`@saastcolab`、websiteは`https://saastcolab.jp`です。
 旧投稿10件を削除し、repost 3件を解除し、元投稿削除に伴うself-repost 1件の消滅を確認した結果、
 外部read-backで投稿0件を確認しました。別accountで稼働中のFANZA運用には変更を加えておらず、
-brand、domain、repo、credential、analyticsの分離を維持します。P01のX初回配信は本文と送信先を固定した
-個別の`x_post: GO P01`を受領するまでHOLDします。
+brand、domain、repo、credential、analyticsの分離を維持します。2026-08-08の`x_post: GO P01`に基づき、
+冒頭PR表示、承認済みP01 claim、`saastcolab.jp`の記事URLだけでXスレッド8件を公開した。
+ASP広告link、非公開報酬、tracking IDは含めていない。公開後のread-backで`@saastcolab`の(1/8)と(8/8)を確認した。
 
 ## field-level rights decision slate
 

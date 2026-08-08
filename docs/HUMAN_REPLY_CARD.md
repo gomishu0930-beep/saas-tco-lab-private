@@ -4,11 +4,9 @@
 measurement ID、partner ID、tracking ID、支払情報、メール本文は追記しない。GOは書かれたscopeだけに有効で、
 domain GOからindex GOやCTA GOを推論しない。
 
-現在地: P01–P03旧版は2026-08-03公開済みで、Mangools CTAも稼働中。2026-08-05の読者向け改稿版は
-local preview確認済みで2026-08-06に再承認済みだが、releaseは未実施。P06/P07は2026-08-07に記事承認済みで、
+現在地: P01–P03のR1–R6読者向け改稿版は2026-08-08に公開済みで、Mangools CTAも稼働中。P06/P07は2026-08-07に記事承認済みで、
 deploy・index・CTAは未承認のままである。serversはSVR01 candidate-only contractをlocal保存済み、XServer
-ビジネスは提携審査待ちで、価格のcanonical採用・公開は未承認である。Xは`@saastcolab`への転用と旧投稿整理が
-完了し、投稿0件のSaaS専用mediaとして待機中である。初回投稿は個別GOまでHOLDする。
+ビジネスは提携審査待ちで、価格のcanonical採用・公開は未承認である。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。
 
 ## 今使うtoken
 

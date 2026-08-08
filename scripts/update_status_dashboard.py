@@ -225,6 +225,8 @@ def _external_action_queue(
     )
     server_contract_confirmed = "candidate contractの構造確定" in adoption
     x_ready = "handleは`@saastcolab`" in adoption and "投稿0件" in adoption
+    r1_release_done = "Sites version 11へ公開した" in adoption
+    p01_x_done = "Xスレッド8件を公開した" in adoption
     actions: list[dict[str, Any]] = []
     moshimo = programs["moshimo-lolipop-rental-server"]
     if moshimo.partnership_status.value == "not_applied":
@@ -277,18 +279,18 @@ def _external_action_queue(
             "status": "Human承認待ち",
             "token": "article_approve: P06,P07",
         })
-    actions.extend([
-        {
+    if not r1_release_done:
+        actions.append({
             "label": "P01–P03 R1–R6 release",
             "status": "外部GO待ち",
             "token": "repository_update_push: GO / deploy_update: GO P01,P02,P03 R1-R6",
-        },
-        {
+        })
+    if not p01_x_done:
+        actions.append({
             "label": "P01 X初回投稿",
             "status": "投稿GO待ち" if x_ready else "account準備待ち",
             "token": "x_post: GO P01",
-        },
-    ])
+        })
     return [{"priority": index, **action} for index, action in enumerate(actions, start=1)]
 
 
