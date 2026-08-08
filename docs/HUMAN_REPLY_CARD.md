@@ -46,6 +46,7 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |SaaS専用X（完了記録）|`account_repurpose: GO <旧handle> retire_fanza`|`account_repurpose: GO @fanza_poll_lab retire_fanza`|2026-08-06受領・完了済み。再実行しない|
 |P01 X初回投稿|`x_post: GO P01 / HOLD P01`|`x_post: HOLD P01`|冒頭PR表示、P01の読者向け本文、saastcolab.jpのP01 URLだけを投稿対象にする。ASP広告linkは含めない|
 |Release用push|`repository_update_push: GO / HOLD`|`repository_update_push: HOLD`|提示済みrelease対象だけをcommit・pushする。診断履歴、output、credentialは除外|
+|承認済み記事のproduction release|`deploy_update: GO <P-ID,...> / HOLD`|`deploy_update: GO P04,P08,P10`|列挙した承認済み記事だけをproduction候補へ進める。index・partner CTAの対象追加は別のexact GO|
 |R1–R6 deploy|`deploy_update: GO P01,P02,P03 R1-R6 / HOLD`|`deploy_update: HOLD`|push済みの読者向け改稿3記事だけを本番反映。index・Mangools CTAの既存gateは維持|
 |月次KPI CSV|`monthly_kpi_csv: done / pending <source>`|`monthly_kpi_csv: done`|dashboard safe total更新を開始|
 |Mangools月次|`mangools_monthly: unchanged / changed review_needed`|`mangools_monthly: unchanged`|tier・conversion画面の変化有無だけを記録|

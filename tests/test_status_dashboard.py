@@ -284,6 +284,28 @@ def test_unknown_only_contract_requires_evidence_instead_of_article_approval(tmp
     )
 
 
+def test_approved_undeployed_contract_requires_exact_production_go(tmp_path: Path) -> None:
+    dashboard = tmp_path / "dashboard.html"
+    dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())
+    state = tmp_path / "state.json"
+    state.write_bytes((ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_bytes())
+    contracts = tmp_path / "contracts"
+    contracts.mkdir()
+    source = ROOT / "artifacts" / "editorial-inputs" / "P04-editorial-input.json"
+    (contracts / source.name).write_bytes(source.read_bytes())
+
+    result = _run(dashboard, state, contracts, "--no-prompt")
+
+    assert result.returncode == 0, result.stderr
+    release = next(
+        action
+        for action in _dashboard_data(dashboard)["externalActions"]
+        if action["status"] == "production_go_required"
+    )
+    assert release["label"] == "P04のproduction release"
+    assert release["token"] == "deploy_update: GO P04 / HOLD"
+
+
 def test_csv_with_unapproved_extra_column_is_rejected(tmp_path: Path) -> None:
     dashboard = tmp_path / "dashboard.html"
     dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())

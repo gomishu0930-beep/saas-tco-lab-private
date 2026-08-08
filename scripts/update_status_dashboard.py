@@ -358,6 +358,21 @@ def _external_action_queue(
             "status": "evidence_required",
             "token": f"article_evidence: pending {joined}",
         })
+    release_ready = [
+        article_id
+        for article_id in PILOT_IDS
+        if article_id in contracts
+        and state["articles"][article_id] == "approved"
+        and contracts[article_id].article_review_status.value == "approved"
+        and article_id not in state["deployed_articles"]
+    ]
+    if release_ready:
+        joined = ",".join(release_ready)
+        actions.append({
+            "label": f"{joined}のproduction release",
+            "status": "production_go_required",
+            "token": f"deploy_update: GO {joined} / HOLD",
+        })
     if not r1_release_done:
         actions.append({
             "label": "P01–P03 R1–R6 release",

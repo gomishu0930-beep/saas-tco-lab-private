@@ -74,8 +74,9 @@ commit `793fdf3`をprivate remoteへpushし、Sites version 12・runtime環境re
 外部read-backではP01–P03・P06・P07がHTTP 200かつ`index, follow`、各記事の開示がMangools CTAより前、
 CTA送客先hostが`mangools.com`、`rel="sponsored noopener noreferrer"`であることを確認した。
 P04/P05/P08–P12は`noindex, nofollow`かつCTA 0件、sitemapは上記5記事だけ、robotsは承認記事と
-`/assets/`・faviconを許可し、Googlebot user agentで参照assetがHTTP 200だった。Search Consoleの既存sitemapは
-「成功しました」だが、最終読み込み2026-08-06・検出3ページのままであり、新しい5ページ版の再読込待ちである。
+`/assets/`・faviconを許可し、Googlebot user agentで参照assetがHTTP 200だった。Search Consoleは
+2026-08-09の後続read-only確認でsitemapを再読込し、検出5ページへ更新した。ページ集計は最終更新
+2026-08-05のまま登録済み1・未登録3で、登録済み1件は旧HTTPルートである。承認記事のindex完了とは扱わない。
 
 観測contract v2.3では価格表示を`none`、`annual_discount_permanent`、`time_limited_promo`、`unknown`の
 4区分とする。計算HOLDは期間限定promoとunknownだけである。2026-08-02にHuman token
@@ -436,8 +437,9 @@ Google向けCSP許可を出さず、有効時も訪問者の同意前と拒否�
 `qualified_session` 2までread-backしたが、実装確認の訪問を含むため需要・CVR・収益へ算入しない。実行・検証・rollback手順は
 `docs/GSC_GA4_DEPLOYMENT_GATE.md`を正本とする。
 
-2026-08-09のS6再確認では、Search Consoleのdomain propertyでsitemapは引き続き`成功しました`、
-最終読み込み2026-08-06、検出3ページであり、公開sitemapの5件への再読込待ちです。再送信やURL検査登録は
+2026-08-09のS6再確認では、Search Consoleのdomain propertyでsitemapは`成功しました`であり、後続確認で
+最終読み込み2026-08-09、検出5ページへ更新されました。ページ集計は最終更新2026-08-05、登録済み1、
+未登録3で、登録済み1件は旧HTTPルートです。承認記事のindex完了とは扱わず、再送信やURL検査登録は
 行っていません。GA4 Realtimeの過去30分は0件で、過去28日イベント表では`page_view` 7、
 `qualified_session` 7、`outbound_click`は行自体がありませんでした。実装確認訪問を含むため、これらを
 月次需要・CVR・収益へ算入しません。
