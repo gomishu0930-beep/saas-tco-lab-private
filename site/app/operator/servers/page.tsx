@@ -3,6 +3,7 @@ import Link from "next/link";
 
 import { ServerObservationForm } from "../../components/ServerObservationForm";
 import { serverArticleSlate } from "../../lib/pilot-pages";
+import savedSvr01Candidate from "../../../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v2-2026-08-08.json";
 
 const svr01BrowserCandidates = {
   observedOn: "2026-08-09",
@@ -70,7 +71,7 @@ export default function ServerOperatorPage() {
         <h1>通常料金・更新料・特典を、<br />一つずつ分けて記録。</h1>
         <p>価格確認20分、入力20分、表示確認20分。値を推測せず、未確認は理由付きで残します。</p>
       </header>
-      <div className="shell operator-input-wrap"><ServerObservationForm /></div>
+      <div className="shell operator-input-wrap"><ServerObservationForm savedCandidate={savedSvr01Candidate} /></div>
       <section
         className="shell page-section"
         aria-labelledby="svr01-browser-candidates-title"

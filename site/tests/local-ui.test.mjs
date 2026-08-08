@@ -264,6 +264,8 @@ test("servers operator and all twenty article routes remain candidate-only and f
   assert.match(operator, /共通情報を全fieldへ適用/);
   assert.match(operator, /値、通貨、税、請求周期、確認状態は変更しません/);
   assert.match(operator, /保存済みSVR01候補から再開/);
+  assert.match(operator, /repositoryのSVR01候補を読込/);
+  assert.match(operator, /Humanがボタンを押した後だけブラウザメモリへ読み/);
   assert.match(operator, /候補JSONをローカル読込/);
   assert.match(operator, /Human選択後だけブラウザメモリへ読み/);
   assert.match(operator, /公式価格ページの必要行だけを解析/);

@@ -213,7 +213,7 @@ function FieldInput({
   );
 }
 
-export function ServerObservationForm() {
+export function ServerObservationForm({ savedCandidate }: { savedCandidate?: unknown }) {
   const [rows, setRows] = useState<EditorialRowFormValue[]>([freshRow(1)]);
   const [confirmed, setConfirmed] = useState<ServerCategoryContract | null>(null);
   const [candidateImportState, setCandidateImportState] = useState("未読込");
@@ -289,6 +289,17 @@ export function ServerObservationForm() {
     }
   }
 
+  function restoreBundledCandidate() {
+    const restored = rowsFromSavedCandidate(savedCandidate as ServerCategoryContract);
+    if (!restored) {
+      setCandidateImportState("読込失敗: repositoryのSVR01候補を再生成してください");
+      return;
+    }
+    setRows(restored);
+    setConfirmed(null);
+    setCandidateImportState("読込済み: repositoryのSVR01候補11 fieldを現在欄へ復元");
+  }
+
   function analyzePaste() {
     const result = extractPriceTextCandidates(pastedText);
     setExtraction(result);
@@ -339,9 +350,12 @@ export function ServerObservationForm() {
       <section className="operator-previous" aria-labelledby="server-previous-title">
         <div className="operator-previous-heading">
           <div><p className="eyebrow">RECONFIRMATION</p><h3 id="server-previous-title">保存済みSVR01候補から再開</h3></div>
-          <label>候補JSONをローカル読込<input type="file" accept="application/json,.json" onChange={(event) => { void restoreSavedCandidate(event.target.files?.[0]); event.currentTarget.value = ""; }} /></label>
+          <div className="operator-paste-actions">
+            <button type="button" onClick={restoreBundledCandidate} disabled={!savedCandidate}>repositoryのSVR01候補を読込</button>
+            <label>別の候補JSONをローカル読込<input type="file" accept="application/json,.json" onChange={(event) => { void restoreSavedCandidate(event.target.files?.[0]); event.currentTarget.value = ""; }} /></label>
+          </div>
         </div>
-        <p>保存済みcandidate-only JSONはHuman選択後だけブラウザメモリへ読み、外部送信・端末保存を行いません。追加観測は該当fieldだけ更新し、再度Human確認するまでcontractへ確定しません。</p>
+        <p>保存済みcandidate-only JSONはHuman選択後だけブラウザメモリへ読みます。repository候補もHumanがボタンを押した後だけブラウザメモリへ読み、外部送信・端末保存を行いません。追加観測は該当fieldだけ更新し、再度Human確認するまでcontractへ確定しません。</p>
         <p aria-live="polite">{candidateImportState}</p>
       </section>
       <section className="operator-paste-parser" aria-labelledby="server-paste-title">
