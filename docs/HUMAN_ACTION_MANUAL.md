@@ -154,7 +154,7 @@ omishu
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|
 |公開前site|カード不要Sitesで公開済み。noindex、外部link 0、実価格0、Affiliate CTA 0、内部routeは503|
-|Search Console / GA4|新originのGSC所有確認済み。GA4は同意前・拒否後0通信、同意後Realtime `page_view`受信済み。初日GSC実測とinternal traffic filter active化だけ未完了|
+|Search Console / GA4|`saastcolab.jp`のGSC domain property所有確認・専用GA4 stream連携済み。GA4は同意前・拒否後0通信、同意後Realtime `page_view`受信済み。GSCの8記事再読込とinternal traffic filter active化だけ未完了|
 |実価格取得・indexing・実Affiliate CTA|Gate A–C合格まで技術的にSTOP|
 
 ## 停止条件

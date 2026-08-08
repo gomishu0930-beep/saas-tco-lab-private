@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0",
-  "as_of": "2026-07-26",
+  "as_of": "2026-08-09",
   "source_registry": "docs/CURRENT_ADOPTION_REGISTRY.json",
-  "scope": "Verified local implementation plus the Human-approved noindex public-prelaunch origin, verified Search Console property and read-only export dimensions, deployed consent-gated GA4 with Realtime page-view and qualified-session evidence, a 30-run read-only prelaunch monitor, accepted Semrush and Impact Marketplace agreements, completed the non-sensitive Impact tax workflow and public profile, verified the SaaS TCO Lab media property, submitted the Impact Marketplace application, sent three approved rights follow-ups, attempted but did not complete the Semrush program application, and reviewed synthetic slates; excludes credentials, billing, tax values, external vendor data export, real-data publication, indexing, affiliate CTAs, Marketplace approval, internal-traffic filter activation, and unapproved Affiliate applications",
+  "scope": "Verified local implementation plus the Human-approved public editorial lane on saastcolab.jp: eight approved articles are deployed, indexable, disclosure-first, and eligible only for the approved Mangools CTA; the Search Console domain property and consent-gated GA4 stream are linked. Credentials, billing data, private tax values, tracking identifiers, unapproved automated source acquisition, non-Mangools production CTAs, Marketplace approval, and internal-traffic filter activation remain excluded.",
   "allowed_states": [
     "implemented_verified",
     "prepared_waiting_human",
@@ -46,6 +46,6 @@
     {"id":"O02","state":"implemented_verified","codex_work_complete":true,"evidence":["src/saas_preflight/external_actions.py","src/saas_preflight/production_consumer.py","tests/test_external_actions.py"],"remaining_human":null},
     {"id":"O03","state":"implemented_waiting_trigger","codex_work_complete":true,"evidence":["src/saas_preflight/control_cycle.py","schemas/conditional-activation-input.schema.json","examples/conditional-activation.current-stop.json"],"remaining_human":"Select an approved alert destination after the 30-day shadow run"},
     {"id":"O04","state":"deferred_gate_prepared","codex_work_complete":true,"evidence":["src/saas_preflight/production_readiness.py","schemas/production-integration-plan.schema.json","tests/test_production_readiness.py"],"remaining_human":"Provide exact public, provider, hosting, and budget approval after upstream readiness"},
-    {"id":"H01","state":"implemented_waiting_trigger","codex_work_complete":true,"evidence":["src/saas_preflight/release_assurance.py","src/saas_preflight/launch_handoff.py","site/.openai/hosting.json","site/tests/production-worker.test.mjs","docs/CURRENT_ADOPTION_ACTIONS.md"],"remaining_human":"The public-prelaunch origin is live and read back; issue separate exact approval only for real data, indexing, affiliate CTAs, analytics transmission, custom domain, or a production release"}
+    {"id":"H01","state":"implemented_waiting_trigger","codex_work_complete":true,"evidence":["src/saas_preflight/release_assurance.py","src/saas_preflight/launch_handoff.py","site/.openai/hosting.json","site/tests/production-worker.test.mjs","docs/CURRENT_ADOPTION_ACTIONS.md"],"remaining_human":"Eight approved editorial articles are live with Mangools-only CTA and linked GSC/GA4. P05/P09/P11/P12 still require Human-confirmed evidence before any later production release; additional partner CTAs require their existing runtime destination and partner gates."}
   ]
 }

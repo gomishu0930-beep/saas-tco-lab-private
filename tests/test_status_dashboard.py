@@ -319,7 +319,12 @@ def test_approved_undeployed_contract_requires_exact_production_go(tmp_path: Pat
     dashboard = tmp_path / "dashboard.html"
     dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())
     state = tmp_path / "state.json"
-    state.write_bytes((ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_bytes())
+    launch_state = json.loads(
+        (ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_text(encoding="utf-8")
+    )
+    launch_state["deployed_articles"].remove("P04")
+    launch_state["index_approved_articles"].remove("P04")
+    state.write_text(json.dumps(launch_state), encoding="utf-8")
     contracts = tmp_path / "contracts"
     contracts.mkdir()
     source = ROOT / "artifacts" / "editorial-inputs" / "P04-editorial-input.json"

@@ -37,11 +37,11 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H07|Affiliate承認後|各partnerからexportを本人取得可能にする|`affiliate_export_ready: <partner>`|safe summary、status mapping、settlement reconcile|tracking ID、税務/受取情報|
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
-|A-H10|公開前版完了|カード不要Sitesを公開前originとして採用済み。実データ、indexing、CTA、DB、独自domainは別承認|2026-07-26 public-prelaunch GO|外部readbackとfail-closed経路を継続監視。実運用releaseはGate A–Cまで停止|cloud root credential|
-|A-H11|進行中 — 12/12入力・8/12承認・5/12公開|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P04・P06–P08・P10を承認済み。P01–P03 R1–R6とP06/P07の5記事をindex・Mangools CTA対象として外部read-back済み|P05/P09/P11/P12は確認済み実値がないため承認せず、P04/P08/P10を含む未公開記事はnoindex・CTA無効を維持|raw本文、PII、credential、tracking ID|
-|A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|indexとCTAは別GOまでHOLDする|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
+|A-H10|editorial production稼働|Sitesを公開originとして採用し、rights model v2のHuman editorial laneだけを本番化|2026-07-26 public-prelaunch GOと後続のdomain・記事・index・CTA・deploy承認|8記事の外部readbackとfail-closed経路を継続監視。automated data pathはGate A–Cまで停止|cloud root credential|
+|A-H11|進行中 — 12/12入力・8/12承認・8/12公開|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P04・P06–P08・P10を承認済みかつindex・Mangools CTA対象として外部read-back済み|P05/P09/P11/P12は確認済み実値がないため承認せず、noindex・CTA無効を維持|raw本文、PII、credential、tracking ID|
+|A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|8記事releaseのdomain・redirect・計測境界を維持する|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
 |A-H13|完了 — v1.1分類済み|KWFinder正規画面からJP/ja CSVをHuman exportする|2026-08-05 batch-e/fを含む150件をexport・検証済み|rawをrepositoryへ保存せず、known/no_data/rejectedを分離したsafe-summaryだけを扱う|account情報、raw CSVのrepo保存、no_dataの0補完|
-|A-H14|完了 — 5記事index境界確認済み|index解除対象を確定する|2026-08-03 `index_go: GO`、2026-08-08最優先タスク一括承認を受領|承認済みP01–P03・P06・P07だけindex可。その他記事と他HTML routeはnoindex|verification・tracking ID|
+|A-H14|完了 — 8記事index境界確認済み|index解除対象を確定する|2026-08-03 `index_go: GO`、2026-08-08〜09の最優先タスク一括承認を受領|承認済みP01–P04・P06–P08・P10だけindex可。その他記事と他HTML routeはnoindex|verification・tracking ID|
 
 2026-08-02、Human ApproverがMangoolsの年次checkout総額452.40／632.40／1,172.40 USD、
 同planの月払い比較値61.00／81.00／141.00 USD、Japan選択時VAT 0表示を確認し、P01–P03の
@@ -81,7 +81,13 @@ P04/P05/P08–P12は`noindex, nofollow`かつCTA 0件、sitemapは上記5記事�
 同日、P04/P08/P10を追加した8記事release候補をproduction workerへsynthetic runtime値でlocal dry-runした。
 8記事だけが`index, follow`・canonical・開示先行Mangools CTA・robots Allow・sitemap対象となり、
 P05/P09/P11/P12は`noindex, nofollow`・canonicalなし・CTAなしを維持することを回帰testへ固定した。
-これはproduction deploy、index追加、CTA追加ではなく、`deploy_update: GO P04,P08,P10`受領前の候補検証である。
+2026-08-09、Human Approverの「最優先タスクをすべて行い、承認系は承認扱い」とする実行指示を、
+P04/P08/P10のdeploy・index・既存Mangools CTA追加へ限定適用した。`CHECK-ALL: PASS`済みcommit
+`9aad7e6`をSites sourceへpushし、version 15・runtime revision 7として本番deployした。
+外部read-backでは8記事がHTTP 200、`index, follow`、canonical、Mangools送客先host、
+`rel="sponsored noopener noreferrer"`を満たし、robots allowlistとsitemapも同じ8記事で一致した。
+開示先行はproduction workerのDOM順序guardと回帰testで維持する。P05/P09/P11/P12、運営route、
+operator routeはnoindex、canonicalなし、CTAなしを維持し、Mangools以外のCTAは追加していない。
 また、明示的`not_applicable`をunknownと混ぜずdashboardへ別表示し、数値の適用外をHumanが確認済みなら
 記事標本reviewへ進められるようにした。P12の現contractはまだunknownなので、Humanの方針確認までは証拠待ちを維持する。
 
@@ -303,7 +309,7 @@ P04の月間運用時間と導入時間はvendor観測ではなくHuman scenario
 vendor・plan行へ混在しないようにしました。P04・P08・P10は再利用候補をHuman確認し、2026-08-09に
 記事contractと本文を承認済みへ進めました。P05・P09・P11・P12は、同義の承認済み証拠がないfieldを
 明示的な`unknown`としてcontract化しました。構造検証は合格していますが確認済み実値が0件のため、記事は
-`unreviewed`、noindex、CTA無効を維持します。これにより現在は12/12入力、8/12承認、5/12公開です。
+`unreviewed`、noindex、CTA無効を維持します。これにより現在は12/12入力、8/12承認、8/12公開です。
 
 P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go: GO P01 PR先頭追記`により、
 公開記事の本文先頭へ`[PR]`を追記し、公開read-backで反映を確認しました。localの再配信templateは
@@ -450,6 +456,12 @@ Google向けCSP許可を出さず、有効時も訪問者の同意前と拒否�
 行っていません。GA4 Realtimeの過去30分は0件で、過去28日イベント表では`page_view` 7、
 `qualified_session` 7、`outbound_click`は行自体がありませんでした。実装確認訪問を含むため、これらを
 月次需要・CVR・収益へ算入しません。
+
+2026-08-09、GA4管理画面で`saastcolab.jp`のSearch Console domain propertyと
+`SaaS TCO Lab — Public Web` streamの連携を作成し、連携済み行をread-backした。連携に伴って表示される
+利用者メール、stream ID、verification値はrepository・報告へ保存しない。internal traffic filterはtest、
+拡張計測OFF、同意既定denyを変更していない。同日の8記事deploy後の公開sitemapは8 URLであり、
+Search Console側の次回再読込までは検出5ページのまま処理待ちとする。
 
 ```text
 gsc_verification_deploy: GO / STOP

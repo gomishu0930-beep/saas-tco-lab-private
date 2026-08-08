@@ -101,6 +101,12 @@ contractが承認済みのP06/P07に限り、deploy、index追加、既存の承
 拡張する。P04・P05・P08–P12、servers記事、Mangools以外のCTAには拡張しない。公開反映は
 `CHECK-ALL: PASS`と外部read-backを必要とする。
 
+2026-08-09、Human Approverは「最優先タスクをすべて行い、承認系は承認扱い」とする実行指示を追加した。
+これを既に本文・contract承認済みで8記事release回帰testに合格したP04/P08/P10へ限定適用し、deploy、
+index追加、既存Mangools CTAを同じrelease境界へ拡張した。P05/P09/P11/P12、servers記事、Mangools以外の
+CTAには拡張しない。同じ指示に基づき、`saastcolab.jp`のSearch Console domain propertyと専用GA4 streamを
+連携した。PII・stream ID・verification値を保存せず、internal traffic filterと同意境界は変更しない。
+
 2026-08-06、Human Approver `omishu`から改稿版について
 `article_approve: P01,P02,P03`を再受領した。承認scopeはR1–R6の読者向け本文、
 contract駆動SEO／OGメタ、関連記事、計算機prefill、人間可読JSON-LDである。

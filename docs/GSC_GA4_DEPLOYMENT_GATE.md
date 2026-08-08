@@ -10,6 +10,8 @@
 - GSC verification metaと同意制御GA4 bootstrapはSites version 5へdeploy・外部read-back済み。
 - GA4の拡張計測機能は2026-07-26にOFFへ変更し、下記の明示event以外を自動収集しない。
 - verification tokenとmeasurement IDはrepositoryへ保存せず、Sitesのruntime valueだけで渡す。
+- 2026-08-09、`saastcolab.jp`のSearch Console domain propertyと専用GA4 streamを連携済み。
+  連携画面に表示される利用者メールとstream IDはrepositoryへ保存しない。
 
 ## Fail-closed実装
 
@@ -64,6 +66,11 @@ analytics scope拡張をこの承認へ含めない。
   ページ集計は最終更新2026-08-05のまま登録済み1、未登録3で、登録済み1件は旧HTTPルート、未登録理由は
   `検出 - インデックス未登録`である。承認記事の登録完了とは扱わず、再送信、URL検査登録、設定変更を
   行わずGoogle側の処理を待つ。
+- 2026-08-09にP04/P08/P10を追加したSites version 15を公開し、公開sitemapとrobots allowlistが
+  承認済み8記事で一致することを外部read-backした。Search Consoleの既存sitemap submissionは維持し、
+  再送信・URL検査登録は行わず次回読込を待つ。
+- 同日、GA4管理画面からSearch Console domain property `saastcolab.jp`を専用web streamへリンクし、
+  連携済み行をread-backした。internal traffic filter、拡張計測、同意設定は変更していない。
 - GA4は同意前と拒否後に外部script 0件、同意後だけGoogle tag 1件を読み込むことを確認した。
 - GA4 Realtimeで初回の`page_view`受信を確認した。2026-07-26の追加read-only確認では、過去30分の
   active user 2、`page_view` 2、`qualified_session` 2を確認した。これは実装確認の訪問を含むため、
