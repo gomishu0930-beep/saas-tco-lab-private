@@ -107,6 +107,10 @@ index追加、既存Mangools CTAを同じrelease境界へ拡張した。P05/P09/
 CTAには拡張しない。同じ指示に基づき、`saastcolab.jp`のSearch Console domain propertyと専用GA4 streamを
 連携した。PII・stream ID・verification値を保存せず、internal traffic filterと同意境界は変更しない。
 
+同日の継続実行では、P12の確認間隔fieldを「全field共通の単一間隔を適用せず、観測ごとの次回確認日を
+管理する」という既存運用方針に基づく`not_applicable`として承認した。数値は補完せず、本文修正、index追加、
+既存Mangools CTAを9記事release境界へ拡張した。P05/P09/P11はnoindex・CTA無効を維持する。
+
 2026-08-06、Human Approver `omishu`から改稿版について
 `article_approve: P01,P02,P03`を再受領した。承認scopeはR1–R6の読者向け本文、
 contract駆動SEO／OGメタ、関連記事、計算機prefill、人間可読JSON-LDである。

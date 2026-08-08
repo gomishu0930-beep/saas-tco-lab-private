@@ -4,9 +4,9 @@
 measurement ID、partner ID、tracking ID、支払情報、メール本文は追記しない。GOは書かれたscopeだけに有効で、
 domain GOからindex GOやCTA GOを推論しない。
 
-現在地: P01–P12は12/12入力済み、P01–P04・P06–P08・P10の8記事を承認・公開済みです。
-2026-08-09の外部read-backで8記事だけのindex・sitemap、P05/P09/P11/P12のnoindex、
-開示先行gate、Mangools CTAを確認済みです。P05/P09/P11/P12は確認済み実値が0件のため承認せず、
+現在地: P01–P12は12/12入力済み、P01–P04・P06–P08・P10・P12の9記事を承認・公開済みです。
+2026-08-09の外部read-backで9記事だけのindex・sitemap、P05/P09/P11のnoindex、
+開示先行gate、Mangools CTAを確認済みです。P05/P09/P11は確認済み実値が0件のため承認せず、
 CTAも無効です。Search Console domain propertyと専用GA4 streamも連携済みです。serversはSVR01
 candidate-only contractをlocal保存済みで、XServerビジネスとABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
 価格のcanonical採用・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。

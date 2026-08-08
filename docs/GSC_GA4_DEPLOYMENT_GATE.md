@@ -71,6 +71,9 @@ analytics scope拡張をこの承認へ含めない。
   再送信・URL検査登録は行わず次回読込を待つ。
 - 同日、GA4管理画面からSearch Console domain property `saastcolab.jp`を専用web streamへリンクし、
   連携済み行をread-backした。internal traffic filter、拡張計測、同意設定は変更していない。
+- 同日、P12の共通確認間隔を明示的`not_applicable`として承認し、Sites version 17・runtime revision 8へ
+  追加公開した。外部read-backで公開sitemapとrobots allowlistは9記事で一致し、P05/P09/P11はnoindex・
+  canonicalなし・CTAなしを維持した。GSCへの再送信やURL検査登録は行わず、既存submissionの再読込を待つ。
 - GA4は同意前と拒否後に外部script 0件、同意後だけGoogle tag 1件を読み込むことを確認した。
 - GA4 Realtimeで初回の`page_view`受信を確認した。2026-07-26の追加read-only確認では、過去30分の
   active user 2、`page_view` 2、`qualified_session` 2を確認した。これは実装確認の訪問を含むため、
