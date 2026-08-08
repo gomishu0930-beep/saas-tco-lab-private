@@ -321,7 +321,7 @@ Human action: 専用事業mail/accountで申請し、program ID、対象site、�
   sectionが有効化され、紹介IDと提供素材の発行を確認済みである。禁止事項、報酬条件、表示条件も
   Human記録にある。価格の自動取得・DB保存・履歴利用の権利は未承認のままで、CTAはpartner別GOまで無効とする。
 - HubSpot: 2026-08-03にImpactで`Declined`（low reach）を確認したため未承認。流入実績ができるまで再申請しない。
-- Semrush: Impact Marketplace手続中で、個別programの受付が確認できないため未承認。
+- Semrush: Impact Marketplaceは2026-08-09に却下済みで、個別programの受付も成立していないため未承認。公開記事・流入実績が改善するまで再申請しない。
 - SE Ranking、Serpstat: Affiliate利用を開始できる承認記録がないため未承認。
 
 Exit（editorial lane）: 掲載対象partner単位でAffiliate承認がcurrentで、規約・表示遵守を検査できる。

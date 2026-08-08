@@ -1,6 +1,6 @@
 # 現時点の導入 — あなたの操作表
 
-基準日: 2026-08-01（Asia/Tokyo）
+基準日: 2026-08-09（Asia/Tokyo）
 
 2026-07-28のHuman decision `DR-2026-07-28-REVENUE-TRACK`により、P0–P18はmaintenance only、
 人手予算はlaunch trackへ全振りする。rights model v2では、自動取得・価格DB・履歴DBはstrict gateを
@@ -160,7 +160,7 @@ XServerビジネスも開示先行、runtime destination設定、partner別`cta_
 |もしもアフィリエイト|Account登録済み、ロリポップ申請結果未確認・他3件未申請|検索結果概要だけを台帳へ記録。報酬値は非保存|0|再認証後にロリポップの提携状態だけ確認し、重複申請しない|
 |バリューコマース|Account本登録済み、ABLENET共用サーバー提携承認済み|個別条件を台帳v1.1へ要約。報酬値は非保存|1|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
 |HubSpot|2026-08-03 Impact画面でDeclined（low reach）を確認|未回答。2026-07-26追送済み|0|公開・流入実績を作るまで再申請しない。拒否を承認済みと数えない|
-|Semrush|Impact Marketplace申請受領・website認証済み。個別申請の送信を試行したが未受領|回答あり|0|Marketplace承認を待つ。`Discover`表示後にSemrushを再申請し、受付receiptを確認する|
+|Semrush|Impact Marketplaceは2026-08-09に却下済み。個別申請は未成立|回答あり|0|公開記事・流入実績を蓄積し、再申請条件を満たした後に新しいexact GOで再評価する|
 |SE Ranking|work email例外回答待ち|未回答。ticket 112501へ2026-07-26追送済み|0|回答まで再登録しない|
 |Serpstat|未申請|回答あり・社内審査中。2026-07-26 due-diligence返信済み|0|authorized teamの8項目回答を待つ|
 
@@ -169,13 +169,14 @@ A8.netで直接確認できなかったHubSpot、kintone、サイボウズ、Con
 `docs/JP_ASP_APPLICATION_CHECKLIST.md`に置き、W6 safe-summaryがないカテゴリを有望扱いしない。
 
 E10のImpact product feed確認は、Impact上でAffiliateがactiveになったpartnerだけがtriggerである。現在は
-HubSpotはlow reachでDeclined、SemrushはMarketplace手続中であり、対象partnerは0社なのでHuman操作はまだ不要。
+HubSpotはlow reachでDeclined、Impact Marketplace自体も2026-08-09に却下済みで、Semrush個別申請は未成立である。
+対象partnerは0社なのでHuman操作はまだ不要であり、流入実績形成前の再申請も行わない。
 active通知後に`docs/IMPACT_PRODUCT_FEED_CHECKLIST.md`を使い、catalog有無とA1利用scopeを確認する。
 
 HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。2026-08-03に
 Impact画面でlow reachを理由とするDeclinedを確認しました。公開・流入実績を作るまで再申請せず、追加表示された
 Impact Marketplace設定、税務情報、受取情報は未操作です。Semrushは
-2026-07-26に契約同意、Impact credential受付、SMS端末認証、既存Impact accountへのloginまで完了しました。同日、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User AgreementとMaster Program Agreementへ同意しました。税務workflowは値を記録せず完了し、SaaS TCO Lab限定の公開profileも保存済みです。media propertyはwebsite認証済みで、Impact Marketplace申請は受領済みです。Humanの`semrush_submit: GO`後にSemrush個別申請の送信を再試行しましたが、既存Impact accountへのsign-in後はHubSpot homeへ遷移し、Semrushの受付画面・通知・受付メールはいずれも確認できませんでした。再認証の失敗ではなく、Marketplace承認前の導線または既存account callbackの停止と判定します。Marketplace承認後に`Discover`から再開し、受付receiptを確認します。申請中も承認済みと数えず、Affiliate、data rights、対象site、
+2026-07-26に契約同意、Impact credential受付、SMS端末認証、既存Impact accountへのloginまで完了しました。同日、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User AgreementとMaster Program Agreementへ同意しました。税務workflowは値を記録せず完了し、SaaS TCO Lab限定の公開profileも保存済みです。media propertyはwebsite認証済みで、Impact Marketplace申請は受領済みです。Humanの`semrush_submit: GO`後にSemrush個別申請の送信を再試行しましたが、既存Impact accountへのsign-in後はHubSpot homeへ遷移し、Semrushの受付画面・通知・受付メールはいずれも確認できませんでした。2026-08-09に既存accountの任意business profileをpublisher・individual・website・product/service reviewsとして完了し、申請完了画面の後にMarketplace状態が`却下済み`であることをread-backしました。新規に追加したwebsite channelのverificationは成立しておらず、過去のwebsite認証記録をこのchannelへ読み替えません。Marketplace却下中はSemrushを再申請せず、公開記事・流入実績が改善した後に新しいexact GOで再評価します。却下を承認済みと数えず、Affiliate、data rights、対象site、
 payoutの全条件が揃った会社だけを1社と数えます。
 
 ## Google Ads以外のJP/ja需要source
@@ -503,7 +504,7 @@ Affiliate承認、拒否は0件で、受付確認・survey・既存審査中thre
 sourceはruntime secretが存在する時だけ`impact-site-verification` metaをHTMLへ挿入し、値そのものをrepoへ
 保存しない。Impact公式手順に合わせてmetaを`<head>`内の最初のmetaとするversion 3を再検証・公開し、
 外部readbackでHTTP 200、meta位置、従来のnoindex security headerを確認した。Impact画面ではwebsiteが
-`Verified`となり、Marketplace進捗100%、Marketplace application受領を確認した。Semrush個別申請は送信を試行したが、既存accountへのsign-in後にHubSpot homeへ戻り、受付receiptは生成されなかった。
+`Verified`となり、当時のMarketplace進捗100%、Marketplace application受領を確認した。Semrush個別申請は送信を試行したが、既存accountへのsign-in後にHubSpot homeへ戻り、受付receiptは生成されなかった。2026-08-09の最新read-backではMarketplaceは`却下済み`であり、この後続状態を現在地とする。
 
 同日、HumanのGSC/GA4個別GO後にversion 5を公開した。verification値とmeasurement値はSites runtime
 secretだけへ保存し、repositoryへ保存していない。外部readbackでImpact meta first、GSC meta、noindex、

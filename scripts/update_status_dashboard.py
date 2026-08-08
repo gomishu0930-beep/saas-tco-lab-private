@@ -594,6 +594,43 @@ def _regenerate(
         {"id": "L3", "name": "noindex解除", "status": index_state, "note": f"index承認 {len(index_approved)}本・記事承認だけでは追加しない"},
         {"id": "L4", "name": "CTA有効化", "status": "HOLD" if cta_count == 0 else f"{cta_count} partner GO", "note": "Affiliate承認・規約遵守・開示先行"},
     ]
+    data["partners"] = [
+        {
+            "name": "Mangools",
+            "affiliate": "有効(紹介ID発行済)",
+            "affStatus": "go",
+            "rights": "未回答(7/26追送)",
+            "next": "editorial CTA候補。tier確認 毎月4日",
+        },
+        {
+            "name": "HubSpot",
+            "affiliate": "ImpactでDeclined(low reach・8/3確認)",
+            "affStatus": "warn",
+            "rights": "未回答(7/26追送)",
+            "next": "流入実績を作るまで再申請しない",
+        },
+        {
+            "name": "Semrush",
+            "affiliate": "Impact Marketplace却下済み(8/9確認)",
+            "affStatus": "warn",
+            "rights": "自動取得系prohibited / editorial条件付き可",
+            "next": "流入実績形成後に新しいexact GOで再評価",
+        },
+        {
+            "name": "SE Ranking",
+            "affiliate": "work email例外回答待ち",
+            "affStatus": "hold",
+            "rights": "未回答(ticket追送済)",
+            "next": "回答まで再登録しない",
+        },
+        {
+            "name": "Serpstat",
+            "affiliate": "未申請",
+            "affStatus": "hold",
+            "rights": "社内審査中",
+            "next": "項目別回答待ち",
+        },
+    ]
     data["work"] = _work_queue(root)
     data["externalActions"] = _external_action_queue(root, state, contracts)
     data["articleReviews"] = _article_review_queue(contracts)

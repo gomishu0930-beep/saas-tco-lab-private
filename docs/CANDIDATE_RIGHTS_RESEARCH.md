@@ -1,12 +1,12 @@
 # SaaS比較候補5社：権利・Affiliate一次情報調査
 
-初回確認日: 2026-07-21、返信反映日: 2026-07-26（Asia/Tokyo）
+初回確認日: 2026-07-21、最新状態反映日: 2026-08-09（Asia/Tokyo）
 
 対象: Semrush、SE Ranking、Mangools、Serpstat、HubSpot
 
 ## 結論
 
-公開Affiliate Programは5社すべてで確認済みです。Mangoolsはaffiliate accessと紹介素材の発行まで到達し、HubSpotは2026-07-26にImpact申請を送信して`In Review`、Semrushは同日に契約同意、SMS端末認証、既存Impact accountへのloginまで完了しました。Impact MarketplaceのPartner User AgreementとMaster Program AgreementもHumanのaction-time承認で同意済みで、税務workflow、公開profile、website認証、Marketplace申請まで完了しました。Humanの`semrush_submit: GO`後にSemrush個別申請を再試行しましたが、sign-in callbackはHubSpot homeへ戻り、Semrushの受付画面・通知・受付メールは生成されませんでした。Marketplace承認後の`Discover`から再開します。申請中や単なるaccount発行を「実利用可能な提携」と数えず、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがって統合gateは現時点で **0/3、STOP** です。
+公開Affiliate Programは5社すべてで確認済みです。Mangoolsはaffiliate accessと紹介素材の発行まで到達し、HubSpotは2026-08-03にlow reachを理由とする`Declined`、Impact Marketplaceは2026-08-09に`却下済み`をread-backしました。Semrushは契約同意、SMS端末認証、既存Impact accountへのloginまで完了しましたが、個別申請の受付画面・通知・受付メールは生成されていません。公開記事・流入実績が改善するまでMarketplace・HubSpot・Semrushを再申請しません。申請や単なるaccount発行を「実利用可能な提携」と数えず、公開料金ページを継続取得し、最小fieldを保存し、比較表・12か月TCO・価格履歴として商用公開する一連の権利を明示確認できた会社も0社です。したがってautomated data pathの統合gateは現時点で **0/3、STOP** です。
 
 これは各社の価格を人が一度閲覧できないという意味ではありません。Affiliateとして紹介できること、サービス内部のデータをAPI利用できること、各社自身の価格・利用上限を取得・保存・比較・履歴化できることは、それぞれ別の権利です。契約上の明示がない用途を、報酬の高さや一般的な比較記事の存在から推定承認しません。
 
@@ -42,7 +42,7 @@ Humanがこの分類を承認しても、相手方が付与していない取得
 
 |会社|低頻度の自動取得|最小field保存|比較表示|派生12か月TCO|価格履歴|商標・素材|Affiliate参加|現判定|
 |---|---|---|---|---|---|---|---|---|
-|Semrush|**回答で禁止**: website dataの自動収集は不可。公式APIは別規約|**回答で禁止**: website pricing/featuresの継続保存は不可|**条件付き可**: 正確・最新の独立記事。系統的field転載は不可|**未回答**|**回答で禁止**: website dataの履歴DB化は不可|**条件付き可**: publication ruleとAffiliate Termsに従う|**Impact Marketplace申請・website認証済み。個別申請は送信試行済み・未受領**|data sourceはSTOP。手動検証記事だけ候補|
+|Semrush|**回答で禁止**: website dataの自動収集は不可。公式APIは別規約|**回答で禁止**: website pricing/featuresの継続保存は不可|**条件付き可**: 正確・最新の独立記事。系統的field転載は不可|**未回答**|**回答で禁止**: website dataの履歴DB化は不可|**条件付き可**: publication ruleとAffiliate Termsに従う|**Impact Marketplaceは2026-08-09却下済み。個別申請は未成立**|data sourceはSTOP。手動検証記事だけ候補|
 |SE Ranking|**unknown**: 公開価格pageのautomation許諾なし。Serviceはinternal use|**unknown**|**unknown**: Affiliate素材の限定licenseはあるが、SE Ranking contentの複製・派生は書面許諾が原則|**unknown**|**unknown**|**確認済み・Affiliate素材のみ条件付き**|**確認済み・公開契約あり**。現account/linkは未取得|優先照会、未承認|
 |Mangools|**unknown**: 公式pageは公開だが、IP利用はinternal businessに限定|**unknown**|**unknown**: Affiliate promotionは可能だが、IPの商用再利用は書面同意が原則|**unknown**|**unknown**|**推定**: 提供bannerは利用可能。ブランドのPPC/domain/social名利用は禁止|**確認済み・free accountで自動access**。現account/linkは未取得|最優先照会、未承認|
 |Serpstat|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**書面同意待ち**|**未回答**|**未申請**|社内審査中、全data field STOP|
@@ -74,7 +74,7 @@ Humanがこの分類を承認しても、相手方が付与していない取得
 |派生TCO|unknown|価格fieldから12か月TCOを生成・商用表示する権利の明示なし|
 |履歴|回答で禁止|website dataのhistorical databaseを作らない|
 |商標|確認済み・条件付き|publication ruleに従う。広告・domain・誤認表示は別制限。Affiliate条件を優先|
-|Affiliate|Marketplace審査待ち / Semrush送信未成立|2026-07-26にHuman承認でSemrush契約とImpact Marketplace規約へ同意。SMS verification、Impact login、税務workflow、公開profile、website認証、Marketplace申請は完了。Semrush送信はsign-in後にHubSpot homeへ戻り、receiptなし|
+|Affiliate|Marketplace却下済み / Semrush送信未成立|2026-08-09にImpact Marketplaceの`却下済み`をread-back。Semrush送信はsign-in後にHubSpot homeへ戻り、receiptなし。流入実績形成前は再申請しない|
 
 ### 結論
 
@@ -203,11 +203,11 @@ Affiliate programとcomparison audienceの相性は強い一方、一般Website 
 
 |会社|公開program|公開条件の把握|有効account|tracking link|データ/TCO/履歴の明示権利|gate count|
 |---|---|---|---|---|---|---:|
-|Semrush|確認済み|Impact Marketplace申請・website認証済み。Semrush個別申請は送信試行済みだが未受領|未取得|未取得|自動取得・継続保存・履歴は明示不可|0|
+|Semrush|確認済み|Impact Marketplaceは2026-08-09却下済み。Semrush個別申請は未成立|未取得|未取得|自動取得・継続保存・履歴は明示不可|0|
 |SE Ranking|確認済み|確認済み|未取得|未取得|未取得|0|
 |Mangools|確認済み|確認済み。ただし“lifetime”に条件差あり|有効|発行済み・値は非保存|未取得|0|
 |Serpstat|確認済み|書面同意が必要・社内審査中|未取得|未取得|item別許諾0|0|
-|HubSpot|確認済み|2026-07-26 Impact申請送信、審査待ち|申請accountのみ・提携未承認|未取得|未取得|0|
+|HubSpot|確認済み|2026-08-03 low reachでDeclined|申請accountのみ・提携未承認|未取得|未取得|0|
 |**合計**||||||**0/3**|
 
 公開programが5件あることを「提携5社」と数えません。現時点ではsourceをfetchせず、Human Approverの照会・申請判断へhandoffします。

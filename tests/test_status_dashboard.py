@@ -141,6 +141,14 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         "warning": False,
         "individualCtaGateRequired": True,
     }
+    semrush = next(partner for partner in data["partners"] if partner["name"] == "Semrush")
+    assert semrush == {
+        "name": "Semrush",
+        "affiliate": "Impact Marketplace却下済み(8/9確認)",
+        "affStatus": "warn",
+        "rights": "自動取得系prohibited / editorial条件付き可",
+        "next": "流入実績形成後に新しいexact GOで再評価",
+    }
     assert data["launchQuarter"]["exitLine"] == {
         "decisionDate": "2026-12-31",
         "publishedArticlesMinimum": 20,
