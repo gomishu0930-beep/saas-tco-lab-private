@@ -270,6 +270,13 @@ test("servers operator and all twenty article routes remain candidate-only and f
   assert.match(operator, /抽出値は事前入力だけです/);
   assert.match(operator, /pricing\.initial_fee/);
   assert.match(operator, /servers\.campaign_period_months/);
+  assert.match(operator, /SVR01 \/ HUMAN確認前/);
+  assert.match(operator, /data-candidate-authority="none"/);
+  assert.match(operator, /data-svr01-browser-candidate-count="9"/);
+  assert.match(operator, /2026年10月13日17:00終了/);
+  assert.match(operator, /転送量課金なし・転送量無制限/);
+  assert.match(operator, /Human確認前はcontractへ保存せず/);
+  assert.match(operator, /TCO・順位・記事・index・CTAへ流しません/);
   assert.doesNotMatch(operator, /候補JSONを保存/);
 
   assert.match(operator, /data-server-candidate-index="20"/);
