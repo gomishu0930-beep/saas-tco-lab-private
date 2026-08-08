@@ -86,5 +86,38 @@
     },
     "scenario": {"seats": 3, "monthlyUsage": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], "usageUnit": null},
     "expected": {"listedMinor": "21600", "addedTaxMinor": "0", "totalMinor": "21600"}
+  },
+  {
+    "name": "server-first-year-campaign-setup-renewal-and-domain-benefit",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "server", "amount": "1000", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [], "usage": null, "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], "usageUnit": null},
+    "serverTerms": {"initialFee": "3000", "renewalFee": "500", "renewalDueMonth": 12, "campaignPrice": "500", "campaignPeriodMonths": 3, "domainPrice": "2400", "domainBillingPeriod": "annual", "domainIncludedMonths": 12},
+    "expected": {"listedMinor": "14000", "addedTaxMinor": "0", "totalMinor": "14000"}
+  },
+  {
+    "name": "server-second-year-renewal-and-domain-charge",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "server", "amount": "1000", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [], "usage": null, "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], "usageUnit": null},
+    "serverTerms": {"initialFee": "0", "renewalFee": "500", "renewalDueMonth": 13, "campaignPrice": "500", "campaignPeriodMonths": 3, "domainPrice": "2400", "domainBillingPeriod": "annual", "domainIncludedMonths": 12},
+    "expected": {"listedMinor": "25400", "addedTaxMinor": "0", "totalMinor": "25400"}
+  },
+  {
+    "name": "server-zero-input-thirty-six-month-horizon",
+    "quote": {
+      "currency": "JPY", "minorUnitDigits": 0, "minimumCommitmentMonths": 1,
+      "base": {"name": "server", "amount": "1000", "currency": "JPY", "billingPeriod": "monthly", "priceBasis": "flat", "minimumSeats": 1, "includedSeats": 0, "maximumSeats": null},
+      "addons": [], "usage": null, "tax": {"treatment": "not_applicable", "rate": null}
+    },
+    "scenario": {"seats": 1, "monthlyUsage": ["0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0", "0"], "usageUnit": null},
+    "serverTerms": {"initialFee": null, "renewalFee": null, "renewalDueMonth": null, "campaignPrice": null, "campaignPeriodMonths": null, "domainPrice": null, "domainBillingPeriod": null, "domainIncludedMonths": null},
+    "expected": {"listedMinor": "36000", "addedTaxMinor": "0", "totalMinor": "36000"}
   }
 ]

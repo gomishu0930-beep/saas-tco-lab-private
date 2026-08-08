@@ -532,7 +532,13 @@ _EXPANSION_FIELD_KINDS: dict[ExpansionCategory, dict[str, EditorialValueKind]] =
         "email.overage_price": EditorialValueKind.PRICE,
     },
     ExpansionCategory.SERVERS: {
+        "pricing.initial_fee": EditorialValueKind.PRICE,
         "pricing.base_price": EditorialValueKind.PRICE,
+        "pricing.renewal_fee": EditorialValueKind.PRICE,
+        "servers.campaign_price": EditorialValueKind.PRICE,
+        "servers.campaign_period_months": EditorialValueKind.DURATION,
+        "servers.domain_benefit_amount": EditorialValueKind.PRICE,
+        "servers.domain_benefit_period_months": EditorialValueKind.DURATION,
         "servers.compute_hours": EditorialValueKind.USAGE,
         "servers.storage_gb": EditorialValueKind.QUOTA,
         "servers.data_transfer_gb": EditorialValueKind.QUOTA,
@@ -558,7 +564,17 @@ class CategoryExpansionInput(StrictModel):
     category_id: ExpansionCategory
     template_kind: Literal["pricing_tco"] = "pricing_tco"
     state: Literal["candidate_only"] = "candidate_only"
-    numeric_fields: tuple[HumanEditorialNumericField, ...] = ()
+    numeric_fields: tuple[HumanEditorialNumericField, ...] = Field(
+        default=(),
+        json_schema_extra={
+            "x-category-field-catalog": {
+                category.value: {
+                    field: kind.value for field, kind in fields.items()
+                }
+                for category, fields in _EXPANSION_FIELD_KINDS.items()
+            }
+        },
+    )
 
     @model_validator(mode="after")
     def validate_category_fields(self) -> Self:

@@ -362,18 +362,44 @@ def test_imported_first_batch_contracts_pass_authoritative_validation() -> None:
         assert all(field.rights_path == "human_editorial" for field in contract.numeric_fields)
 
 
+def test_p06_p07_contracts_record_explicit_human_approval() -> None:
+    expected_counts = {"P06": 4, "P07": 4}
+    for article_id, expected_count in expected_counts.items():
+        path = ROOT / "artifacts" / "editorial-inputs" / f"{article_id}-editorial-input.json"
+        contract = EditorialArticleInput.model_validate_json(path.read_text(encoding="utf-8"))
+        assert contract.article_id == article_id
+        assert len(contract.numeric_fields) == expected_count
+        assert contract.article_review_status.value == "approved"
+        assert all(field.review_status.value == "approved" for field in contract.numeric_fields)
+        assert all(field.entered_by == "human" for field in contract.numeric_fields)
+        assert all(field.rights_path == "human_editorial" for field in contract.numeric_fields)
+
+
 def test_category_expansion_contract_is_candidate_only_and_has_fixed_catalogs() -> None:
     candidate = CategoryExpansionInput(category_id=ExpansionCategory.ACCOUNTING)
 
     assert candidate.state == "candidate_only"
     assert candidate.numeric_fields == ()
     assert expansion_field_kinds(ExpansionCategory.SERVERS) == {
+        "pricing.initial_fee": EditorialValueKind.PRICE,
         "pricing.base_price": EditorialValueKind.PRICE,
+        "pricing.renewal_fee": EditorialValueKind.PRICE,
+        "servers.campaign_price": EditorialValueKind.PRICE,
+        "servers.campaign_period_months": EditorialValueKind.DURATION,
+        "servers.domain_benefit_amount": EditorialValueKind.PRICE,
+        "servers.domain_benefit_period_months": EditorialValueKind.DURATION,
         "servers.compute_hours": EditorialValueKind.USAGE,
         "servers.storage_gb": EditorialValueKind.QUOTA,
         "servers.data_transfer_gb": EditorialValueKind.QUOTA,
         "servers.backup_price": EditorialValueKind.PRICE,
     }
+    schema_catalog = CategoryExpansionInput.model_json_schema()["properties"][
+        "numeric_fields"
+    ]["x-category-field-catalog"]["servers"]
+    assert schema_catalog["pricing.initial_fee"] == "price"
+    assert schema_catalog["pricing.renewal_fee"] == "price"
+    assert schema_catalog["servers.campaign_period_months"] == "duration"
+    assert schema_catalog["servers.domain_benefit_amount"] == "price"
 
 
 def test_category_expansion_rejects_partial_or_cross_category_rows() -> None:

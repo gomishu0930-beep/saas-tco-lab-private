@@ -4,8 +4,11 @@
 measurement ID、partner ID、tracking ID、支払情報、メール本文は追記しない。GOは書かれたscopeだけに有効で、
 domain GOからindex GOやCTA GOを推論しない。
 
-現在地: P01–P03は2026-08-03承認済み。次のrelease tokenは`index_go: GO / HOLD`であり、
-CTAは引き続き別tokenである。
+現在地: P01–P03旧版は2026-08-03公開済みで、Mangools CTAも稼働中。2026-08-05の読者向け改稿版は
+local preview確認済みで2026-08-06に再承認済みだが、releaseは未実施。P06/P07は2026-08-07に記事承認済みで、
+deploy・index・CTAは未承認のままである。serversはSVR01 candidate-only contractをlocal保存済み、XServer
+ビジネスは提携審査待ちで、価格のcanonical採用・公開は未承認である。Xは`@saastcolab`への転用と旧投稿整理が
+完了し、投稿0件のSaaS専用mediaとして待機中である。初回投稿は個別GOまでHOLDする。
 
 ## 今使うtoken
 
@@ -22,8 +25,23 @@ CTAは引き続き別tokenである。
 |Impact feed有無|`impact_feed_check: <available\|unavailable\|unclear> <partner>`|`impact_feed_check: available HubSpot`|承認済みpartnerのcatalog表示有無だけを記録|
 |Impact feed A1登録|`impact_feed_a1: GO <partner> / HOLD <partner>`|`impact_feed_a1: HOLD HubSpot`|全利用scopeを確認したexact feedだけsource policy候補へ登録。取得は開始しない|
 |Mangools需要CSV|`mangools_csv: done / pending`|`mangools_csv: done`|凍結済みquery CSVのlocal検証を開始|
-|Scope拡大|`scope_expand: GO / HOLD`|`scope_expand: HOLD`|需要不足時の対象拡大判断|
+|Scope拡大準備|`scope_expand: GO (準備scope) / HOLD`|`scope_expand: GO (準備scope)`|2026-08-05受領済み。query・checklist・template準備だけで、公開・申請・照会は許可しない|
+|優先カテゴリ|`category_primary: GO <category> / HOLD`|`category_primary: GO servers`|2026-08-06受領済み。serversのlocal記事・観測表・計算機準備だけを許可|
 |日本ASP申請|`asp_signup: GO <ASP> / HOLD <ASP>`|`asp_signup: GO A8.net`|列挙したASPのHuman申請だけを開始|
+|ASP account状態|`asp_account: <partner> <registration_incomplete / registered / under_review / approved>`|`asp_account: a8net registered`|機密値を含めずpartner台帳を更新|
+|もしも本登録完了（確認済み）|`moshimo_email_verify: done / HOLD`|`moshimo_email_verify: done`|2026-08-07に管理画面へログイン済みであることをread-back済み。再返信不要|
+|ASP個別提携状態|`asp_partnership: <partner> <not_applied / pending / approved / denied>`|`asp_partnership: a8net pending`|program名・カテゴリ・公開可能な条件を別途確認して更新|
+|ASP個別program申請|`asp_program_apply: GO <ASP> <program名> / HOLD <ASP> <program名>`|`asp_program_apply: GO A8.net formrun`|対象program一件だけの提携申請を許可。CTA・広告link取得は別GO|
+|A8再認証完了（確認済み）|`a8_reauth: done`|`a8_reauth: done`|2026-08-07にSaaS TCO Lab選択済みのprogram詳細をread-back済み。再返信不要|
+|もしも再認証・結果確認|`moshimo_reauth: done`|`moshimo_reauth: done`|ロリポップ！申請操作後にsessionが失効したため、Human再ログイン後に提携状態だけをread-only確認。重複申請しない|
+|バリューコマース本登録完了|`valuecommerce_registration: done`|`valuecommerce_registration: done`|本登録案内メールの期限内URLからHumanが手続きを完了した後、ABLENET候補の個別条件をread-onlyで再確認|
+|servers候補入力|`server_price_input: done <SVR-ID>`|`server_price_input: done SVR01`|`/operator/servers/`の候補値をHumanが確認し、確定ボタンを押して保存したcandidate-only JSONをlocal検証。公開・CTAには効かない|
+|localhost候補JSON download許可|`local_download_permission: GO localhost <SVR-ID> / HOLD`|`local_download_permission: GO localhost SVR01`|Safariの一回のlocalhost download許可だけを承認。外部送信・公開・CTA・ASP申請には効かない|
+|P01 note修正|`note_edit_go: GO P01 PR先頭追記 / HOLD`|`note_edit_go: GO P01 PR先頭追記`|既存noteの先頭へlocal templateのPR表示だけを追記する外部編集を許可|
+|SaaS専用X（完了記録）|`account_repurpose: GO <旧handle> retire_fanza`|`account_repurpose: GO @fanza_poll_lab retire_fanza`|2026-08-06受領・完了済み。再実行しない|
+|P01 X初回投稿|`x_post: GO P01 / HOLD P01`|`x_post: HOLD P01`|冒頭PR表示、P01の読者向け本文、saastcolab.jpのP01 URLだけを投稿対象にする。ASP広告linkは含めない|
+|Release用push|`repository_update_push: GO / HOLD`|`repository_update_push: HOLD`|提示済みrelease対象だけをcommit・pushする。診断履歴、output、credentialは除外|
+|R1–R6 deploy|`deploy_update: GO P01,P02,P03 R1-R6 / HOLD`|`deploy_update: HOLD`|push済みの読者向け改稿3記事だけを本番反映。index・Mangools CTAの既存gateは維持|
 |月次KPI CSV|`monthly_kpi_csv: done / pending <source>`|`monthly_kpi_csv: done`|dashboard safe total更新を開始|
 |Mangools月次|`mangools_monthly: unchanged / changed review_needed`|`mangools_monthly: unchanged`|tier・conversion画面の変化有無だけを記録|
 |Rights回答|`rights_decision: approve / revise / reject`|`rights_decision: revise Semrush history`|新しい実質回答のfield分類だけを判断|

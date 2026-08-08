@@ -230,6 +230,64 @@ function escapeHtmlAttribute(value: string): string {
     .replaceAll(">", "&gt;");
 }
 
+function decodeHtmlAttribute(value: string): string {
+  return value
+    .replaceAll("&quot;", '"')
+    .replaceAll("&#39;", "'")
+    .replaceAll("&#x27;", "'")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&amp;", "&");
+}
+
+function htmlAttribute(tag: string, name: string): string | null {
+  const match = tag.match(new RegExp(`\\b${name}=["']([^"']*)["']`, "i"));
+  return match ? decodeHtmlAttribute(match[1]) : null;
+}
+
+async function withNextReading(
+  response: Response,
+  indexPaths: ReadonlySet<string>,
+  currentPath: string,
+): Promise<Response> {
+  const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+  if (
+    response.status !== 200
+    || !contentType.includes("text/html")
+    || !indexPaths.has(currentPath)
+  ) return response;
+
+  const body = await response.text();
+  const placeholderPattern = /<div\b(?=[^>]*data-next-reading-placeholder=["'][^"']+["'])[^>]*>[\s\S]*?<\/div>/i;
+  const placeholder = body.match(placeholderPattern)?.[0];
+  if (!placeholder) return new Response(body, response);
+
+  const candidates = [...placeholder.matchAll(/<template\b[^>]*>/gi)]
+    .map((match) => ({
+      path: htmlAttribute(match[0], "data-next-reading-path"),
+      title: htmlAttribute(match[0], "data-next-reading-title"),
+      outcome: htmlAttribute(match[0], "data-next-reading-outcome"),
+    }))
+    .filter((candidate) => (
+      candidate.path
+      && candidate.title
+      && candidate.outcome
+      && candidate.path !== currentPath
+      && indexPaths.has(candidate.path)
+    ))
+    .slice(0, 3);
+  const replacement = candidates.length
+    ? `<section class="shell page-section next-reading" aria-labelledby="runtime-next-reading"><div class="section-heading"><p class="eyebrow">次に読む</p><h2 id="runtime-next-reading">関連する料金記事</h2></div><ul>${candidates.map((candidate) => `<li><a href="${escapeHtmlAttribute(candidate.path as string)}/">${escapeHtmlAttribute(candidate.title as string)}</a><span>${escapeHtmlAttribute(candidate.outcome as string)}</span></li>`).join("")}</ul></section>`
+    : "";
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  return new Response(body.replace(placeholderPattern, replacement), {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 function affiliateCtaBootstrap(controls: AffiliateCtaControls): string {
   const destination = JSON.stringify(controls.destination).replaceAll("<", "\\u003c");
   const approvedPaths = JSON.stringify(controls.approvedPaths).replaceAll("<", "\\u003c");
@@ -444,10 +502,14 @@ const worker = {
       const embeddable = normalizedPath === "/embed/tco-calculator";
       return withSecurityHeaders(
         await withAffiliateCta(
-          await withRuntimeHeadControls(
-            response,
-            runtimeControls,
-            indexPaths.has(normalizedPath),
+          await withNextReading(
+            await withRuntimeHeadControls(
+              response,
+              runtimeControls,
+              indexPaths.has(normalizedPath),
+              normalizedPath,
+            ),
+            indexPaths,
             normalizedPath,
           ),
           ctaControls,

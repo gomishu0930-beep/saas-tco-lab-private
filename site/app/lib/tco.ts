@@ -39,6 +39,60 @@ export type UsageScenario = {
   usageUnit: string | null;
 };
 
+export type ServerTcoTerms = {
+  initialFee: string | null;
+  renewalFee: string | null;
+  renewalDueMonth: number | null;
+  campaignPrice: string | null;
+  campaignPeriodMonths: number | null;
+  domainPrice: string | null;
+  domainBillingPeriod: BillingPeriod | null;
+  domainIncludedMonths: number | null;
+};
+
+export type ServerUseCase = "small_site" | "corporate_site" | "ecommerce";
+export type ServerPlanPriceStatus = "known" | "unknown";
+export type ServerPlanReviewStatus = "unreviewed" | "approved";
+
+export type ServerZeroInputPlan = {
+  vendorId: string;
+  planId: string;
+  displayName: string;
+  priceStatus: ServerPlanPriceStatus;
+  reviewStatus: ServerPlanReviewStatus;
+  eligibleUseCases: readonly ServerUseCase[];
+  quote: PricingQuote | null;
+  serverTerms: ServerTcoTerms | null;
+  unknownReason: string | null;
+  observedOn: string | null;
+  nextReviewOn: string | null;
+};
+
+export type ServerZeroInputContract = {
+  articleReviewStatus: ServerPlanReviewStatus;
+  plans: readonly ServerZeroInputPlan[];
+};
+
+export type ServerZeroInputRow = {
+  vendorId: string;
+  planId: string;
+  displayName: string;
+  status: "ranked" | "unconfirmed" | "ineligible" | "currency_mismatch";
+  totalMinor: bigint | null;
+  currency: string | null;
+  minorUnitDigits: number | null;
+  rank: number | null;
+  reason: string | null;
+  observedOn: string | null;
+  nextReviewOn: string | null;
+};
+
+export type ServerZeroInputTable = {
+  months: 12 | 24 | 36;
+  useCase: ServerUseCase;
+  rows: readonly ServerZeroInputRow[];
+};
+
 export type TcoLineItem = {
   name: string;
   kind: string;
@@ -97,6 +151,10 @@ function multiply(left: Rational, right: Rational): Rational {
 
 function multiplyInteger(value: Rational, quantity: number): Rational {
   return { numerator: value.numerator * BigInt(quantity), denominator: value.denominator };
+}
+
+function greaterThan(left: Rational, right: Rational): boolean {
+  return left.numerator * right.denominator > right.numerator * left.denominator;
 }
 
 function roundHalfUp(value: Rational): bigint {
@@ -249,7 +307,38 @@ function priceUsage(
   };
 }
 
-export function calculateTco(quote: PricingQuote, scenario: UsageScenario): TcoResult {
+function priceFixed(
+  name: string,
+  kind: string,
+  amount: Rational,
+  billed: boolean,
+  digits: number,
+  tax: ReturnType<typeof validateTax>,
+): TcoLineItem {
+  const invoiceMinor = billed ? majorToMinor(amount, digits) : 0n;
+  const taxMinor = addedTax(invoiceMinor, tax.treatment, tax.rate);
+  return {
+    name,
+    kind,
+    listedMinor: invoiceMinor,
+    addedTaxMinor: taxMinor,
+    totalMinor: invoiceMinor + taxMinor,
+    billedOccurrences: billed ? 1 : 0,
+  };
+}
+
+function pairPresent(left: unknown, right: unknown, message: string): boolean {
+  const leftPresent = left !== null;
+  const rightPresent = right !== null;
+  if (leftPresent !== rightPresent) throw new TcoError(message);
+  return leftPresent;
+}
+
+function calculateTcoInternal(
+  quote: PricingQuote,
+  scenario: UsageScenario,
+  serverTerms: ServerTcoTerms | null,
+): TcoResult {
   const currency = normalizeCurrency(quote.currency, "quote.currency");
   if (!Number.isSafeInteger(quote.minorUnitDigits) || quote.minorUnitDigits < 0 || quote.minorUnitDigits > 8) {
     throw new TcoError("minorUnitDigits must be an integer between 0 and 8");
@@ -261,9 +350,64 @@ export function calculateTco(quote: PricingQuote, scenario: UsageScenario): TcoR
   const values = scenario.monthlyUsage.map((value, index) => decimal(value, `monthlyUsage[${index}]`));
   const tax = validateTax(quote.tax);
   const baseMinimumSeats = positiveInteger(quote.base.minimumSeats, "base.minimumSeats");
-  const lineItems: TcoLineItem[] = [
-    priceRecurring(quote.base, "base", months, seats, currency, quote.minorUnitDigits, tax),
-  ];
+  const lineItems: TcoLineItem[] = [];
+
+  if (serverTerms?.initialFee !== null && serverTerms?.initialFee !== undefined) {
+    lineItems.push(priceFixed(
+      "initial fee",
+      "server.initial_fee",
+      decimal(serverTerms.initialFee, "server.initialFee"),
+      true,
+      quote.minorUnitDigits,
+      tax,
+    ));
+  }
+
+  const hasCampaign = serverTerms === null
+    ? false
+    : pairPresent(
+        serverTerms.campaignPrice,
+        serverTerms.campaignPeriodMonths,
+        "server campaign price and period must be supplied together",
+      );
+  if (!hasCampaign) {
+    lineItems.push(priceRecurring(quote.base, "base", months, seats, currency, quote.minorUnitDigits, tax));
+  } else {
+    if (quote.base.billingPeriod !== "monthly") {
+      throw new TcoError("server campaign pricing currently requires an observed monthly base price");
+    }
+    const campaignPrice = decimal(serverTerms!.campaignPrice!, "server.campaignPrice");
+    if (greaterThan(campaignPrice, decimal(quote.base.amount, "base.amount"))) {
+      throw new TcoError("server campaign price cannot exceed the observed regular price");
+    }
+    const campaignPeriodMonths = positiveInteger(
+      serverTerms!.campaignPeriodMonths!,
+      "server.campaignPeriodMonths",
+    );
+    const campaignMonths = Math.min(months, campaignPeriodMonths);
+    lineItems.push(priceRecurring(
+      { ...quote.base, name: `${quote.base.name} (campaign)`, amount: serverTerms!.campaignPrice! },
+      "base.campaign",
+      campaignMonths,
+      seats,
+      currency,
+      quote.minorUnitDigits,
+      tax,
+    ));
+    const regularMonths = months - campaignMonths;
+    if (regularMonths > 0) {
+      lineItems.push(priceRecurring(
+        quote.base,
+        "base.regular",
+        regularMonths,
+        seats,
+        currency,
+        quote.minorUnitDigits,
+        tax,
+      ));
+    }
+  }
+
   quote.addons.forEach((addon, index) => {
     lineItems.push(priceRecurring(addon, `addon[${index}]`, months, seats, currency, quote.minorUnitDigits, tax));
   });
@@ -272,6 +416,60 @@ export function calculateTco(quote: PricingQuote, scenario: UsageScenario): TcoR
   } else {
     lineItems.push(priceUsage(quote.usage, values, scenario.usageUnit, months, seats, baseMinimumSeats, currency, quote.minorUnitDigits, tax));
   }
+
+  if (serverTerms !== null) {
+    const hasRenewal = pairPresent(
+      serverTerms.renewalFee,
+      serverTerms.renewalDueMonth,
+      "server renewal fee and due month must be supplied together",
+    );
+    if (hasRenewal) {
+      const dueMonth = positiveInteger(serverTerms.renewalDueMonth!, "server.renewalDueMonth");
+      lineItems.push(priceFixed(
+        "renewal fee",
+        "server.renewal_fee",
+        decimal(serverTerms.renewalFee!, "server.renewalFee"),
+        dueMonth <= months,
+        quote.minorUnitDigits,
+        tax,
+      ));
+    }
+
+    const domainValues = [
+      serverTerms.domainPrice,
+      serverTerms.domainBillingPeriod,
+      serverTerms.domainIncludedMonths,
+    ];
+    const domainPresent = domainValues.filter((value) => value !== null).length;
+    if (domainPresent !== 0 && domainPresent !== domainValues.length) {
+      throw new TcoError("server domain price, billing period, and included months must be supplied together");
+    }
+    if (domainPresent === domainValues.length) {
+      const includedMonths = nonNegativeInteger(
+        serverTerms.domainIncludedMonths!,
+        "server.domainIncludedMonths",
+      );
+      lineItems.push(priceRecurring(
+        {
+          name: "domain after included benefit",
+          amount: serverTerms.domainPrice!,
+          currency,
+          billingPeriod: serverTerms.domainBillingPeriod!,
+          priceBasis: "flat",
+          minimumSeats: 1,
+          includedSeats: 0,
+          maximumSeats: null,
+        },
+        "server.domain",
+        Math.max(months - includedMonths, 0),
+        1,
+        currency,
+        quote.minorUnitDigits,
+        tax,
+      ));
+    }
+  }
+
   const listedMinor = lineItems.reduce((total, item) => total + item.listedMinor, 0n);
   const addedTaxMinor = lineItems.reduce((total, item) => total + item.addedTaxMinor, 0n);
   return {
@@ -283,6 +481,145 @@ export function calculateTco(quote: PricingQuote, scenario: UsageScenario): TcoR
     addedTaxMinor,
     totalMinor: listedMinor + addedTaxMinor,
     lineItems,
+  };
+}
+
+export function calculateTco(quote: PricingQuote, scenario: UsageScenario): TcoResult {
+  return calculateTcoInternal(quote, scenario, null);
+}
+
+export function calculateServerTco(
+  quote: PricingQuote,
+  scenario: UsageScenario,
+  serverTerms: ServerTcoTerms,
+): TcoResult {
+  return calculateTcoInternal(quote, scenario, serverTerms);
+}
+
+/**
+ * Display-only server comparison derived from approved contract projections.
+ * It accepts no reader-entered price, seat, tax, or pricing-basis values.
+ */
+export function calculateServerZeroInputTable(
+  contract: ServerZeroInputContract,
+  months: 12 | 24 | 36,
+  useCase: ServerUseCase,
+): ServerZeroInputTable {
+  if (![12, 24, 36].includes(months)) {
+    throw new TcoError("server zero-input horizon must be 12, 24, or 36 months");
+  }
+  if (!["small_site", "corporate_site", "ecommerce"].includes(useCase)) {
+    throw new TcoError("server zero-input use case is invalid");
+  }
+  const identities = contract.plans.map((plan) => `${plan.vendorId}\u0000${plan.planId}`);
+  if (new Set(identities).size !== identities.length) {
+    throw new TcoError("server zero-input plan identities must be unique");
+  }
+
+  const pending: ServerZeroInputRow[] = [];
+  const calculated: { plan: ServerZeroInputPlan; result: TcoResult }[] = [];
+  for (const plan of contract.plans) {
+    if (!plan.vendorId.trim() || !plan.planId.trim() || !plan.displayName.trim()) {
+      throw new TcoError("server zero-input plan identity cannot be blank");
+    }
+    if (plan.priceStatus === "unknown") {
+      if (plan.quote !== null || plan.serverTerms !== null) {
+        throw new TcoError("unknown server plan cannot carry calculable price terms");
+      }
+      if (!plan.unknownReason?.trim()) {
+        throw new TcoError("unknown server plan requires a reason");
+      }
+      pending.push({
+        vendorId: plan.vendorId,
+        planId: plan.planId,
+        displayName: plan.displayName,
+        status: "unconfirmed",
+        totalMinor: null,
+        currency: null,
+        minorUnitDigits: null,
+        rank: null,
+        reason: plan.unknownReason.trim(),
+        observedOn: plan.observedOn,
+        nextReviewOn: plan.nextReviewOn,
+      });
+      continue;
+    }
+    if (plan.quote === null || plan.serverTerms === null) {
+      throw new TcoError("known server plan requires quote and server terms");
+    }
+    if (contract.articleReviewStatus !== "approved" || plan.reviewStatus !== "approved") {
+      pending.push({
+        vendorId: plan.vendorId,
+        planId: plan.planId,
+        displayName: plan.displayName,
+        status: "unconfirmed",
+        totalMinor: null,
+        currency: null,
+        minorUnitDigits: null,
+        rank: null,
+        reason: "Human承認前のため計算対象外",
+        observedOn: plan.observedOn,
+        nextReviewOn: plan.nextReviewOn,
+      });
+      continue;
+    }
+    if (!plan.eligibleUseCases.includes(useCase)) {
+      pending.push({
+        vendorId: plan.vendorId,
+        planId: plan.planId,
+        displayName: plan.displayName,
+        status: "ineligible",
+        totalMinor: null,
+        currency: plan.quote.currency,
+        minorUnitDigits: plan.quote.minorUnitDigits,
+        rank: null,
+        reason: "選択した用途区分の承認対象外",
+        observedOn: plan.observedOn,
+        nextReviewOn: plan.nextReviewOn,
+      });
+      continue;
+    }
+    calculated.push({
+      plan,
+      result: calculateServerTco(plan.quote, {
+        seats: 1,
+        monthlyUsage: Array.from({ length: months }, () => "0"),
+        usageUnit: null,
+      }, plan.serverTerms),
+    });
+  }
+
+  const comparable = new Set(calculated.map(({ result }) => result.currency)).size <= 1;
+  const ranks = new Map<string, number>();
+  if (comparable) {
+    [...calculated]
+      .sort((left, right) => {
+        if (left.result.totalMinor < right.result.totalMinor) return -1;
+        if (left.result.totalMinor > right.result.totalMinor) return 1;
+        return left.plan.displayName.localeCompare(right.plan.displayName, "ja");
+      })
+      .forEach(({ plan }, index) => ranks.set(`${plan.vendorId}\u0000${plan.planId}`, index + 1));
+  }
+  const calculatedRows: ServerZeroInputRow[] = calculated.map(({ plan, result }) => ({
+    vendorId: plan.vendorId,
+    planId: plan.planId,
+    displayName: plan.displayName,
+    status: comparable ? "ranked" : "currency_mismatch",
+    totalMinor: result.totalMinor,
+    currency: result.currency,
+    minorUnitDigits: result.minorUnitDigits,
+    rank: ranks.get(`${plan.vendorId}\u0000${plan.planId}`) ?? null,
+    reason: comparable ? null : "通貨換算を行わないため順位なし",
+    observedOn: plan.observedOn,
+    nextReviewOn: plan.nextReviewOn,
+  }));
+  const rows = new Map(
+    [...calculatedRows, ...pending].map((row) => [`${row.vendorId}\u0000${row.planId}`, row]),
+  );
+  return {
+    months,
+    useCase,
+    rows: identities.map((identity) => rows.get(identity)!),
   };
 }
 

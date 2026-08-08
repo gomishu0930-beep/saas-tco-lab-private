@@ -9,6 +9,8 @@ export type EditorialSaleBannerState = "none" | "annual_discount_permanent" | "t
 export type EditorialObservedPriceBasis = "checkout_billed_total" | "displayed_price" | "human_scenario" | "not_applicable" | "unknown";
 
 export type EditorialFieldFormValue = {
+  billingToggleState: EditorialBillingToggleState | "";
+  saleBannerState: EditorialSaleBannerState | "";
   valueStatus: EditorialValueStatus;
   value: string;
   unit: string;
@@ -175,6 +177,8 @@ function validateSourceUrl(value: string): string | null {
 
 export function emptyEditorialField(): EditorialFieldFormValue {
   return {
+    billingToggleState: "",
+    saleBannerState: "",
     valueStatus: "known",
     value: "",
     unit: "",
@@ -435,15 +439,13 @@ export function valuesFromContract(page: PilotPage, contract: EditorialContract)
       vendorId: stored.vendor_id ?? "",
       planId: stored.plan_id ?? "",
       scenarioBasis: stored.scenario_basis ?? "",
-      billingToggleState: stored.billing_toggle_state ?? "",
-      saleBannerState: stored.sale_banner_state ?? "",
+      billingToggleState: "",
+      saleBannerState: "",
       values: {},
     };
-    if (
-      row.billingToggleState !== (stored.billing_toggle_state ?? "")
-      || row.saleBannerState !== (stored.sale_banner_state ?? "")
-    ) return null;
     row.values[stored.field] = {
+      billingToggleState: stored.billing_toggle_state ?? "",
+      saleBannerState: stored.sale_banner_state ?? "",
       valueStatus: stored.value_status,
       value: stored.value ?? "",
       unit: stored.unit ?? "",
@@ -493,12 +495,7 @@ export function validateEditorialInput(
     if (row.scopeKind === "vendor_plan") {
       if (!slugPattern.test(vendorId)) addError(errors, `${rowPrefix}.vendorId`, "vendor識別子は英小文字・数字・ハイフンで入力してください（例: mangools）。");
       if (!slugPattern.test(planId)) addError(errors, `${rowPrefix}.planId`, "plan識別子は英小文字・数字・ハイフンで入力してください（例: basic）。");
-      if (!billingToggleStates.has(row.billingToggleState)) addError(errors, `${rowPrefix}.billingToggleState`, "確認時のbilling toggle位置を選択してください。見当たらなければ「toggleなし」、判別不能なら「不明」です。");
-      if (!saleBannerStates.has(row.saleBannerState)) addError(errors, `${rowPrefix}.saleBannerState`, "価格表示を「なし・年払い恒常割引・期間限定promo・不明」の4区分から選択してください。");
       identity = `vendor_plan:${vendorId}:${planId}`;
-      if (row.billingToggleState === "unknown") calculationBlockers.push(`${identity} / screen: billing toggle unknown`);
-      if (row.saleBannerState === "unknown") calculationBlockers.push(`${identity} / screen: sale banner unknown`);
-      if (row.saleBannerState === "time_limited_promo") calculationBlockers.push(`${identity} / screen: time-limited promo`);
     } else {
       if (!scenarioBasis || scenarioBasis.length > 300) addError(errors, `${rowPrefix}.scenarioBasis`, "Humanシナリオの根拠を300文字以内で入力してください。個人情報は入れません。");
       identity = "human_scenario";
@@ -509,6 +506,15 @@ export function validateEditorialInput(
     for (const field of fieldsForRow(page, row)) {
       const current = row.values[field.key] ?? emptyEditorialField();
       const prefix = `${rowPrefix}.${field.key}`;
+      const billingToggleState = current.billingToggleState || row.billingToggleState;
+      const saleBannerState = current.saleBannerState || row.saleBannerState;
+      if (row.scopeKind === "vendor_plan") {
+        if (!billingToggleStates.has(billingToggleState)) addError(errors, `${prefix}.billingToggleState`, "このfieldを確認した時のbilling toggle位置を選択してください。見当たらなければ「toggleなし」、判別不能なら「不明」です。");
+        if (!saleBannerStates.has(saleBannerState)) addError(errors, `${prefix}.saleBannerState`, "このfieldの価格表示を「なし・年払い恒常割引・期間限定promo・不明」の4区分から選択してください。");
+        if (billingToggleState === "unknown") calculationBlockers.push(`${identity} / ${field.key}: billing toggle unknown`);
+        if (saleBannerState === "unknown") calculationBlockers.push(`${identity} / ${field.key}: sale banner unknown`);
+        if (saleBannerState === "time_limited_promo") calculationBlockers.push(`${identity} / ${field.key}: time-limited promo`);
+      }
       const valueStatus = current.valueStatus;
       const numeric = current.value.trim();
       const unit = current.unit.trim().replace(/\s+/g, " ");
@@ -584,13 +590,13 @@ export function validateEditorialInput(
         else if (row.scopeKind === "human_scenario" && observedPriceBasis !== "human_scenario") addError(errors, `${prefix}.observedPriceBasis`, "Humanシナリオ価格は公式価格の一次観測として扱いません。");
         else if (row.scopeKind === "vendor_plan" && valueStatus === "known" && billingPeriod === "annual") {
           if (observedPriceBasis !== "checkout_billed_total") addError(errors, `${prefix}.observedPriceBasis`, "年払いplanの値にはcheckoutで確認した請求総額を入力してください。料金表の月額換算表示は一次観測値にできません。");
-          if (row.billingToggleState !== "annual_selected") addError(errors, `${prefix}.billingPeriod`, "年払いcheckout総額では画面状態を「年払い選択」にしてください。");
+          if (billingToggleState !== "annual_selected") addError(errors, `${prefix}.billingPeriod`, "年払いcheckout総額では画面状態を「年払い選択」にしてください。");
           derivedMonthlyValue = annualMonthlyEquivalent(contractValue ?? "", currency ?? "");
           if (derivedMonthlyValue !== null) {
             derivedMonthlyUnit = "/ mo";
             derivationMethod = "annual_checkout_total_divided_by_12";
           }
-          if (row.saleBannerState === "annual_discount_permanent") {
+          if (saleBannerState === "annual_discount_permanent") {
             monthlyReferenceValue = current.monthlyReferenceValue.trim();
             const decimalMatch = /^\d+(?:\.\d+)?$/.exec(monthlyReferenceValue);
             if (!monthlyReferenceValue) {
@@ -621,8 +627,8 @@ export function validateEditorialInput(
           && valueStatus === "known"
           && !["displayed_price", "checkout_billed_total"].includes(observedPriceBasis ?? "")
         ) addError(errors, `${prefix}.observedPriceBasis`, "確認済み価格の一次観測区分を選択してください。");
-        if (billingPeriod === "monthly" && row.billingToggleState === "annual_selected") addError(errors, `${prefix}.billingPeriod`, "月払い価格に「年払い選択」の画面状態は使えません。");
-        if (billingPeriod === "annual" && row.billingToggleState === "monthly_selected") addError(errors, `${prefix}.billingPeriod`, "年払い価格に「月払い選択」の画面状態は使えません。");
+        if (billingPeriod === "monthly" && billingToggleState === "annual_selected") addError(errors, `${prefix}.billingPeriod`, "月払い価格に「年払い選択」の画面状態は使えません。");
+        if (billingPeriod === "annual" && billingToggleState === "monthly_selected") addError(errors, `${prefix}.billingPeriod`, "年払い価格に「月払い選択」の画面状態は使えません。");
         if (billingPeriod === "unknown") calculationBlockers.push(`${identity} / ${field.key}: billing period unknown`);
         if (taxTreatment === "unknown") calculationBlockers.push(`${identity} / ${field.key}: tax treatment unknown`);
       }
@@ -660,8 +666,8 @@ export function validateEditorialInput(
         currency_unknown_reason: currencyUnknownReason,
         billing_period: billingPeriod,
         tax_treatment: taxTreatment,
-        billing_toggle_state: row.scopeKind === "vendor_plan" ? row.billingToggleState as EditorialBillingToggleState : null,
-        sale_banner_state: row.scopeKind === "vendor_plan" ? row.saleBannerState as EditorialSaleBannerState : null,
+        billing_toggle_state: row.scopeKind === "vendor_plan" ? billingToggleState as EditorialBillingToggleState : null,
+        sale_banner_state: row.scopeKind === "vendor_plan" ? saleBannerState as EditorialSaleBannerState : null,
         observed_price_basis: observedPriceBasis,
         derived_monthly_value: derivedMonthlyValue,
         derived_monthly_unit: derivedMonthlyUnit,

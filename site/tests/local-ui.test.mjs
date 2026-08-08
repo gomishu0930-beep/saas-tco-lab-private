@@ -56,8 +56,10 @@ test("renders every synthetic-only local decision route with landmarks", async (
     ["/disclosure", /広告収益と、比較判断を混ぜない。/],
     ["/readiness", /現在の総合判定/],
     ["/operator", /見る・入力する・/],
+    ["/operator/servers", /通常料金・更新料・特典を/],
     ["/operator/derivatives", /noteとXへ/],
-    ["/embed/tco-calculator", /埋め込み用12か月TCO計算機/],
+    ["/servers/business-server-pricing", /法人向けサーバー料金/],
+    ["/embed/tco-calculator", /埋め込み用TCO表示/],
   ];
 
   for (const [path, expected] of expectations) {
@@ -76,38 +78,41 @@ test("renders every synthetic-only local decision route with landmarks", async (
   }
 });
 
-test("P01 article renders the Human-confirmed annual checkout TCO", async () => {
+test("P01 renders reader copy and approved evidence without an input calculator", async () => {
   const response = await render("/pilot/pricing-calculator");
   const html = await response.text();
 
-  assert.match(html, /P01[\s\S]{0,80}HUMAN INPUT/);
-  assert.match(html, /APPROVED/);
-  assert.match(html, /承認済み6章本文/);
+  assert.match(html, /P01[\s\S]{0,80}確認済み/);
+  assert.match(html, /Mangools料金\(2026年8月確認\): USD 452\.40と12か月TCO｜料金計算/);
   assert.doesNotMatch(html, /\{\{contract:/);
-  assert.match(html, /Human確認済み12か月TCO/);
+  assert.match(html, /class="article-lead">Mangools Basicの確認済み実額はUSD 452\.40（年次請求）で、/);
+  const readerBody = html.match(/<section[^>]*aria-labelledby="P01-article-structure"[\s\S]*?<\/section>/)?.[0] ?? "";
+  assert.doesNotMatch(readerBody, /vendor|billing toggle|価格表示分類|Human scenario|contract/i);
+  assert.match(readerBody, /href="\/methodology\/#detailed-calculator"/);
+  assert.match(html, />12か月TCO<\/h2>/);
   assert.match(html, /USD 452\.40/);
   assert.match(html, /USD 37\.70 \/ mo/);
   assert.match(html, /USD 61\.00 \/ mo/);
   assert.match(html, /月払い比で約38%割安/);
   assert.match(html, /通貨[\s\S]{0,80}USD/);
-  assert.match(html, /billing toggle[\s\S]{0,80}年払い選択/);
-  assert.match(html, /価格表示の分類[\s\S]{0,100}年払い恒常割引（計算可）/);
-  assert.match(html, /価格の一次観測[\s\S]{0,80}checkout請求総額/);
-  assert.match(html, /月額換算（派生値）[\s\S]{0,80}37\.70/);
+  assert.match(html, /画面の支払周期[\s\S]{0,80}年払い選択/);
+  assert.match(html, /価格表示の扱い[\s\S]{0,100}通常の年払い割引/);
+  assert.match(html, /価格を確認した場所[\s\S]{0,80}checkout請求総額/);
+  assert.match(html, /月あたりの参考額[\s\S]{0,80}37\.70/);
   assert.match(html, /24時間ごとに更新されると説明し、従量超過課金を提示していない/);
   assert.match(html, /VAT \$0\.00かつSubtotalとTotalが同額/);
   assert.match(html, /Human指定: 1名でブログ記事4〜5本\/月/);
-  assert.match(html, /Human入力値/);
+  assert.match(html, /確認値/);
   assert.match(html, /https:\/\/mangools\.com\/subscriptions\/checkout/);
   assert.match(html, /観測日/);
   assert.match(html, /次回確認日/);
-  assert.match(html, /12か月TCO計算機/);
-  assert.doesNotMatch(html, /checkout_values token未受領/);
-  assert.match(html, /contract取込済み/);
-  assert.match(html, /記事review[\s\S]{0,80}承認済み・公開候補/);
+  assert.doesNotMatch(html, /12か月TCO計算機|data-calculator-prefill-source="approved-evidence"/);
+  assert.doesNotMatch(html, /<input\b|<select\b/i);
+  assert.match(html, /観測日<\/dt><dd>2026-08-02/);
+  assert.match(html, /次回確認日<\/dt><dd>2026-08-31/);
   assert.match(html, /PR・広告に関する表示/);
-  assert.match(html, /CTA DISABLED/);
-  assert.ok(html.indexOf("article-pr-disclosure") < html.indexOf("CTA DISABLED"));
+  assert.match(html, /data-affiliate-cta-placeholder="mangools"/);
+  assert.ok(html.indexOf("article-pr-disclosure") < html.indexOf('data-affiliate-cta-placeholder="mangools"'));
   assert.doesNotMatch(html, /rel="sponsored|公式サイトへ/i);
 });
 
@@ -117,7 +122,7 @@ test("P02 and P03 keep vendor-plan identities and explicit unknown reasons", asy
   assert.match(p02, /Mangools \/ Basic/);
   assert.match(p02, /Mangools \/ Premium/);
   assert.match(p02, /Mangools \/ Agency/);
-  assert.match(p02, /keyword検索回数 \/ 24h/);
+  assert.match(p02, /キーワード検索回数 \/ 24時間/);
   assert.match(p02, /最低seat数を明示していない/);
   assert.match(p02, /USD 452\.40[\s\S]*USD 632\.40[\s\S]*USD 1172\.40/);
   assert.match(p02, /約38%割安[\s\S]*約35%割安[\s\S]*約31%割安/);
@@ -127,21 +132,40 @@ test("P02 and P03 keep vendor-plan identities and explicit unknown reasons", asy
   assert.match(p03, /Mangools \/ Basic/);
   assert.match(p03, /SE Ranking \/ Core/);
   assert.match(p03, /Semrush \/ SEO/);
-  assert.match(p03, /追跡keyword数（候補別単位）/);
+  assert.match(p03, /追跡キーワード数（候補別単位）/);
   assert.match(p03, /SE Ranking \/ Core[\s\S]{0,500}checkout請求総額が未観測/);
   assert.match(p03, /Semrush \/ SEO[\s\S]{0,500}checkout請求総額が未観測/);
-  assert.match(p03, /Mangools Basicの12か月総額だけを確定/);
+  assert.match(p03, /Mangools Basicの12か月総額だけを確認/);
   assert.match(p03, /横断価格順位を付けません/);
   assert.match(p03, /年次請求/);
   assert.match(p03, /unknown（税込・税別未確認）/);
-  assert.match(p03, /billing toggle[\s\S]{0,80}年払い選択/);
-  assert.match(p03, /Mangools \/ Basic[\s\S]{0,1200}価格表示の分類[\s\S]{0,100}年払い恒常割引（計算可）/);
-  assert.match(p03, /SE Ranking \/ Core[\s\S]{0,1200}価格表示の分類[\s\S]{0,100}unknown（分類未確認・計算HOLD）/);
+  assert.match(p03, /画面の支払周期[\s\S]{0,80}年払い選択/);
+  assert.match(p03, /Mangools \/ Basic[\s\S]{0,1200}価格表示の扱い[\s\S]{0,100}通常の年払い割引/);
+  assert.match(p03, /SE Ranking \/ Core[\s\S]{0,1200}価格表示の扱い[\s\S]{0,100}表示条件を未確認/);
   assert.match(p03, /公式価格ページ上で移行費用を確認できない/);
   assert.match(p03, /記事単位の出典・更新状態/);
   assert.match(p03, /2026-07-30/);
   assert.match(p03, /2026-08-29/);
   assert.match(p03, /記事状態[\s\S]{0,80}approved/);
+});
+
+test("P06 and P07 render approved evidence while remaining local noindex candidates", async () => {
+  const p06 = await (await render("/pilot/annual-vs-monthly")).text();
+  assert.match(p06, /P06[\s\S]{0,80}確認済み/);
+  assert.doesNotMatch(p06, /記事レビュー待ち/);
+  assert.doesNotMatch(p06, /\{\{contract:/);
+  assert.match(p06, /Mangools \/ Basic: USD 61\.00 \/ mo/);
+  assert.match(p06, /Mangools \/ Basic: USD 452\.40 \/ yr/);
+  assert.match(p06, /月払い比で約(?:<!-- -->)?38(?:<!-- -->)?%割安/);
+  assert.match(p06, /途中解約時の返金・残存支払・解約費用/);
+
+  const p07 = await (await render("/pilot/usage-overage")).text();
+  assert.match(p07, /P07[\s\S]{0,80}確認済み/);
+  assert.doesNotMatch(p07, /記事レビュー待ち/);
+  assert.doesNotMatch(p07, /\{\{contract:/);
+  assert.match(p07, /100 keyword research req\. \/ 24h/);
+  assert.match(p07, /400 ルックアップ\/月/);
+  assert.match(p07, /従量超過課金を提示していない/);
 });
 
 test("local comparison contains precomputed conditions and no active CTA", async () => {
@@ -180,23 +204,59 @@ test("operator route reduces Human work to form input and exact reply tokens", a
   assert.match(html, /Humanシナリオ/);
   assert.match(html, /Human確認して証拠contractを確定/);
   assert.match(html, /前回確定値とのside-by-side差分/);
+  assert.match(html, /価格確認20分 → 入力20分 → 確認20分/);
+  assert.match(html, /60分セッション開始/);
+  assert.match(html, /80点で公開候補へ進め/);
   assert.doesNotMatch(html, /JSONをコピー/);
   assert.match(html, /article_approve: P01,P02,P03/);
   assert.match(html, /CTA[^<]*DISABLED/);
   assert.doesNotMatch(html, /Google Adsを課金画面前まで進める/);
   assert.doesNotMatch(html, /HubSpot Impact契約・申請/);
   assert.doesNotMatch(html, /<form[^>]+action=/i);
+  assert.match(html, /href="\/operator\/servers\//);
+  assert.match(html, /href="\/servers\/business-server-pricing\//);
 });
 
-test("calculator embed stays disclosed, sourced, and noindex before release GO", async () => {
+test("servers operator and first article remain candidate-only and fail closed", async () => {
+  const operator = await (await render("/operator/servers")).text();
+  assert.match(operator, /SERVERS \/ CANDIDATE ONLY/);
+  assert.match(operator, /Human確認してservers候補contractを確定/);
+  assert.match(operator, /共通の画面情報を11 fieldへ一括適用/);
+  assert.match(operator, /共通情報を全fieldへ適用/);
+  assert.match(operator, /値、通貨、税、請求周期、確認状態は変更しません/);
+  assert.match(operator, /pricing\.initial_fee/);
+  assert.match(operator, /servers\.campaign_period_months/);
+  assert.doesNotMatch(operator, /候補JSONを保存/);
+
+  const article = await (await render("/servers/business-server-pricing")).text();
+  assert.match(article, /data-server-article-state="candidate_only"/);
+  assert.match(article, /承認済みのservers価格contractはまだありません/);
+  assert.match(article, /承認済みpartnerがないためCTAは無効/);
+  assert.ok(article.indexOf("article-pr-disclosure") < article.indexOf("data-server-template-step=\"calculator\""));
+  assert.ok(article.indexOf("data-server-template-step=\"calculator\"") < article.indexOf("data-server-template-step=\"cta_slot\""));
+  assert.doesNotMatch(article, /rel="sponsored|https?:\/\/[^\s<]*affiliate/i);
+});
+
+test("calculator embed is zero-input gated and links to the methodology detail mode", async () => {
   const response = await render("/embed/tco-calculator");
   const html = await response.text();
   assert.match(html, /PR・広告に関する表示/);
-  assert.match(html, /12か月TCO計算機/);
-  assert.match(html, /計算仕様・根拠の確認/);
-  assert.ok(html.indexOf("article-pr-disclosure") < html.indexOf("tco-calculator-title"));
+  assert.match(html, /埋め込み用TCO表示/);
+  assert.match(html, /承認済み価格を待っています/);
+  assert.match(html, /href="\/methodology\/#detailed-calculator"/);
+  assert.doesNotMatch(html, /<input\b|<select\b/i);
+  assert.ok(html.indexOf("article-pr-disclosure") < html.indexOf("embed-zero-input-title"));
   assert.match(html, /name="robots"[^>]*content="noindex, nofollow, noarchive, nosnippet"/i);
   assert.doesNotMatch(html, /rel="sponsored|公式サイトへ/i);
+});
+
+test("methodology owns the only detailed input calculator", async () => {
+  const html = await (await render("/methodology")).text();
+  assert.match(html, /id="detailed-calculator"/);
+  assert.match(html, /詳細計算モード/);
+  assert.match(html, /12か月TCO計算機/);
+  assert.match(html, /<input\b/i);
+  assert.match(html, /<select\b/i);
 });
 
 test("local robots disallows the complete site", async () => {

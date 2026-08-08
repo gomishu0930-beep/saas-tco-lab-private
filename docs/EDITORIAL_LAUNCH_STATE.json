@@ -3,6 +3,16 @@
   "domain": "saastcolab.jp",
   "domain_state": "GO",
   "index_state": "GO",
+  "deployed_articles": [
+    "P01",
+    "P02",
+    "P03"
+  ],
+  "index_approved_articles": [
+    "P01",
+    "P02",
+    "P03"
+  ],
   "affiliate_cta": {
     "Mangools": "GO"
   },
@@ -12,8 +22,8 @@
     "P03": "approved",
     "P04": "unreviewed",
     "P05": "unreviewed",
-    "P06": "unreviewed",
-    "P07": "unreviewed",
+    "P06": "approved",
+    "P07": "approved",
     "P08": "unreviewed",
     "P09": "unreviewed",
     "P10": "unreviewed",

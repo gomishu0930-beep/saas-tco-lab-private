@@ -3,10 +3,31 @@
     "DemandCapacityDecision": {
       "enum": [
         "insufficient_even_at_full_capture",
+        "known_volume_floor_below_required_incomplete",
         "volume_floor_met_not_proven"
       ],
       "title": "DemandCapacityDecision",
       "type": "string"
+    },
+    "MangoolsRejectedVolumeRow": {
+      "additionalProperties": false,
+      "properties": {
+        "line_number": {
+          "minimum": 2,
+          "title": "Line Number",
+          "type": "integer"
+        },
+        "source_text": {
+          "title": "Source Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "line_number",
+        "source_text"
+      ],
+      "title": "MangoolsRejectedVolumeRow",
+      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -47,20 +68,57 @@
     "capacity_decision": {
       "$ref": "#/$defs/DemandCapacityDecision"
     },
+    "comma_integer_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Comma Integer Volume Count",
+      "type": "integer"
+    },
     "country": {
       "const": "JP",
       "default": "JP",
       "title": "Country",
       "type": "string"
     },
+    "decimal_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Decimal Volume Count",
+      "type": "integer"
+    },
     "frozen_universe_sha256": {
       "pattern": "^[0-9a-f]{64}$",
       "title": "Frozen Universe Sha256",
       "type": "string"
     },
+    "integer_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Integer Volume Count",
+      "type": "integer"
+    },
     "keyword_count": {
       "const": 150,
       "title": "Keyword Count",
+      "type": "integer"
+    },
+    "known_monthly_search_volume_total": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Known Monthly Search Volume Total"
+    },
+    "known_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Known Volume Count",
       "type": "integer"
     },
     "language": {
@@ -68,11 +126,6 @@
       "default": "ja",
       "title": "Language",
       "type": "string"
-    },
-    "missing_volume_count": {
-      "const": 0,
-      "title": "Missing Volume Count",
-      "type": "integer"
     },
     "monthly_revenue_target_jpy": {
       "exclusiveMinimum": 0,
@@ -83,6 +136,26 @@
       "format": "date",
       "title": "Next Review On",
       "type": "string"
+    },
+    "no_data_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+          "type": "string"
+        }
+      ],
+      "title": "No Data Rate"
+    },
+    "no_data_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "No Data Volume Count",
+      "type": "integer"
     },
     "observed_on": {
       "format": "date",
@@ -112,6 +185,20 @@
       "title": "Raw Saved",
       "type": "boolean"
     },
+    "rejected_rows": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/MangoolsRejectedVolumeRow"
+      },
+      "title": "Rejected Rows",
+      "type": "array"
+    },
+    "rejected_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Rejected Volume Count",
+      "type": "integer"
+    },
     "required_confirmed_outbound_clicks": {
       "exclusiveMinimum": 0,
       "title": "Required Confirmed Outbound Clicks",
@@ -123,25 +210,26 @@
       "type": "integer"
     },
     "schema_version": {
-      "const": "1.0",
-      "default": "1.0",
+      "const": "1.1",
+      "default": "1.1",
       "title": "Schema Version",
       "type": "string"
     },
     "scope_expansion_recommended": {
       "title": "Scope Expansion Recommended",
       "type": "boolean"
-    },
-    "total_monthly_search_volume": {
-      "minimum": 0,
-      "title": "Total Monthly Search Volume",
-      "type": "integer"
     }
   },
   "required": [
     "keyword_count",
-    "missing_volume_count",
-    "total_monthly_search_volume",
+    "known_volume_count",
+    "no_data_volume_count",
+    "rejected_volume_count",
+    "integer_volume_count",
+    "comma_integer_volume_count",
+    "decimal_volume_count",
+    "known_monthly_search_volume_total",
+    "no_data_rate",
     "observed_on",
     "next_review_on",
     "raw_csv_sha256",

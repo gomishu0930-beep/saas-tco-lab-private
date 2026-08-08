@@ -1,6 +1,8 @@
 import p01ContractJson from "../../../artifacts/editorial-inputs/P01-editorial-input.json";
 import p02ContractJson from "../../../artifacts/editorial-inputs/P02-editorial-input.json";
 import p03ContractJson from "../../../artifacts/editorial-inputs/P03-editorial-input.json";
+import p06ContractJson from "../../../artifacts/editorial-inputs/P06-editorial-input.json";
+import p07ContractJson from "../../../artifacts/editorial-inputs/P07-editorial-input.json";
 
 import type { EditorialContract } from "./editorial-input-contract";
 import { validateEditorialInput, valuesFromContract } from "./editorial-input-contract";
@@ -12,6 +14,8 @@ const importedContracts: Readonly<Record<string, unknown>> = {
   P01: p01ContractJson,
   P02: p02ContractJson,
   P03: p03ContractJson,
+  P06: p06ContractJson,
+  P07: p07ContractJson,
 };
 
 /**

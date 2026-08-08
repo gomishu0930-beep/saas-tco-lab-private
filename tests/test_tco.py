@@ -14,6 +14,11 @@ from saas_preflight.tco import (
     PriceBasis,
     PricingQuote,
     RecurringCharge,
+    ServerPlanPriceStatus,
+    ServerPlanReviewStatus,
+    ServerTcoTerms,
+    ServerUseCase,
+    ServerZeroInputPlan,
     TaxInformationError,
     TaxPolicy,
     TaxTreatment,
@@ -22,6 +27,8 @@ from saas_preflight.tco import (
     UsageCharge,
     UsageScenario,
     UsageUnitMismatchError,
+    calculate_server_tco,
+    calculate_server_zero_input_table,
     calculate_tco,
     calculate_vendor_plan_tco,
     constant_usage_scenario,
@@ -77,6 +84,104 @@ def test_flat_monthly_twelve_month_tco() -> None:
     assert result.total_minor == 12_000
     assert result.months == 12
     assert result.line_items[0].billed_occurrences == 12
+
+
+def test_server_zero_input_table_ranks_only_approved_known_eligible_rows() -> None:
+    plans = (
+        ServerZeroInputPlan(
+            vendor_id="alpha",
+            plan_id="basic",
+            display_name="Alpha Basic",
+            price_status=ServerPlanPriceStatus.KNOWN,
+            review_status=ServerPlanReviewStatus.APPROVED,
+            eligible_use_cases=(ServerUseCase.SMALL_SITE,),
+            quote=_quote(amount=Decimal("1000")),
+            server_terms=ServerTcoTerms(),
+        ),
+        ServerZeroInputPlan(
+            vendor_id="beta",
+            plan_id="business",
+            display_name="Beta Business",
+            price_status=ServerPlanPriceStatus.KNOWN,
+            review_status=ServerPlanReviewStatus.APPROVED,
+            eligible_use_cases=(ServerUseCase.SMALL_SITE, ServerUseCase.CORPORATE_SITE),
+            quote=_quote(amount=Decimal("1500")),
+            server_terms=ServerTcoTerms(),
+        ),
+        ServerZeroInputPlan(
+            vendor_id="gamma",
+            plan_id="unknown",
+            display_name="Gamma 未確認プラン",
+            price_status=ServerPlanPriceStatus.UNKNOWN,
+            review_status=ServerPlanReviewStatus.UNREVIEWED,
+            eligible_use_cases=(),
+            unknown_reason="更新料が未確認",
+        ),
+    )
+
+    table = calculate_server_zero_input_table(
+        plans,
+        months=24,
+        use_case=ServerUseCase.SMALL_SITE,
+        article_review_approved=True,
+    )
+
+    assert [row.total_minor for row in table.rows] == [24_000, 36_000, None]
+    assert [row.rank for row in table.rows] == [1, 2, None]
+    assert [row.status for row in table.rows] == ["ranked", "ranked", "unconfirmed"]
+    assert table.rows[2].reason == "更新料が未確認"
+
+
+def test_server_zero_input_table_filters_use_case_and_article_review() -> None:
+    plan = ServerZeroInputPlan(
+        vendor_id="alpha",
+        plan_id="basic",
+        display_name="Alpha Basic",
+        price_status=ServerPlanPriceStatus.KNOWN,
+        review_status=ServerPlanReviewStatus.APPROVED,
+        eligible_use_cases=(ServerUseCase.SMALL_SITE,),
+        quote=_quote(),
+        server_terms=ServerTcoTerms(),
+    )
+
+    ineligible = calculate_server_zero_input_table(
+        (plan,),
+        months=12,
+        use_case=ServerUseCase.ECOMMERCE,
+        article_review_approved=True,
+    )
+    assert ineligible.rows[0].status == "ineligible"
+    assert ineligible.rows[0].rank is None
+
+    unreviewed = calculate_server_zero_input_table(
+        (plan,),
+        months=12,
+        use_case=ServerUseCase.SMALL_SITE,
+        article_review_approved=False,
+    )
+    assert unreviewed.rows[0].status == "unconfirmed"
+    assert unreviewed.rows[0].total_minor is None
+
+
+@pytest.mark.parametrize(("months", "expected"), [(12, 12_000), (24, 24_000), (36, 36_000)])
+def test_server_zero_input_table_uses_canonical_horizons(months: int, expected: int) -> None:
+    plan = ServerZeroInputPlan(
+        vendor_id="alpha",
+        plan_id="basic",
+        display_name="Alpha Basic",
+        price_status=ServerPlanPriceStatus.KNOWN,
+        review_status=ServerPlanReviewStatus.APPROVED,
+        eligible_use_cases=(ServerUseCase.CORPORATE_SITE,),
+        quote=_quote(),
+        server_terms=ServerTcoTerms(),
+    )
+    table = calculate_server_zero_input_table(
+        (plan,),
+        months=months,
+        use_case=ServerUseCase.CORPORATE_SITE,
+        article_review_approved=True,
+    )
+    assert table.rows[0].total_minor == expected
 
 
 def test_monthly_and_annual_fixture_are_equivalent() -> None:
@@ -327,6 +432,100 @@ def test_maximum_seats_is_enforced() -> None:
                 maximum_seats=3,
             ),
             _scenario(seats=4),
+        )
+
+
+def test_server_terms_add_known_initial_renewal_campaign_and_domain_costs() -> None:
+    result = calculate_server_tco(
+        _quote(),
+        _scenario(),
+        ServerTcoTerms(
+            initial_fee=Decimal("3000"),
+            renewal_fee=Decimal("500"),
+            renewal_due_month=12,
+            campaign_price=Decimal("500"),
+            campaign_period_months=3,
+            domain_price=Decimal("2400"),
+            domain_billing_period=BillingPeriod.ANNUAL,
+            domain_included_months=12,
+        ),
+    )
+
+    assert result.total_minor == 14_000
+    assert [item.kind for item in result.line_items] == [
+        "server.initial_fee",
+        "base.campaign",
+        "base.regular",
+        "server.renewal_fee",
+        "server.domain",
+    ]
+    assert result.line_items[-1].billed_occurrences == 0
+
+
+def test_server_renewal_and_domain_charge_only_when_horizon_reaches_them() -> None:
+    scenario = constant_usage_scenario(
+        months=24,
+        seats=1,
+        monthly_usage=Decimal(0),
+        usage_unit=None,
+    )
+    result = calculate_server_tco(
+        _quote(),
+        scenario,
+        ServerTcoTerms(
+            renewal_fee=Decimal("500"),
+            renewal_due_month=13,
+            domain_price=Decimal("2400"),
+            domain_billing_period=BillingPeriod.ANNUAL,
+            domain_included_months=12,
+        ),
+    )
+
+    assert result.total_minor == 24_000 + 500 + 2_400
+    assert result.line_items[-2].billed_occurrences == 1
+    assert result.line_items[-1].billed_occurrences == 1
+
+
+@pytest.mark.parametrize(
+    ("terms", "message"),
+    [
+        (ServerTcoTerms(renewal_fee=Decimal("500")), "renewal fee and due month"),
+        (ServerTcoTerms(campaign_price=Decimal("500")), "campaign price and period"),
+        (
+            ServerTcoTerms(
+                domain_price=Decimal("2400"),
+                domain_billing_period=BillingPeriod.ANNUAL,
+            ),
+            "domain price, billing period, and included months",
+        ),
+    ],
+)
+def test_server_terms_reject_partial_observations(
+    terms: ServerTcoTerms,
+    message: str,
+) -> None:
+    with pytest.raises(TcoError, match=message):
+        calculate_server_tco(_quote(), _scenario(), terms)
+
+
+def test_server_campaign_rejects_annual_proration_and_invented_discount() -> None:
+    with pytest.raises(UnsupportedProrationError, match="monthly base price"):
+        calculate_server_tco(
+            _quote(billing_period=BillingPeriod.ANNUAL, amount=Decimal("12000")),
+            _scenario(),
+            ServerTcoTerms(
+                campaign_price=Decimal("6000"),
+                campaign_period_months=12,
+            ),
+        )
+    with pytest.raises(TcoError, match="cannot exceed"):
+        calculate_server_tco(
+            _quote(),
+            _scenario(),
+            ServerTcoTerms(
+                campaign_price=Decimal("1001"),
+                campaign_period_months=1,
+            ),
         )
 
 

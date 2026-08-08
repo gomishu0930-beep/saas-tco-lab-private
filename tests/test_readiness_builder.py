@@ -2,11 +2,25 @@ from __future__ import annotations
 
 from datetime import timedelta
 from decimal import Decimal
+import json
+from pathlib import Path
 from uuid import uuid4
 
 import pytest
 from pydantic import ValidationError
 
+from saas_preflight.affiliate_partner_ledger import (
+    AffiliateCommissionAmount,
+    AffiliateCommissionStatus,
+    AffiliateCommissionUnit,
+    AffiliateCtaRuntimeState,
+    AffiliatePartnerLedger,
+    AffiliatePartnerLedgerEntry,
+    AffiliatePartnershipStatus,
+    evaluate_affiliate_cta_gate,
+    evaluate_affiliate_program_cta_gate,
+    load_affiliate_partner_ledger,
+)
 from saas_preflight.economics import Decision, RollbackTestStatus
 from saas_preflight.models import FieldEvidence, PolicyDecision
 from saas_preflight.preflight import (
@@ -28,6 +42,180 @@ from saas_preflight.readiness_builder import (
 
 from test_models import NOW, make_plan, make_policy
 from test_preflight import _demand
+
+
+ROOT = Path(__file__).resolve().parents[1]
+PARTNER_LEDGER_PATH = ROOT / "docs" / "AFFILIATE_PARTNER_LEDGER.json"
+
+
+def test_partner_ledger_records_safe_status_without_private_values() -> None:
+    ledger = load_affiliate_partner_ledger(PARTNER_LEDGER_PATH)
+
+    assert tuple(entry.partner_id for entry in ledger.entries) == (
+        "a8net",
+        "mangools",
+        "moshimo",
+        "valuecommerce",
+    )
+    assert ledger.tracking_ids_saved is False
+    assert ledger.advertising_urls_saved is False
+    assert ledger.personal_data_saved is False
+    assert ledger.schema_version == "1.1"
+
+    entries = {entry.partner_id: entry for entry in ledger.entries}
+    assert entries["mangools"].partnership_status is AffiliatePartnershipStatus.APPROVED
+    assert entries["a8net"].account_status.value == "registered"
+    assert entries["moshimo"].account_status.value == "registered"
+    assert entries["valuecommerce"].account_status.value == "registered"
+    for partner_id in ("a8net", "moshimo", "valuecommerce"):
+        entry = entries[partner_id]
+        assert entry.partnership_status is AffiliatePartnershipStatus.NOT_APPLIED
+        assert entry.program_name is None
+        assert entry.category is None
+        assert entry.performance_condition is None
+        assert entry.commission_amount.status is AffiliateCommissionStatus.UNKNOWN
+
+    assert tuple(item.research_id for item in ledger.program_research) == (
+        "a8net-formrun",
+        "a8net-freee-accounting",
+        "a8net-misoca",
+        "a8net-money-forward-cloud-accounting",
+        "a8net-will-mail",
+        "a8net-xserver-business",
+        "a8net-yayoi-series",
+        "moshimo-conoha-wing",
+        "moshimo-lolipop-rental-server",
+        "moshimo-onamae-rental-server",
+        "moshimo-shin-rental-server",
+        "valuecommerce-ablenet-shared-server",
+    )
+    assert {item.asp_partner_id for item in ledger.program_research} == {
+        "a8net",
+        "moshimo",
+        "valuecommerce",
+    }
+    assert sum(
+        item.partnership_status is AffiliatePartnershipStatus.PENDING
+        for item in ledger.program_research
+    ) == 1
+    assert all(
+        item.partnership_status is AffiliatePartnershipStatus.NOT_APPLIED
+        for item in ledger.program_research
+        if item.research_id != "a8net-xserver-business"
+    )
+    assert all(item.commission_amount.value is None for item in ledger.program_research)
+    assert sum(
+        item.commission_amount.status
+        is AffiliateCommissionStatus.RESTRICTED_DASHBOARD_ONLY
+        for item in ledger.program_research
+    ) == 11
+    researched = {item.research_id: item for item in ledger.program_research}
+    assert researched["a8net-xserver-business"].partnership_status is AffiliatePartnershipStatus.PENDING
+    assert researched["a8net-xserver-business"].condition_review_status.value == "detail_reviewed"
+    assert researched["moshimo-lolipop-rental-server"].condition_review_status.value == "detail_reviewed"
+    assert tuple(item.partner_id for item in ledger.network_search_checks) == (
+        "benchmark-email",
+        "blastmail",
+        "conoha",
+        "cybozu",
+        "hubspot",
+        "kintone",
+    )
+    assert all(
+        item.next_networks == ("moshimo", "valuecommerce")
+        for item in ledger.network_search_checks
+    )
+
+    source = PARTNER_LEDGER_PATH.read_text(encoding="utf-8")
+    assert "http://" not in source
+    assert "https://" not in source
+    assert "@" not in source
+
+
+def test_partner_ledger_cta_gate_is_fail_closed() -> None:
+    ledger = load_affiliate_partner_ledger(PARTNER_LEDGER_PATH)
+    entries = {entry.partner_id: entry for entry in ledger.entries}
+    approved_runtime = AffiliateCtaRuntimeState(
+        partner_id="mangools",
+        partner_approval_current=True,
+        disclosure_precedes_cta=True,
+        destination_configured=True,
+        cta_go=True,
+    )
+
+    assert evaluate_affiliate_cta_gate(entries["mangools"], approved_runtime) is True
+    for field in (
+        "partner_approval_current",
+        "disclosure_precedes_cta",
+        "destination_configured",
+        "cta_go",
+    ):
+        held = approved_runtime.model_copy(update={field: False})
+        assert evaluate_affiliate_cta_gate(entries["mangools"], held) is False
+
+    for partner_id in ("a8net", "moshimo", "valuecommerce"):
+        unapproved_runtime = approved_runtime.model_copy(
+            update={"partner_id": partner_id}
+        )
+        assert evaluate_affiliate_cta_gate(entries[partner_id], unapproved_runtime) is False
+
+    a8_account = entries["a8net"]
+    for program in ledger.program_research:
+        unapproved_program_runtime = approved_runtime.model_copy(
+            update={"partner_id": program.research_id}
+        )
+        assert (
+            evaluate_affiliate_program_cta_gate(
+                a8_account,
+                program,
+                unapproved_program_runtime,
+            )
+            is False
+        )
+
+
+def test_partner_ledger_rejects_private_fields_and_incoherent_rewards() -> None:
+    source = json.loads(PARTNER_LEDGER_PATH.read_text(encoding="utf-8"))
+    source["entries"][0]["tracking_id"] = "must-not-be-stored"
+    with pytest.raises(ValidationError, match="Extra inputs are not permitted"):
+        AffiliatePartnerLedger.model_validate_json(json.dumps(source))
+
+    with pytest.raises(ValidationError, match="known commission requires"):
+        AffiliateCommissionAmount(status=AffiliateCommissionStatus.KNOWN)
+    with pytest.raises(ValidationError, match="unavailable commission cannot retain"):
+        AffiliateCommissionAmount(
+            status=AffiliateCommissionStatus.UNKNOWN,
+            value=Decimal("1"),
+            unit=AffiliateCommissionUnit.JPY,
+        )
+    with pytest.raises(ValidationError, match="unavailable commission cannot retain"):
+        AffiliateCommissionAmount(
+            status=AffiliateCommissionStatus.RESTRICTED_DASHBOARD_ONLY,
+            value=Decimal("1"),
+            unit=AffiliateCommissionUnit.JPY,
+        )
+
+    entry = load_affiliate_partner_ledger(PARTNER_LEDGER_PATH).entries[0]
+    payload = entry.model_dump(mode="json")
+    payload["category"] = "未選定カテゴリ"
+    with pytest.raises(ValidationError, match="unselected partnership"):
+        AffiliatePartnerLedgerEntry.model_validate_json(json.dumps(payload))
+
+    payload = entry.model_dump(mode="json")
+    payload.update(
+        {
+            "program_name": "選定済み未申請program",
+            "category": "業務SaaS",
+            "performance_condition": "公開規約で確認済みの成果条件",
+            "commission_amount": {
+                "status": "known",
+                "value": "1000",
+                "unit": "JPY",
+            },
+        }
+    )
+    selected = AffiliatePartnerLedgerEntry.model_validate_json(json.dumps(payload))
+    assert selected.partnership_status is AffiliatePartnershipStatus.NOT_APPLIED
 
 
 def _affiliate(

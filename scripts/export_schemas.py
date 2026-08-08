@@ -7,6 +7,7 @@ import argparse
 import json
 from pathlib import Path
 
+from saas_preflight.affiliate_partner_ledger import AffiliatePartnerLedger
 from saas_preflight.ai_routing import (
     EvaluatedModelRoute,
     ModelRouterPolicy,
@@ -151,7 +152,10 @@ from saas_preflight.measurement_integrity import (
     ProducerCoverage,
     SignedMeasurementRunPlan,
 )
-from saas_preflight.mangools_export import MangoolsDemandSafeSummary
+from saas_preflight.mangools_export import (
+    MangoolsDemandSafeSummary,
+    MangoolsSlateDemandSafeSummary,
+)
 from saas_preflight.preview import PreviewPage
 from saas_preflight.repository_acceptance import (
     HumanRepositoryAcceptance,
@@ -324,11 +328,13 @@ SCHEMA_MODELS = {
     "preview-page.schema.json": PreviewPage,
     "business-dossier.schema.json": BusinessDossier,
     "affiliate-decisions.schema.json": AffiliateDecisionBatch,
+    "affiliate-partner-ledger.schema.json": AffiliatePartnerLedger,
     "demand-evidence.schema.json": DemandEvidence,
     "cohort-evidence.schema.json": CohortEvidence,
     "operations-evidence.schema.json": OperationsEvidence,
     "demand-summary-batch.schema.json": DemandSummaryBatch,
     "mangools-demand-safe-summary.schema.json": MangoolsDemandSafeSummary,
+    "mangools-slate-demand-safe-summary.schema.json": MangoolsSlateDemandSafeSummary,
     "cohort-summary-batch.schema.json": CohortSummaryBatch,
     "operations-summary-batch.schema.json": OperationsSummaryBatch,
     "human-gold-set.schema.json": HumanGoldSet,

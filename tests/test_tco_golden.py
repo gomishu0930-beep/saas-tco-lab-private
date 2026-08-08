@@ -9,10 +9,12 @@ from saas_preflight.tco import (
     PriceBasis,
     PricingQuote,
     RecurringCharge,
+    ServerTcoTerms,
     TaxPolicy,
     TaxTreatment,
     UsageCharge,
     UsageScenario,
+    calculate_server_tco,
     calculate_tco,
 )
 
@@ -64,13 +66,55 @@ def test_shared_golden_cases_match_python_canonical() -> None:
             ),
         )
         raw_scenario = case["scenario"]
-        result = calculate_tco(
-            quote,
-            UsageScenario(
-                seats=raw_scenario["seats"],
-                monthly_usage=tuple(Decimal(value) for value in raw_scenario["monthlyUsage"]),
-                usage_unit=raw_scenario["usageUnit"],
+        scenario = UsageScenario(
+            seats=raw_scenario["seats"],
+            monthly_usage=tuple(
+                Decimal(value) for value in raw_scenario["monthlyUsage"]
             ),
+            usage_unit=raw_scenario["usageUnit"],
+        )
+        raw_server_terms = case.get("serverTerms")
+        result = (
+            calculate_tco(quote, scenario)
+            if raw_server_terms is None
+            else calculate_server_tco(
+                quote,
+                scenario,
+                ServerTcoTerms(
+                    initial_fee=(
+                        None
+                        if raw_server_terms["initialFee"] is None
+                        else Decimal(raw_server_terms["initialFee"])
+                    ),
+                    renewal_fee=(
+                        None
+                        if raw_server_terms["renewalFee"] is None
+                        else Decimal(raw_server_terms["renewalFee"])
+                    ),
+                    renewal_due_month=raw_server_terms["renewalDueMonth"],
+                    campaign_price=(
+                        None
+                        if raw_server_terms["campaignPrice"] is None
+                        else Decimal(raw_server_terms["campaignPrice"])
+                    ),
+                    campaign_period_months=raw_server_terms[
+                        "campaignPeriodMonths"
+                    ],
+                    domain_price=(
+                        None
+                        if raw_server_terms["domainPrice"] is None
+                        else Decimal(raw_server_terms["domainPrice"])
+                    ),
+                    domain_billing_period=(
+                        None
+                        if raw_server_terms["domainBillingPeriod"] is None
+                        else BillingPeriod(raw_server_terms["domainBillingPeriod"])
+                    ),
+                    domain_included_months=raw_server_terms[
+                        "domainIncludedMonths"
+                    ],
+                ),
+            )
         )
         assert str(result.listed_minor) == case["expected"]["listedMinor"], case["name"]
         assert str(result.added_tax_minor) == case["expected"]["addedTaxMinor"], case["name"]

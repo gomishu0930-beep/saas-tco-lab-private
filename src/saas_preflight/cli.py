@@ -61,7 +61,10 @@ from .launch_handoff import (
 )
 from .launch_semantics import LaunchSemanticAuthorityPins
 from .keyword_universe import load_keyword_universe, summarize_keyword_universe
-from .mangools_export import validate_mangools_human_export
+from .mangools_export import (
+    validate_mangools_human_export,
+    validate_mangools_human_export_batches,
+)
 from .measurement import (
     CohortSummaryBatch,
     DemandSummaryBatch,
@@ -179,6 +182,31 @@ def _parser() -> argparse.ArgumentParser:
     mangools_export.add_argument("--monthly-revenue-target-jpy", type=int, default=200_000)
     mangools_export.add_argument("--assumed-confirmed-epc-jpy", type=_decimal_argument, default=Decimal("60"))
     mangools_export.add_argument("--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15"))
+
+    mangools_slate_export = commands.add_parser(
+        "validate-mangools-slate-export",
+        help="Validate a complete frozen query slate split across Human-exported CSV files.",
+    )
+    mangools_slate_export.add_argument("csv", type=Path, nargs="+")
+    mangools_slate_export.add_argument("--slate-id", required=True)
+    mangools_slate_export.add_argument("--universe", type=Path, required=True)
+    mangools_slate_export.add_argument(
+        "--observed-on", type=date.fromisoformat, required=True
+    )
+    mangools_slate_export.add_argument(
+        "--next-review-on", type=date.fromisoformat, required=True
+    )
+    mangools_slate_export.add_argument(
+        "--monthly-revenue-target-jpy", type=int, default=200_000
+    )
+    mangools_slate_export.add_argument(
+        "--assumed-confirmed-epc-jpy",
+        type=_decimal_argument,
+        default=Decimal("60"),
+    )
+    mangools_slate_export.add_argument(
+        "--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15")
+    )
 
     store = commands.add_parser("store-plan", help="Append one validated plan to a local DB.")
     store.add_argument("plan", type=Path)
@@ -764,6 +792,25 @@ def run(argv: Sequence[str] | None = None) -> int:
             universe_summary = summarize_keyword_universe(rows)
             summary = validate_mangools_human_export(
                 args.csv,
+                universe_rows=rows,
+                universe_sha256=universe_summary.sha256,
+                observed_on=args.observed_on,
+                next_review_on=args.next_review_on,
+                monthly_revenue_target_jpy=args.monthly_revenue_target_jpy,
+                assumed_confirmed_epc_jpy=args.assumed_confirmed_epc_jpy,
+                assumed_outbound_ctr=args.assumed_outbound_ctr,
+            )
+            _emit(summary.model_dump(mode="json"))
+            return 0
+
+        if args.command == "validate-mangools-slate-export":
+            rows = load_keyword_universe(
+                args.universe, minimum_keywords=1, maximum_keywords=200
+            )
+            universe_summary = summarize_keyword_universe(rows)
+            summary = validate_mangools_human_export_batches(
+                tuple(args.csv),
+                slate_id=args.slate_id,
                 universe_rows=rows,
                 universe_sha256=universe_summary.sha256,
                 observed_on=args.observed_on,

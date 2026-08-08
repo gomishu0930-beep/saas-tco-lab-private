@@ -1,20 +1,34 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 
-import { pilotFieldScope, type PilotPage } from "../lib/pilot-pages";
 import { articleDraft } from "../lib/article-drafts";
+import { nextToReadPages } from "../lib/article-navigation";
 import type { EditorialContract } from "../lib/editorial-input-contract";
 import { editorialContract, hasUnknownFact } from "../lib/editorial-contracts";
+import {
+  editorialPresentation,
+  planDisplayName,
+  vendorDisplayName,
+} from "../lib/editorial-presentation";
+import {
+  pilotFieldScope,
+  pilotPages,
+  type PilotPage,
+  type ServerArticleSlateEntry,
+  type ServerCtaPresentationPolicy,
+} from "../lib/pilot-pages";
+import type { ServerZeroInputContract } from "../lib/tco";
 import { AdvertisingDisclosure } from "./AdvertisingDisclosure";
 import { ArticleStructuredData } from "./ArticleStructuredData";
+import { ServerZeroInputCalculator } from "./TcoCalculator";
 
 const publicPrelaunch = process.env.SAAS_RUNTIME_MODE === "production";
 
 type ImportedField = EditorialContract["numeric_fields"][number];
 
 function fieldValue(field: ImportedField): string {
-  if (field.value_status === "unknown") return "unknown（不明）";
-  if (field.value_status === "not_applicable") return "not_applicable（該当なし）";
+  if (field.value_status === "unknown") return "未確認";
+  if (field.value_status === "not_applicable") return "該当なし";
   return `${field.value} ${field.unit}`.trim();
 }
 
@@ -28,25 +42,25 @@ function currencyValue(field: ImportedField): string {
   return "not_applicable（該当なし）";
 }
 
-const vendorDisplayNames: Readonly<Record<string, string>> = {
-  mangools: "Mangools",
-  "se-ranking": "SE Ranking",
-  semrush: "Semrush",
-};
-
-const planDisplayNames: Readonly<Record<string, string>> = {
-  "mangools/basic": "Basic",
-  "mangools/premium": "Premium",
-  "mangools/agency": "Agency",
-  "se-ranking/core": "Core",
-  "semrush/seo": "SEO",
-};
-
 function evidenceIdentity(field: ImportedField): string {
-  if (field.scope_kind !== "vendor_plan") return "Human scenario";
-  const vendorId = field.vendor_id ?? "unknown-vendor";
-  const planId = field.plan_id ?? "unknown-plan";
-  return `${vendorDisplayNames[vendorId] ?? vendorId} / ${planDisplayNames[`${vendorId}/${planId}`] ?? planId}`;
+  if (field.scope_kind !== "vendor_plan") return "試算条件";
+  return `${vendorDisplayName(field.vendor_id)} / ${planDisplayName(field.vendor_id, field.plan_id)}`;
+}
+
+function contractTokenValue(field: ImportedField): string {
+  const value = fieldValue(field);
+  const reviewPrefix = field.review_status === "approved" ? "" : "確認待ち: ";
+  if (field.value_kind === "price" && field.currency_status === "known" && field.currency) {
+    return `${reviewPrefix}${evidenceIdentity(field)}: ${field.currency} ${value}`;
+  }
+  return `${reviewPrefix}${evidenceIdentity(field)}: ${value}`;
+}
+
+function renderContractTokens(body: string, contract: EditorialContract | null): string {
+  return body.replace(/\{\{contract:([a-z0-9_.]+)\.value\}\}/g, (_match, fieldPath: string) => {
+    const matches = contract?.numeric_fields.filter((field) => field.field === fieldPath) ?? [];
+    return matches.length ? matches.map(contractTokenValue).join("／") : "未確認（確認値なし）";
+  });
 }
 
 function billingPeriodValue(value: string | null): string {
@@ -64,17 +78,17 @@ function billingToggleValue(value: ImportedField["billing_toggle_state"]): strin
   switch (value) {
     case "annual_selected": return "年払い選択";
     case "monthly_selected": return "月払い選択";
-    case "not_present": return "toggleなし";
+    case "not_present": return "切替表示なし";
     default: return "unknown（不明）";
   }
 }
 
 function saleBannerValue(value: ImportedField["sale_banner_state"]): string {
   switch (value) {
-    case "none": return "none（割引・promo表示なし）";
-    case "annual_discount_permanent": return "年払い恒常割引（計算可）";
-    case "time_limited_promo": return "期間限定promo（計算HOLD）";
-    default: return "unknown（分類未確認・計算HOLD）";
+    case "none": return "割引・キャンペーン表示なし";
+    case "annual_discount_permanent": return "通常の年払い割引";
+    case "time_limited_promo": return "期間限定価格（計算対象外）";
+    default: return "表示条件を未確認（計算対象外）";
   }
 }
 
@@ -82,7 +96,7 @@ function observedPriceBasisValue(value: ImportedField["observed_price_basis"]): 
   switch (value) {
     case "checkout_billed_total": return "checkout請求総額（一次観測値）";
     case "displayed_price": return "公式画面の表示価格（一次観測値）";
-    case "human_scenario": return "Humanシナリオ入力";
+    case "human_scenario": return "読者が変更できる試算条件";
     case "not_applicable": return "not_applicable（該当なし）";
     default: return "unknown（不明）";
   }
@@ -119,15 +133,15 @@ function AnnualTcoEvidence({ page, contract }: { page: PilotPage; contract: Edit
   return (
     <section className="shell page-section" aria-labelledby={`${page.id}-annual-tco`}>
       <div className="section-heading split-heading">
-        <div><p className="eyebrow">HUMAN-CONFIRMED TCO</p><h2 id={`${page.id}-annual-tco`}>Human確認済み12か月TCO</h2></div>
-        <p>年次checkout請求総額を一次観測値とし、月額換算と年払い割引率はcontractの固定式による派生値として分離します。</p>
+        <div><p className="eyebrow">確認済みの支払額</p><h2 id={`${page.id}-annual-tco`}>12か月TCO</h2></div>
+        <p>公式の購入直前画面で確認した12か月分の請求総額と、比較用に計算した月あたりの参考額を分けて表示します。</p>
       </div>
-      <div className="table-scroll" tabIndex={0} aria-label="Human確認済み12か月TCO表を横スクロール">
+      <div className="table-scroll" tabIndex={0} aria-label="確認済み12か月TCO表を横スクロール">
         <table className="annual-tco-table">
-          <thead><tr><th>vendor / plan</th><th>12か月checkout総額</th><th>請求上の月額換算</th><th>月払い比較値</th><th>年払い差</th><th>観測</th></tr></thead>
+          <thead><tr><th>サービス / プラン</th><th>12か月分の請求総額</th><th>月あたりの参考額</th><th>月払い価格</th><th>年払い差</th><th>確認日</th></tr></thead>
           <tbody>{rows.map((field) => <tr key={`${field.vendor_id}-${field.plan_id}-${field.field}`}>
             <th>{evidenceIdentity(field)}</th>
-            <td><strong>{`${field.currency} ${field.value}`}</strong><small>一次観測値</small></td>
+            <td><strong>{`${field.currency} ${field.value}`}</strong><small>公式画面の確認値</small></td>
             <td>{field.derived_monthly_value !== null ? `${field.currency} ${field.derived_monthly_value} ${field.derived_monthly_unit}` : "割り切れないため非表示"}</td>
             <td>{field.monthly_reference_value !== null ? `${field.currency} ${field.monthly_reference_value} ${field.monthly_reference_unit}` : "比較値なし"}</td>
             <td>{field.derived_annual_discount_percent !== null ? `月払い比で約${field.derived_annual_discount_percent}%割安` : "算出なし"}</td>
@@ -137,10 +151,10 @@ function AnnualTcoEvidence({ page, contract }: { page: PilotPage; contract: Edit
       </div>
       <p className="annual-tco-note">
         {page.id === "P03" && unresolvedAnnualPrices.length > 0
-          ? `Mangools Basicの12か月総額だけを確定しました。${unresolvedAnnualPrices.map(evidenceIdentity).join("、")}は年次checkout総額がunknownのため、横断価格順位を付けません。`
+          ? `Mangools Basicの12か月総額だけを確認できました。${unresolvedAnnualPrices.map(evidenceIdentity).join("、")}は年次の請求総額が未確認のため、横断価格順位を付けません。`
           : page.id === "P02"
-            ? "3プランの支払総額は比較できます。最低seat数がunknownのplanは適合順位から除外します。"
-            : "Basic 1ユーザー・月400 lookupのHuman scenarioはplan上限内です。従量超過課金は公式提示なし、Japan checkoutのVAT表示は0でした。"}
+            ? "確認済みの3プランは支払総額を比較できます。最低利用者数が未確認のプランは、適合順位から除外します。"
+            : "今回の利用者数と月間利用量は確認済みの上限内です。上限超過時の追加課金は公式表示がなく、日本向け購入画面ではVATが0と表示されました。"}
       </p>
     </section>
   );
@@ -155,50 +169,49 @@ export function PilotArticle({
 }) {
   const draft = articleDraft(page);
   const contract = editorialContract(page);
+  const presentation = editorialPresentation(page, contract);
   const articleApproved = contract?.article_review_status === "approved";
   const unknownFields = contract?.numeric_fields.filter(hasUnknownFact).length ?? 0;
   const sourceUrls = [...new Set(contract?.numeric_fields.flatMap((field) => field.source_url ? [field.source_url] : []) ?? [])];
   const observedDates = [...new Set(contract?.numeric_fields.map((field) => field.observed_on) ?? [])];
   const nextReviewDates = [...new Set(contract?.numeric_fields.map((field) => field.next_review_on) ?? [])];
+  const reviewApprovedPages = pilotPages.filter(
+    (candidate) => editorialContract(candidate)?.article_review_status === "approved",
+  );
+  const nextPages = nextToReadPages(page, {
+    indexGo: process.env.SAAS_INDEX_GO === "GO",
+    approvedArticleIdsValue: process.env.SAAS_INDEX_APPROVED_ARTICLES,
+    articleReviewsCurrent: process.env.SAAS_ARTICLE_REVIEWS_CURRENT === "true",
+    reviewApprovedArticleIds: new Set(reviewApprovedPages.map((candidate) => candidate.id)),
+  });
   return (
     <main id="main-content" className="page-main">
       <AdvertisingDisclosure />
       <ArticleStructuredData page={page} contract={contract} />
       <header className="shell page-header">
-        <p className="eyebrow">{page.id} / {contract ? "HUMAN INPUT" : "EDITORIAL TEMPLATE"} / {articleApproved ? "APPROVED" : "DRAFT"} / {page.pageType}</p>
-        <h1>{contract ? `${page.title}のHuman確認値を反映した${articleApproved ? "承認済み記事" : "公開前記事"}。` : `${page.title}を、実記事にするための公開前template。`}</h1>
-        {contract ? (
-          <p>
-            問いは「{page.question}」。Humanが公式公開画面で確認した値、出典、観測日と、
-            確定できないunknownを同時に表示します。記事は{articleApproved ? "Human承認済み" : "未承認"}です。
-            検索公開とCTAは別ゲートで制御し、現在のCTA状態は記事末尾に表示します。
-          </p>
-        ) : (
-          <p>
-            問いは「{page.question}」。このURLは記事構造の合成fixtureであり、
-            実在サービスの値・評価・提携リンクはまだ含みません。数値fieldはOperator入力contractとだけ
-            接続し、読後には「{page.readerOutcome}」状態を目指します。
-          </p>
-        )}
+        <p className="eyebrow">{page.id} / {articleApproved ? "確認済み" : "記事レビュー待ち"}{presentation.observedMonth ? ` / ${presentation.observedMonth}` : ""}</p>
+        <h1>{presentation.title}</h1>
+        <p>{presentation.description}</p>
       </header>
 
       <section className="shell page-section" aria-labelledby={`${page.id}-article-structure`}>
         <div className="section-heading split-heading">
           <div>
-            <p className="eyebrow">ARTICLE BODY</p>
-            <h2 id={`${page.id}-article-structure`}>{articleApproved ? "承認済み6章本文" : "6章の本文下書き"}</h2>
+            <p className="eyebrow">料金と判断材料</p>
+            <h2 id={`${page.id}-article-structure`}>{page.question}</h2>
           </div>
-          <p>
-            intentは{page.intent}。analyst、editor、skeptical buyerの3視点で反証し、
-            Human入力contractを満たす数値だけをclaim候補にします。
-          </p>
+          <p>確認できた事実と、まだ確認できない費用を分けて説明します。</p>
         </div>
+        <p className="article-lead">{presentation.lead}</p>
+        <p className="article-methodology-link">
+          数値の確認方法と任意条件の試算は<Link href="/methodology/#detailed-calculator">詳細計算モード</Link>にまとめています。
+        </p>
         <div className="editorial-sections">
           {draft.sections.map((section, index) => (
             <article key={section.title}>
               <span>{String(index + 1).padStart(2, "0")}</span>
               <h2>{section.title}</h2>
-              <p>{section.body}</p>
+              <p>{renderContractTokens(section.body, contract)}</p>
             </article>
           ))}
         </div>
@@ -209,15 +222,15 @@ export function PilotArticle({
       <section className="shell page-section" aria-labelledby={`${page.id}-field-inputs`}>
         <div className="section-heading split-heading">
           <div>
-            <p className="eyebrow">{contract ? "IMPORTED FIELD EVIDENCE" : "HUMAN FIELD INPUT"}</p>
-            <h2 id={`${page.id}-field-inputs`}>{contract ? "実値とunknownを同じ行で確認" : "数値ごとに根拠経路を固定"}</h2>
+            <p className="eyebrow">数値の根拠</p>
+            <h2 id={`${page.id}-field-inputs`}>{contract ? "確認値と未確認項目" : "確認待ちの項目"}</h2>
           </div>
           <p>
             {contract
               ? unknownFields > 0
-                ? `Python正本で再検証したcontractを表示中。unknownを含むfieldは${unknownFields}件あり、そのfieldを使う総額・順位claimから除外します。`
-                : "Python正本で再検証したcontractを表示中。TCOに必要なfieldは確認済みで、Human記事reviewへ進めます。"
-              : "vendor値は値・公式URL・観測日・次回確認日、Humanシナリオは値・入力根拠・観測日・次回確認日を必須にします。"}
+                ? `未確認の項目が${unknownFields}件あります。その項目を使う総額や順位は表示しません。`
+                : "12か月TCOに必要な項目は確認済みです。各数値の出典と確認日を下で確認できます。"
+              : "公式ページ、確認日、次回確認日がそろうまで金額を表示しません。"}
           </p>
         </div>
         <div className="field-input-grid">
@@ -229,39 +242,39 @@ export function PilotArticle({
                 <p className="field-evidence-identity">{evidenceIdentity(field)}</p>
                 <h2>{definition?.label ?? field.field}</h2>
                 <dl>
-                  <div><dt>Human入力値</dt><dd>{fieldValue(field)}</dd></div>
-                  <div><dt>値状態</dt><dd>{field.value_status}</dd></div>
-                  {field.unknown_reason ? <div><dt>unknown理由</dt><dd>{field.unknown_reason}</dd></div> : null}
+                  <div><dt>確認値</dt><dd>{fieldValue(field)}</dd></div>
+                  <div><dt>確認状態</dt><dd>{field.value_status === "known" ? "確認済み" : field.value_status === "not_applicable" ? "該当なし" : "未確認"}</dd></div>
+                  {field.unknown_reason ? <div><dt>未確認・該当なしの理由</dt><dd>{field.unknown_reason}</dd></div> : null}
                   {isPrice ? <div><dt>通貨</dt><dd>{currencyValue(field)}</dd></div> : null}
-                  {isPrice && field.currency_unknown_reason ? <div><dt>通貨unknown理由</dt><dd>{field.currency_unknown_reason}</dd></div> : null}
+                  {isPrice && field.currency_unknown_reason ? <div><dt>通貨を確認できない理由</dt><dd>{field.currency_unknown_reason}</dd></div> : null}
                   {isPrice ? <div><dt>請求周期</dt><dd>{billingPeriodValue(field.billing_period)}</dd></div> : null}
                   {isPrice ? <div><dt>税区分</dt><dd>{taxTreatmentValue(field.tax_treatment)}</dd></div> : null}
-                  {field.scope_kind === "vendor_plan" ? <div><dt>billing toggle</dt><dd>{billingToggleValue(field.billing_toggle_state)}</dd></div> : null}
-                  {field.scope_kind === "vendor_plan" ? <div><dt>価格表示の分類</dt><dd>{saleBannerValue(field.sale_banner_state)}</dd></div> : null}
-                  {isPrice ? <div><dt>価格の一次観測</dt><dd>{observedPriceBasisValue(field.observed_price_basis)}</dd></div> : null}
-                  {isPrice && field.derived_monthly_value !== null ? <div><dt>月額換算（派生値）</dt><dd>{field.derived_monthly_value} {field.derived_monthly_unit}<br /><small>{field.derivation_method}</small></dd></div> : null}
+                  {field.scope_kind === "vendor_plan" ? <div><dt>画面の支払周期</dt><dd>{billingToggleValue(field.billing_toggle_state)}</dd></div> : null}
+                  {field.scope_kind === "vendor_plan" ? <div><dt>価格表示の扱い</dt><dd>{saleBannerValue(field.sale_banner_state)}</dd></div> : null}
+                  {isPrice ? <div><dt>価格を確認した場所</dt><dd>{observedPriceBasisValue(field.observed_price_basis)}</dd></div> : null}
+                  {isPrice && field.derived_monthly_value !== null ? <div><dt>月あたりの参考額</dt><dd>{field.derived_monthly_value} {field.derived_monthly_unit}<br /><small>{field.derivation_method}</small></dd></div> : null}
                   {isPrice && field.monthly_reference_value != null ? <div><dt>月払い比較値</dt><dd>{field.monthly_reference_value} {field.monthly_reference_unit}</dd></div> : null}
                   {isPrice && field.derived_annual_discount_percent != null ? <div><dt>年払い差（派生値）</dt><dd>月払い比で約{field.derived_annual_discount_percent}%割安<br /><small>{field.discount_derivation_method}</small></dd></div> : null}
                   <div>
-                    <dt>{field.scope_kind === "vendor_plan" ? "公式出典URL" : "scenario根拠"}</dt>
+                    <dt>{field.scope_kind === "vendor_plan" ? "公式出典URL" : "試算条件の根拠"}</dt>
                     <dd className="field-evidence-source">{field.source_url ?? field.scenario_basis}</dd>
                   </div>
                   <div><dt>観測日</dt><dd>{field.observed_on}</dd></div>
                   <div><dt>次回確認日</dt><dd>{field.next_review_on}</dd></div>
                 </dl>
-                <small>contract: {field.field} / {field.value_kind} / {field.scope_kind} / {field.review_status}</small>
+                <small>確認記録: {field.field} / {field.review_status === "approved" ? "確認済み" : "レビュー待ち"}</small>
               </article>
             );
           }) : page.numericFields.map((field) => (
               <article key={field.key}>
                 <h2>{field.label}</h2>
                 <dl>
-                  <div><dt>Human入力値</dt><dd>未入力</dd></div>
-                  <div><dt>{pilotFieldScope(field) === "vendor_plan" ? "出典URL" : "scenario根拠"}</dt><dd>未入力</dd></div>
+                  <div><dt>確認値</dt><dd>未入力</dd></div>
+                  <div><dt>{pilotFieldScope(field) === "vendor_plan" ? "出典URL" : "試算条件の根拠"}</dt><dd>未入力</dd></div>
                   <div><dt>観測日</dt><dd>未入力</dd></div>
                   <div><dt>次回確認日</dt><dd>未入力</dd></div>
                 </dl>
-                <small>contract: {field.key} / {field.valueKind} / {pilotFieldScope(field)}</small>
+                <small>確認記録: {field.key} / 未入力</small>
               </article>
             ))}
         </div>
@@ -286,33 +299,107 @@ export function PilotArticle({
       {children}
 
       <section className="shell target-band" aria-labelledby="pilot-refresh-title">
-        <div><p className="eyebrow">REFRESH TRIGGER</p><h2 id="pilot-refresh-title">更新と停止</h2></div>
+        <div><p className="eyebrow">掲載情報の状態</p><h2 id="pilot-refresh-title">再確認と紹介リンク</h2></div>
         <dl>
-          <div><dt>Human入力</dt><dd>{contract ? "contract取込済み" : "未投入"}</dd></div>
-          <div><dt>記事review</dt><dd>{articleApproved ? "承認済み・公開候補" : "未承認"}</dd></div>
-          <div><dt>CTA</dt><dd><span data-affiliate-cta-state="disabled">DISABLED</span></dd></div>
+          <div><dt>数値の確認記録</dt><dd>{contract ? "反映済み" : "未入力"}</dd></div>
+          <div><dt>記事確認</dt><dd>{articleApproved ? "確認済み" : "レビュー待ち"}</dd></div>
+          <div><dt>紹介リンク</dt><dd><span data-affiliate-cta-state="disabled">無効</span></dd></div>
         </dl>
         <p>
           {contract && unknownFields > 0
-            ? `unknownを含むfield ${unknownFields}件を保持中です。承認scopeどおり該当TCO・価格順位だけをSTOPし、unknownを明示した本文は公開候補として保持します。`
+            ? `未確認の項目が${unknownFields}件あります。その項目を必要とする総額と価格順位は、確認できるまで表示しません。`
             : articleApproved
-              ? "本文・TCOはHuman承認済みです。index、CTA、期限確認は独立したgateとして維持します。"
-              : "自動取得権とeditorial pathを混同せず、期限切れ、推測値、未承認記事、CTA不一致でSTOPします。"}
+              ? "本文と12か月TCOは確認済みです。検索掲載、紹介リンク、価格の再確認日はそれぞれ別に管理します。"
+              : "記事レビューが終わるまで検索掲載と紹介リンクを有効にしません。"}
         </p>
         <span
           className="cta-disabled"
           aria-describedby="article-pr-disclosure"
           data-affiliate-cta-placeholder="mangools"
         >
-          CTA DISABLED
+          紹介リンクは無効です
         </span>
       </section>
 
+      {nextPages.length > 0 ? (
+        <section className="shell page-section next-reading" aria-labelledby={`${page.id}-next-reading`}>
+          <div className="section-heading">
+            <p className="eyebrow">次に読む</p>
+            <h2 id={`${page.id}-next-reading`}>関連する料金記事</h2>
+          </div>
+          <ul>
+            {nextPages.map((candidate) => (
+              <li key={candidate.id}>
+                <Link href={`/pilot/${candidate.slug}/`}>{candidate.title}</Link>
+                <span>{candidate.readerOutcome}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : (
+        <div data-next-reading-placeholder={page.id}>
+          {reviewApprovedPages
+            .filter((candidate) => candidate.id !== page.id)
+            .map((candidate) => (
+              <template
+                key={candidate.id}
+                data-next-reading-path={`/pilot/${candidate.slug}`}
+                data-next-reading-title={candidate.title}
+                data-next-reading-outcome={candidate.readerOutcome}
+              />
+            ))}
+        </div>
+      )}
+
       <section className="shell page-section">
         <Link className="text-link" href={publicPrelaunch ? "/" : "/pilot/"}>
-          {publicPrelaunch ? "SaaS TCO Labへ戻る" : "12本の記事template一覧へ戻る"}
+          {publicPrelaunch ? "SaaS TCO Labへ戻る" : "12本の記事一覧へ戻る"}
         </Link>
       </section>
+    </main>
+  );
+}
+
+/** Candidate-only servers layout. It contains no destination or active CTA. */
+export function ServerArticleTemplate({
+  article,
+  calculatorContract,
+  evidence,
+  ctaPolicy,
+}: {
+  article: ServerArticleSlateEntry;
+  calculatorContract: ServerZeroInputContract;
+  evidence: ReactNode;
+  ctaPolicy: ServerCtaPresentationPolicy;
+}) {
+  return (
+    <main id="main-content" className="page-main" data-server-article-state={article.state}>
+      <AdvertisingDisclosure />
+      <header className="shell page-header">
+        <p className="eyebrow">SERVERS / HUMAN REVIEW REQUIRED</p>
+        <h1>{article.titleTemplate}</h1>
+        <p>{article.readerQuestion}</p>
+      </header>
+      <section className="shell page-section" data-server-template-step="calculator">
+        <div data-server-template-step="result" aria-label="計算結果">
+          <ServerZeroInputCalculator contract={calculatorContract} />
+        </div>
+      </section>
+      <section
+        className="shell target-band"
+        data-server-template-step="cta_slot"
+        data-server-cta-mode={ctaPolicy.mode}
+        aria-label="サーバー紹介リンク枠"
+      >
+        {ctaPolicy.mode === "comparison" ? (
+          <p>承認済みpartnerを同じ比較条件で確認する枠です。各リンクは個別CTA gateを通過するまで無効です。</p>
+        ) : ctaPolicy.mode === "single" ? (
+          <p>承認済みpartnerは1社です。単独CTAだけを扱い、比較表示にはしません。</p>
+        ) : (
+          <p>承認済みpartnerがないためCTAは無効です。</p>
+        )}
+      </section>
+      <section className="shell page-section" data-server-template-step="evidence" aria-label="価格の根拠表">{evidence}</section>
     </main>
   );
 }

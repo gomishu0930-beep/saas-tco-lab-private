@@ -183,6 +183,51 @@ test("same field can be repeated across distinct vendor-plan rows", () => {
   assert.deepEqual(result.contract?.numeric_fields.map(item => item.plan_id), ["basic", "premium"]);
 });
 
+test("one vendor-plan can preserve different screen states for monthly and annual fields", () => {
+  const page = pilotPages.find(candidate => candidate.id === "P06");
+  const row = emptyEditorialRow(page, "vendor_plan", "vendor-1");
+  row.vendorId = "mangools";
+  row.planId = "basic";
+  const common = {
+    sourceUrl: "https://mangools.com/plans-and-pricing",
+    observedOn: "2026-08-02",
+    nextReviewOn: "2026-08-31",
+  };
+  row.values["billing.monthly_contract_price"] = {
+    ...row.values["billing.monthly_contract_price"], ...common,
+    billingToggleState: "monthly_selected", saleBannerState: "annual_discount_permanent",
+    value: "61", unit: "/ mo", currencyStatus: "known", currency: "USD",
+    billingPeriod: "monthly", taxTreatment: "not_applicable", observedPriceBasis: "displayed_price",
+  };
+  row.values["billing.annual_contract_price"] = {
+    ...row.values["billing.annual_contract_price"], ...common,
+    billingToggleState: "annual_selected", saleBannerState: "annual_discount_permanent",
+    value: "452.40", unit: "/ yr", currencyStatus: "known", currency: "USD",
+    billingPeriod: "annual", taxTreatment: "not_applicable", observedPriceBasis: "checkout_billed_total",
+    monthlyReferenceValue: "61",
+  };
+  row.values["billing.minimum_commitment_months"] = {
+    ...row.values["billing.minimum_commitment_months"], ...common,
+    billingToggleState: "annual_selected", saleBannerState: "annual_discount_permanent",
+    value: "12", unit: "か月",
+  };
+  row.values["billing.termination_cost"] = {
+    ...row.values["billing.termination_cost"], ...common,
+    billingToggleState: "unknown", saleBannerState: "unknown",
+    valueStatus: "unknown", unknownReason: "Human確認待ち", currencyStatus: "unknown",
+    currencyUnknownReason: "金額未確認", billingPeriod: "unknown", taxTreatment: "unknown",
+    observedPriceBasis: "unknown",
+  };
+
+  const result = validateEditorialInput(page, [row]);
+  assert.deepEqual(result.errors, {});
+  assert.equal(result.contract?.numeric_fields[0].billing_toggle_state, "monthly_selected");
+  assert.equal(result.contract?.numeric_fields[1].billing_toggle_state, "annual_selected");
+  const restored = valuesFromContract(page, result.contract);
+  assert.equal(restored?.[0].values["billing.monthly_contract_price"].billingToggleState, "monthly_selected");
+  assert.equal(restored?.[0].values["billing.annual_contract_price"].billingToggleState, "annual_selected");
+});
+
 test("Human scenario has no vendor identity or official source URL", () => {
   const field = { key: "scenario.seat_count", label: "seat数", valueKind: "seat_count", inputScope: "human_scenario" };
   const page = oneFieldPage(field);

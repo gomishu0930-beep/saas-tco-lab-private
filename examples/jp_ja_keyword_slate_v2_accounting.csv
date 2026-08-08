@@ -1,0 +1,41 @@
+universe_version,country,language,cluster_id,intent,vendor,query
+jp-ja-v2,JP,ja,accounting-category,category,,クラウド会計ソフト
+jp-ja-v2,JP,ja,accounting-category,category,,会計ソフト 個人事業主
+jp-ja-v2,JP,ja,accounting-category,category,,会計ソフト 法人
+jp-ja-v2,JP,ja,accounting-category,category,,中小企業 会計システム
+jp-ja-v2,JP,ja,accounting-category,category,,青色申告 ソフト
+jp-ja-v2,JP,ja,accounting-category,category,,請求書 会計ソフト
+jp-ja-v2,JP,ja,accounting-category,category,,経費精算 会計ソフト
+jp-ja-v2,JP,ja,accounting-category,category,,電子帳簿保存 会計ソフト
+jp-ja-v2,JP,ja,accounting-category,category,,インボイス対応 会計ソフト
+jp-ja-v2,JP,ja,accounting-category,category,,税理士連携 会計ソフト
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,クラウド会計ソフト 比較
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,会計ソフト 個人事業主 比較
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,会計ソフト 法人 比較
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,中小企業 会計システム 比較
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,青色申告 ソフト 比較
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,請求書 会計ソフト 比較
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,経費精算 会計ソフト 比較
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,電子帳簿保存 会計ソフト 比較
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,インボイス対応 会計ソフト 比較
+jp-ja-v2,JP,ja,accounting-comparison,comparison,,税理士連携 会計ソフト 比較
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,クラウド会計ソフト 料金
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,会計ソフト 個人事業主 料金
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,会計ソフト 法人 料金
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,会計ソフト 月額
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,会計ソフト 年額
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,会計ソフト ユーザー追加 料金
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,会計ソフト 事業所追加 料金
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,会計ソフト 初期費用
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,会計ソフト 解約 費用
+jp-ja-v2,JP,ja,accounting-pricing,pricing,,会計ソフト 12か月 総費用
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト 取引件数 上限
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト ユーザー数
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト 複数事業
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト 複数法人
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト 税理士 共有
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト 銀行連携
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト データ移行
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト サポート 比較
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト 無料期間
+jp-ja-v2,JP,ja,accounting-fit,fit,,会計ソフト 選び方 法人

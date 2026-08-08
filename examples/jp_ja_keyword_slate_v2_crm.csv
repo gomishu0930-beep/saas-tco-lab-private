@@ -1,0 +1,41 @@
+universe_version,country,language,cluster_id,intent,vendor,query
+jp-ja-v2,JP,ja,crm-category,category,,CRM ツール
+jp-ja-v2,JP,ja,crm-category,category,,顧客管理 システム
+jp-ja-v2,JP,ja,crm-category,category,,営業支援 CRM
+jp-ja-v2,JP,ja,crm-category,category,,中小企業 CRM
+jp-ja-v2,JP,ja,crm-category,category,,法人向け CRM
+jp-ja-v2,JP,ja,crm-category,category,,クラウド 顧客管理
+jp-ja-v2,JP,ja,crm-category,category,,案件管理 CRM
+jp-ja-v2,JP,ja,crm-category,category,,マーケティング CRM
+jp-ja-v2,JP,ja,crm-category,category,,問い合わせ管理 CRM
+jp-ja-v2,JP,ja,crm-category,category,,名刺管理 CRM
+jp-ja-v2,JP,ja,crm-comparison,comparison,,CRM ツール 比較
+jp-ja-v2,JP,ja,crm-comparison,comparison,,顧客管理 システム 比較
+jp-ja-v2,JP,ja,crm-comparison,comparison,,営業支援 CRM 比較
+jp-ja-v2,JP,ja,crm-comparison,comparison,,中小企業 CRM 比較
+jp-ja-v2,JP,ja,crm-comparison,comparison,,法人向け CRM 比較
+jp-ja-v2,JP,ja,crm-comparison,comparison,,クラウド 顧客管理 比較
+jp-ja-v2,JP,ja,crm-comparison,comparison,,案件管理 CRM 比較
+jp-ja-v2,JP,ja,crm-comparison,comparison,,マーケティング CRM 比較
+jp-ja-v2,JP,ja,crm-comparison,comparison,,問い合わせ管理 CRM 比較
+jp-ja-v2,JP,ja,crm-comparison,comparison,,名刺管理 CRM 比較
+jp-ja-v2,JP,ja,crm-pricing,pricing,,CRM ツール 料金
+jp-ja-v2,JP,ja,crm-pricing,pricing,,顧客管理 システム 料金
+jp-ja-v2,JP,ja,crm-pricing,pricing,,CRM 月額
+jp-ja-v2,JP,ja,crm-pricing,pricing,,CRM 年額
+jp-ja-v2,JP,ja,crm-pricing,pricing,,CRM 一人あたり 料金
+jp-ja-v2,JP,ja,crm-pricing,pricing,,CRM ユーザー追加 料金
+jp-ja-v2,JP,ja,crm-pricing,pricing,,CRM コンタクト追加 料金
+jp-ja-v2,JP,ja,crm-pricing,pricing,,CRM 自動化 追加料金
+jp-ja-v2,JP,ja,crm-pricing,pricing,,CRM 初期費用
+jp-ja-v2,JP,ja,crm-pricing,pricing,,CRM 12か月 総費用
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM コンタクト数 上限
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM ユーザー数
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM 自動化 上限
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM メール送信 上限
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM API 制限
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM データ移行
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM 日本語 サポート
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM 小規模 チーム
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM 無料プラン 制限
+jp-ja-v2,JP,ja,crm-fit,fit,,CRM 選び方 中小企業

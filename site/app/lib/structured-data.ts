@@ -1,4 +1,10 @@
 import type { EditorialContract } from "./editorial-input-contract";
+import {
+  billingPeriodLabel,
+  editorialPresentation,
+  planDisplayName,
+  vendorDisplayName,
+} from "./editorial-presentation.ts";
 import type { PilotPage } from "./pilot-pages";
 
 type JsonLdObject = Record<string, unknown>;
@@ -22,7 +28,7 @@ function approvedOffers(contract: EditorialContract | null): JsonLdObject[] {
     ))
     .map((field) => ({
       "@type": "Offer",
-      name: `${field.vendor_id} / ${field.plan_id} / ${field.field}`,
+      name: `${vendorDisplayName(field.vendor_id)} ${planDisplayName(field.vendor_id, field.plan_id)}（${billingPeriodLabel(field.billing_period)}）`,
       price: field.value,
       priceCurrency: field.currency,
       priceValidUntil: field.next_review_on,
@@ -34,10 +40,11 @@ export function articleStructuredData(
   contract: EditorialContract | null,
 ): JsonLdObject {
   const offers = approvedOffers(contract);
+  const presentation = editorialPresentation(page, contract);
   const product: JsonLdObject = {
     "@type": "Product",
-    name: `${page.title} — SaaS TCO比較`,
-    description: page.question,
+    name: presentation.title,
+    description: presentation.description,
     category: "Business Software",
   };
   if (offers.length) product.offers = offers;
@@ -53,7 +60,7 @@ export function articleStructuredData(
           name: page.question,
           acceptedAnswer: {
             "@type": "Answer",
-            text: `${page.readerOutcome}ように、Human確認値・unknown・出典・観測日を分けて確認します。`,
+            text: `${page.readerOutcome}ように、確認できた値、未確認項目、出典、確認日を分けて説明します。`,
           },
         }],
       },
@@ -62,7 +69,7 @@ export function articleStructuredData(
         itemListElement: [
           { "@type": "ListItem", position: 1, name: "SaaS TCO Lab" },
           { "@type": "ListItem", position: 2, name: "記事" },
-          { "@type": "ListItem", position: 3, name: page.title },
+          { "@type": "ListItem", position: 3, name: presentation.title },
         ],
       },
     ],

@@ -37,6 +37,85 @@ HOLDにしない。恒常割引率は、同一plan・同一通貨・同一税条
 この五つのURLは既存の一次調査台帳に記録済みの公式URLである。redirect、404、地域差、login要求が出た場合は
 別URLを推測せず`HOLD`とし、Codexへ画面名だけを伝える。
 
+## Y2 — servers価格観測checklist
+
+`category_primary: GO servers`で選定された第1カテゴリのHuman観測表である。次のURLは2026-08-06に
+公式hostの現行料金ページとしてread-only確認した。ここにURLを列挙することは価格取得や保存の許可ではない。
+1記事の標準作業は本書の「Z4 — servers記事60分標準workflow」に従い、価格確認を最初の20分へ収める。
+20分で主要fieldを確認できなければ推測せず、記事単位で`HOLD`する。
+
+|Code|Vendor候補|Humanが開く公式料金ページ|主な比較単位|
+|---|---|---|---|
+|XB|XServerビジネス|[料金プラン](https://business.xserver.ne.jp/price/)|共有 / managed仮想 / managed物理を分離|
+|CW|ConoHa WING|[料金](https://www.conoha.jp/pricing/)|WINGパック / 通常料金、契約期間を分離|
+|SK|さくらのレンタルサーバ|[料金プラン](https://rs.sakura.ad.jp/plan/)|planと月払い / 年払いを分離|
+|KG|KAGOYAレンタルサーバー|[料金・スペック](https://www.kagoya.jp/kir/price/)|light / basic / high-end、月払い / 12か月一括を分離|
+
+候補掲載はAffiliate提携や推奨を意味しない。service種別が違う行を同じplanとして比較せず、まずXBの
+共有サーバー1 planを最小観測単位とする。各vendor・planで次を上から確認する。
+
+|確認順|公式画面で見るもの|contract field / 記録|STOP条件|
+|---:|---|---|---|
+|1|vendor、service種別、plan名、選択中契約期間|vendor_id、plan_id、比較単位|共有 / VPS / managedが識別不能|
+|2|初期費用と課税表示|`pricing.initial_fee`、通貨、税、`one_time`|「無料」を0として確定できる明示がない|
+|3|月払い額またはcheckout年次請求総額|`pricing.base_price`、`monthly` / `annual`、billing toggle位置|年払いの月額換算しかなく請求総額を確認できない|
+|4|初回期間後の通常額・更新時請求額・更新月|`pricing.renewal_fee`、請求周期、更新支払月|初回価格と更新価格を区別できない|
+|5|campaign価格と、その価格が適用される請求月数|`servers.campaign_price`、`servers.campaign_period_months`|応募期限だけを料金適用月数へ変換する必要がある|
+|6|campaignの開始日時・終了日時・cashback条件|画面状態memo、`time_limited_promo`、終了前を次回確認日に設定|終了日、対象plan、受取条件のいずれか不明|
+|7|domain無料特典の対象数・TLD・取得条件・無料期間|`servers.domain_benefit_amount`、`servers.domain_benefit_period_months`、条件memo|無料対象は確認できるが通常取得・更新額が不明なら金額はunknown|
+|8|特典終了後のdomain更新料と請求周期|calculatorのdomain price / billing period|更新料と取得料を混同する|
+|9|storage、transfer、backup、超過単位|`servers.storage_gb`、`servers.data_transfer_gb`、`servers.backup_price`|転送方向、backup世代、復元料金が不明|
+|10|公式移行支援の料金・対象・対象外作業|SVR06の公式費用。Human作業時間は別scenario|移行無料の対象範囲を全移行作業へ拡張する必要がある|
+
+contractのservers catalogは上記に加え`servers.compute_hours`を保持する。共有サーバーでcompute時間が
+課金軸でない場合は`not_applicable`、VPS等で従量軸ならHuman確認値を使う。欠けた料金を0、domain特典を
+想定相場、campaign応募期間を割引適用月数へ置き換えない。
+
+### 1 vendor・1 planの記録カード
+
+```text
+vendor / service / plan:
+official pricing URL:
+billing toggle / selected period:
+initial fee / tax:
+monthly price OR annual checkout billed total:
+renewal amount / billing period / due month:
+campaign price / applied billing months:
+campaign starts / ends / cashback conditions:
+domain count / eligible TLD / included months / post-benefit renewal:
+storage / transfer / backup / overage:
+migration support / exclusions:
+observed_on / next_review_on:
+unknown fields and reason:
+```
+
+氏名、住所、email、カード、account固有URL、見積書、tracking parameterはカードにもrepositoryにも残さない。
+Human確認前の候補値はcontractへ保存しない。
+
+### Z4 — servers記事60分標準workflow
+
+60分は品質gateの免除ではない。時間切れで推測、無開示、無出典、未承認公開へ進めず、未解決の主要claimが
+あれば記事を`HOLD`する。
+
+|経過|工程|Humanが行うこと|終了条件|
+|---:|---|---|---|
+|0–20分|価格確認|上の公式画面で記事の問いに必要なfieldだけを確認|値または明示的unknown、出典URL、観測日、次回確認日を確保|
+|20–40分|Operator入力|vendor・plan別に入力し、画面状態、請求周期、税、campaign、domain特典を確認|contract validation合格。Human確認前候補は保存しない|
+|40–60分|表示・根拠確認|計算結果、CTA枠、根拠表、unknown、mobile表示を確認|主要claimが確認済みで、開示先行・CTA gate・記事承認境界を維持|
+
+Operatorのtimerは端末内の経過表示だけに使い、時間、貼り付け原文、価格、account情報を外部送信・永続保存しない。
+「80点公開」は文章装飾や追加FAQを後日に回す意味であり、次の必須条件を緩めない。
+
+- 開示が計算機とCTAより先にある
+- 主結論の数値がHuman確認済みで、公式出典URLと日付を持つ
+- unknownを0や相場へ置換せず、そのunknownを必要とする計算・順位を表示しない
+- Python正本と一致する計算機を使い、別の手計算結果を本文へ置かない
+- CTAはpartner承認、規約、destination、個別`cta_go`をすべて満たすまで無効
+- 記事承認、index、CTAを別tokenのまま維持する
+
+60分で終わらない場合、主結論に不要な改善は後日へ送り、主要価格・税・更新・解約条件が未確認なら
+`article_approve: HOLD <SVR-ID>`とする。同一記事を3時間以上追わず、次の最小確認画面だけを記録する。
+
 ## 記事×vendorの確認表
 
 各行をM・H・SE・SM・SRについて独立に実施する。すなわち一つの行に五つの確認単位がある。

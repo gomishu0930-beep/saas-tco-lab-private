@@ -6,8 +6,9 @@ import "./globals.css";
 const publicPrelaunch = process.env.SAAS_RUNTIME_MODE === "production";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://saastcolab.jp"),
   title: {
-    default: "SaaS TCO Lab | 公開前比較MVP",
+    default: "SaaS TCO Lab",
     template: "%s | SaaS TCO Lab",
   },
   description:

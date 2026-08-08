@@ -22,6 +22,23 @@ Human Approver `omishu`の最終指示により、次を同じdecision IDの実�
 5. **Human予算**: 2026-08-01〜2026-10-31はlaunch trackに限り月2,000分へ引き上げる。automated data pathのhard gateを緩和せず、2026-11に720分へ戻すか再判定する。
 6. **確率向上レバー**: 単価（Impact完遂・日本ASP追加）、需要（W6実測・不足時のカテゴリ拡張準備）、チャネル分散（TCO embed・note/X・構造化data）、取引意図記事への集中を採用する。
 7. **90日固定判定**: 2026-10-31にindex数、GSC impressions、GSC clicksと直前28日比で継続・拡張・縮小を判定する。閾値は実測前に`docs/PRODUCTION_ROADMAP.md`へ固定し、判定後に変更しない。
+8. **拡張準備scopeの前倒し**: 2026-08-05のW6はknown 9,610/月、no_data率0.77333333で、必要22,227 sessions/月に対するknown下限が43.24%だった。Human Approver `omishu`は現ニッチ追加queryと5カテゴリquery・ASP確認表・TCO/article templateのlocal準備だけをGOとした。公開、申請、新vendor照会、価格観測、CTAは別GOを維持する。
+
+## 2026-08-06追加決定 — servers政策v2
+
+Human Approver `omishu`はserversの失敗経路を先に潰すため、次を同じlaunch trackへ追加した。
+
+9. **ロングテール先行**: 凍結40語から具体性と購入直前性をproxyに20語を選び、第1弾候補とする。
+   query別競合性は未観測のため「競合が薄い」とは断定しない。ビッグワードは内部link hub候補へ延期する。
+10. **計算機first**: servers記事は`開示 → 計算機 → 結果 → CTA枠 → 根拠表`の順とする。
+    開示先行、Human確認値、unknownのfail-closed、記事承認を省略しない。
+11. **partner冗長化**: serversの有効partnerが0社ならCTA無効、1社なら単独CTA、2社以上なら比較CTAとする。
+    1社だけの場合は構造上100%依存として80%超警告をdashboardへ表示する。2社以上で実測shareがない場合は
+    依存率を推測しない。各partnerの承認・規約・destination・`cta_go`は個別gateのまま維持する。
+12. **60分workflow**: 価格確認20分、Operator入力20分、表示・根拠確認20分を標準とする。
+    「80点公開」は装飾改善を後日に回す意味だけを持ち、数値・出典・開示・承認hard gateを緩和しない。
+13. **固定撤退ライン**: 2026-12-31に公開20本、GSC clicks 300/月、confirmed 1件をすべて要求する。
+    閾値は事後に緩めない。未達時はembed配布、note有料、受託を転換候補としてHuman判断へ送る。
 
 実装queueはQ1〜Q9とする。Q1はF1–F3とE1–E10の既存完成確認、Q2は取引意図優先、Q3はembed、
 Q4はProduct/FAQ/Breadcrumb JSON-LD、Q5はnote/X template、Q6は日本ASP申請準備、Q7はカテゴリ拡張準備、
@@ -78,6 +95,12 @@ Python正本とTypeScriptの固定式で再検証する。
 既知へ変更せず、該当する横断順位は引き続きSTOPする。index、CTA、deploy、push、公開は承認scope外であり、
 `index_go`受領までnoindexを維持する。その後の2026-08-03 `index_go: GO`はP01–P03だけ、
 `cta_go: GO mangools`は同3記事のMangoolsだけをscopeとし、他記事・他partnerへ拡張しない。
+
+2026-08-06、Human Approver `omishu`から改稿版について
+`article_approve: P01,P02,P03`を再受領した。承認scopeはR1–R6の読者向け本文、
+contract駆動SEO／OGメタ、関連記事、計算機prefill、人間可読JSON-LDである。
+新しい価格、税、通貨、課金周期の追加はなく、known／unknownと証拠表の境界を維持する。
+この再承認はlocal公開候補への登録までを対象とし、commit、push、deployの承認を含まない。
 
 S1のSSL、DNS、GSC、GA4、Impact操作は画面別手順書を提示し、Humanが実行する。旧`chatgpt.site`
 originはImpactがVerifiedになるまで存続させ、その後も301を維持する。

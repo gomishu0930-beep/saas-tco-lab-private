@@ -66,6 +66,7 @@ RepositoryScopeProfile = Literal[
     "p11-p21-growth-local-candidate-v4",
     "p11-p21-owned-learning-local-candidate-v5",
     "p11-p21-measurement-deploy-ready-local-candidate-v6",
+    "p11-p21-launch-track-local-candidate-v7",
 ]
 LEGACY_SCOPE_PROFILE: RepositoryScopeProfile = "p11-p18-local-candidate-v1"
 P20_SCOPE_PROFILE: RepositoryScopeProfile = "p11-p20-local-candidate-v2"
@@ -75,7 +76,7 @@ OWNED_LEARNING_SCOPE_PROFILE: RepositoryScopeProfile = (
     "p11-p21-owned-learning-local-candidate-v5"
 )
 SCOPE_PROFILE: RepositoryScopeProfile = (
-    "p11-p21-measurement-deploy-ready-local-candidate-v6"
+    "p11-p21-launch-track-local-candidate-v7"
 )
 PREVIOUS_CANDIDATE_RECORD = "docs/P11_P17_LOCAL_ACCEPTANCE_PENDING.md"
 _SCOPE_PATHS_BY_PROFILE = {
@@ -94,8 +95,11 @@ _SCOPE_PATHS_BY_PROFILE = {
     OWNED_LEARNING_SCOPE_PROFILE: (
         "e095b623274f1ce14d4b413bccc760bad1238effc4e63d4077a014e64a0f0bc6"
     ),
+    "p11-p21-measurement-deploy-ready-local-candidate-v6": (
+        "227fe3fcfc83718e17f5e9fb8667cc4c762b6606a6f000319619ff4aaf473d20"
+    ),
     SCOPE_PROFILE: (
-        "47260506e120f0abd77514899f4133815e330559b272651bdc6e0f77d7be0657"
+        "a078f9b367a21890879f0b24445f84d2e95994d32489f9d939964107f2390175"
     ),
 }
 

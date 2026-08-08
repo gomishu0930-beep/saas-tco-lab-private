@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 
+import { TcoCalculator } from "../components/TcoCalculator";
+
 export const metadata: Metadata = {
   title: "算定方法",
   description: "比較条件、権利検査、TCO算定、失効制御の方法。",
@@ -8,7 +10,7 @@ export const metadata: Metadata = {
 const steps = [
   ["入力を固定", "region・tax・currency・billing・commitment・seat・利用量をscenarioとして凍結します。"],
   ["根拠をfield化", "価格、請求周期、上限、追加費用ごとに取得元、取得時刻、許可範囲、期限を結びます。"],
-  ["Pythonで算定", "月次・年次、per-seat、usage/overage、税、addonをcanonical実装で計算します。UIは再計算しません。"],
+  ["Python正本で算定", "月次・年次、per-seat、usage/overage、税、addonに加え、サーバーの初期費用・更新料・期間限定料金・domain特典後の料金をcanonical実装で計算します。画面のTypeScript計算は同じgolden fixtureとの一致を必須にします。"],
   ["適合を説明", "必要条件を満たすかを、結論だけでなく理由と一緒に残します。"],
   ["配信時に再検査", "data・rights・affiliateの最短期限をrequestごとに検査し、期限到達時は数値とCTAを隠します。"],
 ] as const;
@@ -42,12 +44,24 @@ export default function MethodologyPage() {
           </p>
           <dl>
             <div><dt>価格計算</dt><dd>Pythonのみ</dd></div>
-            <div><dt>画面計算</dt><dd>禁止</dd></div>
+            <div><dt>画面計算</dt><dd>Python golden一致</dd></div>
             <div><dt>期限検査</dt><dd>requestごと</dd></div>
             <div><dt>未確認値</dt><dd>非表示</dd></div>
           </dl>
         </aside>
       </section>
+      <section className="shell page-section" id="detailed-calculator" aria-labelledby="detailed-calculator-title">
+        <div className="section-heading split-heading">
+          <div>
+            <p className="eyebrow">DETAILED MODE</p>
+            <h2 id="detailed-calculator-title">詳細計算モード</h2>
+          </div>
+          <p>
+            任意の確認済み条件を手元で試すための入力式です。記事内のservers比較は、この入力欄を使わず承認済み価格から自動表示します。
+          </p>
+        </div>
+      </section>
+      <TcoCalculator sourceHref="#method-steps" />
     </main>
   );
 }

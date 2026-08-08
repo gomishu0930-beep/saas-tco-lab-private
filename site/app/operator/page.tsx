@@ -11,25 +11,25 @@ export const metadata: Metadata = {
 const remainingHumanWork = [
   {
     id: "H1",
-    timing: "SSL Active確認後",
-    title: "domain移行runbookの後半を実行",
-    minutes: "当日のみ",
-    status: "購入・DNS・自動更新完了 / SSL待ち",
-    why: "購入、DNS、GSC、GA4、Impactの本人画面だけを順番に操作します。credentialやverification値はこの画面へ貼りません。",
-    steps: ["DOMAIN_MIGRATION_CHECKLISTを開く", "各画面のread-back欄だけ確認する", "失敗時は次へ進まずHOLDを返す"],
-    done: "domain_readback: done saastcolab.jp / HOLD saastcolab.jp",
-    next: "Codexがroute・noindex・計測境界を検証",
+    timing: "完了済み",
+    title: "domain移行状態を維持",
+    minutes: "通常は0分",
+    status: "domain・SSL・GSC・GA4・redirect・Impact完了",
+    why: "通常は操作不要です。domain、SSL、GSC、GA4、redirect、Impactの異常通知が出た場合だけrunbookを開きます。",
+    steps: ["通常は何もしない", "異常通知時だけDOMAIN_MIGRATION_CHECKLISTを開く", "credentialやverification値は共有しない"],
+    done: "domain_day: done saastcolab.jp",
+    next: "月次read-backで維持状態だけ確認",
   },
   {
     id: "H2",
     timing: "記事準備時",
     title: "公式価格を見て、この画面へ入力",
     minutes: "記事ごと",
-    status: "P01–P03承認済み / P04–P12継続",
+    status: "P01–P03改稿版再承認済み / release待ち / SVR01有効入力待ち",
     why: "価格確認checklistの公式URLをHumanが開き、必要箇所を貼り付けて候補抽出できます。候補はHuman確認前にcontractへ入りません。",
     steps: ["記事とvendorを選ぶ", "料金表を貼り付けて候補を事前入力する", "出典・観測日・次回確認日と前回差分を確認する", "Human確認後のJSONを保存し、本文標本を確認する"],
     done: "article_approve: <P-ID,...>",
-    next: "P01–P03はindex GO待ち。残記事はcontract再検証・公開前QA",
+    next: "改稿P01–P03は別deploy GO後にrelease。SVR01はservers専用Operatorで有効なcandidateを作成",
   },
   {
     id: "H3",
@@ -62,7 +62,7 @@ export default function OperatorPage() {
         <p className="eyebrow">HUMAN EASE TRACK</p>
         <h1>見る・入力する・<br />GO/HOLDを返す。</h1>
         <p>
-          あなたの残作業は、domain当日の画面操作、公式価格の確認と入力、token返信、月次確認だけです。
+          あなたの残作業は、公式価格の確認と入力、必要時の再認証、token返信、月次確認だけです。
           JSON編集、値の推測、外部への自動送信はありません。
         </p>
         <p>credential、個人情報、tracking ID、非公開報酬は入力しないでください。</p>
@@ -74,14 +74,16 @@ export default function OperatorPage() {
           <h2 id="operator-summary-title">Human作業を4種類へ集約</h2>
         </div>
         <dl>
-          <div><dt>第1弾</dt><dd>P01–P03</dd></div>
-          <div><dt>公開状態</dt><dd>NOINDEX</dd></div>
-          <div><dt>CTA</dt><dd>DISABLED</dd></div>
+          <div><dt>本番第1弾</dt><dd>P01–P03 公開中</dd></div>
+          <div><dt>この入力画面</dt><dd>NOINDEX</dd></div>
+          <div><dt>CTA</dt><dd>本番Mangoolsのみ / ローカル候補DISABLED</dd></div>
         </dl>
       </section>
 
       <div className="shell operator-input-wrap">
         <OperatorInputForm />
+        <p className="operator-derivative-link"><Link className="text-link" href="/operator/servers/">servers価格観測を開く</Link></p>
+        <p className="operator-derivative-link"><Link className="text-link" href="/servers/business-server-pricing/">servers第1記事のnoindex標本を確認</Link></p>
         <p className="operator-derivative-link"><Link className="text-link" href="/operator/derivatives/">note・X再配信templateを確認</Link></p>
       </div>
 

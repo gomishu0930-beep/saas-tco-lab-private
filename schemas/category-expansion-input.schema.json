@@ -503,7 +503,46 @@
         "$ref": "#/$defs/HumanEditorialNumericField"
       },
       "title": "Numeric Fields",
-      "type": "array"
+      "type": "array",
+      "x-category-field-catalog": {
+        "accounting": {
+          "accounting.entity_count": "quota",
+          "accounting.monthly_transactions": "quota",
+          "pricing.base_price": "price",
+          "pricing.minimum_seats": "seat_count"
+        },
+        "crm": {
+          "crm.automation_addon_price": "price",
+          "crm.contact_count": "quota",
+          "pricing.base_price": "price",
+          "pricing.minimum_seats": "seat_count"
+        },
+        "email_marketing": {
+          "email.contact_count": "quota",
+          "email.monthly_sends": "quota",
+          "email.overage_price": "price",
+          "pricing.base_price": "price"
+        },
+        "forms": {
+          "forms.monthly_responses": "quota",
+          "forms.payment_fee": "percentage",
+          "forms.storage_quota": "quota",
+          "pricing.base_price": "price"
+        },
+        "servers": {
+          "pricing.base_price": "price",
+          "pricing.initial_fee": "price",
+          "pricing.renewal_fee": "price",
+          "servers.backup_price": "price",
+          "servers.campaign_period_months": "duration",
+          "servers.campaign_price": "price",
+          "servers.compute_hours": "usage",
+          "servers.data_transfer_gb": "quota",
+          "servers.domain_benefit_amount": "price",
+          "servers.domain_benefit_period_months": "duration",
+          "servers.storage_gb": "quota"
+        }
+      }
     },
     "schema_version": {
       "const": "1.0",

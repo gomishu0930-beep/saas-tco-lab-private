@@ -101,13 +101,45 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         "Outbound clicks(月)": 4,
         "確定報酬(月)": 500,
     }
-    assert len(data["work"]) == 9
+    assert len(data["work"]) == 11
     assert all(item["done"] for item in data["work"])
+    assert [item["priority"] for item in data["externalActions"]] == [1, 2, 3, 4]
+    assert data["externalActions"][0]["status"] == "result_unverified"
+    assert data["externalActions"][0]["token"] == "moshimo_reauth: done"
+    assert data["externalActions"][1]["token"] == "article_approve: P06,P07"
+    assert data["externalActions"][-1]["token"] == "x_post: GO P01"
     assert data["launchQuarter"]["humanBudgetMinutesPerMonth"] == 2000
     assert data["launchQuarter"]["decisionDate"] == "2026-10-31"
+    assert data["launchQuarter"]["scopeExpansion"] == {
+        "state": "PREPARATION GO",
+        "observedKnownVolume": 9610,
+        "requiredSessions": 22227,
+        "noDataRate": "77.33%",
+        "frozenQueries": 260,
+        "externalActions": "HOLD",
+    }
     assert [item["tier"] for item in data["launchQuarter"]["thresholds"]] == [
         "拡張", "継続", "最低ライン"
     ]
+    assert data["serverPartnerPolicy"] == {
+        "approvedPartnerCount": 0,
+        "ctaMode": "disabled",
+        "dependencyStatus": "not_measurable",
+        "dominantSharePercent": None,
+        "warningThresholdPercent": 80,
+        "warning": False,
+        "individualCtaGateRequired": True,
+    }
+    assert data["launchQuarter"]["exitLine"] == {
+        "decisionDate": "2026-12-31",
+        "publishedArticlesMinimum": 20,
+        "gscClicksPerMonthMinimum": 300,
+        "confirmedConversionsMinimum": 1,
+        "allConditionsRequired": True,
+        "thresholdCanBeRelaxed": False,
+        "pivotCandidates": ["embed配布", "note有料", "受託"],
+    }
+    assert data["deadlines"][-1]["date"] == "2026-12-31"
     assert "monthly.csv" not in dashboard.read_text(encoding="utf-8")
 
 
@@ -168,8 +200,51 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     result = _run(dashboard, state, contracts, "--no-prompt")
     assert result.returncode == 0, result.stderr
     data = _dashboard_data(dashboard)
-    assert data["kpis"][0]["value"] == 1
+    assert data["kpis"][0]["value"] == 0
     assert data["lane"][1]["status"] == "1/12入力・1/12承認"
+
+    raw_state["deployed_articles"].append("P12")
+    raw_state["index_approved_articles"].append("P12")
+    state.write_text(json.dumps(raw_state), encoding="utf-8")
+    result = _run(dashboard, state, contracts, "--no-prompt")
+    assert result.returncode == 0, result.stderr
+    data = _dashboard_data(dashboard)
+    assert data["kpis"][0]["value"] == 1
+
+
+def test_pending_p06_p07_review_cards_are_contract_driven(tmp_path: Path) -> None:
+    dashboard = tmp_path / "dashboard.html"
+    dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())
+    state = tmp_path / "state.json"
+    state.write_bytes((ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_bytes())
+    contracts = tmp_path / "contracts"
+    contracts.mkdir()
+    for article_id in ("P06", "P07"):
+        source = ROOT / "artifacts" / "editorial-inputs" / f"{article_id}-editorial-input.json"
+        raw = json.loads(source.read_text(encoding="utf-8"))
+        raw["article_review_status"] = "unreviewed"
+        for field in raw["numeric_fields"]:
+            field["review_status"] = "unreviewed"
+        (contracts / source.name).write_text(json.dumps(raw), encoding="utf-8")
+
+    result = _run(dashboard, state, contracts, "--no-prompt")
+
+    assert result.returncode == 0, result.stderr
+    cards = _dashboard_data(dashboard)["articleReviews"]
+    assert [card["articleId"] for card in cards] == ["P06", "P07"]
+    assert cards[0]["confirmed"] == [
+        "月払い: 61.00 / mo USD",
+        "年次checkout総額: 452.40 / yr（checkout請求総額） USD",
+        "最低契約期間: 12 か月（年次請求）",
+    ]
+    assert cards[0]["unresolved"][0].startswith("途中解約費用: unknown")
+    assert cards[0]["nextReviewOn"] == "2026-08-31"
+    assert cards[1]["confirmed"] == [
+        "含有利用量: 100 keyword research req. / 24h",
+        "Human月間利用量: 400 ルックアップ/月",
+    ]
+    assert len(cards[1]["unresolved"]) == 2
+    assert cards[1]["token"] == "article_approve: P07"
 
 
 def test_csv_with_unapproved_extra_column_is_rejected(tmp_path: Path) -> None:
@@ -188,3 +263,18 @@ def test_csv_with_unapproved_extra_column_is_rejected(tmp_path: Path) -> None:
     result = _run(dashboard, state, contracts, "--kpi-csv", str(bad_csv))
     assert result.returncode != 0
     assert "safe template" in result.stderr
+
+
+def test_risk_register_is_sanitized_and_has_exactly_one_hundred_risks() -> None:
+    source = (ROOT / "docs/RISK_REGISTER_100.md").read_text(encoding="utf-8")
+    risk_ids = [f"C{number:03d}" for number in range(1, 101)]
+
+    assert "sanitization_authority: `human_authorized_sanitization`" in source
+    assert "review_status: `unreviewed`" in source
+    assert all(source.count(f"|{risk_id}|") == 1 for risk_id in risk_ids)
+    assert "restricted_dashboard_only" not in source
+    assert "年間20万円超" not in source
+    assert "最低賃金" not in source
+    assert "月次固定費が3,000円超" not in source
+    assert "内部IPフィルタをactive化" not in source
+    assert "tracking ID、広告URL" in source

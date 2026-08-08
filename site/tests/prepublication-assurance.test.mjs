@@ -23,7 +23,9 @@ const ROUTES = [
   "/disclosure",
   "/readiness",
   "/operator",
+  "/operator/servers",
   "/operator/derivatives",
+  "/servers/business-server-pricing",
   "/embed/tco-calculator",
   "/about",
   "/operator-information",
@@ -173,7 +175,7 @@ test("every P01-P12 article renders PR disclosure before a disabled CTA", () => 
   for (const path of ARTICLE_ROUTES) {
     const html = pages.get(path);
     const disclosurePosition = html.indexOf('id="article-pr-disclosure"');
-    const ctaPosition = html.indexOf("CTA DISABLED");
+    const ctaPosition = html.indexOf('data-affiliate-cta-placeholder="mangools"');
     assert.ok(disclosurePosition >= 0, `${path}: PR disclosure`);
     assert.ok(ctaPosition > disclosurePosition, `${path}: disclosure before CTA`);
     assert.doesNotMatch(html, /rel=["'][^"']*sponsored/i, path);
@@ -295,6 +297,7 @@ test("comparison tables expose captions, scoped headers, adjacent disclosure, an
 
 test("pre-public HTML contains no canonical, runtime origin, tracking URL, or active CTA", () => {
   const allowedEvidenceHosts = new Set([
+    "saastcolab.jp",
     "mangools.com",
     "seranking.com",
     "www.semrush.com",
@@ -320,6 +323,21 @@ test("pre-public HTML contains no canonical, runtime origin, tracking URL, or ac
     assert.doesNotMatch(html, /[?&](?:utm_|ref|aff|partner|clickid|subid)/i, `${path}: tracking URL`);
     assert.doesNotMatch(html, /\brel=["'][^"']*sponsored/i, `${path}: sponsored link`);
     assert.doesNotMatch(html, /公式サイトへ|affiliate[_-]?url/i, `${path}: active CTA`);
+  }
+});
+
+test("every article exposes text-only Open Graph and Twitter metadata", () => {
+  for (const path of ARTICLE_ROUTES) {
+    const html = pages.get(path);
+    assert.match(html, /<meta property="og:title" content="[^"]+"\/>/i, path);
+    assert.match(html, /<meta property="og:description" content="[^"]+"\/>/i, path);
+    assert.match(html, /<meta property="og:url" content="https:\/\/saastcolab\.jp\/pilot\/[^"]+\/"\/>/i, path);
+    assert.match(html, /<meta property="og:site_name" content="SaaS TCO Lab"\/>/i, path);
+    assert.match(html, /<meta property="og:type" content="article"\/>/i, path);
+    assert.match(html, /<meta name="twitter:card" content="summary"\/>/i, path);
+    assert.match(html, /<meta name="twitter:title" content="[^"]+"\/>/i, path);
+    assert.match(html, /<meta name="twitter:description" content="[^"]+"\/>/i, path);
+    assert.doesNotMatch(html, /property="og:image"|name="twitter:image"/i, path);
   }
 });
 

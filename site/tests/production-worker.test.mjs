@@ -265,6 +265,11 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
         path,
       );
       assert.match(documentHtml, /<script data-saastco-affiliate-cta>/i, path);
+      const nextReadingPosition = documentHtml.indexOf('class="shell page-section next-reading"');
+      assert.ok(nextReadingPosition > ctaPosition, `${path}: next-to-read after CTA`);
+      const nextReading = documentHtml.slice(nextReadingPosition, documentHtml.indexOf("</section>", nextReadingPosition));
+      assert.match(nextReading, /href="\/pilot\/(?:pricing-calculator|plan-comparison|alternatives)\/"/i, path);
+      assert.doesNotMatch(nextReading, /small-team-fit|enterprise-fit|annual-vs-monthly|usage-overage/i, path);
       assert.doesNotMatch(
         documentHtml,
         /<span\b[^>]*data-affiliate-cta-placeholder|>CTA DISABLED</i,
@@ -464,6 +469,11 @@ test("missing, expired, or malformed Mangools approval stays CTA fail-closed", a
   for (const override of [
     { CTA_GO: "HOLD" },
     { CTA_APPROVED_PARTNER: "semrush" },
+    {
+      CTA_APPROVED_PARTNER: "a8net",
+      A8NET_AFFILIATE_APPROVAL_CURRENT: "true",
+      A8NET_AFFILIATE_DESTINATION: "configured-in-runtime-only",
+    },
     { MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "false" },
     { MANGOOLS_AFFILIATE_DESTINATION: "https://example.com/#a1234567890bcdef123456789" },
     { MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/?ref=not-approved" },
@@ -475,7 +485,7 @@ test("missing, expired, or malformed Mangools approval stays CTA fail-closed", a
     );
     assert.equal(response.status, 200);
     const body = await response.text();
-    assert.match(body, /CTA DISABLED/);
+    assert.match(body, /data-affiliate-cta-placeholder="mangools"/);
     assert.match(body, /data-affiliate-disclosure-status="disabled"/);
     assert.doesNotMatch(body, /rel=["'][^"']*sponsored|data-affiliate-cta-partner/i);
   }

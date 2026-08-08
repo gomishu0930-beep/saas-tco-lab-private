@@ -11,6 +11,10 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+from saas_preflight.affiliate_partner_ledger import (
+    AffiliatePartnershipStatus,
+    load_affiliate_partner_ledger,
+)
 from saas_preflight.editorial_input import EditorialArticleInput
 
 
@@ -20,6 +24,16 @@ DATA_START = "// DASHBOARD_DATA_START\nconst DATA = "
 DATA_END = ";\n// DASHBOARD_DATA_END"
 ALLOWED_LANE_STATES = frozenset({"HOLD", "GO", "DONE"})
 ALLOWED_ARTICLE_STATES = frozenset({"unreviewed", "approved", "rejected"})
+ARTICLE_REVIEW_FIELD_LABELS = {
+    "billing.monthly_contract_price": "月払い",
+    "billing.annual_contract_price": "年次checkout総額",
+    "billing.minimum_commitment_months": "最低契約期間",
+    "billing.termination_cost": "途中解約費用",
+    "usage.included_quota": "含有利用量",
+    "usage.overage_unit_size": "従量超過単位",
+    "usage.overage_price": "従量超過単価",
+    "usage.monthly_volume": "Human月間利用量",
+}
 KPI_FIELDS = (
     "indexed_articles",
     "gsc_clicks",
@@ -57,7 +71,8 @@ def _load_launch_state(path: Path) -> dict[str, Any]:
     except (OSError, json.JSONDecodeError) as exc:
         raise DashboardInputError("editorial launch state is unreadable") from exc
     expected = {
-        "schema_version", "domain", "domain_state", "index_state", "affiliate_cta", "articles"
+        "schema_version", "domain", "domain_state", "index_state", "affiliate_cta",
+        "articles", "deployed_articles", "index_approved_articles",
     }
     if not isinstance(state, dict) or set(state) != expected:
         raise DashboardInputError("editorial launch state fields do not match ease-track-1")
@@ -75,6 +90,17 @@ def _load_launch_state(path: Path) -> dict[str, Any]:
         raise DashboardInputError("launch state must contain exact P01-P12 article keys")
     if any(value not in ALLOWED_ARTICLE_STATES for value in articles.values()):
         raise DashboardInputError("article state must be unreviewed, approved, or rejected")
+    for field in ("deployed_articles", "index_approved_articles"):
+        values = state[field]
+        if (
+            not isinstance(values, list)
+            or any(not isinstance(value, str) or value not in PILOT_IDS for value in values)
+            or len(values) != len(set(values))
+            or any(articles[value] != "approved" for value in values)
+        ):
+            raise DashboardInputError(
+                f"{field} must contain unique approved P01-P12 article IDs"
+            )
     cta = state["affiliate_cta"]
     if not isinstance(cta, dict) or any(value not in ALLOWED_LANE_STATES for value in cta.values()):
         raise DashboardInputError("affiliate CTA states must be HOLD, GO, or DONE")
@@ -176,8 +202,168 @@ def _work_queue(root: Path) -> list[dict[str, Any]]:
         ("Q7 拡張category slate・input contract", root / "docs/CATEGORY_EXPANSION_SLATE.md"),
         ("Q8 90日判定閾値固定", root / "docs/PRODUCTION_ROADMAP.md"),
         ("Q9 dashboard Launch Quarter更新", root / "scripts/update_status_dashboard.py"),
+        ("SVR01 servers価格観測Operator", root / "site/app/operator/servers/page.tsx"),
+        ("SVR01 noindex記事標本", root / "site/app/servers/business-server-pricing/page.tsx"),
     )
     return [{"done": path.is_file(), "label": label} for label, path in requirements]
+
+
+def _external_action_queue(
+    root: Path,
+    state: dict[str, Any],
+    contracts: dict[str, EditorialArticleInput],
+) -> list[dict[str, Any]]:
+    """Return non-secret Human/external gates without treating them as repo work."""
+
+    ledger = load_affiliate_partner_ledger(root / "docs" / "AFFILIATE_PARTNER_LEDGER.json")
+    accounts = {entry.partner_id: entry for entry in ledger.entries}
+    programs = {entry.research_id: entry for entry in ledger.program_research}
+    adoption = (root / "docs" / "CURRENT_ADOPTION_ACTIONS.md").read_text(encoding="utf-8")
+    server_contract_ready = any(
+        path.name.startswith("SVR01")
+        for path in (root / "artifacts" / "category-expansion-inputs").glob("*.json")
+    )
+    server_contract_confirmed = "candidate contractの構造確定" in adoption
+    x_ready = "handleは`@saastcolab`" in adoption and "投稿0件" in adoption
+    actions: list[dict[str, Any]] = []
+    moshimo = programs["moshimo-lolipop-rental-server"]
+    if moshimo.partnership_status.value == "not_applied":
+        result_unverified = "申請ボタン押下後にsessionが失効" in adoption
+        actions.append({
+            "label": "もしも ロリポップ！レンタルサーバー提携申請",
+            "status": "result_unverified" if result_unverified else moshimo.partnership_status.value,
+            "token": (
+                "moshimo_reauth: done"
+                if result_unverified
+                else "asp_program_apply: GO もしも ロリポップ！レンタルサーバー"
+            ),
+        })
+    a8 = programs["a8net-xserver-business"]
+    if a8.partnership_status.value == "not_applied":
+        actions.append({
+            "label": "A8.net XServerビジネス提携申請",
+            "status": a8.partnership_status.value,
+            "token": "asp_program_apply: GO A8.net XServerビジネス",
+        })
+    if accounts["valuecommerce"].account_status.value == "registration_incomplete":
+        actions.append({
+            "label": "バリューコマース本登録・ABLENET詳細確認",
+            "status": "registration_incomplete",
+            "token": "valuecommerce_registration: done",
+        })
+    if not server_contract_ready:
+        actions.append({
+            "label": "SVR01候補JSON保存",
+            "status": (
+                "localhost download許可待ち"
+                if server_contract_confirmed
+                else "入力待ち"
+            ),
+            "token": (
+                "local_download_permission: GO localhost SVR01"
+                if server_contract_confirmed
+                else "server_price_input: done SVR01"
+            ),
+        })
+    reviews_complete = all(
+        state["articles"][article_id] == "approved"
+        and article_id in contracts
+        and contracts[article_id].article_review_status.value == "approved"
+        for article_id in ("P06", "P07")
+    )
+    if not reviews_complete:
+        actions.append({
+            "label": "P06・P07記事標本のHuman承認",
+            "status": "Human承認待ち",
+            "token": "article_approve: P06,P07",
+        })
+    actions.extend([
+        {
+            "label": "P01–P03 R1–R6 release",
+            "status": "外部GO待ち",
+            "token": "repository_update_push: GO / deploy_update: GO P01,P02,P03 R1-R6",
+        },
+        {
+            "label": "P01 X初回投稿",
+            "status": "投稿GO待ち" if x_ready else "account準備待ち",
+            "token": "x_post: GO P01",
+        },
+    ])
+    return [{"priority": index, **action} for index, action in enumerate(actions, start=1)]
+
+
+def _article_review_queue(
+    contracts: dict[str, EditorialArticleInput],
+) -> list[dict[str, Any]]:
+    """Build a non-secret, contract-driven Human review card for pending articles."""
+
+    queue: list[dict[str, Any]] = []
+    for article_id in ("P06", "P07"):
+        contract = contracts.get(article_id)
+        if contract is None or contract.article_review_status.value != "unreviewed":
+            continue
+        confirmed: list[str] = []
+        unresolved: list[str] = []
+        next_reviews: list[date] = []
+        observed: list[date] = []
+        for field in contract.numeric_fields:
+            label = ARTICLE_REVIEW_FIELD_LABELS.get(field.field, field.field)
+            observed.append(field.observed_on)
+            next_reviews.append(field.next_review_on)
+            if field.value_status.value == "known":
+                amount = f"{field.value} {field.unit or ''}".strip()
+                if field.currency is not None:
+                    amount = f"{amount} {field.currency}".strip()
+                confirmed.append(f"{label}: {amount}")
+            else:
+                reason = field.unknown_reason or "数値適用なし"
+                unresolved.append(
+                    f"{label}: {field.value_status.value}（{reason}）"
+                )
+        queue.append(
+            {
+                "articleId": article_id,
+                "title": contract.title,
+                "previewUrl": f"http://localhost:3000/pilot/{contract.slug}",
+                "confirmed": confirmed,
+                "unresolved": unresolved,
+                "observedOn": min(observed).isoformat(),
+                "nextReviewOn": min(next_reviews).isoformat(),
+                "token": f"article_approve: {article_id}",
+            }
+        )
+    return queue
+
+
+def _server_partner_redundancy(root: Path) -> dict[str, Any]:
+    ledger = load_affiliate_partner_ledger(root / "docs" / "AFFILIATE_PARTNER_LEDGER.json")
+    approved = sorted({
+        item.research_id
+        for item in ledger.program_research
+        if item.category == "サーバー"
+        and item.partnership_status is AffiliatePartnershipStatus.APPROVED
+    })
+    if not approved:
+        mode = "disabled"
+        dependency_status = "not_measurable"
+        dominant_share = None
+    elif len(approved) == 1:
+        mode = "single"
+        dependency_status = "structural_single_partner"
+        dominant_share = 100
+    else:
+        mode = "comparison"
+        dependency_status = "confirmed_commission_share_unobserved"
+        dominant_share = None
+    return {
+        "approvedPartnerCount": len(approved),
+        "ctaMode": mode,
+        "dependencyStatus": dependency_status,
+        "dominantSharePercent": dominant_share,
+        "warningThresholdPercent": 80,
+        "warning": dominant_share is not None and dominant_share > 80,
+        "individualCtaGateRequired": True,
+    }
 
 
 def _launch_quarter() -> dict[str, Any]:
@@ -190,11 +376,22 @@ def _launch_quarter() -> dict[str, Any]:
             "D5 launch trackのHuman予算を月2,000分へ一時引上げ",
             "D6 単価・需要・channel分散・取引意図集中を採用",
             "D7 index・impressions・click成長で90日固定判定",
+            "D8 W6 known下限によりカテゴリ拡張の準備scopeを前倒しGO",
+            "D9 serversをロングテール・計算機first・partner冗長化で運用",
+            "D10 servers記事はzero-input、入力式はmethodologyだけに分離",
         ],
+        "scopeExpansion": {
+            "state": "PREPARATION GO",
+            "observedKnownVolume": 9610,
+            "requiredSessions": 22227,
+            "noDataRate": "77.33%",
+            "frozenQueries": 260,
+            "externalActions": "HOLD",
+        },
         "weeklyPlan": [
             {"date": "7/31–8/2", "label": "domain day・P01–P03最終標本"},
             {"date": "8/3–8/9", "label": "第1弾記事承認・index準備"},
-            {"date": "8/10–8/16", "label": "Mangools CTA gate・W6需要CSV"},
+            {"date": "8/10–8/16", "label": "W6完了・X1–X3拡張準備slate固定"},
             {"date": "8/17–8/31", "label": "P06–P09中心に約8本・ASP申請可能化"},
             {"date": "9月", "label": "残記事・embed・note/X・Impact/ASP審査"},
             {"date": "10/1–10/24", "label": "取引意図記事改稿・内部導線"},
@@ -205,6 +402,15 @@ def _launch_quarter() -> dict[str, Any]:
             {"tier": "継続", "indexed": 8, "impressions": 1500, "clicks": 25, "impressionGrowth": "+25%", "clickGrowth": "0%以上"},
             {"tier": "最低ライン", "indexed": 4, "impressions": 300, "clicks": 5, "impressionGrowth": "0%以上", "clickGrowth": "0%以上"},
         ],
+        "exitLine": {
+            "decisionDate": "2026-12-31",
+            "publishedArticlesMinimum": 20,
+            "gscClicksPerMonthMinimum": 300,
+            "confirmedConversionsMinimum": 1,
+            "allConditionsRequired": True,
+            "thresholdCanBeRelaxed": False,
+            "pivotCandidates": ["embed配布", "note有料", "受託"],
+        },
     }
 
 
@@ -228,7 +434,9 @@ def _regenerate(
     }
     input_count = len(contracts)
     approved_count = len(approved)
-    published_count = approved_count if state["index_state"] in {"GO", "DONE"} else 0
+    deployed = set(state["deployed_articles"])
+    index_approved = set(state["index_approved_articles"])
+    published_count = len(approved & deployed)
     cta_count = sum(value in {"GO", "DONE"} for value in state["affiliate_cta"].values())
     domain_state = state["domain_state"]
     index_state = state["index_state"]
@@ -258,6 +466,8 @@ def _regenerate(
         "actualClicks": outbound,
         "partnerBreakdown": [],
     }
+    server_partner_policy = _server_partner_redundancy(root)
+    data["serverPartnerPolicy"] = server_partner_policy
     data["funnel"] = [
         {"label": "Sessions", "value": external["sessions"]},
         {"label": "Qualified sessions", "value": external["qualified_sessions"]},
@@ -267,19 +477,33 @@ def _regenerate(
     data["lane"] = [
         {"id": "L1", "name": "独自domain取得", "status": domain_state, "note": "domain day runbookとread-back"},
         {"id": "L2", "name": "記事実値入力・承認", "status": f"{input_count}/12入力・{approved_count}/12承認", "note": "有効contractとHuman記事承認だけを算入"},
-        {"id": "L3", "name": "noindex解除", "status": index_state, "note": "承認済み記事だけ・別GO"},
+        {"id": "L3", "name": "noindex解除", "status": index_state, "note": f"index承認 {len(index_approved)}本・記事承認だけでは追加しない"},
         {"id": "L4", "name": "CTA有効化", "status": "HOLD" if cta_count == 0 else f"{cta_count} partner GO", "note": "Affiliate承認・規約遵守・開示先行"},
     ]
     data["work"] = _work_queue(root)
+    data["externalActions"] = _external_action_queue(root, state, contracts)
+    data["articleReviews"] = _article_review_queue(contracts)
     data["launchQuarter"] = _launch_quarter()
     data["deadlines"] = [
         {"date": "2026-08-01", "label": "exact domain選択・domain day開始"},
         {"date": "2026-08 第1週", "label": "P01–P03 Human記事承認"},
-        {"date": "2026-08 前半", "label": "Mangools 150 query CSV"},
+        {"date": "2026-08-05", "label": "W6 150 query完了・拡張準備260 query凍結"},
         {"date": "2026-08-31", "label": "約8本・Impact・W6・ASP申請可能状態"},
-        {"date": "2026-10-31", "label": "90日固定判定・scope_expand判断"},
+        {"date": "2026-10-31", "label": "現ニッチ90日固定判定・カテゴリ別判断"},
         {"date": "2026-11", "label": "Human予算を720分へ戻すか再判定"},
+        {"date": "2026-12-31", "label": "20本・GSC clicks 300/月・confirmed 1件の固定撤退判定"},
     ]
+    dynamic_risks = [
+        item for item in data.get("risks", [])
+        if item.get("riskId") != "server-partner-dependency"
+    ]
+    if server_partner_policy["warning"]:
+        dynamic_risks.append({
+            "riskId": "server-partner-dependency",
+            "level": "warn",
+            "label": "serversの単一partner依存が80%を超過。第2partner承認までは単独CTAを維持",
+        })
+    data["risks"] = dynamic_risks
     return data
 
 

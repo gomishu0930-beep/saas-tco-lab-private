@@ -38,9 +38,9 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
 |A-H10|公開前版完了|カード不要Sitesを公開前originとして採用済み。実データ、indexing、CTA、DB、独自domainは別承認|2026-07-26 public-prelaunch GO|外部readbackとfail-closed経路を継続監視。実運用releaseはGate A–Cまで停止|cloud root credential|
-|A-H11|P01–P03承認済み／P04–P12継続|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|2026-08-03 `article_approve: P01,P02,P03`受領|承認scopeをcontractへ固定し、unknown依存claimだけSTOP。P01–P03は公開候補、残記事はreview継続|raw本文、PII、credential、tracking ID|
+|A-H11|P01–P03の公開中版・R1改稿版を承認済み|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|2026-08-06にR1–R6改稿版の`article_approve: P01,P02,P03`を再受領|R1–R6のlocal previewは別deploy GOまで公開しない。unknown依存claimだけSTOP|raw本文、PII、credential、tracking ID|
 |A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|indexとCTAは別GOまでHOLDする|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
-|A-H13|150 query export時|KWFinder正規画面からJP/ja CSVをHuman exportする|`mangools_csv: done`|rawを保存せずvalidatorでsafe-summaryだけ生成|account情報、raw CSVのrepo保存|
+|A-H13|完了 — v1.1分類済み|KWFinder正規画面からJP/ja CSVをHuman exportする|2026-08-05 batch-e/fを含む150件をexport・検証済み|rawをrepositoryへ保存せず、known/no_data/rejectedを分離したsafe-summaryだけを扱う|account情報、raw CSVのrepo保存、no_dataの0補完|
 |A-H14|完了 — P01–P03|index解除対象を確定する|2026-08-03 `index_go: GO`受領|承認済みP01–P03だけindex可。P04–P12と他HTML routeはnoindex|verification・tracking ID|
 
 2026-08-02、Human ApproverがMangoolsの年次checkout総額452.40／632.40／1,172.40 USD、
@@ -51,6 +51,21 @@ P03のSE Ranking・Semrush年次総額と移行費用はunknownのまま横断�
 Human Approver `omishu`がこの2026-08-02観測contractに基づく本文・TCO節を承認した。P01–P03は
 公開候補へ登録後、2026-08-03の`index_go: GO`と`cta_go: GO mangools`を受領した。P01–P03だけを
 index可・Mangools CTA有効とし、P04–P12、他HTML route、Mangools以外のCTAは無効を維持する。
+
+2026-08-05、R1–R6の読者向け改稿、contract駆動SEO/OGメタ、承認済み記事だけの関連記事、
+確認済み価格による計算機初期表示、人間可読JSON-LDをlocalで実装した。これは2026-08-03に承認された
+公開中本文とは異なる改稿版であるため、P01–P03は再度の`article_approve`を受けるまでcommit・push・deployしない。
+数値証拠そのもののreview statusは変更せず、改稿で新しい価格・税・通貨・課金周期を追加していない。
+2026-08-06、Human Approver `omishu`から改稿版の`article_approve: P01,P02,P03`を受領した。
+local公開候補への登録を完了し、commit、push、deployは別GOまでHOLDを維持する。
+
+P06とP07はP01–P03のHuman確認済みMangools観測を記事別contractへ再配置したlocal標本である。
+P06は月払い61.00 USD、年次checkout総額452.40 USD、最低契約12か月を表示し、途中解約時の費用は
+unknownのまま総額から除外する。P07は100 keyword research requests / 24h、従量超過単位・単価の
+公式表示なし、Human scenario 400 lookup/月を分けて表示する。両記事とも新しい値を推測せず、
+2026-08-07、Human Approver `omishu`から`article_approve: P06,P07`を受領し、本文と既存contractを承認済みにした。
+この承認は記事レビューだけを対象とし、P06/P07のdeploy、index追加、CTA有効化には効かない。既存の
+index許可はP01–P03だけで、P06/P07はlocal preview・noindex・CTA無効を維持する。
 
 観測contract v2.3では価格表示を`none`、`annual_discount_permanent`、`time_limited_promo`、`unknown`の
 4区分とする。計算HOLDは期間限定promoとunknownだけである。2026-08-02にHuman token
@@ -88,13 +103,31 @@ business purposeの需要判断に限定し、volumeのsafe-summaryだけをrepo
 
 ## Affiliate提携とrights回答の現在地
 
+Affiliate partner状態の非機密な正本として`docs/AFFILIATE_PARTNER_LEDGER.json`を追加した。A8.net、
+もしもアフィリエイト、バリューコマースはAccount登録済みである。もしもアフィリエイトは
+2026-08-07の正規管理画面read-backで確認し、バリューコマースは2026-08-08のHuman token
+`valuecommerce_registration: done`により本登録完了を記録した。登録完了は個別programの提携承認として扱わない。
+2026-08-06にA8.netの7 programを
+read-onlyで調査したが、すべて未申請である。ログイン後だけ表示される報酬額・確定率は
+`restricted_dashboard_only`として値をrepositoryへ保存しない。
+したがって三社はCTA対象外とし、提携承認、開示先行、runtime destination設定、partner別`cta_go`が
+すべて揃うまでfail-closedを維持する。台帳はruntime secretの参照名だけを持ち、tracking ID、広告link URL、
+本人情報、secret値を保存しない。
+
 |会社|Affiliate現在地|rights回答|統合gateへの算入|次の本人操作|
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答。2026-07-26追送済み|0|rights回答を待つ。紹介IDは共有しない|
+|A8.net|Account登録済み、XServerビジネス申請済み・審査待ち|条件要約を台帳v1.1へ記録。報酬値は非保存|0|審査結果をread-onlyで確認し、承認まではCTA不可|
+|もしもアフィリエイト|Account登録済み、ロリポップ申請結果未確認・他3件未申請|検索結果概要だけを台帳へ記録。報酬値は非保存|0|再認証後にロリポップの提携状態だけ確認し、重複申請しない|
+|バリューコマース|Account本登録済み、個別program未申請|ABLENETは概要確認のみ|0|正規画面でABLENETの個別条件をread-only確認し、申請は対象名付き別GO後だけ行う|
 |HubSpot|2026-08-03 Impact画面でDeclined（low reach）を確認|未回答。2026-07-26追送済み|0|公開・流入実績を作るまで再申請しない。拒否を承認済みと数えない|
 |Semrush|Impact Marketplace申請受領・website認証済み。個別申請の送信を試行したが未受領|回答あり|0|Marketplace承認を待つ。`Discover`表示後にSemrushを再申請し、受付receiptを確認する|
 |SE Ranking|work email例外回答待ち|未回答。ticket 112501へ2026-07-26追送済み|0|回答まで再登録しない|
 |Serpstat|未申請|回答あり・社内審査中。2026-07-26 due-diligence返信済み|0|authorized teamの8項目回答を待つ|
+
+A8.netで直接確認できなかったHubSpot、kintone、サイボウズ、ConoHa、Benchmark Email、blastmailは
+不存在と断定せず、もしもアフィリエイトとバリューコマースの確認待ちとする。単価×需要表は
+`docs/JP_ASP_APPLICATION_CHECKLIST.md`に置き、W6 safe-summaryがないカテゴリを有望扱いしない。
 
 E10のImpact product feed確認は、Impact上でAffiliateがactiveになったpartnerだけがtriggerである。現在は
 HubSpotはlow reachでDeclined、SemrushはMarketplace手続中であり、対象partnerは0社なのでHuman操作はまだ不要。
@@ -113,7 +146,8 @@ payoutの全条件が揃った会社だけを1社と数えます。
 Mangools Termsはデータ利用をinternal business purposeとし、publicationにはattributionを求め、自動化は
 API経由を前提とします。Humanが正規画面からexportし、rawをrepository外でvalidatorへ一度だけ渡す需要検証を
 本decisionで承認します。CSVのraw、query別volume、Mangools固有IDはrepositoryへ保存せず、150 query一致、
-合計volume、欠損、観測日、hashだけをsafe-summaryにします。API・browser自動取得は行いません。
+known/no_data/rejectedの行数、known行だけの合計、no_data率、観測日、hashだけをsafe-summaryにします。
+no_dataは0として合計へ混ぜません。API・browser自動取得は行いません。
 
 |順位|source|採用判断|役割|停止条件|
 |---:|---|---|---|---|
@@ -122,9 +156,80 @@ API経由を前提とします。Humanが正規画面からexportし、rawをrep
 |3|Search Console|`available_waiting_data`|公開後の自サイト実需要|所有確認済み。初日データ処理中で実測queryは未生成|
 |4|Google Trends|`supporting_only`|季節性・相対比較|絶対需要やCVRへ換算禁止|
 
-`mangools_csv: done`はHumanがCSVを正規exportし、validatorでlocale、exact 150 query、欠損、重複、
-観測日を検証した合図です。field-level回答は自動取得trackで追跡を続けますが、このHuman exportによる
-internal demand検証を停止しません。
+2026-08-05のvalidator v1.1結果は、exact 150 query、重複0、Japan以外0、known 34、no_data 116、
+rejected 0、known合計9,610、no_data率0.77333333です。月20万円の既定逆算22,227 sessionに対して、
+`known_volume_floor_below_required_incomplete`と判定しました。これはknown下限での拡張推奨であり、
+no_dataを0とみなした総需要不足の確定ではありません。raw CSVとquery別volumeはrepository外に維持します。
+field-level回答は自動取得trackで追跡を続けますが、このHuman exportによるinternal demand検証を停止しません。
+
+2026-08-05、Human Approver `omishu`は上記known下限に基づき`scope_expand: GO (準備scope)`を承認しました。
+X1の現ニッチ追加60語と、X2のservers / accounting / crm / forms / email_marketing各40語を
+`docs/CATEGORY_EXPANSION_SLATE.md`と`examples/`へ凍結します。X3としてカテゴリ別90日判定を
+`docs/PRODUCTION_ROADMAP.md`へ固定しました。公開、ASP申請、新vendor照会、価格取得、CTAは別GOまでHOLDです。
+
+2026-08-06、Human Approverは`category_primary: GO servers`を発効しました。serversは40/40検証済み、
+known 28,220/月、14 known、26 no_data、rejected 0です。A8.net管理画面で確認された報酬・確定率と
+そこから逆算できる値は`restricted_dashboard_only`としてrepositoryへ保存しません。旧Y1の6記事案は
+政策v2で、凍結40語から選ぶ取引意図・具体性proxyの20記事へ置き換えました。query別競合性は未観測のため
+「競合が薄い」とは断定しません。記事順は開示→計算機→結果→CTA枠→根拠表、作業は20分×3工程です。
+Y2のHuman価格観測checklist、Y3のservers TCO contract・Python/TypeScript計算機をlocalで準備します。
+XServerビジネスの個別提携は2026-08-07に申請済み・審査待ちで、公開、index、CTAは別GOまでHOLDです。P01–P03は既存資産として
+維持し、Mangools CTA以外を追加しません。accounting / forms / crm / email_marketingは需要unknownのまま、
+有望と判定しません。serversの比較CTAは承認partner 2社以上、1社なら単独CTAとし、構造上の1社依存100%を
+dashboardで警告します。2026-12-31の固定撤退ラインは公開20本、GSC clicks 300/月、confirmed 1件の全達成です。
+
+Z6–Z7としてservers記事の計算機をzero-inputへ固定しました。記事には承認済みcontractから事前計算する
+総額表と、12/24/36か月・用途区分のbuttonだけを置き、金額、seat、価格基準、税区分の入力欄は置きません。
+unknown、未承認、用途対象外は順位から除外し、unknownは`未確認`と表示します。従来の任意入力式計算機は
+`/methodology/#detailed-calculator`だけに移設し、記事からは1リンクで参照します。serversの承認済み価格は
+まだ0件なので、local実装には実価格をseedせず、Python/TypeScriptのsynthetic goldenだけを使います。
+
+2026-08-06、serversのHuman入力導線を`/operator/servers/`へ追加し、Y2の11 fieldをvendor・plan単位で
+`CategoryExpansionInput(category_id=servers, state=candidate_only)`候補へ変換できるようにしました。値、出典URL、
+観測日、次回確認日、画面の支払周期、価格表示分類がそろい、Humanが確定操作をした場合だけ候補JSONを出します。
+`/servers/business-server-pricing/`にはSVR01のnoindex標本を追加しました。実価格0件、CTA 0件、順位なしを維持し、
+価格入力、記事承認、index、partner CTAはそれぞれ別gateです。
+
+同日のexternal read-backでは、A8.netのXServerビジネスprogramは第一申請候補ですが、申請時の掲載siteが旧mediaを
+指していました。2026-08-06の`a8_reauth: done`後、A8の登録site `SaaS TCO Lab`を主サイトへ変更し、
+画面read-backで反映を確認しました。XServerビジネスの個別提携申請は同日の対象名付きGOにより送信済みです。
+2026-08-07のread-only再確認では、A8.netはSaaS TCO Labが主サイトのままで、XServerビジネスの詳細画面も
+再認証なしで表示できました。未提携・SaaS TCO Lab選択済みを確認後に申請し、完了画面をread-backしました。
+もしもアフィリエイトは本登録済み管理画面へアクセスでき、`レンタルサーバー`検索12件から
+シンレンタルサーバー、ConoHa WING、ロリポップ！レンタルサーバー、お名前.comレンタルサーバーを
+優先候補として台帳へ追加しました。ロリポップ！だけ申請操作後の結果が未確認で、他3件は未申請です。
+非公開の報酬値・広告ID・tracking URLは保存していません。
+ロリポップ！は詳細画面で、3か月以上の新規契約と入金、本人等の申込・更新等の対象外条件、審査なし、
+再訪問90日、承認期限60日、広告出稿条件を確認し、safe-summaryだけを台帳へ更新しました。
+バリューコマースは検索結果確認後にsession切れとなり、2026-08-07の再確認で本登録前の仮登録状態と判明しました。
+
+同日、バリューコマースのsession切れ直前の検索結果概要で、サーバー候補として
+`ABLENETレンタルサーバー（共用サーバー）`を確認しました。商品購入条件の概要だけを台帳v1.1へ追加し、
+非公開の報酬値・広告ID・tracking URLは保存していません。個別条件の確認、提携申請、CTAは本登録完了後の別gateです。
+
+同日、XServerビジネス公式料金画面からSVR01の候補入力をBrowser sessionへ準備しました。初期費用と共有
+スタンダードの容量だけを確認済み候補とし、年次請求総額、更新、キャッシュバック、ドメイン特典の金銭価値、
+転送量等は理由付きunknownのままです。構造validationは合格していますが、Human確認と候補JSON保存前なので
+repositoryのeditorial contractには採用していません。2026-08-07、受領済み`server_price_input: done SVR01`と
+`local_download_permission: GO localhost SVR01`に基づきHuman確認と候補JSON保存を実行しました。候補は
+`artifacts/category-expansion-inputs/`へ分離し、正本modelで検証済みです。既知値は初期費用16,500円（税込）と
+容量700GB、残る9 fieldはunknownです。candidate-onlyのため、総額・順位・CTA・indexのHOLDを維持します。
+
+同日、`asp_program_apply: GO A8.net XServerビジネス`のscopeで提携申請完了画面を確認しました。台帳は
+`pending`へ更新し、広告主承認とみなしていません。`asp_program_apply: GO もしも ロリポップ！レンタルサーバー`では
+申請ボタン押下後にsessionが失効し、結果画面を確認できませんでした。重複送信を避けるため台帳は
+`not_applied`のまま保守的に維持し、再認証後のread-only状態確認を待ちます。
+
+P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go: GO P01 PR先頭追記`により、
+公開記事の本文先頭へ`[PR]`を追記し、公開read-backで反映を確認しました。localの再配信templateは
+確認済み実額・公式記事URL・冒頭PR表示を含む版です。2026-08-06のHuman承認
+`account_repurpose: GO @fanza_poll_lab retire_fanza`、`legacy_posts: DELETE`、`profile_update: GO`、
+`legacy_posts_delete_final: GO 14`に基づき、当該未使用accountをSaaS専用mediaへ転用しました。
+表示名は`SaaS TCO Lab`、handleは`@saastcolab`、websiteは`https://saastcolab.jp`です。
+旧投稿10件を削除し、repost 3件を解除し、元投稿削除に伴うself-repost 1件の消滅を確認した結果、
+外部read-backで投稿0件を確認しました。別accountで稼働中のFANZA運用には変更を加えておらず、
+brand、domain、repo、credential、analyticsの分離を維持します。P01のX初回配信は本文と送信先を固定した
+個別の`x_post: GO P01`を受領するまでHOLDします。
 
 ## field-level rights decision slate
 

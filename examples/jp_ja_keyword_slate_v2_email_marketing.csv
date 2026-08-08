@@ -1,0 +1,41 @@
+universe_version,country,language,cluster_id,intent,vendor,query
+jp-ja-v2,JP,ja,email-category,category,,メール配信 システム
+jp-ja-v2,JP,ja,email-category,category,,メールマーケティング ツール
+jp-ja-v2,JP,ja,email-category,category,,メルマガ 配信 サービス
+jp-ja-v2,JP,ja,email-category,category,,法人向け メール配信
+jp-ja-v2,JP,ja,email-category,category,,中小企業 メール配信
+jp-ja-v2,JP,ja,email-category,category,,ステップメール ツール
+jp-ja-v2,JP,ja,email-category,category,,一斉メール 配信
+jp-ja-v2,JP,ja,email-category,category,,HTMLメール 作成 ツール
+jp-ja-v2,JP,ja,email-category,category,,メール 自動化 ツール
+jp-ja-v2,JP,ja,email-category,category,,顧客管理 メール配信
+jp-ja-v2,JP,ja,email-comparison,comparison,,メール配信 システム 比較
+jp-ja-v2,JP,ja,email-comparison,comparison,,メールマーケティング ツール 比較
+jp-ja-v2,JP,ja,email-comparison,comparison,,メルマガ 配信 サービス 比較
+jp-ja-v2,JP,ja,email-comparison,comparison,,法人向け メール配信 比較
+jp-ja-v2,JP,ja,email-comparison,comparison,,中小企業 メール配信 比較
+jp-ja-v2,JP,ja,email-comparison,comparison,,ステップメール ツール 比較
+jp-ja-v2,JP,ja,email-comparison,comparison,,一斉メール 配信 比較
+jp-ja-v2,JP,ja,email-comparison,comparison,,HTMLメール 作成 ツール 比較
+jp-ja-v2,JP,ja,email-comparison,comparison,,メール 自動化 ツール 比較
+jp-ja-v2,JP,ja,email-comparison,comparison,,顧客管理 メール配信 比較
+jp-ja-v2,JP,ja,email-pricing,pricing,,メール配信 システム 料金
+jp-ja-v2,JP,ja,email-pricing,pricing,,メールマーケティング ツール 料金
+jp-ja-v2,JP,ja,email-pricing,pricing,,メルマガ 配信 月額
+jp-ja-v2,JP,ja,email-pricing,pricing,,メール配信 通数 料金
+jp-ja-v2,JP,ja,email-pricing,pricing,,メール配信 登録者数 料金
+jp-ja-v2,JP,ja,email-pricing,pricing,,メール配信 超過料金
+jp-ja-v2,JP,ja,email-pricing,pricing,,メール配信 初期費用
+jp-ja-v2,JP,ja,email-pricing,pricing,,メール配信 年払い 割引
+jp-ja-v2,JP,ja,email-pricing,pricing,,メール配信 無料プラン 制限
+jp-ja-v2,JP,ja,email-pricing,pricing,,メール配信 12か月 総費用
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 登録者数 上限
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 通数 上限
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 到達率 比較
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 自動化 上限
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 API 制限
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 日本語 サポート
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 小規模 事業
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 セグメント 上限
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 解約 条件
+jp-ja-v2,JP,ja,email-fit,fit,,メール配信 選び方 法人

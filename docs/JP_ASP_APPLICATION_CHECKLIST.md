@@ -1,35 +1,117 @@
 # 日本ASP申請準備checklist
 
-基準日: 2026-07-31（Asia/Tokyo）
-状態: `COPY READY / PUBLIC SITE GATE HOLD / HUMAN SUBMISSION ONLY`
+基準日: 2026-08-08（Asia/Tokyo）
+状態: `A8 XSERVER PENDING / MOSHIMO RESULT UNVERIFIED / VALUECOMMERCE REGISTERED`
 
 この文書はA8.net、もしもアフィリエイト、バリューコマースの申請画面で迷わないための準備表である。
 account作成、規約同意、本人確認、口座登録、送信はHumanだけが行う。credential、本人情報、口座、電話番号、
 tracking IDはrepositoryへ記録しない。入力欄が本表と異なる場合は推測せず、画面の最新説明を優先してHOLDする。
 
-## 2026-07-31 readiness read-back
+## Partner台帳v1.1
+
+審査状態の正本は`docs/AFFILIATE_PARTNER_LEDGER.json`とする。ここには公開可能な審査状態、確認済みの
+program条件要約、確認日とruntime secretの参照名だけを記録する。secret値、tracking ID、広告link URL、
+本人情報、ログイン後だけ表示される報酬額・確定率は記録しない。後二者は`restricted_dashboard_only`とし、
+値をrepositoryから復元できない状態にする。
+
+|ASP|Account状態|個別program|提携状態|CTA|
+|---|---|---|---|---|
+|A8.net|`registered`|7候補調査済み、XServerビジネスは申請完了画面確認済み|`pending`|不可|
+|もしもアフィリエイト|`registered`|servers候補4件調査済み、ロリポップ！レンタルサーバーを第一候補として未申請|`not_applied`|不可|
+|バリューコマース|`registered`|ABLENET共用サーバーを概要確認済み。個別詳細は未確認|`not_applied`|不可|
+|Mangools|`approved`|確認済み|`approved`|既存gate合格時だけ可|
+
+各ASPのdestinationはrepositoryへ保存せず、台帳に記録したruntime secret参照名から実行時だけ読む。
+Account登録だけではCTAを許可しない。対象programの提携承認、規約・開示要件の確認、runtime destination設定、
+開示先行の検証、対象partnerを明記した`cta_go`がすべて揃った場合だけ有効化する。
+
+## 2026-08-06 A8.net program調査
+
+Humanの`asp_program_search: GO A8.net`に基づき、ログイン済み正規画面をread-onlyで確認した。提携申請、
+広告link取得、tracking ID取得、外部送信は行っていない。
+
+|Program|カテゴリ|成果報酬|成果条件の記録範囲|確定率|提携状態|
+|---|---|---|---|---|---|
+|XServerビジネス|servers|`restricted_dashboard_only`|6か月以上の新規契約と試用期間内支払。tier別条件あり|`restricted_dashboard_only`|`pending`|
+|formrun|forms|`restricted_dashboard_only`|広告主新規、有料plan登録、1か月以上継続|`unknown`|`not_applied`|
+|WiLL Mail|email_marketing|`restricted_dashboard_only`|広告主新規、trial導線、所定期間内の本人確認|`restricted_dashboard_only`|`not_applied`|
+|freee会計|accounting|`restricted_dashboard_only`|通常planの新規導入。詳細未確認|`unknown`|`not_applied`|
+|マネーフォワード クラウド会計|accounting|`restricted_dashboard_only`|通常planの新規導入。複数案件のため申請前に再確認|`unknown`|`not_applied`|
+|弥生シリーズ|accounting|`unknown`|商品別成果。金額・詳細条件は未確認|`unknown`|`not_applied`|
+|Misoca|accounting|`restricted_dashboard_only`|無料体験planの新規申込。詳細未確認|`unknown`|`not_applied`|
+
+HubSpot、kintone、サイボウズ、ConoHa、Benchmark Email、blastmailはA8.netで直接programを確認できなかった。
+不存在とは断定せず、台帳では`not_confirmed`として、もしもアフィリエイトとバリューコマースの確認待ちにする。
+
+## 2026-08-07 もしも・バリューコマース program調査
+
+ログイン済みのもしもアフィリエイト正規画面で`レンタルサーバー`をread-only検索し、次の4件を
+servers候補として台帳へ追加した。バリューコマースではsession切れ前の検索結果概要でABLENETを確認した。
+2026-08-08のHuman token `valuecommerce_registration: done`によりAccount本登録完了を記録した。
+提携申請、広告link取得、tracking ID取得、外部送信は行っていない。ログイン後だけ表示される報酬値は
+`restricted_dashboard_only`として値を保存しない。
+
+|ASP|Program|確認範囲|提携状態|
+|---|---|---|---|
+|もしも|ロリポップ！レンタルサーバー会員登録|新規契約・3か月以上の契約・入金。本人等の申込と更新は対象外。審査なし、再訪問90日、承認期限60日|`not_applied`|
+|もしも|シンレンタルサーバー|複数planの新規成約。詳細は申請前に再確認|`not_applied`|
+|もしも|ConoHa WING|契約期間に応じた新規アカウント登録。詳細は申請前に再確認|`not_applied`|
+|もしも|お名前.com レンタルサーバー|共用サーバーまたはVPSの申込完了。詳細は申請前に再確認|`not_applied`|
+|バリューコマース|ABLENETレンタルサーバー（共用サーバー）|検索結果概要の成果条件だけ確認。個別詳細は未確認|`not_applied`|
+
+## 単価×需要判定
+
+月20万円に必要な成約数は`ceil(200,000円 ÷ 最高単価)`、必要sessionsは成約率1%の仮定値として
+`成約数 ÷ 0.01`で計算する。1%は実績ではなくmodeled assumptionであり、confirmed conversionが得られたら置換する。
+ログイン後だけ表示される単価を公開repositoryへ保存しないため、下表の逆算値もrepositoryでは`restricted`とする。
+
+|カテゴリ|W6 known需要/月|最高単価案件|必要成約数|必要sessions（CVR 1%仮定）|判定|
+|---|---:|---|---:|---:|---|
+|servers|28,220（14/40 known、no_data率65%）|XServerビジネス|`restricted`|`restricted`|2026-08-06 Human選定のprimary。需要単独では5万/月未満で、収益性確定とは扱わない|
+|accounting|`unknown`（30/40の部分結果は不採用）|マネーフォワード クラウド会計|`restricted`|`restricted`|需要CSV完了待ち|
+|forms|`unknown`|formrun|`restricted`|`restricted`|需要CSV未取得のため判定しない|
+|email_marketing|`unknown`|WiLL Mail|`restricted`|`restricted`|需要CSV未取得のため判定しない|
+|crm|`unknown`|A8.net直接program未確認|`unknown`|`unknown`|もしも・バリューコマースと需要CSVの両方を待つ|
+
+### Evidence-gated next step
+
+|姿勢|調査案|Hard gate|停止条件|
+|---|---|---|---|
+|conservative|serversの既知需要とXServer条件を記事候補へ対応付ける|提携未申請のためCTA不可|提携否認、またはHuman価格観測不能|
+|balanced|serversの6記事slate・価格観測・TCO対応をlocalで先行し、1 vendorずつ検証|価格・提携・公開は各別gate|golden不一致、unknownの推測補完、需要または提携の否定証拠|
+|aggressive|5カテゴリを同時申請・同時公開する|需要unknownかつ提携未承認のため`ineligible`|現状は開始しない|
+
+2026-08-06のHuman decisionで`balanced`を採用した。これはserversのlocal準備だけを許可し、申請・公開・CTAを許可しない。
+accounting / forms / crm / email_marketingは需要unknownのまま、有望と判定しない。
+
+## 2026-08-07 readiness read-back
 
 |対象|現在地|次の解除条件|
 |---|---|---|
-|A8.net|`COPY READY / SIGNUP GO待ち`|public site gate復旧後にHumanが登録・規約・口座を確認|
-|もしもアフィリエイト|`COPY READY / SIGNUP GO待ち`|public site gate復旧後にHumanが登録。正確な本人情報でaccount審査を受ける|
-|バリューコマース|`COPY READY / HOLD`|public site gate復旧、独自domain、Human承認済み記事の表示後に申請|
+|A8.net|`ACCOUNT REGISTERED / XSERVER APPLICATION PENDING`|申請完了画面確認済み。広告主の承認結果をread-onlyで待ち、承認まではCTA不可|
+|もしもアフィリエイト|`ACCOUNT REGISTERED / LOLIPOP RESULT UNVERIFIED`|申請操作後にsessionが失効したため、再認証後に提携状態だけを確認する。重複申請しない|
+|バリューコマース|`ACCOUNT REGISTERED / ABLENET SUMMARY FOUND`|ABLENETの個別条件をread-onlyで確認する。個別申請は対象名付きの別GO|
 
 公開originのread-only確認結果:
 
-- `/`、`/methodology/`、`/disclosure/`、公開前の記事見本3routeはHTTP 200。
-- `/about`、`/operator-information`、`/privacy`、`/contact`、`/advertising-policy`はHTTP 503。
-- 全応答の`noindex`は維持され、`saastcolab.jp`は取得・DNS保存済みでTLS反映待ち。P01–P03のarticle reviewは2026-08-03承認済み公開候補。
+- `https://saastcolab.jp/`、運営者情報5route、P01–P03はすべてHTTP 200。
+- P01–P03はHuman承認済みでindex可、PR開示先行、Mangools CTAだけが有効。他記事・他partner CTAはfail-closedを維持する。
+- 申請URL、公開origin、canonical originは`https://saastcolab.jp`で一致する。
 
-したがって、3社とも申請文は完成しているが、ASPへ提示するsiteは現時点でgate不合格とする。account作成だけが
-可能なASPでも、申請URLは独自domainへ切り替えるまで確定しない。503復旧と独自domain反映を
-満たした後、下の順序で開始する。P01–P03承認条件は完了済みである。
+したがって、Account登録はA8.net、もしも、バリューコマースの三社で完了した。
+次にHumanが行うのは対象program名を明示した個別提携GOと審査結果のread-backである。提携結果が台帳で`approved`になるまで、
+三社のCTAは有効化しない。
+
+2026-08-06の画面確認では、A8.netのXServerビジネス詳細画面で選択中のappeal siteがSaaS TCO Labではなく
+既存の別mediaだった。その後、A8の登録site `SaaS TCO Lab`を主サイトへ変更して画面read-back済みである。
+2026-08-07にSaaS TCO Lab選択済みのprogram詳細を再度read-backし、Humanの対象program名付きGOに基づいて
+申請しました。申請完了画面は確認済みですが、提携承認とは数えません。
 
 ## 推奨申請順
 
 1. A8.net: 会員登録に入会時審査がないため最初に実行する。ただしprogram提携は別審査として扱う。
-2. もしもアフィリエイト: account登録後に会員情報審査がある。重複accountと入力欠けを先に確認する。
-3. バリューコマース: media内容が閲覧できる状態で登録審査を受ける。P01–P03の公開表示確認後に実行する。
+2. もしもアフィリエイト: Account登録済み。第一候補のロリポップ！レンタルサーバーは別GO後だけ申請する。
+3. バリューコマース: Account本登録済み。ABLENETの個別条件を確認し、別GO後だけ申請する。
 
 この順番は承認を保証しない。3社accountの成立を、個別SaaS partnerとのAffiliate提携承認として数えない。
 
@@ -133,3 +215,15 @@ asp_signup: GO バリューコマース / HOLD バリューコマース
 ```
 
 GOは対象ASPのHuman申請だけを許可し、広告主提携、CTA、tracking link配置、課金、他media掲載を許可しない。
+
+Accountまたは個別programの状態が変わった場合は、機密値を含めず次の形式で返す。
+
+```text
+asp_account: <a8net|moshimo|valuecommerce> <registration_incomplete|registered|under_review|approved>
+asp_program: <partner> <program名> <カテゴリ>
+asp_partnership: <partner> <not_applied|pending|approved|denied>
+asp_program_apply: GO A8.net <program名> / HOLD A8.net <program名>
+```
+
+成果報酬額、成果条件、開示要件は公開可能な規約表示だけを転記する。tracking ID、広告link URL、
+本人情報、非公開条件は返信にも含めない。

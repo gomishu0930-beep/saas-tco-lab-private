@@ -15,6 +15,38 @@ from saas_preflight.keyword_universe import (
 
 ROOT = Path(__file__).resolve().parents[1]
 UNIVERSE = ROOT / "examples" / "jp_ja_keyword_universe_v1.csv"
+EXPANSION_SLATES = {
+    "seo_tools_v2": (
+        ROOT / "examples" / "jp_ja_keyword_universe_v2_seo_extension.csv",
+        60,
+        "4e1930a108569222ff91afcc0d5aecc716765514d3ae3a769b0cfa86028a7b7d",
+    ),
+    "servers": (
+        ROOT / "examples" / "jp_ja_keyword_slate_v2_servers.csv",
+        40,
+        "a826707c61169a9efebc3bb4838cee624035d04f19b98b52d508a0c96f9e8ee1",
+    ),
+    "accounting": (
+        ROOT / "examples" / "jp_ja_keyword_slate_v2_accounting.csv",
+        40,
+        "9bc33b2c63c31f5d22a67cfa2f52bf7e1ef36e36b586bddfe4030c1102907c4e",
+    ),
+    "crm": (
+        ROOT / "examples" / "jp_ja_keyword_slate_v2_crm.csv",
+        40,
+        "b7bcc093aa85bda86d16a915dd83f5f1a50993afb6a429d71a2f28c0d98ceca3",
+    ),
+    "forms": (
+        ROOT / "examples" / "jp_ja_keyword_slate_v2_forms.csv",
+        40,
+        "2ea8dacda2813cbf1752b9886a1888e226acb50b763571a0976c436175b0f68d",
+    ),
+    "email_marketing": (
+        ROOT / "examples" / "jp_ja_keyword_slate_v2_email_marketing.csv",
+        40,
+        "1cd09f8281e0227b9e614f7da6b65a763c83920fcec434402f9bab6105539219",
+    ),
+}
 
 
 def test_checked_in_keyword_universe_is_frozen_and_safe() -> None:
@@ -42,6 +74,38 @@ def test_summary_hash_is_input_order_independent() -> None:
     assert summarize_keyword_universe(rows).sha256 == summarize_keyword_universe(
         tuple(reversed(rows))
     ).sha256
+
+
+def test_scope_expansion_query_slates_are_frozen_safe_and_disjoint() -> None:
+    original_queries = {row.query for row in load_keyword_universe(UNIVERSE)}
+    seen_queries: set[str] = set()
+
+    for slate_id, (path, expected_count, expected_sha256) in EXPANSION_SLATES.items():
+        minimum = 50 if slate_id == "seo_tools_v2" else 30
+        maximum = 100 if slate_id == "seo_tools_v2" else 50
+        rows = load_keyword_universe(
+            path,
+            minimum_keywords=minimum,
+            maximum_keywords=maximum,
+        )
+        summary = summarize_keyword_universe(rows)
+        queries = {row.query for row in rows}
+
+        assert summary.universe_version == "jp-ja-v2"
+        assert summary.keyword_count == expected_count
+        assert summary.sha256 == expected_sha256
+        assert not queries.intersection(original_queries)
+        assert not queries.intersection(seen_queries)
+        if slate_id == "seo_tools_v2":
+            assert dict(summary.intent_counts) == {"category": 30, "comparison": 30}
+        else:
+            assert dict(summary.intent_counts) == {
+                "category": 10,
+                "comparison": 10,
+                "fit": 10,
+                "pricing": 10,
+            }
+        seen_queries.update(queries)
 
 
 def test_cli_emits_hash_only_summary(capsys: pytest.CaptureFixture[str]) -> None:

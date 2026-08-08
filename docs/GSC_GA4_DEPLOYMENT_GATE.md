@@ -1,10 +1,10 @@
 # GSC / GA4 deployment gate
 
-基準日: 2026-07-26（Asia/Tokyo）
+基準日: 2026-08-04（Asia/Tokyo）
 
 ## 現在地
 
-- Search Consoleの中立origin URL-prefix propertyは作成・HTML tag所有確認済み。
+- Search Consoleは`saastcolab.jp`のdomain propertyをDNS TXTで所有確認済み。verification値はrepositoryへ保存しない。
 - GA4の専用streamは2026-08-03に`https://saastcolab.jp`へorigin更新済み。任意data sharingは全OFF、
   event／user retentionは14か月、拡張計測はOFF、internal traffic filterはtestのままである。
 - GSC verification metaと同意制御GA4 bootstrapはSites version 5へdeploy・外部read-back済み。
@@ -48,9 +48,13 @@ analytics scope拡張をこの承認へ含めない。
 
 ## 実行結果
 
-- 公開HTMLはImpact verificationを最初のmeta、GSC verificationをその後に維持し、noindexも維持した。
-- Search ConsoleはHTML tagで所有権を確認した。query、page、country、device、dateとexport UIを確認し、
-  初日のため実データだけは「処理中（1日後に再確認）」である。
+- 2026-07-26の公開前originでは、Impact verificationを最初のmeta、GSC verificationをその後に維持し、
+  noindexも維持した。URL-prefix propertyはHTML tagで所有権を確認した。
+- 2026-08-03に`saastcolab.jp`のdomain propertyをDNS TXTで所有確認した。query、page、country、device、
+  dateのread-only export境界を維持し、verification値は保存・表示しない。
+- 2026-08-04のread-only再確認では、domain property `saastcolab.jp`の`/sitemap.xml`は
+  `成功しました`、送信日2026-08-03、最終読み込み2026-08-04、検出ページ3、検出動画0である。
+  再送信、URL検査登録、設定変更は行っていない。
 - GA4は同意前と拒否後に外部script 0件、同意後だけGoogle tag 1件を読み込むことを確認した。
 - GA4 Realtimeで初回の`page_view`受信を確認した。2026-07-26の追加read-only確認では、過去30分の
   active user 2、`page_view` 2、`qualified_session` 2を確認した。これは実装確認の訪問を含むため、
