@@ -254,7 +254,8 @@ def test_pending_p06_p07_review_cards_are_contract_driven(tmp_path: Path) -> Non
         "含有利用量: 100 keyword research req. / 24h",
         "Human月間利用量: 400 ルックアップ/月",
     ]
-    assert len(cards[1]["unresolved"]) == 2
+    assert len(cards[1]["notApplicable"]) == 2
+    assert cards[1]["unresolved"] == []
     assert cards[1]["reviewState"] == "approval_ready"
     assert cards[1]["token"] == "article_approve: P07"
 
@@ -280,6 +281,36 @@ def test_unknown_only_contract_requires_evidence_instead_of_article_approval(tmp
     assert any(
         action["status"] == "evidence_required"
         and action["token"] == "article_evidence: pending P05"
+        for action in data["externalActions"]
+    )
+
+
+def test_explicit_not_applicable_policy_is_ready_for_human_article_review(tmp_path: Path) -> None:
+    dashboard = tmp_path / "dashboard.html"
+    dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())
+    state = tmp_path / "state.json"
+    state.write_bytes((ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_bytes())
+    contracts = tmp_path / "contracts"
+    contracts.mkdir()
+    source = ROOT / "artifacts" / "editorial-inputs" / "P12-editorial-input.json"
+    raw = json.loads(source.read_text(encoding="utf-8"))
+    raw["numeric_fields"][0]["value_status"] = "not_applicable"
+    (contracts / source.name).write_text(json.dumps(raw), encoding="utf-8")
+
+    result = _run(dashboard, state, contracts, "--no-prompt")
+
+    assert result.returncode == 0, result.stderr
+    data = _dashboard_data(dashboard)
+    card = data["articleReviews"][0]
+    assert card["articleId"] == "P12"
+    assert card["reviewState"] == "approval_ready"
+    assert card["token"] == "article_approve: P12"
+    assert card["confirmed"] == []
+    assert card["notApplicable"] == [
+        "根拠確認間隔: 対象外（全field共通の単一確認間隔は定めず、各観測の次回確認日を個別に管理している）"
+    ]
+    assert not any(
+        action["status"] == "evidence_required"
         for action in data["externalActions"]
     )
 

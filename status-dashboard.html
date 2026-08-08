@@ -511,6 +511,7 @@ const DATA = {
       "title": "組織利用適合",
       "previewUrl": "http://localhost:3000/pilot/enterprise-fit",
       "confirmed": [],
+      "notApplicable": [],
       "unresolved": [
         "含まれる管理者数: unknown（公式価格ページで組織利用に含まれる管理者数を確認できていない）",
         "Agency Pack料金: unknown（記事で扱うAgency Packと同一条件のcheckout請求総額を確認できていない）",
@@ -527,6 +528,7 @@ const DATA = {
       "title": "移行コスト",
       "previewUrl": "http://localhost:3000/pilot/migration-cost",
       "confirmed": [],
+      "notApplicable": [],
       "unresolved": [
         "移行支援料金: unknown（公式価格ページで移行支援料金を確認できていない）",
         "重複契約月数: unknown（SaaS TCO Labで実移行をまだ行っておらず、重複契約期間を観測していない）",
@@ -544,6 +546,7 @@ const DATA = {
       "title": "損益分岐",
       "previewUrl": "http://localhost:3000/pilot/break-even",
       "confirmed": [],
+      "notApplicable": [],
       "unresolved": [
         "月間削減時間: unknown（SaaS TCO Labの導入前後で月間削減時間をまだ比較観測していない）",
         "Human時間価値: unknown（損益分岐に使う担当者の時間単価をHumanシナリオとしてまだ確定していない）",
@@ -560,6 +563,7 @@ const DATA = {
       "title": "根拠の検証",
       "previewUrl": "http://localhost:3000/pilot/evidence-method",
       "confirmed": [],
+      "notApplicable": [],
       "unresolved": [
         "根拠確認間隔: unknown（全field共通の単一確認間隔は定めず、各観測の次回確認日を個別に管理している）"
       ],
@@ -664,7 +668,7 @@ el("article-reviews").innerHTML = DATA.articleReviews.length ? `
   <tr><th>記事</th><th>確認済み</th><th>未確定の扱い</th><th>期限 / token</th></tr>
   ${DATA.articleReviews.map(item => `<tr>
     <td><strong>${esc(item.articleId)} ${esc(item.title)}</strong><br><a href="${esc(item.previewUrl)}">previewを開く</a></td>
-    <td>${item.confirmed.map(value => `<div>${esc(value)}</div>`).join("")}</td>
+    <td>${item.confirmed.map(value => `<div>${esc(value)}</div>`).join("")}${item.notApplicable.map(value => `<div class="muted">${esc(value)}</div>`).join("")}</td>
     <td>${item.unresolved.length ? item.unresolved.map(value => `<div>${esc(value)}</div>`).join("") : "なし"}</td>
     <td><div>観測 ${esc(item.observedOn)}</div><div>次回 ${esc(item.nextReviewOn)}</div><code>${esc(item.token)}</code></td>
   </tr>`).join("")}

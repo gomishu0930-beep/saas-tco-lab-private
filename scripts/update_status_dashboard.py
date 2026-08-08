@@ -339,7 +339,10 @@ def _external_action_queue(
     review_ready = [
         article_id
         for article_id in unreviewed_contracts
-        if any(field.value_status.value == "known" for field in contracts[article_id].numeric_fields)
+        if any(
+            field.value_status.value in {"known", "not_applicable"}
+            for field in contracts[article_id].numeric_fields
+        )
     ]
     evidence_required = [
         article_id for article_id in unreviewed_contracts if article_id not in review_ready
@@ -399,6 +402,7 @@ def _article_review_queue(
         if contract is None or contract.article_review_status.value != "unreviewed":
             continue
         confirmed: list[str] = []
+        not_applicable: list[str] = []
         unresolved: list[str] = []
         next_reviews: list[date] = []
         observed: list[date] = []
@@ -411,18 +415,22 @@ def _article_review_queue(
                 if field.currency is not None:
                     amount = f"{amount} {field.currency}".strip()
                 confirmed.append(f"{label}: {amount}")
+            elif field.value_status.value == "not_applicable":
+                reason = field.unknown_reason or "数値適用なし"
+                not_applicable.append(f"{label}: 対象外（{reason}）")
             else:
                 reason = field.unknown_reason or "数値適用なし"
                 unresolved.append(
                     f"{label}: {field.value_status.value}（{reason}）"
                 )
-        ready_for_approval = bool(confirmed)
+        ready_for_approval = bool(confirmed or not_applicable)
         queue.append(
             {
                 "articleId": article_id,
                 "title": contract.title,
                 "previewUrl": f"http://localhost:3000/pilot/{contract.slug}",
                 "confirmed": confirmed,
+                "notApplicable": not_applicable,
                 "unresolved": unresolved,
                 "observedOn": min(observed).isoformat(),
                 "nextReviewOn": min(next_reviews).isoformat(),

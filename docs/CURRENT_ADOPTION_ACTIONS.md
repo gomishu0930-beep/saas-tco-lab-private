@@ -78,6 +78,13 @@ P04/P05/P08–P12は`noindex, nofollow`かつCTA 0件、sitemapは上記5記事�
 2026-08-09の後続read-only確認でsitemapを再読込し、検出5ページへ更新した。ページ集計は最終更新
 2026-08-05のまま登録済み1・未登録3で、登録済み1件は旧HTTPルートである。承認記事のindex完了とは扱わない。
 
+同日、P04/P08/P10を追加した8記事release候補をproduction workerへsynthetic runtime値でlocal dry-runした。
+8記事だけが`index, follow`・canonical・開示先行Mangools CTA・robots Allow・sitemap対象となり、
+P05/P09/P11/P12は`noindex, nofollow`・canonicalなし・CTAなしを維持することを回帰testへ固定した。
+これはproduction deploy、index追加、CTA追加ではなく、`deploy_update: GO P04,P08,P10`受領前の候補検証である。
+また、明示的`not_applicable`をunknownと混ぜずdashboardへ別表示し、数値の適用外をHumanが確認済みなら
+記事標本reviewへ進められるようにした。P12の現contractはまだunknownなので、Humanの方針確認までは証拠待ちを維持する。
+
 観測contract v2.3では価格表示を`none`、`annual_discount_permanent`、`time_limited_promo`、`unknown`の
 4区分とする。計算HOLDは期間限定promoとunknownだけである。2026-08-02にHuman token
 `sale_banner_state: annual_discount_permanent mangools`を受領し、P01–P03のMangools 22 fieldへ反映した。

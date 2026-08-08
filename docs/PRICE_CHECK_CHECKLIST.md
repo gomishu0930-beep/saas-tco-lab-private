@@ -136,6 +136,21 @@ Operatorのtimerは端末内の経過表示だけに使い、時間、貼り付�
 |通常|P11 損益分岐|M / H / SE / SM / SR|月間削減時間、時間単価、導入費、月額TCO|vendor価格と自社観測を別sourceとして記録|
 |通常|P12 根拠の検証|M / H / SE / SM / SR|確認間隔日数|全fieldのURL・観測日・次回確認日がそろっているか監査|
 
+### P05・P09・P11・P12の最小確認カード
+
+この4記事はcontractの構造だけが完成しており、確認済み実値がない。記事数を埋めるための仮値は入力せず、
+次の最小単位だけを確認する。Humanは公式画面または自分の実測を読み、`/operator`で確定するだけでよい。
+
+|記事|確認場所|最小field|Humanが確定できない場合|
+|---|---|---|---|
+|P05|Mangoolsのplans-and-pricing、同planの機能上限、checkout直前画面|管理者seat数、対象packageのcheckout請求総額、監査ページ上限、移行支援料金|公式に記載が見つからないだけでは0または`not_applicable`にしない。`unknown`と確認した画面を記録する|
+|P09|Mangoolsの公式料金・support/help画面と、実際に行った移行の作業記録|公式移行支援料金、重複契約月数、作業時間、時間単価、教育時間|実移行前はHuman scenario 4 fieldをunknownのままにし、記事公開を急がない|
+|P11|SaaS TCO Lab自身の同一期間における導入前後記録|月間削減時間、時間単価、導入費、月額TCO|自データがない間は全field unknown。vendor資料や一般相場で補完しない|
+|P12|全記事contractの観測日・次回確認日とHumanの運用方針|共通確認間隔を採用する場合はその日数|field別の次回確認日だけを使う方針なら、Humanがその方針を明示確認した後に`not_applicable`と理由を記録する|
+
+P12の`not_applicable`は「未確認」と同義ではない。共通間隔を使わないというHumanの明示方針が必要であり、
+単に日数を決められない場合は`unknown`を維持する。P09・P11の自データ取得前状態は、初期8記事公開のblockerにしない。
+
 ## その場でSTOPする条件
 
 - URLに`utm_`、`ref`、affiliate ID等が入っている。

@@ -459,6 +459,85 @@ test("production robots and sitemap expose only the five approved articles", asy
   assert.doesNotMatch(xml, /embed|small-team-fit|enterprise-fit|addon-cost|migration-cost|japan-tax|break-even|evidence-method|about|privacy|operator/i);
 });
 
+test("the approved eight-article release candidate stays scoped and disclosure-first", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("eight-article-release", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+    IMPACT_SITE_VERIFICATION: "test-impact-verification-value",
+    GOOGLE_SITE_VERIFICATION: "test-google-site-verification-value",
+    GA4_ANALYTICS_ENABLED: "true",
+    GA4_MEASUREMENT_ID: "G-TEST123456",
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P06,P07,P08,P10",
+    CTA_GO: "GO",
+    CTA_APPROVED_PARTNER: "mangools",
+    MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "true",
+    MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/#a1234567890bcdef123456789",
+  };
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+  const released = [
+    "/pilot/pricing-calculator",
+    "/pilot/plan-comparison",
+    "/pilot/alternatives",
+    "/pilot/small-team-fit",
+    "/pilot/annual-vs-monthly",
+    "/pilot/usage-overage",
+    "/pilot/addon-cost",
+    "/pilot/japan-tax",
+  ];
+  const held = [
+    "/pilot/enterprise-fit",
+    "/pilot/migration-cost",
+    "/pilot/break-even",
+    "/pilot/evidence-method",
+  ];
+
+  for (const path of released) {
+    const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
+    assert.equal(response.status, 200, path);
+    assert.equal(response.headers.get("x-robots-tag"), "index, follow", path);
+    const body = await response.text();
+    assert.match(body, new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${path}">`, "i"), path);
+    const disclosure = body.indexOf('data-affiliate-disclosure-status="enabled"');
+    const cta = body.indexOf(
+      '<a class="cta-active" data-affiliate-cta-partner="mangools"',
+    );
+    assert.ok(disclosure >= 0, `${path}: disclosure enabled`);
+    assert.ok(cta > disclosure, `${path}: disclosure before CTA`);
+    assert.match(body, /rel="sponsored noopener noreferrer"/i, path);
+  }
+
+  for (const path of held) {
+    const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
+    assert.equal(response.status, 200, path);
+    assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i, path);
+    const body = await response.text();
+    assert.doesNotMatch(body, /<link\s+rel=["']canonical["']/i, path);
+    assert.doesNotMatch(body, /data-affiliate-cta-partner|rel=["'][^"']*sponsored/i, path);
+  }
+
+  const robots = await worker.fetch(new Request("https://saastcolab.jp/robots.txt"), env, ctx);
+  const robotsText = await robots.text();
+  for (const path of released) assert.match(robotsText, new RegExp(`Allow: ${path}\\$`));
+  for (const path of held) assert.doesNotMatch(robotsText, new RegExp(`Allow: ${path}\\$`));
+  assert.match(robotsText, /Allow: \/assets\//);
+  assert.match(robotsText, /Allow: \/favicon\.svg\$/);
+  assert.match(robotsText, /Disallow: \/$/m);
+
+  const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
+  const xml = await sitemap.text();
+  const locations = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  assert.equal(locations.length, released.length);
+  assert.deepEqual(new Set(locations), new Set(released.map((path) => `https://saastcolab.jp${path}`)));
+});
+
 test("missing or invalid index approval stays fail-closed", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("fail-closed-index", `${process.pid}-${Date.now()}`);
