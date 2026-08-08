@@ -25,7 +25,7 @@ const remainingHumanWork = [
     timing: "記事準備時",
     title: "公式価格を見て、この画面へ入力",
     minutes: "記事ごと",
-    status: "P01–P04・P06–P08・P10公開済み / SVR01追加観測待ち",
+    status: "P01–P04・P06–P08・P10・P12公開済み / SVR01追加観測待ち",
     why: "価格確認checklistの公式URLをHumanが開き、必要箇所を貼り付けて候補抽出できます。候補はHuman確認前にcontractへ入りません。",
     steps: ["記事とvendorを選ぶ", "料金表を貼り付けて候補を事前入力する", "出典・観測日・次回確認日と前回差分を確認する", "Human確認後のJSONを保存し、本文標本を確認する"],
     done: "article_approve: <P-ID,...>",
@@ -74,7 +74,7 @@ export default function OperatorPage() {
           <h2 id="operator-summary-title">Human作業を4種類へ集約</h2>
         </div>
         <dl>
-          <div><dt>本番公開</dt><dd>P01–P04・P06–P08・P10（8/12）</dd></div>
+          <div><dt>本番公開</dt><dd>P01–P04・P06–P08・P10・P12（9/12）</dd></div>
           <div><dt>この入力画面</dt><dd>NOINDEX</dd></div>
           <div><dt>CTA</dt><dd>本番Mangoolsのみ / ローカル候補DISABLED</dd></div>
         </dl>

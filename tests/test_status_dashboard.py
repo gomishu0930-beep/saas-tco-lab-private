@@ -159,6 +159,8 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())
     raw_state = json.loads((ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_text(encoding="utf-8"))
     raw_state["articles"]["P12"] = "approved"
+    raw_state["deployed_articles"].remove("P12")
+    raw_state["index_approved_articles"].remove("P12")
     raw_state["index_state"] = "GO"
     state = tmp_path / "state.json"
     state.write_text(json.dumps(raw_state), encoding="utf-8")
@@ -289,12 +291,19 @@ def test_explicit_not_applicable_policy_is_ready_for_human_article_review(tmp_pa
     dashboard = tmp_path / "dashboard.html"
     dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())
     state = tmp_path / "state.json"
-    state.write_bytes((ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_bytes())
+    raw_state = json.loads(
+        (ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_text(encoding="utf-8")
+    )
+    raw_state["deployed_articles"].remove("P12")
+    raw_state["index_approved_articles"].remove("P12")
+    raw_state["articles"]["P12"] = "unreviewed"
+    state.write_text(json.dumps(raw_state), encoding="utf-8")
     contracts = tmp_path / "contracts"
     contracts.mkdir()
     source = ROOT / "artifacts" / "editorial-inputs" / "P12-editorial-input.json"
     raw = json.loads(source.read_text(encoding="utf-8"))
-    raw["numeric_fields"][0]["value_status"] = "not_applicable"
+    raw["article_review_status"] = "unreviewed"
+    raw["numeric_fields"][0]["review_status"] = "unreviewed"
     (contracts / source.name).write_text(json.dumps(raw), encoding="utf-8")
 
     result = _run(dashboard, state, contracts, "--no-prompt")
@@ -307,7 +316,7 @@ def test_explicit_not_applicable_policy_is_ready_for_human_article_review(tmp_pa
     assert card["token"] == "article_approve: P12"
     assert card["confirmed"] == []
     assert card["notApplicable"] == [
-        "根拠確認間隔: 対象外（全field共通の単一確認間隔は定めず、各観測の次回確認日を個別に管理している）"
+        "根拠確認間隔: 対象外（全field共通の単一確認間隔は適用せず、各観測の次回確認日を個別に管理する運用方針のため）"
     ]
     assert not any(
         action["status"] == "evidence_required"

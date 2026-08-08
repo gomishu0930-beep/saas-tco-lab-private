@@ -239,21 +239,25 @@ test("servers calculator is zero-input and detailed inputs live only on methodol
   assert.match(methodologySource, /<TcoCalculator\b/);
 });
 
-test("note and X templates are bounded, disclosed first, and remain Human-posted", () => {
+test("released note and X derivatives contain verified copy while held pages fail closed", () => {
+  const released = new Set(["P01", "P02", "P03", "P04", "P06", "P07", "P08", "P10", "P12"]);
   for (const page of launchPriorityPages()) {
     const template = buildDerivativeTemplate(page);
     assert.match(template.note, /^\[PR\]/, page.id);
-    assert.ok(template.note.length >= 1_300 && template.note.length <= 1_700, `${page.id}: note length ${template.note.length}`);
-    assert.equal(template.xThread.length, 8, page.id);
     assert.match(template.xThread[0], /^\[PR\]/, page.id);
     assert.ok(template.xThread.every((post) => post.length <= 280), page.id);
-    if (page.id === "P01") {
-      assert.match(template.note, /452\.40 USD/);
-      assert.match(template.note, /2026年8月31日/);
-      assert.match(template.xThread.at(-1), /https:\/\/saastcolab\.jp\/pilot\/pricing-calculator/);
+    if (released.has(page.id)) {
+      assert.ok(template.note.length >= 1_300 && template.note.length <= 1_700, `${page.id}: note length ${template.note.length}`);
+      assert.equal(template.xThread.length, 8, page.id);
+      assert.match(template.note, /https:\/\/saastcolab\.jp\/pilot\//);
+      assert.match(template.note, /観測日は2026-08-/);
+      assert.match(template.xThread.at(-1), /https:\/\/saastcolab\.jp\/pilot\//);
+      assert.doesNotMatch(`${template.note}\n${template.xThread.join("\n")}`, /【|Humanが公開時に入力|contract:/);
     } else {
-      assert.match(template.note, /Humanが公開時に入力/);
-      assert.match(template.xThread.at(-1), /Humanが公開時に入力/);
+      assert.equal(template.xThread.length, 1, page.id);
+      assert.match(template.note, /確認待ち/);
+      assert.match(template.xThread[0], /投稿しません/);
+      assert.doesNotMatch(template.note, /https:\/\/saastcolab\.jp\/pilot\//);
     }
     assert.doesNotMatch(`${template.note}\n${template.xThread.join("\n")}`, /rel=["']sponsored|[?&](?:utm_|ref=|affiliate|tracking)/i);
   }

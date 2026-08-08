@@ -12,10 +12,10 @@
       "plan_id": null,
       "field": "evidence.review_interval_days",
       "value_kind": "duration",
-      "value_status": "unknown",
+      "value_status": "not_applicable",
       "value": null,
       "unit": null,
-      "unknown_reason": "全field共通の単一確認間隔は定めず、各観測の次回確認日を個別に管理している",
+      "unknown_reason": "全field共通の単一確認間隔は適用せず、各観測の次回確認日を個別に管理する運用方針のため",
       "currency_status": "not_applicable",
       "currency": null,
       "currency_display": null,
@@ -39,8 +39,8 @@
       "entered_by": "human",
       "acquisition_method": "human_scenario_input",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     }
   ],
-  "article_review_status": "unreviewed"
+  "article_review_status": "approved"
 }

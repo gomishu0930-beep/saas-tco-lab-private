@@ -101,15 +101,15 @@ test("renders every synthetic-only local decision route with landmarks", async (
   }
 });
 
-test("operator and pilot index report the current eight-article release without stale launch copy", async () => {
+test("operator and pilot index report the current nine-article release without stale launch copy", async () => {
   const operator = await (await render("/operator")).text();
-  assert.match(operator, /P01–P04・P06–P08・P10（8\/12）/);
-  assert.match(operator, /P01–P04・P06–P08・P10公開済み/);
+  assert.match(operator, /P01–P04・P06–P08・P10・P12（9\/12）/);
+  assert.match(operator, /P01–P04・P06–P08・P10・P12公開済み/);
   assert.doesNotMatch(operator, /release待ち|P01–P03 公開中/);
 
   const pilot = await (await render("/pilot")).text();
-  assert.match(pilot, /P01–P04・P06–P08・P10の8本はHuman承認後に公開済み/);
-  assert.match(pilot, /P05・P09・P11・P12/);
+  assert.match(pilot, /P01–P04・P06–P08・P10・P12の9本はHuman承認後に公開済み/);
+  assert.match(pilot, /P05・P09・P11/);
   assert.doesNotMatch(pilot, /index GO未受領/);
 });
 

@@ -11,7 +11,8 @@
     "P06",
     "P07",
     "P08",
-    "P10"
+    "P10",
+    "P12"
   ],
   "index_approved_articles": [
     "P01",
@@ -21,7 +22,8 @@
     "P06",
     "P07",
     "P08",
-    "P10"
+    "P10",
+    "P12"
   ],
   "affiliate_cta": {
     "Mangools": "GO"
@@ -38,6 +40,6 @@
     "P09": "unreviewed",
     "P10": "approved",
     "P11": "unreviewed",
-    "P12": "unreviewed"
+    "P12": "approved"
   }
 }

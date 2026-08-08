@@ -459,9 +459,9 @@ test("production robots and sitemap expose only the five approved articles", asy
   assert.doesNotMatch(xml, /embed|small-team-fit|enterprise-fit|addon-cost|migration-cost|japan-tax|break-even|evidence-method|about|privacy|operator/i);
 });
 
-test("the approved eight-article release candidate stays scoped and disclosure-first", async () => {
+test("the approved nine-article release candidate stays scoped and disclosure-first", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("eight-article-release", `${process.pid}-${Date.now()}`);
+  workerUrl.searchParams.set("nine-article-release", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
   const env = {
     ASSETS: {
@@ -472,7 +472,7 @@ test("the approved eight-article release candidate stays scoped and disclosure-f
     GA4_ANALYTICS_ENABLED: "true",
     GA4_MEASUREMENT_ID: "G-TEST123456",
     INDEX_GO: "GO",
-    INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P06,P07,P08,P10",
+    INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P06,P07,P08,P10,P12",
     CTA_GO: "GO",
     CTA_APPROVED_PARTNER: "mangools",
     MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "true",
@@ -491,12 +491,12 @@ test("the approved eight-article release candidate stays scoped and disclosure-f
     "/pilot/usage-overage",
     "/pilot/addon-cost",
     "/pilot/japan-tax",
+    "/pilot/evidence-method",
   ];
   const held = [
     "/pilot/enterprise-fit",
     "/pilot/migration-cost",
     "/pilot/break-even",
-    "/pilot/evidence-method",
   ];
 
   for (const path of released) {

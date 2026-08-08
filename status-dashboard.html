@@ -156,9 +156,9 @@ const DATA = {
   "kpis": [
     {
       "label": "公開記事数",
-      "value": 8,
+      "value": 9,
       "target": 12,
-      "sub": "入力 12/12・承認 8/12"
+      "sub": "入力 12/12・承認 9/12"
     },
     {
       "label": "インデックス数",
@@ -224,14 +224,14 @@ const DATA = {
     {
       "id": "L2",
       "name": "記事実値入力・承認",
-      "status": "12/12入力・8/12承認",
+      "status": "12/12入力・9/12承認",
       "note": "有効contractとHuman記事承認だけを算入"
     },
     {
       "id": "L3",
       "name": "noindex解除",
       "status": "GO",
-      "note": "index承認 8本・記事承認だけでは追加しない"
+      "note": "index承認 9本・記事承認だけでは追加しない"
     },
     {
       "id": "L4",
@@ -365,7 +365,7 @@ const DATA = {
     {
       "riskId": "editorial-coverage",
       "level": "warn",
-      "label": "編集記事は8/12承認。未承認記事はnoindex・CTA無効を維持"
+      "label": "編集記事は9/12承認。未承認記事はnoindex・CTA無効を維持"
     },
     {
       "riskId": "server-candidate-only",
@@ -494,9 +494,9 @@ const DATA = {
     },
     {
       "priority": 4,
-      "label": "P05,P09,P11,P12の確認済み実値取得",
+      "label": "P05,P09,P11の確認済み実値取得",
       "status": "evidence_required",
-      "token": "article_evidence: pending P05,P09,P11,P12"
+      "token": "article_evidence: pending P05,P09,P11"
     }
   ],
   "articleReviews": [
@@ -551,20 +551,6 @@ const DATA = {
       "nextReviewOn": "2026-09-07",
       "reviewState": "evidence_required",
       "token": "article_evidence: pending P11"
-    },
-    {
-      "articleId": "P12",
-      "title": "根拠の検証",
-      "previewUrl": "http://localhost:3000/pilot/evidence-method",
-      "confirmed": [],
-      "notApplicable": [],
-      "unresolved": [
-        "根拠確認間隔: unknown（全field共通の単一確認間隔は定めず、各観測の次回確認日を個別に管理している）"
-      ],
-      "observedOn": "2026-08-09",
-      "nextReviewOn": "2026-09-07",
-      "reviewState": "evidence_required",
-      "token": "article_evidence: pending P12"
     }
   ]
 };
