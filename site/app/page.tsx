@@ -4,21 +4,21 @@ import { ComparisonTable } from "./components/ComparisonTable";
 import { StatusStrip } from "./components/StatusStrip";
 import { syntheticComparison } from "./lib/synthetic-data";
 
-const publicPrelaunch = process.env.SAAS_RUNTIME_MODE === "production";
+const productionRuntime = process.env.SAAS_RUNTIME_MODE === "production";
 
-function PublicPrelaunchHome() {
+function PublicEditorialHome() {
   const samples = [
     {
-      href: "/pilot/annual-vs-monthly/",
+      href: "/pilot/pricing-calculator/",
       number: "01",
-      title: "年契約と月契約",
-      body: "値引きだけでなく、commitmentと解約リスクを含む12か月総額の考え方を整理します。",
+      title: "12か月TCO",
+      body: "Human確認済みの年次請求総額から、12か月の支払額と未確認条件を分けて示します。",
     },
     {
-      href: "/pilot/migration-cost/",
+      href: "/pilot/plan-comparison/",
       number: "02",
-      title: "移行コスト",
-      body: "subscription料金に加え、重複契約、移行作業、教育時間を初年度費用へ含めます。",
+      title: "プラン比較",
+      body: "Basic・Premium・Agencyの年次請求総額を、同じ通貨・税表示の範囲で比較します。",
     },
     {
       href: "/pilot/evidence-method/",
@@ -45,24 +45,24 @@ function PublicPrelaunchHome() {
             <Link className="button button-primary" href="/methodology/">
               算定方法を見る <span aria-hidden="true">→</span>
             </Link>
-            <Link className="text-link" href="/pilot/evidence-method/">
-              記事見本を確認
+            <Link className="text-link" href="/pilot/pricing-calculator/">
+              公開中の料金記事を見る
             </Link>
           </div>
         </div>
-        <aside className="hero-proof" aria-label="公開前版の状態">
+        <aside className="hero-proof" aria-label="公開運用の状態">
           <div className="proof-heading">
             <span className="signal" aria-hidden="true" />
-            PUBLIC PRELAUNCH
+            PUBLIC EDITORIAL
           </div>
           <dl className="proof-grid">
             <div><dt>対象</dt><dd>JP / ja</dd></div>
             <div><dt>算定</dt><dd>12か月TCO</dd></div>
-            <div><dt>広告リンク</dt><dd>0件</dd></div>
-            <div><dt>検索登録</dt><dd>NOINDEX</dd></div>
+            <div><dt>公開記事</dt><dd>9本</dd></div>
+            <div><dt>広告導線</dt><dd>Mangools</dd></div>
           </dl>
           <p className="proof-note">
-            現在は編集方針と記事構造の公開前版です。実在サービスの価格・評価・送客リンクは表示していません。
+            Human確認済みの数値だけを公開し、未確認項目は推測せず明示します。広告リンクは承認済み記事だけで有効です。
           </p>
         </aside>
       </section>
@@ -89,9 +89,9 @@ function PublicPrelaunchHome() {
         <div className="section-heading split-heading">
           <div>
             <p className="eyebrow">EDITORIAL SAMPLES</p>
-            <h2 id="sample-title">公開予定の記事構造</h2>
+            <h2 id="sample-title">公開中の記事</h2>
           </div>
-          <p>vendor固有の未承認データを使わず、判断方法だけを先に公開しています。</p>
+          <p>確認済み実額、出典、観測日、次回確認日をそろえた記事だけをご案内します。</p>
         </div>
         <div className="policy-cards">
           {samples.map((sample) => (
@@ -108,7 +108,7 @@ function PublicPrelaunchHome() {
 }
 
 export default function Home() {
-  if (publicPrelaunch) return <PublicPrelaunchHome />;
+  if (productionRuntime) return <PublicEditorialHome />;
 
   return (
     <>

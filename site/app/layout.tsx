@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import "./globals.css";
 
-const publicPrelaunch = process.env.SAAS_RUNTIME_MODE === "production";
+const productionRuntime = process.env.SAAS_RUNTIME_MODE === "production";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://saastcolab.jp"),
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     template: "%s | SaaS TCO Lab",
   },
   description:
-    "権利と根拠期限を検査し、事前計算済み12か月TCOでSaaSを比較する公開前MVP。",
+    "Human確認済みの価格、契約条件、利用上限を根拠付き12か月TCOで比較するSaaS選定メディア。",
   robots: {
     index: false,
     follow: false,
@@ -46,9 +46,9 @@ export default function RootLayout({
             </Link>
             <nav aria-label="主要ナビゲーション">
               <Link href="/methodology/">算定方法</Link>
-              {publicPrelaunch ? (
+              {productionRuntime ? (
                 <>
-                  <Link href="/pilot/annual-vs-monthly/">記事見本</Link>
+                  <Link href="/pilot/pricing-calculator/">料金記事</Link>
                   <Link href="/pilot/evidence-method/">根拠方針</Link>
                 </>
               ) : (
@@ -83,9 +83,9 @@ export default function RootLayout({
               <Link href="/advertising-policy/">広告ポリシー</Link>
               <Link href="/methodology/">算定方法</Link>
               <Link href="/disclosure/">広告表示</Link>
-              {publicPrelaunch ? (
+              {productionRuntime ? (
                 <>
-                  <Link href="/pilot/annual-vs-monthly/">記事見本</Link>
+                  <Link href="/pilot/pricing-calculator/">料金記事</Link>
                   <Link href="/pilot/evidence-method/">根拠方針</Link>
                 </>
               ) : (

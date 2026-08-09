@@ -346,6 +346,35 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
   }
 });
 
+test("public trust pages describe the live nine-article affiliate state", async () => {
+  const home = await (await fetch(`${baseUrl}/`)).text();
+  assert.match(home, /PUBLIC EDITORIAL/);
+  assert.match(home, /公開記事[\s\S]{0,80}9本/);
+  assert.match(home, /広告導線[\s\S]{0,80}Mangools/);
+  assert.match(home, /href="\/pilot\/pricing-calculator\//);
+  assert.match(home, /href="\/pilot\/plan-comparison\//);
+  assert.match(home, /href="\/pilot\/evidence-method\//);
+  assert.doesNotMatch(home, /href="\/pilot\/migration-cost\//);
+  assert.doesNotMatch(home, /PUBLIC PRELAUNCH|広告リンク[\s\S]{0,50}0件|実在サービスの価格・評価・送客リンクは表示していません/);
+
+  const disclosure = await (await fetch(`${baseUrl}/disclosure/`)).text();
+  assert.match(disclosure, /現在の広告状態: Mangoolsのみ有効/);
+  assert.match(disclosure, /Human承認済みの9記事/);
+  assert.doesNotMatch(disclosure, /実アフィリエイトリンクを含みません|公開承認済みAffiliate CTA 0件/);
+
+  const about = await (await fetch(`${baseUrl}/about/`)).text();
+  assert.match(about, /Human承認済みの記事を公開/);
+  assert.doesNotMatch(about, /現在は公開前のnoindex運用/);
+
+  const operator = await (await fetch(`${baseUrl}/operator-information/`)).text();
+  assert.match(operator, /2026年8月9日/);
+  assert.doesNotMatch(operator, /審査・公開前確認用/);
+
+  const privacy = await (await fetch(`${baseUrl}/privacy/`)).text();
+  assert.match(privacy, /有効な広告リンクの遷移先事業者/);
+  assert.doesNotMatch(privacy, /将来、有効な広告リンクを利用する場合/);
+});
+
 test("production exposes a deterministic tracking-free calculator loader", async () => {
   const response = await fetch(`${baseUrl}/embed/tco-calculator.js`);
   assert.equal(response.status, 200);
