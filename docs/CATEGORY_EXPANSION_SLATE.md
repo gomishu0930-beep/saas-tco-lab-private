@@ -188,7 +188,7 @@ Humanが採用したのは`balanced`である。表は実行優先順位の助�
 
 |category|A8.net検索語|もしも検索語|バリューコマース検索語|現在状態|
 |---|---|---|---|---|
-|servers|レンタルサーバー / VPS / ホスティング|レンタルサーバー / VPS|レンタルサーバー / ホスティング|`A8: XServerビジネス承認済み / もしも: ロリポップ結果未確認（公開5記事待ち） / ValueCommerce: ABLENET承認済み`|
+|servers|レンタルサーバー / VPS / ホスティング|レンタルサーバー / VPS|レンタルサーバー / ホスティング|`A8: XServerビジネス承認済み / もしも: ロリポップ承認済み / ValueCommerce: ABLENET承認済み`|
 |accounting|会計ソフト / クラウド会計|会計ソフト / 確定申告|会計ソフト / クラウド会計|`unknown / Human確認待ち`|
 |crm|CRM / 顧客管理 / SFA|CRM / 顧客管理|CRM / SFA / 顧客管理|`unknown / Human確認待ち`|
 |forms|フォーム / アンケート / 予約|フォーム / アンケート|フォーム / 予約 / 決済|`unknown / Human確認待ち`|

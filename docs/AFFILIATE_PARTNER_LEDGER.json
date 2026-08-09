@@ -281,9 +281,9 @@
         "status": "unknown",
         "percent": null
       },
-      "partnership_status": "not_applied",
+      "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-07",
+      "checked_on": "2026-08-09",
       "affiliate_approval_runtime_secret": "MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION"
     },

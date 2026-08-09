@@ -101,12 +101,13 @@ def test_partner_ledger_records_safe_status_without_private_values() -> None:
     assert sum(
         item.partnership_status is AffiliatePartnershipStatus.APPROVED
         for item in ledger.program_research
-    ) == 2
+    ) == 3
     assert all(
         item.partnership_status is AffiliatePartnershipStatus.NOT_APPLIED
         for item in ledger.program_research
         if item.research_id not in {
             "a8net-xserver-business",
+            "moshimo-lolipop-rental-server",
             "valuecommerce-ablenet-shared-server",
         }
     )
@@ -121,6 +122,7 @@ def test_partner_ledger_records_safe_status_without_private_values() -> None:
     assert researched["a8net-xserver-business"].condition_review_status.value == "detail_reviewed"
     assert researched["valuecommerce-ablenet-shared-server"].partnership_status is AffiliatePartnershipStatus.APPROVED
     assert researched["valuecommerce-ablenet-shared-server"].condition_review_status.value == "detail_reviewed"
+    assert researched["moshimo-lolipop-rental-server"].partnership_status is AffiliatePartnershipStatus.APPROVED
     assert researched["moshimo-lolipop-rental-server"].condition_review_status.value == "detail_reviewed"
     assert tuple(item.partner_id for item in ledger.network_search_checks) == (
         "benchmark-email",

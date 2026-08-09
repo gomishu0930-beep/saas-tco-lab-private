@@ -414,6 +414,13 @@ export function ServerArticleTemplate({
           <span
             className="cta-disabled"
             aria-describedby="article-pr-disclosure"
+            data-server-affiliate-cta-placeholder="moshimo-lolipop-rental-server"
+          >
+            ロリポップ！紹介リンクは無効です
+          </span>
+          <span
+            className="cta-disabled"
+            aria-describedby="article-pr-disclosure"
             data-server-affiliate-cta-placeholder="valuecommerce-ablenet-shared-server"
           >
             ABLENET紹介リンクは無効です

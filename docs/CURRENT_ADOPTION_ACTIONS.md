@@ -162,7 +162,7 @@ XServerビジネスも開示先行、runtime destination設定、partner別`cta_
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答。2026-07-26追送済み|0|rights回答を待つ。紹介IDは共有しない|
 |A8.net|Account登録済み、XServerビジネス提携承認済み|条件要約を台帳v1.1へ記録。報酬値は非保存|1|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
-|もしもアフィリエイト|Account登録済み、ロリポップ申請結果未確認・他3件未申請|検索結果概要だけを台帳へ記録。報酬値は非保存|0|再認証後にロリポップの提携状態だけ確認し、重複申請しない|
+|もしもアフィリエイト|Account・saastcolab.jpメディア登録済み、ロリポップ提携承認済み・他3件未申請|ロリポップの詳細条件と承認状態を台帳へ記録。報酬値は非保存|1|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
 |バリューコマース|Account本登録済み、ABLENET共用サーバー提携承認済み|個別条件を台帳v1.1へ要約。報酬値は非保存|1|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
 |HubSpot|2026-08-03 Impact画面でDeclined（low reach）を確認|未回答。2026-07-26追送済み|0|公開・流入実績を作るまで再申請しない。拒否を承認済みと数えない|
 |Semrush|Impact Marketplaceは2026-08-09に却下済み。個別申請は未成立|回答あり|0|公開記事・流入実績を蓄積し、再申請条件を満たした後に新しいexact GOで再評価する|
@@ -184,6 +184,11 @@ active通知後に`docs/IMPACT_PRODUCT_FEED_CHECKLIST.md`を使い、catalog有�
 明示し、公開前に人が一次情報・数値・計算結果を確認する実態を記載する。最終的な3ガイドライン確認checkboxは
 Human本人だけが押す。もしものX向けpromotionはフォロワー3,000人以上という画面条件があるため、条件達成を
 read-backするまでXへもしも広告を掲載しない。サイト登録・ロリポップ提携とX掲載可否を混同しない。
+Human token `moshimo_media_attestation: done`受領後、正規画面で`saastcolab.jp`のメディア登録を確認した。
+申請中一覧は0件、提携中一覧は楽天市場だけだったため、過去のロリポップ申請は成立していないと判定した。
+既存の個別GOに基づき、本人申込専用ではない`ロリポップ！レンタルサーバー会員登録`だけへ提携申請し、
+同画面で即時に`提携中`へ変わったことをread-backした。報酬額、広告URL、識別子は保存していない。
+CTAはruntime destination、servers記事承認、開示先行、partner別CTA GOが揃うまで無効である。
 
 HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。2026-08-03に
 Impact画面でlow reachを理由とするDeclinedを確認しました。公開・流入実績を作るまで再申請せず、追加表示された
@@ -265,7 +270,7 @@ index・runtime destination・partner別CTAは未実行であり、production de
 再認証なしで表示できました。未提携・SaaS TCO Lab選択済みを確認後に申請し、完了画面をread-backしました。
 もしもアフィリエイトは本登録済み管理画面へアクセスでき、`レンタルサーバー`検索12件から
 シンレンタルサーバー、ConoHa WING、ロリポップ！レンタルサーバー、お名前.comレンタルサーバーを
-優先候補として台帳へ追加しました。ロリポップ！だけ申請操作後の結果が未確認で、他3件は未申請です。
+優先候補として台帳へ追加しました。ロリポップ！は2026-08-09に提携承認済みで、他3件は未申請です。
 非公開の報酬値・広告ID・tracking URLは保存していません。
 ロリポップ！は詳細画面で、3か月以上の新規契約と入金、本人等の申込・更新等の対象外条件、審査なし、
 再訪問90日、承認期限60日、広告出稿条件を確認し、safe-summaryだけを台帳へ更新しました。
@@ -310,17 +315,16 @@ Safariでは既存SVR01の11 fieldを復元し、上記の年次請求総額とb
 read-backし、台帳を`approved`へ更新しました。非公開報酬、確定率、program IDは保存していません。
 `asp_program_apply: GO もしも ロリポップ！レンタルサーバー`では
 申請ボタン押下後にsessionが失効し、結果画面を確認できませんでした。重複送信を避けるため台帳は
-`not_applied`のまま保守的に維持しました。2026-08-08の再認証後、SaaS TCO Labのメディア登録途中にある
-著作権・肖像権・翻訳権・翻案権の非侵害確認画面まで到達しました。この事実確認はHuman本人だけが行い、
-Humanが画面上の「はい」を押すまではメディア登録、ロリポップの状態確認、再申請を進めません。
+`not_applied`のまま保守的に維持しました。2026-08-09のHumanによるガイドライン確認とメディア登録後、
+申請中0件をread-backし、同じ個別GOのscopeで通常Affiliateプログラムだけを申請して即時承認を確認しました。
 
 同日、ValueCommerceのABLENET共用サーバーは個別条件の確認後に提携申請し、「提携済み」をread-backしました。
-serversカテゴリの承認済みprogramはXServerビジネスとABLENETの2件です。ただしconfirmed commission shareは
-未観測であり、両partnerともruntime destination・記事承認・開示先行・個別`cta_go`がそろうまでCTAへ出しません。
+serversカテゴリの承認済みprogramはXServerビジネス、ロリポップ、ABLENETの3件です。ただしconfirmed commission shareは
+未観測であり、各partnerともruntime destination・記事承認・開示先行・個別`cta_go`がそろうまでCTAへ出しません。
 
-2026-08-09、上記2件のCTAをrepositoryへURL保存せず実行時だけ有効化するserver runtime gateを実装しました。
+2026-08-09、上記3件のCTAをrepositoryへURL保存せず実行時だけ有効化するserver runtime gateを実装しました。
 SVR01のexact承認、`INDEX_GO`、`CTA_GO`、partner別`SERVER_CTA_GO`、提携有効フラグ、ASP固有host/pathの
-runtime destinationがすべて成立したpartnerだけを表示します。1社だけ成立した場合は単独CTA、2社成立時は
+runtime destinationがすべて成立したpartnerだけを表示します。1社だけ成立した場合は単独CTA、2社以上成立時は
 比較CTAとし、PR開示より前には挿入しません。query付きSVR02–SVR20候補はSVR01が承認されてもnoindex・CTA無効を
 維持します。現productionにはserver承認・destination・server CTA GOを設定していないため、公開状態は変わりません。
 

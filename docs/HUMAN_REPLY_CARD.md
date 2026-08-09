@@ -37,8 +37,8 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |ASP個別提携状態|`asp_partnership: <partner> <not_applied / pending / approved / denied>`|`asp_partnership: a8net pending`|program名・カテゴリ・公開可能な条件を別途確認して更新|
 |ASP個別program申請|`asp_program_apply: GO <ASP> <program名> / HOLD <ASP> <program名>`|`asp_program_apply: GO A8.net formrun`|対象program一件だけの提携申請を許可。CTA・広告link取得は別GO|
 |A8再認証完了（確認済み）|`a8_reauth: done`|`a8_reauth: done`|2026-08-07にSaaS TCO Lab選択済みのprogram詳細をread-back済み。再返信不要|
-|もしも再認証・結果確認|`moshimo_reauth: done`|`moshimo_reauth: done`|ロリポップ！申請操作後にsessionが失効したため、Human再ログイン後に提携状態だけをread-only確認。重複申請しない|
-|もしもメディア適法性確認|`moshimo_media_attestation: done`|`moshimo_media_attestation: done`|SaaS TCO Labが権利を侵害していないことをHuman本人が画面で確認し「はい」を押した後だけ使用。Codexは代行しない|
+|もしも再認証・結果確認（完了）|`moshimo_reauth: done`|`moshimo_reauth: done`|2026-08-09にメディア登録とロリポップ提携承認をread-back済み。再返信不要|
+|もしもメディア適法性確認（完了）|`moshimo_media_attestation: done`|`moshimo_media_attestation: done`|2026-08-09にHuman本人が確認済み。saastcolab.jpのメディア登録へ反映済み|
 |バリューコマース本登録完了|`valuecommerce_registration: done`|`valuecommerce_registration: done`|本登録案内メールの期限内URLからHumanが手続きを完了した後、ABLENET候補の個別条件をread-onlyで再確認|
 |servers候補入力|`server_price_input: done <SVR-ID>`|`server_price_input: done SVR01`|`/operator/servers/`の候補値をHumanが確認し、確定ボタンを押して保存したcandidate-only JSONをlocal検証。公開・CTAには効かない|
 |SVR01公式画面候補の確認|`svr01_candidates: confirm_all` または `svr01_candidates: corrections <field>: <value>`|`svr01_candidates: confirm_all`|`/operator/servers/`の「公式画面の確認候補」9件をHuman本人が読み、すべて正しければ一括確認、相違があればfield単位で訂正する。確認前はcontract・TCO・順位・記事・CTAへ採用しない|

@@ -23,6 +23,8 @@ interface ProductionEnv {
   SERVER_CTA_GO?: string;
   A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT?: string;
   A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION?: string;
+  MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT?: string;
+  MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION?: string;
   VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT?: string;
   VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION?: string;
   IMAGES: {
@@ -180,6 +182,7 @@ interface AffiliateCtaControls {
 
 type ServerAffiliatePartnerId =
   | "a8net-xserver-business"
+  | "moshimo-lolipop-rental-server"
   | "valuecommerce-ablenet-shared-server";
 
 interface ServerAffiliatePartnerControl {
@@ -196,6 +199,7 @@ interface ServerAffiliateCtaControls {
 
 const SERVER_AFFILIATE_PARTNER_IDS: readonly ServerAffiliatePartnerId[] = [
   "a8net-xserver-business",
+  "moshimo-lolipop-rental-server",
   "valuecommerce-ablenet-shared-server",
 ];
 
@@ -287,6 +291,12 @@ function validatedServerAffiliateDestination(
       && destination.pathname === "/svt/ejp"
     ) return destination.href;
     if (
+      partnerId === "moshimo-lolipop-rental-server"
+      && destination.hostname.toLowerCase() === "af.moshimo.com"
+      && destination.pathname === "/af/c/click"
+      && ["a_id", "p_id", "pc_id", "pl_id"].every((key) => Boolean(destination.searchParams.get(key)))
+    ) return destination.href;
+    if (
       partnerId === "valuecommerce-ablenet-shared-server"
       && destination.hostname.toLowerCase() === "ck.jp.ap.valuecommerce.com"
       && destination.pathname === "/servlet/referral"
@@ -326,12 +336,23 @@ function serverAffiliateCtaControls(
       if (destination) partners.push({ destination, id: partnerId, label: "XServerビジネス公式サイトを見る" });
       continue;
     }
-    if (env.VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT?.trim().toLowerCase() !== "true") continue;
-    const destination = validatedServerAffiliateDestination(
-      partnerId,
-      env.VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION,
-    );
-    if (destination) partners.push({ destination, id: partnerId, label: "ABLENET公式サイトを見る" });
+    if (partnerId === "moshimo-lolipop-rental-server") {
+      if (env.MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT?.trim().toLowerCase() !== "true") continue;
+      const destination = validatedServerAffiliateDestination(
+        partnerId,
+        env.MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION,
+      );
+      if (destination) partners.push({ destination, id: partnerId, label: "ロリポップ！公式サイトを見る" });
+      continue;
+    }
+    if (partnerId === "valuecommerce-ablenet-shared-server") {
+      if (env.VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT?.trim().toLowerCase() !== "true") continue;
+      const destination = validatedServerAffiliateDestination(
+        partnerId,
+        env.VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION,
+      );
+      if (destination) partners.push({ destination, id: partnerId, label: "ABLENET公式サイトを見る" });
+    }
   }
   if (partners.length === 0) return { enabled: false, mode: "disabled", partners: [] };
   return {

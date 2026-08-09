@@ -646,9 +646,11 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
     INDEX_APPROVED_ARTICLES: "P01",
     INDEX_APPROVED_SERVER_ARTICLES: "SVR01",
     CTA_GO: "GO",
-    SERVER_CTA_GO: "a8net-xserver-business,valuecommerce-ablenet-shared-server",
+    SERVER_CTA_GO: "a8net-xserver-business,moshimo-lolipop-rental-server,valuecommerce-ablenet-shared-server",
     A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
     A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
+    MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT: "true",
+    MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION: "https://af.moshimo.com/af/c/click?a_id=synthetic&p_id=synthetic&pc_id=synthetic&pl_id=synthetic",
     VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT: "true",
     VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION: "https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=synthetic&pid=synthetic",
   };
@@ -667,14 +669,17 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   const body = await response.text();
   const disclosurePosition = body.indexOf('data-affiliate-disclosure-status="enabled"');
   const xserverPosition = body.indexOf('data-server-affiliate-cta-partner="a8net-xserver-business"');
+  const lolipopPosition = body.indexOf('data-server-affiliate-cta-partner="moshimo-lolipop-rental-server"');
   const ablenetPosition = body.indexOf('data-server-affiliate-cta-partner="valuecommerce-ablenet-shared-server"');
   assert.ok(disclosurePosition >= 0);
   assert.ok(xserverPosition > disclosurePosition);
+  assert.ok(lolipopPosition > disclosurePosition);
   assert.ok(ablenetPosition > disclosurePosition);
   assert.match(body, /data-server-cta-mode="comparison"/);
   assert.match(body, /href="https:\/\/px\.a8\.net\/svt\/ejp\?a8mat=synthetic"/);
+  assert.match(body, /href="https:\/\/af\.moshimo\.com\/af\/c\/click\?a_id=synthetic&amp;p_id=synthetic&amp;pc_id=synthetic&amp;pl_id=synthetic"/);
   assert.match(body, /href="https:\/\/ck\.jp\.ap\.valuecommerce\.com\/servlet\/referral\?sid=synthetic&amp;pid=synthetic"/);
-  assert.equal((body.match(/rel="sponsored noopener noreferrer"/g) ?? []).length, 2);
+  assert.equal((body.match(/rel="sponsored noopener noreferrer"/g) ?? []).length, 3);
   assert.doesNotMatch(body, /data-affiliate-cta-partner="mangools"/);
 });
 
@@ -689,9 +694,11 @@ test("server query variants and incomplete partner gates remain fail-closed", as
     INDEX_GO: "GO",
     INDEX_APPROVED_SERVER_ARTICLES: "SVR01",
     CTA_GO: "GO",
-    SERVER_CTA_GO: "a8net-xserver-business,valuecommerce-ablenet-shared-server",
+    SERVER_CTA_GO: "a8net-xserver-business,moshimo-lolipop-rental-server,valuecommerce-ablenet-shared-server",
     A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
     A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
+    MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT: "true",
+    MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION: "https://af.moshimo.com/af/c/click?a_id=synthetic&p_id=synthetic&pc_id=synthetic&pl_id=synthetic",
     VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT: "true",
     VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION: "https://ck.jp.ap.valuecommerce.com/servlet/referral?sid=synthetic&pid=synthetic",
   };
@@ -714,10 +721,12 @@ test("server query variants and incomplete partner gates remain fail-closed", as
     { SERVER_CTA_GO: "a8net-xserver-business,a8net-xserver-business" },
     {
       A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://example.com/redirect?x=1",
+      MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION: "https://example.com/redirect?x=1",
       VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION: "https://example.com/redirect?x=1",
     },
     {
       A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "false",
+      MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT: "false",
       VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT: "false",
     },
   ]) {

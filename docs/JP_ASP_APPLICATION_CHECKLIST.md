@@ -17,7 +17,7 @@ program条件要約、確認日とruntime secretの参照名だけを記録す�
 |ASP|Account状態|個別program|提携状態|CTA|
 |---|---|---|---|---|
 |A8.net|`registered`|7候補調査済み、XServerビジネスは参加中programとして確認済み|`approved`（XServerビジネス）|記事・destination・CTA gate未完了のため不可|
-|もしもアフィリエイト|`registered`|servers候補4件調査済み、ロリポップ！レンタルサーバーを第一候補として未申請|`not_applied`|不可|
+|もしもアフィリエイト|`registered`|servers候補4件調査済み、ロリポップ！レンタルサーバー提携承認済み|`approved`|runtime destination・servers記事承認・partner別CTA GOまで不可|
 |バリューコマース|`registered`|ABLENET共用サーバーの個別条件確認済み|`approved`（ABLENET共用サーバー）|記事・destination・CTA gate未完了のため不可|
 |Mangools|`approved`|確認済み|`approved`|既存gate合格時だけ可|
 
@@ -52,7 +52,7 @@ servers候補として台帳へ追加した。バリューコマースではABLE
 
 |ASP|Program|確認範囲|提携状態|
 |---|---|---|---|
-|もしも|ロリポップ！レンタルサーバー会員登録|新規契約・3か月以上の契約・入金。本人等の申込と更新は対象外。審査なし、再訪問90日、承認期限60日|`not_applied`|
+|もしも|ロリポップ！レンタルサーバー会員登録|新規契約・3か月以上の契約・入金。本人等の申込と更新は対象外。審査なし、再訪問90日、承認期限60日|`approved`（2026-08-09 read-back）|
 |もしも|シンレンタルサーバー|複数planの新規成約。詳細は申請前に再確認|`not_applied`|
 |もしも|ConoHa WING|契約期間に応じた新規アカウント登録。詳細は申請前に再確認|`not_applied`|
 |もしも|お名前.com レンタルサーバー|共用サーバーまたはVPSの申込完了。詳細は申請前に再確認|`not_applied`|
@@ -89,7 +89,7 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 |対象|現在地|次の解除条件|
 |---|---|---|
 |A8.net|`ACCOUNT REGISTERED / XSERVER APPROVED`|2026-08-08に参加中プログラム一覧で提携承認をread-back済み。servers記事承認、runtime destination、開示先行、partner別CTA gateがそろうまではCTA不可|
-|もしもアフィリエイト|`ACCOUNT REGISTERED / LOLIPOP RESULT UNVERIFIED`|申請操作後にsessionが失効したため、再認証後に提携状態だけを確認する。重複申請しない|
+|もしもアフィリエイト|`ACCOUNT + MEDIA REGISTERED / LOLIPOP APPROVED`|2026-08-09にsaastcolab.jpのメディア登録とロリポップ通常Affiliateプログラムの提携中表示をread-back済み|
 |バリューコマース|`ACCOUNT REGISTERED / ABLENET APPROVED`|個別条件と「提携済み」を2026-08-08にread-back済み。servers記事承認、runtime destination、開示先行、partner別CTA gateがそろうまではCTA不可|
 
 公開originのread-only確認結果:
@@ -110,7 +110,7 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 ## 推奨申請順
 
 1. A8.net: 会員登録に入会時審査がないため最初に実行する。ただしprogram提携は別審査として扱う。
-2. もしもアフィリエイト: Account登録済み。第一候補のロリポップ！レンタルサーバーは別GO後だけ申請する。
+2. もしもアフィリエイト: Account・メディア登録済み。第一候補のロリポップ！レンタルサーバーは提携承認済み。CTAは別GOまで無効。
 3. バリューコマース: Account本登録済み。ABLENET共用サーバーは提携承認済みで、CTAは記事・destination・個別gateを待つ。
 
 この順番は承認を保証しない。3社accountの成立を、個別SaaS partnerとのAffiliate提携承認として数えない。

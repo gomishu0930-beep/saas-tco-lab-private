@@ -76,12 +76,13 @@ test("partner ledger keeps Japanese ASP account and program approval evidence ex
   );
   assert.equal(
     ledger.program_research.filter((entry) => entry.partnership_status === "approved").length,
-    2,
+    3,
   );
   assert.ok(
     ledger.program_research
       .filter((entry) => !new Set([
         "a8net-xserver-business",
+        "moshimo-lolipop-rental-server",
         "valuecommerce-ablenet-shared-server",
       ]).has(entry.research_id))
       .every((entry) => entry.partnership_status === "not_applied"),
@@ -100,6 +101,7 @@ test("partner ledger keeps Japanese ASP account and program approval evidence ex
   assert.equal(researched["valuecommerce-ablenet-shared-server"].partnership_status, "approved");
   assert.equal(researched["valuecommerce-ablenet-shared-server"].condition_review_status, "detail_reviewed");
   assert.equal(researched["a8net-xserver-business"].condition_review_status, "detail_reviewed");
+  assert.equal(researched["moshimo-lolipop-rental-server"].partnership_status, "approved");
   assert.equal(researched["moshimo-lolipop-rental-server"].condition_review_status, "detail_reviewed");
   assert.deepEqual(
     ledger.network_search_checks.map((entry) => entry.partner_id),
@@ -207,6 +209,7 @@ test("servers template fixes disclosure, calculator, result, CTA slot, evidence 
   assert.deepEqual([...positions].sort((left, right) => left - right), positions);
   assert.match(templateSource, /data-server-affiliate-cta-state="disabled"/);
   assert.match(templateSource, /data-server-affiliate-cta-placeholder="a8net-xserver-business"/);
+  assert.match(templateSource, /data-server-affiliate-cta-placeholder="moshimo-lolipop-rental-server"/);
   assert.match(templateSource, /data-server-affiliate-cta-placeholder="valuecommerce-ablenet-shared-server"/);
   assert.doesNotMatch(templateSource, /href=|rel="sponsored/);
 });
