@@ -151,6 +151,12 @@ Operatorのtimerは端末内の経過表示だけに使い、時間、貼り付�
 P12の`not_applicable`は「未確認」と同義ではない。2026-08-09に共通間隔を使わず各観測の次回確認日を
 個別管理する方針を明示し、P12へ反映・公開済みである。P09・P11の自データ取得前状態は、初期9記事公開のblockerにしない。
 
+P05は2026-08-09の公式料金画面候補により、既存field名と公式表記が一致しないことが判明した。公式表示は
+Mangools Agencyの「5 extra seats available」と「Site analysis 150 req. / 24h」であり、管理者総数や
+月間監査ページ数へ換算しない。`Agency Pack`という別商品名も作らず、P02にある同一Agency planの
+Human承認済みcheckout年次総額だけを再利用候補とする。移行支援料金は引き続きunknownである。
+Humanが`/operator`の候補を確認するまでP05 contractは変更しない。
+
 ## その場でSTOPする条件
 
 - URLに`utm_`、`ref`、affiliate ID等が入っている。

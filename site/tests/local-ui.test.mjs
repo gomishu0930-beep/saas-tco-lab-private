@@ -250,6 +250,11 @@ test("operator route reduces Human work to form input and exact reply tokens", a
   assert.doesNotMatch(html, /<form[^>]+action=/i);
   assert.match(html, /href="\/operator\/servers\//);
   assert.match(html, /href="\/servers\/business-server-pricing\//);
+  assert.match(html, /data-p05-candidate-authority="none"/);
+  assert.match(html, /data-p05-field-scope="review_required"/);
+  assert.match(html, /data-p05-field-candidate-count="4"/);
+  assert.match(html, /p05_field_scope: approve mangools_agency_actual_fields/);
+  assert.match(html, /Site analysis 150 requests \/ 24h/);
 });
 
 test("servers operator and all twenty article routes remain candidate-only and fail closed", async () => {

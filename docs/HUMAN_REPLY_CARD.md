@@ -20,6 +20,7 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |Checkout再観測完了（必要時）|`checkout_values: done`|`checkout_values: done`|既存確定値を更新する再観測時だけ使用。Mangools初回値は2026-08-02に取込済み|
 |記事入力完了|`article_input: done <P-ID>`|`article_input: done P01`|Operatorが出力したcontractの取込・再検証を依頼|
 |記事証拠不足|`article_evidence: pending <P-ID,...>`|`article_evidence: pending P05,P09`|contractは構造合格だが確認済み実値がなく、記事承認・公開へ進めない状態を記録|
+|P05公式field修正|`p05_field_scope: approve mangools_agency_actual_fields` または `p05_field_scope: corrections <項目>: <内容>`|`p05_field_scope: approve mangools_agency_actual_fields`|Operatorの4候補をHuman本人が確認後、Agencyの追加seat・承認済み年次総額・Site analysisの24時間上限へfieldを修正する。移行支援料金はunknown維持|
 |記事承認|`article_approve: <P-IDまたはSVR-ID,...>`|`article_approve: P01,P02,P03`|列挙した記事本文だけをHuman承認。serversは価格・TCO・用途判定がREADYのSVR-IDだけ有効|
 |記事修正|`article_revise: <P-ID> <修正点>`|`article_revise: P01 税区分を再確認`|対象記事をunreviewedへ戻す|
 |Index判断|`index_go: GO / HOLD`|`index_go: HOLD`|承認済み記事だけのindex可否。CTAには効かない|

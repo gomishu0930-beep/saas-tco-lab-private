@@ -354,11 +354,18 @@ def _external_action_queue(
             "status": "Human承認待ち",
             "token": f"article_approve: {joined}",
         })
+    if "p05_field_scope: approve mangools_agency_actual_fields" in adoption and "P05" in evidence_required:
+        actions.append({
+            "label": "P05をMangools Agencyの公式fieldへ修正",
+            "status": "human_field_scope_review_required",
+            "token": "p05_field_scope: approve mangools_agency_actual_fields / corrections <item>: <text>",
+        })
+        evidence_required = [article_id for article_id in evidence_required if article_id != "P05"]
     if evidence_required:
         joined = ",".join(evidence_required)
         actions.append({
-            "label": f"{joined}の確認済み実値取得",
-            "status": "evidence_required",
+            "label": f"{joined}の自データ・確認済み実値取得",
+            "status": "owned_data_waiting" if set(evidence_required).issubset({"P09", "P11"}) else "evidence_required",
             "token": f"article_evidence: pending {joined}",
         })
     release_ready = [

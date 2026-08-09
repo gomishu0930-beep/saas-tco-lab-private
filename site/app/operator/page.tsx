@@ -55,6 +55,29 @@ const remainingHumanWork = [
   },
 ] as const;
 
+const p05FieldScopeCandidates = [
+  {
+    current: "Basic / 含まれる管理者数",
+    observed: "Agency / 追加seat 5",
+    handling: "総seat数や管理者数へ換算せず、extra seats availableとして扱う。",
+  },
+  {
+    current: "Agency Pack料金",
+    observed: "Mangools Agency / 年次checkout総額はP02承認済み証拠あり",
+    handling: "存在を確認できないPackを作らず、同一planの承認済み年次総額だけを再利用候補にする。",
+  },
+  {
+    current: "毎月の監査ページ上限",
+    observed: "Site analysis 150 requests / 24h",
+    handling: "月間値や監査ページ数へ換算せず、公式の24時間単位を維持する。",
+  },
+  {
+    current: "移行支援料金",
+    observed: "料金ページでは確認できず",
+    handling: "記載が見つからないことを0円や対象外の根拠にせず、unknownを維持する。",
+  },
+] as const;
+
 export default function OperatorPage() {
   return (
     <main id="main-content" className="page-main">
@@ -78,6 +101,34 @@ export default function OperatorPage() {
           <div><dt>この入力画面</dt><dd>NOINDEX</dd></div>
           <div><dt>CTA</dt><dd>本番Mangoolsのみ / ローカル候補DISABLED</dd></div>
         </dl>
+      </section>
+
+      <section
+        className="shell page-section"
+        aria-labelledby="p05-field-scope-title"
+        data-p05-candidate-authority="none"
+        data-p05-field-scope="review_required"
+      >
+        <div className="operator-section-heading">
+          <div>
+            <p className="eyebrow">P05 FIELD CORRECTION</p>
+            <h2 id="p05-field-scope-title">公式表記に合わせる修正候補</h2>
+          </div>
+          <p>
+            2026-08-09の公式料金画面で確認した候補です。Human確認前はcontract、本文、index、CTAへ採用しません。
+          </p>
+        </div>
+        <div className="route-grid" data-p05-field-candidate-count={p05FieldScopeCandidates.length}>
+          {p05FieldScopeCandidates.map((candidate) => (
+            <article className="route-card" key={candidate.current}>
+              <small>現在: {candidate.current}</small>
+              <h3>{candidate.observed}</h3>
+              <p>{candidate.handling}</p>
+            </article>
+          ))}
+        </div>
+        <p><code>p05_field_scope: approve mangools_agency_actual_fields</code></p>
+        <p><small>出典表示: mangools.com/plans-and-pricing（外部link・Affiliate識別子なし）</small></p>
       </section>
 
       <div className="shell operator-input-wrap">

@@ -292,8 +292,8 @@ def test_unknown_only_contract_requires_evidence_instead_of_article_approval(tmp
     assert data["articleReviews"][0]["reviewState"] == "evidence_required"
     assert data["articleReviews"][0]["token"] == "article_evidence: pending P05"
     assert any(
-        action["status"] == "evidence_required"
-        and action["token"] == "article_evidence: pending P05"
+        action["status"] == "human_field_scope_review_required"
+        and action["token"].startswith("p05_field_scope: approve")
         for action in data["externalActions"]
     )
 

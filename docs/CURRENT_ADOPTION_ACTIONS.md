@@ -330,6 +330,13 @@ vendor・plan行へ混在しないようにしました。P04・P08・P10は再�
 `unreviewed`、noindex、CTA無効を維持します。P12は共通確認間隔を適用しない方針を`not_applicable`として
 承認・公開済みです。これにより現在は12/12入力、9/12承認、9/12公開です。
 
+2026-08-09のMangools公式料金画面read-backでは、Basicは追加seat不可、Premiumは追加seat 3、Agencyは
+追加seat 5と表示され、Site analysisは順に20 / 70 / 150 requests / 24hであった。これはP05既存fieldの
+「管理者数」「Agency Pack」「月間監査ページ」と同義ではないため、自動変換しない。OperatorへAgencyを対象とする
+4項目のfield修正候補を`authority=none`で表示し、`p05_field_scope: approve mangools_agency_actual_fields`
+または訂正をHuman本人から受領するまでP05 contract・本文・index・CTAを変更しない。移行支援料金は公式料金画面に
+見当たらないことだけを根拠に0円・対象外とはせずunknownを維持する。
+
 P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go: GO P01 PR先頭追記`により、
 公開記事の本文先頭へ`[PR]`を追記し、公開read-backで反映を確認しました。localの再配信templateは
 確認済み実額・公式記事URL・冒頭PR表示を含む版です。2026-08-06のHuman承認
