@@ -138,6 +138,11 @@ Google Ads／Keyword Plannerは2026-07-26のHuman判断でskipし、自動再試
 Mangools KWFinderのHuman exportまたは公開後のSearch Console実測で満たす。Mangools CSVはinternal
 business purposeの需要判断に限定し、volumeのsafe-summaryだけをrepositoryへ保存できる。
 
+2026-08-09、Humanが完了したcheckout後の正規Dashboardをread-onlyで確認し、
+**Mangools Basic契約有効化済み**と記録した。credential、認証URL、請求手段、invoice、個人情報は
+保存していない。残りqueryの取得は引き続きHuman exportに限定し、API・browser自動取得へは拡張しない。
+export完了後の更新停止は、Human本人がsubscription画面で実行するまで未完了である。
+
 ## Affiliate提携とrights回答の現在地
 
 Affiliate partner状態の非機密な正本として`docs/AFFILIATE_PARTNER_LEDGER.json`を追加した。A8.net、

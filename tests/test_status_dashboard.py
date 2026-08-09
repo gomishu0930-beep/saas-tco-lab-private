@@ -105,11 +105,10 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert all(item["done"] for item in data["work"])
     assert any(item["label"] == "SVR01–SVR20 noindex候補view" for item in data["work"])
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
-    assert [item["priority"] for item in data["externalActions"]] == [1, 2, 3]
+    assert [item["priority"] for item in data["externalActions"]] == [1, 2]
     assert data["externalActions"][0]["status"] == "human_legal_attestation_required"
     assert data["externalActions"][0]["token"] == "moshimo_media_attestation: done"
-    assert data["externalActions"][1]["status"] == "payment_approval_required"
-    assert data["externalActions"][2]["status"] == "contract_input_required"
+    assert data["externalActions"][1]["status"] == "contract_input_required"
     assert all(
         item["status"] != "human_field_attestation_required"
         for item in data["externalActions"]

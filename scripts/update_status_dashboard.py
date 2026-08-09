@@ -274,7 +274,10 @@ def _external_action_queue(
                 else "asp_program_apply: GO もしも ロリポップ！レンタルサーバー"
             ),
         })
-    if "`plan upgrade required`" in adoption:
+    if (
+        "`plan upgrade required`" in adoption
+        and "Mangools Basic契約有効化済み" not in adoption
+    ):
         actions.append({
             "label": "KWFinder拡張需要150語の一時upgrade・export",
             "status": "payment_approval_required",
