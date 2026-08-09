@@ -102,6 +102,7 @@ type EditorialEvidenceReuseRule = {
 const editorialEvidenceReuseRules: readonly EditorialEvidenceReuseRule[] = [
   { sourceArticleId: "P02", sourceField: "plan.minimum_seats", targetArticleId: "P04", targetField: "team.minimum_seats", vendorId: "mangools", planId: "basic" },
   { sourceArticleId: "P06", sourceField: "billing.monthly_contract_price", targetArticleId: "P04", targetField: "team.monthly_price", vendorId: "mangools", planId: "basic" },
+  { sourceArticleId: "P02", sourceField: "plan.price", targetArticleId: "P05", targetField: "enterprise.agency_annual_checkout_total", vendorId: "mangools", planId: "agency" },
   { sourceArticleId: "P01", sourceField: "pricing.base_price", targetArticleId: "P08", targetField: "addon.base_price", vendorId: "mangools", planId: "basic" },
   { sourceArticleId: "P03", sourceField: "alternative.required_addon_price", targetArticleId: "P08", targetField: "addon.price", vendorId: "mangools", planId: "basic" },
   { sourceArticleId: "P02", sourceField: "plan.minimum_seats", targetArticleId: "P08", targetField: "addon.required_seats", vendorId: "mangools", planId: "basic" },
@@ -120,7 +121,52 @@ type EditorialExplicitUnknownRule = {
   saleBannerState?: EditorialSaleBannerState;
   scenarioBasis?: string;
   currencyUnknownReason?: string;
+  vendorId?: string;
+  planId?: string;
 };
+
+type EditorialExplicitKnownRule = {
+  targetArticleId: PilotPage["id"];
+  targetField: string;
+  vendorId: string;
+  planId: string;
+  value: string;
+  unit: string;
+  sourceUrl: string;
+  observedOn: string;
+  nextReviewOn: string;
+  billingToggleState: EditorialBillingToggleState;
+  saleBannerState: EditorialSaleBannerState;
+};
+
+const editorialExplicitKnownRules: readonly EditorialExplicitKnownRule[] = [
+  {
+    targetArticleId: "P05",
+    targetField: "enterprise.agency_extra_seats_available",
+    vendorId: "mangools",
+    planId: "agency",
+    value: "5",
+    unit: "extra seats available",
+    sourceUrl: "https://mangools.com/plans-and-pricing",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    billingToggleState: "annual_selected",
+    saleBannerState: "annual_discount_permanent",
+  },
+  {
+    targetArticleId: "P05",
+    targetField: "enterprise.site_analysis_requests_per_24h",
+    vendorId: "mangools",
+    planId: "agency",
+    value: "150",
+    unit: "requests / 24h",
+    sourceUrl: "https://mangools.com/plans-and-pricing",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
+    billingToggleState: "annual_selected",
+    saleBannerState: "annual_discount_permanent",
+  },
+] as const;
 
 const editorialExplicitUnknownRules: readonly EditorialExplicitUnknownRule[] = [
   {
@@ -141,45 +187,16 @@ const editorialExplicitUnknownRules: readonly EditorialExplicitUnknownRule[] = [
   },
   {
     targetArticleId: "P05",
-    targetField: "enterprise.included_manager_seats",
-    unknownReason: "公式価格ページで組織利用に含まれる管理者数を確認できていない",
-    sourceUrl: "https://mangools.com/plans-and-pricing",
-    observedOn: "2026-08-01",
-    nextReviewOn: "2026-08-31",
-    billingToggleState: "annual_selected",
-    saleBannerState: "annual_discount_permanent",
-  },
-  {
-    targetArticleId: "P05",
-    targetField: "enterprise.agency_pack_price",
-    unknownReason: "記事で扱うAgency Packと同一条件のcheckout請求総額を確認できていない",
-    sourceUrl: "https://mangools.com/plans-and-pricing",
-    observedOn: "2026-08-01",
-    nextReviewOn: "2026-08-31",
-    billingToggleState: "annual_selected",
-    saleBannerState: "annual_discount_permanent",
-    currencyUnknownReason: "対象packageの金額自体が未確認のためISO通貨を確定していない",
-  },
-  {
-    targetArticleId: "P05",
-    targetField: "enterprise.audit_pages_per_month",
-    unknownReason: "公式価格ページで組織監査に使える月間ページ上限を確認できていない",
-    sourceUrl: "https://mangools.com/plans-and-pricing",
-    observedOn: "2026-08-01",
-    nextReviewOn: "2026-08-31",
-    billingToggleState: "annual_selected",
-    saleBannerState: "annual_discount_permanent",
-  },
-  {
-    targetArticleId: "P05",
     targetField: "enterprise.migration_support_price",
     unknownReason: "公式価格ページで組織向け移行支援の料金を確認できていない",
     sourceUrl: "https://mangools.com/plans-and-pricing",
-    observedOn: "2026-08-01",
-    nextReviewOn: "2026-08-31",
+    observedOn: "2026-08-09",
+    nextReviewOn: "2026-09-07",
     billingToggleState: "annual_selected",
     saleBannerState: "annual_discount_permanent",
     currencyUnknownReason: "移行支援料金自体が未確認のためISO通貨を確定していない",
+    vendorId: "mangools",
+    planId: "agency",
   },
   {
     targetArticleId: "P08",
@@ -1021,8 +1038,9 @@ export function reusableEditorialEvidence(
   sourceContracts: readonly EditorialContract[],
 ): ReusableEditorialEvidence | null {
   const rules = editorialEvidenceReuseRules.filter((rule) => rule.targetArticleId === page.id);
+  const knownRules = editorialExplicitKnownRules.filter((rule) => rule.targetArticleId === page.id);
   const unknownRules = editorialExplicitUnknownRules.filter((rule) => rule.targetArticleId === page.id);
-  if (!rules.length && !unknownRules.length) return null;
+  if (!rules.length && !knownRules.length && !unknownRules.length) return null;
 
   const scopes = new Set(page.numericFields.map(pilotFieldScope));
   const rows: EditorialRowFormValue[] = [
@@ -1051,6 +1069,27 @@ export function reusableEditorialEvidence(
     appliedFields.push(target.key);
   }
 
+  for (const rule of knownRules) {
+    if (!vendorRow) continue;
+    const target = page.numericFields.find((field) => field.key === rule.targetField);
+    if (!target || target.valueKind === "price") continue;
+    vendorRow.vendorId = rule.vendorId;
+    vendorRow.planId = rule.planId;
+    vendorRow.values[target.key] = {
+      ...emptyEditorialField(),
+      billingToggleState: rule.billingToggleState,
+      saleBannerState: rule.saleBannerState,
+      valueStatus: "known",
+      value: rule.value,
+      unit: rule.unit,
+      currencyStatus: "not_applicable",
+      sourceUrl: rule.sourceUrl,
+      observedOn: rule.observedOn,
+      nextReviewOn: rule.nextReviewOn,
+    };
+    appliedFields.push(target.key);
+  }
+
   const explicitUnknownFields: string[] = [];
   for (const rule of unknownRules) {
     const target = page.numericFields.find((field) => field.key === rule.targetField);
@@ -1060,8 +1099,8 @@ export function reusableEditorialEvidence(
     const field = row?.values[target.key];
     if (!row || !field) continue;
     if (scopeKind === "vendor_plan") {
-      row.vendorId = "mangools";
-      row.planId = "basic";
+      row.vendorId = rule.vendorId ?? "mangools";
+      row.planId = rule.planId ?? "basic";
     } else if (rule.scenarioBasis) {
       row.scenarioBasis = rule.scenarioBasis;
     }

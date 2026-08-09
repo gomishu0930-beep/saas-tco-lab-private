@@ -36,9 +36,9 @@ ARTICLE_REVIEW_FIELD_LABELS = {
     "team.minimum_users": "最低利用者数",
     "team.monthly_admin_hours": "月間運用時間",
     "team.onboarding_hours": "導入時間",
-    "enterprise.included_manager_seats": "含まれる管理者数",
-    "enterprise.agency_pack_price": "Agency Pack料金",
-    "enterprise.audit_pages_per_month": "毎月の監査ページ上限",
+    "enterprise.agency_extra_seats_available": "Agencyで追加可能なseat数",
+    "enterprise.agency_annual_checkout_total": "Agency年次checkout総額",
+    "enterprise.site_analysis_requests_per_24h": "Site analysis回数 / 24時間",
     "enterprise.migration_support_price": "移行支援費",
     "addon.base_price": "基本料金",
     "addon.required_addon_price": "必須addon料金",
@@ -324,7 +324,11 @@ def _external_action_queue(
             "status": "Human確認待ち",
             "token": "server_price_input: done SVR01",
         })
-    if "現在のSVR01はTCOと用途判定の" in adoption and "両方がHOLD" in adoption:
+    if (
+        "現在のSVR01はTCOと用途判定の" in adoption
+        and "両方がHOLD" in adoption
+        and "11 fieldをfield-review済みに更新" not in adoption
+    ):
         actions.append({
             "label": "SVR01の公式画面9候補をfield単位でHuman確認",
             "status": "human_field_attestation_required",

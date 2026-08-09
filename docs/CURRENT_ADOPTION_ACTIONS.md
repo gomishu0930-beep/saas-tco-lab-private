@@ -38,7 +38,7 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
 |A-H10|editorial production稼働|Sitesを公開originとして採用し、rights model v2のHuman editorial laneだけを本番化|2026-07-26 public-prelaunch GOと後続のdomain・記事・index・CTA・deploy承認|9記事の外部readbackとfail-closed経路を継続監視。automated data pathはGate A–Cまで停止|cloud root credential|
-|A-H11|進行中 — 12/12入力・9/12承認・9/12公開|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P04・P06–P08・P10・P12を承認済みかつindex・Mangools CTA対象として外部read-back済み|P05/P09/P11は確認済み実値がないため承認せず、noindex・CTA無効を維持|raw本文、PII、credential、tracking ID|
+|A-H11|進行中 — 12/12入力・10/12承認・9/12公開|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P04・P06–P08・P10・P12を承認済みかつindex・Mangools CTA対象として外部read-back済み。P05は公式field修正と記事承認を完了したが未deploy|P09/P11は自データ未取得のため承認せず、P05とともにnoindex・CTA無効を維持|raw本文、PII、credential、tracking ID|
 |A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|9記事releaseのdomain・redirect・計測境界を維持する|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
 |A-H13|完了 — v1.1分類済み|KWFinder正規画面からJP/ja CSVをHuman exportする|2026-08-05 batch-e/fを含む150件をexport・検証済み|rawをrepositoryへ保存せず、known/no_data/rejectedを分離したsafe-summaryだけを扱う|account情報、raw CSVのrepo保存、no_dataの0補完|
 |A-H14|完了 — 9記事index境界確認済み|index解除対象を確定する|2026-08-03 `index_go: GO`、2026-08-08〜09の最優先タスク一括承認を受領|承認済みP01–P04・P06–P08・P10・P12だけindex可。その他記事と他HTML routeはnoindex|verification・tracking ID|
@@ -318,6 +318,12 @@ runtime destinationがすべて成立したpartnerだけを表示します。1�
 `not_applicable`候補、更新料は`unknown`候補ですが、Human field確認前のため既存candidate-only contractへは
 書き込まず、TCO・用途判定HOLDを維持します。
 
+同日、Human Approverの継続指示「承認系に関してはすべて承認扱い」を、Operatorに固定したexact token
+`svr01_candidates: confirm_all`へ適用した。公式画面の9表示をHuman確認済みとし、保存済みSVR01 v2 contractの
+11 fieldをfield-review済みに更新した。転送量は`not_applicable`へ反映したが、CPUの`-`表示、期間限定
+キャッシュバック、更新額、ドメイン特典の実額・期間は推測せずunknownを維持する。基本料金自体も
+`time_limited_promo`分類のため、TCO・用途判定・contract昇格・順位・記事・index・CTAは引き続きHOLDである。
+
 既存のHuman承認済みMangools観測を別記事で再入力しないため、`/operator`へ証拠再利用prefillを追加しました。
 P04は最低利用者数と月契約料金、P08は基本料金・必須addon料金・必要利用者数、P10は表示価格と税fieldだけを
 同じvendor・planかつ同じ値型の承認済みfieldから候補化します。P04の未観測Human時間、P08のaddon課金単位、
@@ -325,10 +331,10 @@ P10のJPY換算レートは数値を作らず、理由・確認先・期限を�
 対象記事では全fieldを`unreviewed`へ戻し、Human確認前にcontractへ保存しません。これは記事承認・index・CTA authorityを持ちません。
 P04の月間運用時間と導入時間はvendor観測ではなくHuman scenarioへ修正し、公式料金と自運用時間が同じ
 vendor・plan行へ混在しないようにしました。P04・P08・P10は再利用候補をHuman確認し、2026-08-09に
-記事contractと本文を承認済みへ進めました。P05・P09・P11は、同義の承認済み証拠がないfieldを
+記事contractと本文を承認済みへ進めました。当時のP05・P09・P11は、同義の承認済み証拠がないfieldを
 明示的な`unknown`としてcontract化しました。構造検証は合格していますが確認済み実値が0件のため、記事は
 `unreviewed`、noindex、CTA無効を維持します。P12は共通確認間隔を適用しない方針を`not_applicable`として
-承認・公開済みです。これにより現在は12/12入力、9/12承認、9/12公開です。
+承認・公開済みです。この時点では12/12入力、9/12承認、9/12公開でした。
 
 2026-08-09のMangools公式料金画面read-backでは、Basicは追加seat不可、Premiumは追加seat 3、Agencyは
 追加seat 5と表示され、Site analysisは順に20 / 70 / 150 requests / 24hであった。これはP05既存fieldの
@@ -336,6 +342,14 @@ vendor・plan行へ混在しないようにしました。P04・P08・P10は再�
 4項目のfield修正候補を`authority=none`で表示し、`p05_field_scope: approve mangools_agency_actual_fields`
 または訂正をHuman本人から受領するまでP05 contract・本文・index・CTAを変更しない。移行支援料金は公式料金画面に
 見当たらないことだけを根拠に0円・対象外とはせずunknownを維持する。
+
+同日、Human Approverの継続指示「承認系に関してはすべて承認扱い」を、Operatorに固定したexact token
+`p05_field_scope: approve mangools_agency_actual_fields`へ適用した。旧fieldの管理者数、Agency Pack、月間監査ページを
+廃止し、Mangools Agencyの`5 extra seats available`、承認済み年次checkout総額1,172.40 USD、
+`Site analysis 150 requests / 24h`へ修正した。seat総数・管理者数・月間値への換算は行わず、移行支援料金だけは
+unknownを維持する。P05 contractの4 fieldをHuman承認済みにし、本文を公式単位へ合わせて改稿した。
+P05は記事承認済みだが、production deploy・index・CTAは個別release前のため無効である。これにより現在は
+12/12入力、10/12承認、9/12公開で、P09/P11だけが自データ待ちである。
 
 P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go: GO P01 PR先頭追記`により、
 公開記事の本文先頭へ`[PR]`を追記し、公開read-backで反映を確認しました。localの再配信templateは

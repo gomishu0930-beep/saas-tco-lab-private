@@ -7,6 +7,7 @@ import savedSvr01Candidate from "../../../../artifacts/category-expansion-inputs
 
 const svr01BrowserCandidates = {
   observedOn: "2026-08-09",
+  reviewStatus: "human_approved",
   sourceLabel: "XServerビジネス公式機能一覧（Safariで開いている画面）",
   fields: [
     {
@@ -75,14 +76,14 @@ export default function ServerOperatorPage() {
       <section
         className="shell page-section"
         aria-labelledby="svr01-browser-candidates-title"
-        data-candidate-authority="none"
+        data-candidate-authority={svr01BrowserCandidates.reviewStatus}
       >
         <div className="section-heading">
-          <p className="eyebrow">SVR01 / HUMAN確認前</p>
-          <h2 id="svr01-browser-candidates-title">公式画面の確認候補</h2>
+          <p className="eyebrow">SVR01 / HUMAN確認済み</p>
+          <h2 id="svr01-browser-candidates-title">公式画面の確認記録</h2>
           <p>
-            これはブラウザで見つけた事前チェックリストです。Human確認前はcontractへ保存せず、
-            TCO・順位・記事・index・CTAへ流しません。
+            9項目の画面表示はHuman確認済みです。値へ一意に変換できないキャンペーン、更新、特典、CPUは
+            unknownを維持し、TCO・順位・記事・index・CTAへ流しません。
           </p>
         </div>
         <p>
@@ -93,14 +94,14 @@ export default function ServerOperatorPage() {
         <div className="route-grid" data-svr01-browser-candidate-count={svr01BrowserCandidates.fields.length}>
           {svr01BrowserCandidates.fields.map((field) => (
             <article key={field.label}>
-              <span>未確認候補</span>
+              <span>Human確認済み候補</span>
               <h3>{field.label}</h3>
               <p>{field.candidate}</p>
               <small>{field.handling}</small>
             </article>
           ))}
         </div>
-        <p><strong>確定操作:</strong> 公式画面と一致する行だけをOperatorへ入力し、差分を確認してから確定します。</p>
+        <p><strong>確認結果:</strong> <code>svr01_candidates: confirm_all</code>。一意に写せるfieldだけをcandidate-only contractへ反映しました。</p>
       </section>
       <section className="shell page-section" aria-labelledby="server-candidate-list-title">
         <div className="section-heading">

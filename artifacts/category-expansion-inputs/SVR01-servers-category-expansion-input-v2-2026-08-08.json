@@ -38,7 +38,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -74,7 +74,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_checkout_review",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -110,7 +110,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -146,7 +146,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -182,7 +182,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -218,7 +218,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -254,7 +254,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -290,7 +290,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -326,7 +326,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -335,10 +335,10 @@
       "plan_id": "shared-standard-12m",
       "field": "servers.data_transfer_gb",
       "value_kind": "quota",
-      "value_status": "unknown",
+      "value_status": "not_applicable",
       "value": null,
       "unit": null,
-      "unknown_reason": "共有スタンダードのデータ転送量上限を公式画面で確認していないため",
+      "unknown_reason": "公式機能一覧で転送量無制限・転送量課金なしを確認し、数値GB上限を適用しないため",
       "currency_status": "not_applicable",
       "currency": null,
       "currency_display": null,
@@ -357,12 +357,12 @@
       "discount_derivation_method": null,
       "source_url": "https://business.xserver.ne.jp/price/",
       "scenario_basis": null,
-      "observed_on": "2026-08-07",
-      "next_review_on": "2026-09-06",
+      "observed_on": "2026-08-09",
+      "next_review_on": "2026-09-07",
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     },
     {
       "schema_version": "2.3",
@@ -398,7 +398,7 @@
       "entered_by": "human",
       "acquisition_method": "manual_public_page",
       "rights_path": "human_editorial",
-      "review_status": "unreviewed"
+      "review_status": "approved"
     }
   ]
 }

@@ -155,7 +155,9 @@ P05は2026-08-09の公式料金画面候補により、既存field名と公式�
 Mangools Agencyの「5 extra seats available」と「Site analysis 150 req. / 24h」であり、管理者総数や
 月間監査ページ数へ換算しない。`Agency Pack`という別商品名も作らず、P02にある同一Agency planの
 Human承認済みcheckout年次総額だけを再利用候補とする。移行支援料金は引き続きunknownである。
-Humanが`/operator`の候補を確認するまでP05 contractは変更しない。
+2026-08-09、Human Approverの承認指示により候補を確認済みとし、P05はAgencyの追加seat 5、年次checkout総額
+1,172.40 USD、Site analysis 150 requests / 24hへ修正した。管理者総数・月間監査数へは換算せず、
+移行支援料金はunknownを維持する。P05のproduction deploy・index・CTAは別gateである。
 
 ## その場でSTOPする条件
 

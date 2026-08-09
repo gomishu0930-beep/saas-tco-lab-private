@@ -79,8 +79,8 @@ test("a complete vendor-plan field emits the Python-owned 2.3 contract shape", (
 test("unsafe URL and review dates fail closed with Japanese correction guidance", () => {
   const page = pilotPages.find(candidate => candidate.id === "P05");
   const row = validVendorRow(page);
-  row.values["enterprise.included_manager_seats"] = {
-    ...row.values["enterprise.included_manager_seats"],
+  row.values["enterprise.agency_extra_seats_available"] = {
+    ...row.values["enterprise.agency_extra_seats_available"],
     value: "90日",
     unit: "",
     sourceUrl: "https://example.com/pricing?utm_source=test",
@@ -490,7 +490,7 @@ test("servers promotion assessment accepts explicit approved values and not-appl
 test("remaining articles reuse only approved same-type evidence as unreviewed form candidates", () => {
   const expected = new Map([
     ["P04", { approved: ["team.minimum_seats", "team.monthly_price"], unknown: ["team.monthly_operation_hours", "team.onboarding_hours"] }],
-    ["P05", { approved: [], unknown: ["enterprise.included_manager_seats", "enterprise.agency_pack_price", "enterprise.audit_pages_per_month", "enterprise.migration_support_price"] }],
+    ["P05", { approved: ["enterprise.agency_annual_checkout_total", "enterprise.agency_extra_seats_available", "enterprise.site_analysis_requests_per_24h"], unknown: ["enterprise.migration_support_price"] }],
     ["P08", { approved: ["addon.base_price", "addon.price", "addon.required_seats"], unknown: ["addon.billing_unit_size"] }],
     ["P09", { approved: [], unknown: ["migration.overlap_months", "migration.work_hours", "migration.hourly_cost", "migration.training_hours", "migration.support_price"] }],
     ["P10", { approved: ["localization.displayed_price", "localization.tax_rate"], unknown: ["localization.exchange_rate"] }],
@@ -508,7 +508,7 @@ test("remaining articles reuse only approved same-type evidence as unreviewed fo
     const vendor = reusable.rows.find((row) => row.scopeKind === "vendor_plan");
     if (page.numericFields.some((field) => (field.inputScope ?? "vendor_plan") === "vendor_plan")) {
       assert.equal(vendor?.vendorId, "mangools");
-      assert.equal(vendor?.planId, "basic");
+      assert.equal(vendor?.planId, articleId === "P05" ? "agency" : "basic");
     }
     if (articleId === "P04") {
       const scenario = reusable.rows.find((row) => row.scopeKind === "human_scenario");

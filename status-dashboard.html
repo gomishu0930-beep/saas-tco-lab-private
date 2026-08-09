@@ -158,7 +158,7 @@ const DATA = {
       "label": "公開記事数",
       "value": 9,
       "target": 12,
-      "sub": "入力 12/12・承認 9/12"
+      "sub": "入力 12/12・承認 10/12"
     },
     {
       "label": "インデックス数",
@@ -224,7 +224,7 @@ const DATA = {
     {
       "id": "L2",
       "name": "記事実値入力・承認",
-      "status": "12/12入力・9/12承認",
+      "status": "12/12入力・10/12承認",
       "note": "有効contractとHuman記事承認だけを算入"
     },
     {
@@ -365,7 +365,7 @@ const DATA = {
     {
       "riskId": "editorial-coverage",
       "level": "warn",
-      "label": "編集記事は9/12承認。未承認記事はnoindex・CTA無効を維持"
+      "label": "編集記事は10/12承認。未承認記事はnoindex・CTA無効を維持"
     },
     {
       "riskId": "server-candidate-only",
@@ -488,41 +488,18 @@ const DATA = {
     },
     {
       "priority": 3,
-      "label": "SVR01の公式画面9候補をfield単位でHuman確認",
-      "status": "human_field_attestation_required",
-      "token": "svr01_candidates: confirm_all / corrections <field>: <value>"
-    },
-    {
-      "priority": 4,
-      "label": "P05をMangools Agencyの公式fieldへ修正",
-      "status": "human_field_scope_review_required",
-      "token": "p05_field_scope: approve mangools_agency_actual_fields / corrections <item>: <text>"
-    },
-    {
-      "priority": 5,
       "label": "P09,P11の自データ・確認済み実値取得",
       "status": "owned_data_waiting",
       "token": "article_evidence: pending P09,P11"
+    },
+    {
+      "priority": 4,
+      "label": "P05のproduction release",
+      "status": "production_go_required",
+      "token": "deploy_update: GO P05 / HOLD"
     }
   ],
   "articleReviews": [
-    {
-      "articleId": "P05",
-      "title": "組織利用適合",
-      "previewUrl": "http://localhost:3000/pilot/enterprise-fit",
-      "confirmed": [],
-      "notApplicable": [],
-      "unresolved": [
-        "含まれる管理者数: unknown（公式価格ページで組織利用に含まれる管理者数を確認できていない）",
-        "Agency Pack料金: unknown（記事で扱うAgency Packと同一条件のcheckout請求総額を確認できていない）",
-        "毎月の監査ページ上限: unknown（公式価格ページで組織監査に使える月間ページ上限を確認できていない）",
-        "移行支援費: unknown（公式価格ページで組織向け移行支援の料金を確認できていない）"
-      ],
-      "observedOn": "2026-08-01",
-      "nextReviewOn": "2026-08-31",
-      "reviewState": "evidence_required",
-      "token": "article_evidence: pending P05"
-    },
     {
       "articleId": "P09",
       "title": "移行コスト",

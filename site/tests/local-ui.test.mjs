@@ -101,15 +101,16 @@ test("renders every synthetic-only local decision route with landmarks", async (
   }
 });
 
-test("operator and pilot index report the current nine-article release without stale launch copy", async () => {
+test("operator and pilot index report nine live articles and the approved P05 candidate", async () => {
   const operator = await (await render("/operator")).text();
   assert.match(operator, /P01–P04・P06–P08・P10・P12（9\/12）/);
-  assert.match(operator, /P01–P04・P06–P08・P10・P12公開済み/);
+  assert.match(operator, /P01–P05・P06–P08・P10・P12承認済み/);
   assert.doesNotMatch(operator, /release待ち|P01–P03 公開中/);
 
   const pilot = await (await render("/pilot")).text();
   assert.match(pilot, /P01–P04・P06–P08・P10・P12の9本はHuman承認後に公開済み/);
-  assert.match(pilot, /P05・P09・P11/);
+  assert.match(pilot, /P05は公式field修正と記事承認を完了/);
+  assert.match(pilot, /P09・P11/);
   assert.doesNotMatch(pilot, /index GO未受領/);
 });
 
@@ -250,8 +251,8 @@ test("operator route reduces Human work to form input and exact reply tokens", a
   assert.doesNotMatch(html, /<form[^>]+action=/i);
   assert.match(html, /href="\/operator\/servers\//);
   assert.match(html, /href="\/servers\/business-server-pricing\//);
-  assert.match(html, /data-p05-candidate-authority="none"/);
-  assert.match(html, /data-p05-field-scope="review_required"/);
+  assert.match(html, /data-p05-candidate-authority="human_approved"/);
+  assert.match(html, /data-p05-field-scope="approved"/);
   assert.match(html, /data-p05-field-candidate-count="4"/);
   assert.match(html, /p05_field_scope: approve mangools_agency_actual_fields/);
   assert.match(html, /Site analysis 150 requests \/ 24h/);
@@ -277,13 +278,14 @@ test("servers operator and all twenty article routes remain candidate-only and f
   assert.match(operator, /抽出値は事前入力だけです/);
   assert.match(operator, /pricing\.initial_fee/);
   assert.match(operator, /servers\.campaign_period_months/);
-  assert.match(operator, /SVR01 \/ HUMAN確認前/);
-  assert.match(operator, /data-candidate-authority="none"/);
+  assert.match(operator, /SVR01 \/ HUMAN確認済み/);
+  assert.match(operator, /data-candidate-authority="human_approved"/);
   assert.match(operator, /data-svr01-browser-candidate-count="9"/);
   assert.match(operator, /2026年10月13日17:00終了/);
   assert.match(operator, /転送量課金なし・転送量無制限/);
-  assert.match(operator, /Human確認前はcontractへ保存せず/);
+  assert.match(operator, /unknownを維持し/);
   assert.match(operator, /TCO・順位・記事・index・CTAへ流しません/);
+  assert.match(operator, /svr01_candidates: confirm_all/);
   assert.doesNotMatch(operator, /候補JSONを保存/);
 
   assert.match(operator, /data-server-candidate-index="20"/);

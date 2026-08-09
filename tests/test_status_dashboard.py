@@ -105,14 +105,14 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert all(item["done"] for item in data["work"])
     assert any(item["label"] == "SVR01–SVR20 noindex候補view" for item in data["work"])
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
-    assert [item["priority"] for item in data["externalActions"]] == [1, 2, 3, 4]
+    assert [item["priority"] for item in data["externalActions"]] == [1, 2, 3]
     assert data["externalActions"][0]["status"] == "human_legal_attestation_required"
     assert data["externalActions"][0]["token"] == "moshimo_media_attestation: done"
     assert data["externalActions"][1]["status"] == "payment_approval_required"
     assert data["externalActions"][2]["status"] == "contract_input_required"
-    assert data["externalActions"][3]["status"] == "human_field_attestation_required"
-    assert data["externalActions"][3]["token"] == (
-        "svr01_candidates: confirm_all / corrections <field>: <value>"
+    assert all(
+        item["status"] != "human_field_attestation_required"
+        for item in data["externalActions"]
     )
     assert all(
         not item["token"].startswith("article_approve:")
@@ -273,7 +273,7 @@ def test_pending_p06_p07_review_cards_are_contract_driven(tmp_path: Path) -> Non
     assert cards[1]["token"] == "article_approve: P07"
 
 
-def test_unknown_only_contract_requires_evidence_instead_of_article_approval(tmp_path: Path) -> None:
+def test_approved_p05_contract_is_not_returned_to_the_human_review_queue(tmp_path: Path) -> None:
     dashboard = tmp_path / "dashboard.html"
     dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())
     state = tmp_path / "state.json"
@@ -287,13 +287,9 @@ def test_unknown_only_contract_requires_evidence_instead_of_article_approval(tmp
 
     assert result.returncode == 0, result.stderr
     data = _dashboard_data(dashboard)
-    assert data["articleReviews"][0]["articleId"] == "P05"
-    assert data["articleReviews"][0]["confirmed"] == []
-    assert data["articleReviews"][0]["reviewState"] == "evidence_required"
-    assert data["articleReviews"][0]["token"] == "article_evidence: pending P05"
-    assert any(
-        action["status"] == "human_field_scope_review_required"
-        and action["token"].startswith("p05_field_scope: approve")
+    assert data["articleReviews"] == []
+    assert all(
+        action["status"] != "human_field_scope_review_required"
         for action in data["externalActions"]
     )
 

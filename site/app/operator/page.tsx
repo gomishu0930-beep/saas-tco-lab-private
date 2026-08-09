@@ -25,11 +25,11 @@ const remainingHumanWork = [
     timing: "記事準備時",
     title: "公式価格を見て、この画面へ入力",
     minutes: "記事ごと",
-    status: "P01–P04・P06–P08・P10・P12公開済み / SVR01追加観測待ち",
+    status: "P01–P05・P06–P08・P10・P12承認済み / P05は公開GO待ち / SVR01追加観測待ち",
     why: "価格確認checklistの公式URLをHumanが開き、必要箇所を貼り付けて候補抽出できます。候補はHuman確認前にcontractへ入りません。",
     steps: ["記事とvendorを選ぶ", "料金表を貼り付けて候補を事前入力する", "出典・観測日・次回確認日と前回差分を確認する", "Human確認後のJSONを保存し、本文標本を確認する"],
     done: "article_approve: <P-ID,...>",
-    next: "P04・P05・P08–P12の入力と、SVR01のservers候補contract更新を継続",
+    next: "P09・P11の自データ取得と、SVR01のservers候補contract更新を継続",
   },
   {
     id: "H3",
@@ -57,17 +57,17 @@ const remainingHumanWork = [
 
 const p05FieldScopeCandidates = [
   {
-    current: "Basic / 含まれる管理者数",
+    current: "旧field: Basic / 含まれる管理者数",
     observed: "Agency / 追加seat 5",
     handling: "総seat数や管理者数へ換算せず、extra seats availableとして扱う。",
   },
   {
-    current: "Agency Pack料金",
+    current: "旧field: Agency Pack料金",
     observed: "Mangools Agency / 年次checkout総額はP02承認済み証拠あり",
     handling: "存在を確認できないPackを作らず、同一planの承認済み年次総額だけを再利用候補にする。",
   },
   {
-    current: "毎月の監査ページ上限",
+    current: "旧field: 毎月の監査ページ上限",
     observed: "Site analysis 150 requests / 24h",
     handling: "月間値や監査ページ数へ換算せず、公式の24時間単位を維持する。",
   },
@@ -106,16 +106,17 @@ export default function OperatorPage() {
       <section
         className="shell page-section"
         aria-labelledby="p05-field-scope-title"
-        data-p05-candidate-authority="none"
-        data-p05-field-scope="review_required"
+        data-p05-candidate-authority="human_approved"
+        data-p05-field-scope="approved"
       >
         <div className="operator-section-heading">
           <div>
             <p className="eyebrow">P05 FIELD CORRECTION</p>
-            <h2 id="p05-field-scope-title">公式表記に合わせる修正候補</h2>
+            <h2 id="p05-field-scope-title">公式表記に合わせて修正済み</h2>
           </div>
           <p>
-            2026-08-09の公式料金画面で確認した候補です。Human確認前はcontract、本文、index、CTAへ採用しません。
+            2026-08-09の公式料金画面と承認済みP02 checkout証拠に基づき、P05 contractと本文へ反映しました。
+            公開、index、CTAは別gateのままです。
           </p>
         </div>
         <div className="route-grid" data-p05-field-candidate-count={p05FieldScopeCandidates.length}>
@@ -127,7 +128,7 @@ export default function OperatorPage() {
             </article>
           ))}
         </div>
-        <p><code>p05_field_scope: approve mangools_agency_actual_fields</code></p>
+        <p><strong>確認済み:</strong> <code>p05_field_scope: approve mangools_agency_actual_fields</code></p>
         <p><small>出典表示: mangools.com/plans-and-pricing（外部link・Affiliate識別子なし）</small></p>
       </section>
 
