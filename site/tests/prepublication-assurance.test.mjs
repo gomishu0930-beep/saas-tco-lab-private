@@ -200,6 +200,7 @@ test("every P01-P12 article renders PR disclosure before a disabled CTA", () => 
     const disclosurePosition = html.indexOf('id="article-pr-disclosure"');
     const ctaPosition = html.indexOf('data-affiliate-cta-placeholder="mangools"');
     assert.ok(disclosurePosition >= 0, `${path}: PR disclosure`);
+    assert.match(html, /記事制作に生成AIを補助的に使用する場合があります/, `${path}: AI assistance disclosure`);
     assert.ok(ctaPosition > disclosurePosition, `${path}: disclosure before CTA`);
     assert.doesNotMatch(html, /rel=["'][^"']*sponsored/i, path);
   }
@@ -213,6 +214,7 @@ test("every servers candidate stays noindex, zero-value, CTA-disabled, and discl
     const calculatorPosition = html.indexOf('data-server-template-step="calculator"');
     const ctaPosition = html.indexOf('data-server-template-step="cta_slot"');
     assert.ok(disclosurePosition >= 0 && disclosurePosition < calculatorPosition, `${path}: disclosure first`);
+    assert.match(html, /記事制作に生成AIを補助的に使用する場合があります/, `${path}: AI assistance disclosure`);
     assert.ok(calculatorPosition < ctaPosition, `${path}: calculator before CTA`);
     assert.match(html, /承認済みのservers価格contractはまだありません/, path);
     assert.match(html, /公開条件をすべて通過したpartnerがないためCTAは無効/, path);

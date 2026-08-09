@@ -178,6 +178,13 @@ HubSpotはlow reachでDeclined、Impact Marketplace自体も2026-08-09に却下�
 対象partnerは0社なのでHuman操作はまだ不要であり、流入実績形成前の再申請も行わない。
 active通知後に`docs/IMPACT_PRODUCT_FEED_CHECKLIST.md`を使い、catalog有無とA1利用scopeを確認する。
 
+2026-08-09、もしもアフィリエイトのメディア登録審査・運営・SNS掲載ガイドラインを
+ログイン済み正規画面でread-only確認した。公開9記事、独自domain、独自の編集内容、出典、広告表示先行、
+誤認ランキングを作らない境界は適合方向である。生成AIの補助利用は全記事の広告表示と広告掲載ポリシーで
+明示し、公開前に人が一次情報・数値・計算結果を確認する実態を記載する。最終的な3ガイドライン確認checkboxは
+Human本人だけが押す。もしものX向けpromotionはフォロワー3,000人以上という画面条件があるため、条件達成を
+read-backするまでXへもしも広告を掲載しない。サイト登録・ロリポップ提携とX掲載可否を混同しない。
+
 HubSpotは2026-07-26にHumanのaction-time承認後、Impact申請を送信し、JPYを確定しました。2026-08-03に
 Impact画面でlow reachを理由とするDeclinedを確認しました。公開・流入実績を作るまで再申請せず、追加表示された
 Impact Marketplace設定、税務情報、受取情報は未操作です。Semrushは

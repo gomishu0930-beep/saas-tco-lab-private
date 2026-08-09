@@ -147,6 +147,7 @@ test("P01 renders reader copy and approved evidence without an input calculator"
   assert.match(html, /観測日<\/dt><dd>2026-08-02/);
   assert.match(html, /次回確認日<\/dt><dd>2026-08-31/);
   assert.match(html, /PR・広告に関する表示/);
+  assert.match(html, /記事制作に生成AIを補助的に使用する場合があります/);
   assert.match(html, /data-affiliate-cta-placeholder="mangools"/);
   assert.ok(html.indexOf("article-pr-disclosure") < html.indexOf('data-affiliate-cta-placeholder="mangools"'));
   assert.doesNotMatch(html, /rel="sponsored|公式サイトへ/i);
