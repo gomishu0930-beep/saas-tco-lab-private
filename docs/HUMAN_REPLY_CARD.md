@@ -40,6 +40,7 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |もしもメディア適法性確認|`moshimo_media_attestation: done`|`moshimo_media_attestation: done`|SaaS TCO Labが権利を侵害していないことをHuman本人が画面で確認し「はい」を押した後だけ使用。Codexは代行しない|
 |バリューコマース本登録完了|`valuecommerce_registration: done`|`valuecommerce_registration: done`|本登録案内メールの期限内URLからHumanが手続きを完了した後、ABLENET候補の個別条件をread-onlyで再確認|
 |servers候補入力|`server_price_input: done <SVR-ID>`|`server_price_input: done SVR01`|`/operator/servers/`の候補値をHumanが確認し、確定ボタンを押して保存したcandidate-only JSONをlocal検証。公開・CTAには効かない|
+|SVR01公式画面候補の確認|`svr01_candidates: confirm_all` または `svr01_candidates: corrections <field>: <value>`|`svr01_candidates: confirm_all`|`/operator/servers/`の「公式画面の確認候補」9件をHuman本人が読み、すべて正しければ一括確認、相違があればfield単位で訂正する。確認前はcontract・TCO・順位・記事・CTAへ採用しない|
 |servers記事承認|`article_approve: <SVR-ID>`|`article_approve: SVR01`|TCO・用途判定・Human確認がすべてREADYの本文だけを承認。index・CTAには効かない|
 |localhost候補JSON download許可|`local_download_permission: GO localhost <SVR-ID> / HOLD`|`local_download_permission: GO localhost SVR01`|Safariの一回のlocalhost download許可だけを承認。外部送信・公開・CTA・ASP申請には効かない|
 |P01 note修正|`note_edit_go: GO P01 PR先頭追記 / HOLD`|`note_edit_go: GO P01 PR先頭追記`|既存noteの先頭へlocal templateのPR表示だけを追記する外部編集を許可|

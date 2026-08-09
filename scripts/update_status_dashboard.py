@@ -326,9 +326,9 @@ def _external_action_queue(
         })
     if "現在のSVR01はTCOと用途判定の" in adoption and "両方がHOLD" in adoption:
         actions.append({
-            "label": "SVR01の更新料・campaign・domain特典・用途上限を確認",
-            "status": "field_review_required",
-            "token": "server_price_input: done SVR01",
+            "label": "SVR01の公式画面9候補をfield単位でHuman確認",
+            "status": "human_field_attestation_required",
+            "token": "svr01_candidates: confirm_all / corrections <field>: <value>",
         })
     unreviewed_contracts = [
         article_id

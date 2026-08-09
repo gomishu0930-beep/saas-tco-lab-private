@@ -283,6 +283,10 @@ Safariでは既存SVR01の11 fieldを復元し、上記の年次請求総額とb
 `SVR01-servers-category-expansion-input-v2-2026-08-08.json`として追記保存した。**SVR01追加候補のHuman確認完了**。
 正本modelで11 field、known 4、unknown 7を再検証済みである。candidate-onlyは維持し、更新料等のunknownを
 0へ補完せず、記事承認・index・CTA・順位にはまだ採用しない。
+同日、公式公開画面から抽出したcampaign、通常額・promo額、storage、CPU、転送量、domain特典、
+2年目更新、移行、backupの9候補を`/operator/servers/`へHuman確認専用カードとして追加した。
+これらは`data-candidate-authority="none"`であり、`svr01_candidates: confirm_all`またはfield単位の
+訂正をHuman本人から受領するまでcontract、TCO、順位、記事、index、CTAへ採用しない。
 同日、Operatorにcandidate-onlyからの準備判定を追加し、TCO field、用途判定field、Human field確認を
 別々に`READY / HOLD`表示するようにした。`not_applicable`は理由付き明示値として扱う一方、unknown、
 期間限定価格、通貨・税・請求周期・一次観測区分の不明はfail-closedを維持する。3判定がREADYになっても
@@ -337,6 +341,13 @@ P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go:
 brand、domain、repo、credential、analyticsの分離を維持します。2026-08-08の`x_post: GO P01`に基づき、
 冒頭PR表示、承認済みP01 claim、`saastcolab.jp`の記事URLだけでXスレッド8件を公開した。
 ASP広告link、非公開報酬、tracking IDは含めていない。公開後のread-backで`@saastcolab`の(1/8)と(8/8)を確認した。
+
+2026-08-09、公開後もhomepage、広告表示、About、運営者情報、privacyに残っていた「公開前・CTA 0件」の
+旧表示を現在の9記事・Mangools CTA稼働状態へ更新した。homepageから未承認P09へのlinkを削除し、承認済み
+P01/P02/P12だけを案内する。`CHECK-ALL: PASS`後のcommit `1d9389b`をSites version 19として公開した。
+外部read-backではhomepageと信用情報routeが新しい現在地を表示し、P01は`index, follow`、開示先行、
+Mangools CTA 1件、送客hostとlink属性が合格、P05は`noindex`・CTA 0件、sitemapは9件のままである。
+Affiliate識別子・URL全文・非公開条件は記録していない。
 
 ## field-level rights decision slate
 

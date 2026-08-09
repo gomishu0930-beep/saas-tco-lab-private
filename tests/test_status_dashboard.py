@@ -110,7 +110,10 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert data["externalActions"][0]["token"] == "moshimo_media_attestation: done"
     assert data["externalActions"][1]["status"] == "payment_approval_required"
     assert data["externalActions"][2]["status"] == "contract_input_required"
-    assert data["externalActions"][3]["status"] == "field_review_required"
+    assert data["externalActions"][3]["status"] == "human_field_attestation_required"
+    assert data["externalActions"][3]["token"] == (
+        "svr01_candidates: confirm_all / corrections <field>: <value>"
+    )
     assert all(
         not item["token"].startswith("article_approve:")
         for item in data["externalActions"]
