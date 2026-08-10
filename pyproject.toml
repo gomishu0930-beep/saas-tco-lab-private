@@ -5,7 +5,7 @@ description = "Deterministic preflight core for a source-backed SaaS pricing and
 readme = "README.md"
 requires-python = ">=3.12,<3.15"
 dependencies = [
-  "cryptography==49.0.0",
+  "cryptography==50.0.0",
   "httpx>=0.28,<1",
   "pydantic>=2.10,<3",
 ]
