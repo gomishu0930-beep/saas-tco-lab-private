@@ -1,6 +1,6 @@
 # 現時点の導入 — あなたの操作表
 
-基準日: 2026-08-09（Asia/Tokyo）
+基準日: 2026-08-12（Asia/Tokyo）
 
 2026-07-28のHuman decision `DR-2026-07-28-REVENUE-TRACK`により、P0–P18はmaintenance only、
 人手予算はlaunch trackへ全振りする。rights model v2では、自動取得・価格DB・履歴DBはstrict gateを
@@ -393,6 +393,12 @@ robots allowlistも10記事で一致した。P09/P11はnoindex・canonicalなし
 contract・端末・外部へ保存せず、既存の承認済み証拠再利用、v2.3 validation、Human確定を通過しても
 記事と全fieldは`unreviewed`のままである。実測値自体はまだ未入力なので、P09/P11のnoindex・CTA無効は維持する。
 
+2026-08-12、もしもの残り3program（シンレンタルサーバー、ConoHa WING、お名前.com レンタルサーバー）の
+申請再開を試みたが、正規検索画面はsession expiryでloginへ戻った。Safariの保存済みcredentialはmacOSの
+本人認証を要求したため、passwordを取得・入力・保存せず停止した。外部申請、規約同意、提携状態変更は0件で、
+3programは`not_applied`を維持する。HumanがSafari上で本人認証を完了するまでは、login後の条件確認と
+法的同意を伴う最終申請buttonへ進まない。
+
 P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go: GO P01 PR先頭追記`により、
 公開記事の本文先頭へ`[PR]`を追記し、公開read-backで反映を確認しました。localの再配信templateは
 確認済み実額・公式記事URL・冒頭PR表示を含む版です。2026-08-06のHuman承認
@@ -557,6 +563,12 @@ Search Console側の次回再読込までは検出5ページのまま処理待�
 9記事のindex完了とは扱わない。同時点のGA4 Realtimeは過去30分のactive user・eventとも0件で、
 新しい`page_view`・`qualified_session`受信は確認できなかった。再送信、URL検査登録、設定変更、
 テスト送信は行っていない。
+
+2026-08-12のread-only再確認でも、公開sitemapとrobots allowlistは承認済み10記事で一致し、P09/P11と
+他HTML routeはnoindex・CTA無効である。Search Consoleのsitemapは最終読み込み2026-08-11、検出9ページの
+ままで、ページ集計は登録済み1・未登録3、集計期間の表示回数とclicksは0だった。GA4は表示上の直近7日間で
+`page_view`、`qualified_session`、`outbound_click`がすべて0、Realtimeも0である。再送信、URL検査登録、
+設定変更、テスト送信は行っていない。
 
 ```text
 gsc_verification_deploy: GO / STOP

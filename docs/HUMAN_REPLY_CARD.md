@@ -38,6 +38,8 @@ SVR01のlocal標本では確認済み11 fieldを証拠表として表示する�
 |もしも本登録完了（確認済み）|`moshimo_email_verify: done / HOLD`|`moshimo_email_verify: done`|2026-08-07に管理画面へログイン済みであることをread-back済み。再返信不要|
 |ASP個別提携状態|`asp_partnership: <partner> <not_applied / pending / approved / denied>`|`asp_partnership: a8net pending`|program名・カテゴリ・公開可能な条件を別途確認して更新|
 |ASP個別program申請|`asp_program_apply: GO <ASP> <program名> / HOLD <ASP> <program名>`|`asp_program_apply: GO A8.net formrun`|対象program一件だけの提携申請を許可。CTA・広告link取得は別GO|
+|ASP再認証|`asp_reauth: done <ASP>`|`asp_reauth: done もしも`|保存済みcredentialのOS認証をHumanが完了し、対象ASPの正規管理画面へ戻ったことだけを通知。passwordは返信しない|
+|ASP個別program規約同意|`asp_program_terms_accept: GO <ASP> <program名> / HOLD`|`asp_program_terms_accept: GO もしも シンレンタルサーバー`|対象programの最新条件を画面で確認した直後に、法的同意を伴う最終申請button一回だけを許可。CTA・広告link取得は別GO|
 |A8再認証完了（確認済み）|`a8_reauth: done`|`a8_reauth: done`|2026-08-07にSaaS TCO Lab選択済みのprogram詳細をread-back済み。再返信不要|
 |もしも再認証・結果確認（完了）|`moshimo_reauth: done`|`moshimo_reauth: done`|2026-08-09にメディア登録とロリポップ提携承認をread-back済み。再返信不要|
 |もしもメディア適法性確認（完了）|`moshimo_media_attestation: done`|`moshimo_media_attestation: done`|2026-08-09にHuman本人が確認済み。saastcolab.jpのメディア登録へ反映済み|

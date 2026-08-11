@@ -1,6 +1,6 @@
 # GSC / GA4 deployment gate
 
-基準日: 2026-08-11（Asia/Tokyo）
+基準日: 2026-08-12（Asia/Tokyo）
 
 ## 現在地
 
@@ -91,6 +91,11 @@ analytics scope拡張をこの承認へ含めない。
   転記せず、confirmed成果やCVRを推測しない。
 - 2026-08-11のread-only確認ではRealtime過去30分のactive userとeventはいずれも0件で、
   `page_view`と`qualified_session`の新規受信は確認できなかった。設定変更やテスト送信は行っていない。
+- 2026-08-12のread-only確認では、公開sitemapとrobots allowlistは承認済み10記事で一致する一方、GSCの
+  sitemapは最終読み込み2026-08-11、検出9ページのままである。ページ集計は登録済み1・未登録3、
+  集計期間の表示回数とclicksは0で、10記事のindex完了とは扱わない。GA4は表示上の直近7日間で
+  `page_view`、`qualified_session`、`outbound_click`がすべて0、Realtimeも0である。再送信、URL検査登録、
+  設定変更、テスト送信は行っていない。
 - 拡張計測はOFF。内部traffic filterは不可逆な除外を避けるためtestのまま維持し、対象sourceを
   確定した別承認後だけactiveへ移す。
 

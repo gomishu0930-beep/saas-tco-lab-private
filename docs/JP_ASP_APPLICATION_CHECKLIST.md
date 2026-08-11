@@ -1,7 +1,7 @@
 # 日本ASP申請準備checklist
 
-基準日: 2026-08-08（Asia/Tokyo）
-状態: `A8 XSERVER APPROVED / MOSHIMO MEDIA 5-ARTICLE GATE / VALUECOMMERCE REGISTERED`
+基準日: 2026-08-12（Asia/Tokyo）
+状態: `A8 XSERVER APPROVED / MOSHIMO LOLIPOP APPROVED / VALUECOMMERCE ABLENET APPROVED`
 
 この文書はA8.net、もしもアフィリエイト、バリューコマースの申請画面で迷わないための準備表である。
 account作成、規約同意、本人確認、口座登録、送信はHumanだけが行う。credential、本人情報、口座、電話番号、
@@ -76,7 +76,7 @@ servers候補として台帳へ追加した。バリューコマースではABLE
 
 |姿勢|調査案|Hard gate|停止条件|
 |---|---|---|---|
-|conservative|serversの既知需要とXServer条件を記事候補へ対応付ける|提携未申請のためCTA不可|提携否認、またはHuman価格観測不能|
+|conservative|serversの既知需要と承認済み3programを記事候補へ対応付ける|SVR01のcanonical価格・記事承認・runtime destination・partner別CTA GOが未完了|提携否認、またはHuman価格観測不能|
 |balanced|serversの6記事slate・価格観測・TCO対応をlocalで先行し、1 vendorずつ検証|価格・提携・公開は各別gate|golden不一致、unknownの推測補完、需要または提携の否定証拠|
 |aggressive|5カテゴリを同時申請・同時公開する|需要unknownかつ提携未承認のため`ineligible`|現状は開始しない|
 
@@ -106,6 +106,12 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 既存の別mediaだった。その後、A8の登録site `SaaS TCO Lab`を主サイトへ変更して画面read-back済みである。
 2026-08-07にSaaS TCO Lab選択済みのprogram詳細を再度read-backし、Humanの対象program名付きGOに基づいて
 申請しました。申請完了画面は確認済みですが、提携承認とは数えません。
+
+2026-08-12、もしもの残り3program（シンレンタルサーバー、ConoHa WING、お名前.com レンタルサーバー）を
+申請するため正規検索画面を開いたところ、session expiryでloginへ戻った。Safariの保存済みcredentialは
+macOSの本人認証を要求したため、passwordを取得・入力・保存せず停止した。3programは引き続き`not_applied`であり、
+HumanがOS認証を完了して`asp_reauth: done もしも`を返した後、各programの最新条件をread-backし、
+法的同意を伴う最終button直前にprogram名付き`asp_program_terms_accept`を一括提示する。
 
 ## 推奨申請順
 

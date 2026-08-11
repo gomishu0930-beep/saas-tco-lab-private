@@ -293,6 +293,19 @@ def _external_action_queue(
             "status": "human_export_required",
             "token": "mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension",
         })
+    for research_id in (
+        "moshimo-shin-rental-server",
+        "moshimo-conoha-wing",
+        "moshimo-onamae-rental-server",
+    ):
+        program = programs[research_id]
+        if program.partnership_status.value != "not_applied":
+            continue
+        actions.append({
+            "label": f"もしも {program.program_name}提携申請",
+            "status": "reauth_then_terms_confirmation_required",
+            "token": f"asp_program_apply: GO もしも {program.program_name}",
+        })
     missing_contracts = [article_id for article_id in PILOT_IDS if article_id not in contracts]
     if missing_contracts:
         joined = ",".join(missing_contracts)
