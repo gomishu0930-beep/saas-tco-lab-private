@@ -1,6 +1,6 @@
 # GSC / GA4 deployment gate
 
-基準日: 2026-08-04（Asia/Tokyo）
+基準日: 2026-08-11（Asia/Tokyo）
 
 ## 現在地
 
@@ -66,6 +66,10 @@ analytics scope拡張をこの承認へ含めない。
   ページ集計は最終更新2026-08-05のまま登録済み1、未登録3で、登録済み1件は旧HTTPルート、未登録理由は
   `検出 - インデックス未登録`である。承認記事の登録完了とは扱わず、再送信、URL検査登録、設定変更を
   行わずGoogle側の処理を待つ。
+- 2026-08-11のread-only確認で、sitemapは`成功しました`、最終読み込み2026-08-11、検出ページ9、
+  検出動画0へ更新された。公開sitemapの9 URLと一致する。一方、ページ集計は最終更新2026-08-07、
+  登録済み1、未登録3で、未登録理由は`検出 - インデックス未登録`のままである。sitemapでの検出と
+  index登録を混同せず、再送信、URL検査登録、設定変更は行っていない。
 - 2026-08-09にP04/P08/P10を追加したSites version 15を公開し、公開sitemapとrobots allowlistが
   承認済み8記事で一致することを外部read-backした。Search Consoleの既存sitemap submissionは維持し、
   再送信・URL検査登録は行わず次回読込を待つ。
@@ -81,6 +85,8 @@ analytics scope拡張をこの承認へ含めない。
 - 2026-08-09のS6再確認ではRealtime過去30分は0件で、過去28日イベント表は`page_view` 7、
   `qualified_session` 7、`outbound_click`は未生成だった。実装確認訪問を分離できないため、月次KPIへ
   転記せず、confirmed成果やCVRを推測しない。
+- 2026-08-11のread-only確認ではRealtime過去30分のactive userとeventはいずれも0件で、
+  `page_view`と`qualified_session`の新規受信は確認できなかった。設定変更やテスト送信は行っていない。
 - 拡張計測はOFF。内部traffic filterは不可逆な除外を避けるためtestのまま維持し、対象sourceを
   確定した別承認後だけactiveへ移す。
 

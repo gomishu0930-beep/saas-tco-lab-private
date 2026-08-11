@@ -283,6 +283,16 @@ def _external_action_queue(
             "status": "payment_approval_required",
             "token": "mangools_upgrade: GO Basic monthly 61.00 USD max_total 61.00 USD cancel_after_export / HOLD",
         })
+    if (
+        "Mangools Basic契約有効化済み" in adoption
+        and "残りはCRM 10、forms 40、email_marketing 40、SEO追加60" in adoption
+        and "拡張需要150語のHuman export完了" not in adoption
+    ):
+        actions.append({
+            "label": "KWFinder拡張需要の残り150語をHuman export",
+            "status": "human_export_required",
+            "token": "mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension",
+        })
     missing_contracts = [article_id for article_id in PILOT_IDS if article_id not in contracts]
     if missing_contracts:
         joined = ",".join(missing_contracts)
@@ -515,8 +525,8 @@ def _launch_quarter() -> dict[str, Any]:
         "weeklyPlan": [
             {"date": "7/31–8/2", "label": "domain day・P01–P03最終標本"},
             {"date": "8/3–8/9", "label": "第1弾記事承認・index準備"},
-            {"date": "8/10–8/16", "label": "W6完了・X1–X3拡張準備slate固定"},
-            {"date": "8/17–8/31", "label": "P06–P09中心に約8本・ASP申請可能化"},
+            {"date": "8/10–8/16", "label": "拡張需要残り150語Human export・P05 release判断"},
+            {"date": "8/17–8/31", "label": "P09/P11自データ観測・servers価格確認"},
             {"date": "9月", "label": "残記事・embed・note/X・Impact/ASP審査"},
             {"date": "10/1–10/24", "label": "取引意図記事改稿・内部導線"},
             {"date": "10/25–10/31", "label": "固定閾値で継続・拡張・縮小判定"},

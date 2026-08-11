@@ -526,6 +526,12 @@ Google向けCSP許可を出さず、有効時も訪問者の同意前と拒否�
 拡張計測OFF、同意既定denyを変更していない。同日のP12追加後の公開sitemapは9 URLであり、
 Search Console側の次回再読込までは検出5ページのまま処理待ちとする。
 
+2026-08-11のread-only再確認で、Search Consoleのsitemapは最終読み込み2026-08-11、検出9ページへ
+更新され、公開sitemap 9 URLと一致した。ページ集計は最終更新2026-08-07、登録済み1、未登録3のため、
+9記事のindex完了とは扱わない。同時点のGA4 Realtimeは過去30分のactive user・eventとも0件で、
+新しい`page_view`・`qualified_session`受信は確認できなかった。再送信、URL検査登録、設定変更、
+テスト送信は行っていない。
+
 ```text
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP

@@ -150,7 +150,7 @@
 <script>
 // DASHBOARD_DATA_START
 const DATA = {
-  "asOf": "2026-08-09",
+  "asOf": "2026-08-11",
   "reportingPeriod": "2026-07",
   "phase": "editorial launch—記事入力・承認中",
   "kpis": [
@@ -405,11 +405,11 @@ const DATA = {
       },
       {
         "date": "8/10–8/16",
-        "label": "W6完了・X1–X3拡張準備slate固定"
+        "label": "拡張需要残り150語Human export・P05 release判断"
       },
       {
         "date": "8/17–8/31",
-        "label": "P06–P09中心に約8本・ASP申請可能化"
+        "label": "P09/P11自データ観測・servers価格確認"
       },
       {
         "date": "9月",
@@ -476,12 +476,18 @@ const DATA = {
   "externalActions": [
     {
       "priority": 1,
+      "label": "KWFinder拡張需要の残り150語をHuman export",
+      "status": "human_export_required",
+      "token": "mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension"
+    },
+    {
+      "priority": 2,
       "label": "P09,P11の自データ・確認済み実値取得",
       "status": "owned_data_waiting",
       "token": "article_evidence: pending P09,P11"
     },
     {
-      "priority": 2,
+      "priority": 3,
       "label": "P05のproduction release",
       "status": "production_go_required",
       "token": "deploy_update: GO P05 / HOLD"

@@ -567,6 +567,60 @@ test("the approved nine-article release candidate stays scoped and disclosure-fi
   assert.deepEqual(new Set(locations), new Set(released.map((path) => `https://saastcolab.jp${path}`)));
 });
 
+test("approved P05 is ready for an exact ten-article release without widening P09 or P11", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("p05-ten-article-release", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P05,P06,P07,P08,P10,P12",
+    CTA_GO: "GO",
+    CTA_APPROVED_PARTNER: "mangools",
+    MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "true",
+    MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/#a1234567890bcdef123456789",
+  };
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+
+  const p05Path = "/pilot/enterprise-fit";
+  const p05 = await worker.fetch(new Request(`https://saastcolab.jp${p05Path}`), env, ctx);
+  assert.equal(p05.status, 200);
+  assert.equal(p05.headers.get("x-robots-tag"), "index, follow");
+  const p05Body = await p05.text();
+  assert.match(p05Body, new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${p05Path}">`, "i"));
+  const disclosure = p05Body.indexOf('data-affiliate-disclosure-status="enabled"');
+  const cta = p05Body.indexOf('<a class="cta-active" data-affiliate-cta-partner="mangools"');
+  assert.ok(disclosure >= 0);
+  assert.ok(cta > disclosure);
+  assert.match(p05Body, /rel="sponsored noopener noreferrer"/i);
+
+  for (const path of ["/pilot/migration-cost", "/pilot/break-even"]) {
+    const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
+    assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i, path);
+    const body = await response.text();
+    assert.doesNotMatch(body, /<link\s+rel=["']canonical["']/i, path);
+    assert.doesNotMatch(body, /data-affiliate-cta-partner|rel=["'][^"']*sponsored/i, path);
+  }
+
+  const robots = await worker.fetch(new Request("https://saastcolab.jp/robots.txt"), env, ctx);
+  const robotsText = await robots.text();
+  assert.match(robotsText, /Allow: \/pilot\/enterprise-fit\$/);
+  assert.doesNotMatch(robotsText, /Allow: \/pilot\/(migration-cost|break-even)\$/);
+
+  const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
+  const xml = await sitemap.text();
+  const locations = [...xml.matchAll(/<loc>([^<]+)<\/loc>/g)].map((match) => match[1]);
+  assert.equal(locations.length, 10);
+  assert.ok(locations.includes("https://saastcolab.jp/pilot/enterprise-fit"));
+  assert.ok(!locations.includes("https://saastcolab.jp/pilot/migration-cost"));
+  assert.ok(!locations.includes("https://saastcolab.jp/pilot/break-even"));
+});
+
 test("missing or invalid index approval stays fail-closed", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("fail-closed-index", `${process.pid}-${Date.now()}`);

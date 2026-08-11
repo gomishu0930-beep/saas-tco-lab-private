@@ -64,7 +64,7 @@ Gate D、3社×6プランgold set、C1–C7の合格を入口条件にしない�
 |順序|現在状態|入口／GO|実装・Human処理|出口|
 |---:|---|---|---|---|
 |L1|完了 — 2026-08-03|2026-08-02 `domain: GO saastcolab.jp`受領。`saastcolab.jp`登録完了、Sites指定DNS保存・個別自動更新ON、2026-08-03 HTTPS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認済み|完了状態を維持し、index／CTAを別GOまでHOLD|domain切替とreadback合格|
-|L2|12/12入力・9/12承認・9/12公開|L1完了|P05/P09/P11の確認済み実値を取得して承認する。P01–P04・P06–P08・P10・P12は公開済み|12記事の公開候補が承認済み|
+|L2|12/12入力・10/12承認・9/12公開|L1完了|承認済みP05は個別release GO待ち。P09/P11の自データを取得して承認する。P01–P04・P06–P08・P10・P12は公開済み|12記事の公開候補が承認済み|
 |L3|9記事完了 — 2026-08-09|`index_go: GO`と対象記事の承認|承認済み9記事だけnoindex解除し、sitemap 9件・他route noindexを外部read-back済み|承認記事のindexability readback合格|
 |L4|Mangools 9記事で稼働 — 2026-08-09|`cta_go: GO mangools`と記事release承認|開示先行、Mangools送客先host、`rel="sponsored noopener noreferrer"`を外部read-back済み|MangoolsだけCTA稼働|
 
@@ -93,8 +93,8 @@ unknownのまま関連する横断順位だけを停止し、記事・index・CT
 |---|---|---|---|
 |7/31–8/2|domain dayとP01–P03最終標本|domain token、価格・記事確認|L1 read-back、P01–P03承認候補|
 |8/3–8/9|第1弾release準備|`article_approve`、domain反映後の`index_go`|承認記事だけindex候補|
-|8/10–8/16|Mangools CTA・W6需要|partner別CTA GO、150 query CSV export|CTA gate、需要safe-summary|
-|8/17–8/31|P06–P09中心に約8本へ|公式値確認、ASP申請は別GO|8本前後の承認候補、ASP申請可能|
+|8/10–8/16|拡張需要CSVとP05 release準備|CRM残り10・forms 40・email marketing 40・SEO追加60のHuman export、P05 release判断|残り150語の行単位検証、P05の10記事release候補QA|
+|8/17–8/31|P09/P11自データとservers観測|実運用値・通常料金/更新条件をHuman確認|P09/P11の観測開始、servers candidate更新|
 |9月|残記事、embed、note/X Human再配信、Impact/ASP審査|投稿・申請・回答判断だけ|index/impression/clickの週次観測|
 |10/1–10/24|取引意図記事の改稿と内部導線|標本確認だけ|比較可能な連続2期間|
 |10/25–10/31|90日判定|現ニッチのGSC実測を確認|継続・拡張・縮小を固定判定。拡張準備scopeは2026-08-05に前倒しGO済み|

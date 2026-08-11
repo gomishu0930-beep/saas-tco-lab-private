@@ -4,11 +4,11 @@
 measurement ID、partner ID、tracking ID、支払情報、メール本文は追記しない。GOは書かれたscopeだけに有効で、
 domain GOからindex GOやCTA GOを推論しない。
 
-現在地: P01–P12は12/12入力済み、P01–P04・P06–P08・P10・P12の9記事を承認・公開済みです。
+現在地: P01–P12は12/12入力済み、10/12承認済み、P01–P04・P06–P08・P10・P12の9記事を公開済みです。
 2026-08-09の外部read-backで9記事だけのindex・sitemap、P05/P09/P11のnoindex、
-開示先行gate、Mangools CTAを確認済みです。P05/P09/P11は確認済み実値が0件のため承認せず、
-CTAも無効です。Search Console domain propertyと専用GA4 streamも連携済みです。serversはSVR01
-candidate-only contractをlocal保存済みで、XServerビジネスとABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
+開示先行gate、Mangools CTAを確認済みです。P05は確認済みの公式fieldを持つ承認済み記事ですがrelease GO待ち、
+P09/P11は自データ未取得のため未承認で、3記事ともCTAは無効です。Search Console domain propertyと専用GA4 streamも連携済みです。serversはSVR01
+candidate-only contractをlocal保存済みで、XServerビジネス、ロリポップ、ABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
 価格のcanonical採用・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。
 
 ## 今使うtoken
@@ -29,6 +29,7 @@ candidate-only contractをlocal保存済みで、XServerビジネスとABLENET�
 |Impact feed A1登録|`impact_feed_a1: GO <partner> / HOLD <partner>`|`impact_feed_a1: HOLD HubSpot`|全利用scopeを確認したexact feedだけsource policy候補へ登録。取得は開始しない|
 |Mangools需要CSV|`mangools_csv: done / pending`|`mangools_csv: done`|凍結済みquery CSVのlocal検証を開始|
 |Mangools一時upgrade（完了）|`mangools_upgrade: done Basic monthly`|`mangools_upgrade: done Basic monthly`|2026-08-09に正規DashboardでBasic有効化をread-back済み。残り150語はHuman exportのみ。export完了後の更新停止はHuman本人が実行する|
+|拡張需要CSVの残り150語|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension / pending`|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension`|CRM残り10、forms 40、email marketing 40、SEO追加60をHuman export後に行単位validatorへ渡す。自動取得は行わない|
 |Scope拡大準備|`scope_expand: GO (準備scope) / HOLD`|`scope_expand: GO (準備scope)`|2026-08-05受領済み。query・checklist・template準備だけで、公開・申請・照会は許可しない|
 |優先カテゴリ|`category_primary: GO <category> / HOLD`|`category_primary: GO servers`|2026-08-06受領済み。serversのlocal記事・観測表・計算機準備だけを許可|
 |日本ASP申請|`asp_signup: GO <ASP> / HOLD <ASP>`|`asp_signup: GO A8.net`|列挙したASPのHuman申請だけを開始|
