@@ -112,6 +112,29 @@ const verifiedDerivativeSpecs: Readonly<Partial<Record<PilotPage["id"], Verified
     observedOn: "2026-08-02",
     nextReviewOn: "2026-08-31",
   },
+  P05: {
+    title: "Mangools Agencyの年次総額は1,172.40 USD",
+    summary: "Mangools Agencyは、購入直前画面の年次請求総額1,172.40 USD、追加できるseat数5、Site analysis 150 requests / 24hを確認済みです。移行支援費と権限の詳細は未確認なので、この3点だけで組織要件に合うとは断定しません。",
+    sections: [
+      { title: "年次請求総額", body: "2026年8月2日の購入直前画面で、Agencyの12か月請求総額1,172.40 USDを確認しました。月あたり97.70 USDは比較用の換算値で、毎月の請求額ではありません。" },
+      { title: "年払いと月払いの差", body: "同じAgencyの月払い表示は141.00 USDでした。終了日、カウントダウン、クーポン、取消線価格はなく、年払い総額は月払い12回分より約31%低い計算です。" },
+      { title: "追加seat", body: "公式料金画面の表記は5 extra seats availableです。総seat数、管理者数、同時利用者数へは読み替えず、誰にどの権限を付与できるかも別途確認します。" },
+      { title: "Site analysisの上限", body: "Agencyで確認した上限はSite analysis 150 requests / 24hです。月間監査ページ数やクロールURL数とは異なるため、組織の監査量と直接比較しません。" },
+      { title: "未確認の移行支援", body: "公式料金画面で組織向け移行支援の料金を確認できていません。記載が見つからないことを無料の根拠にせず、費用と提供条件は未確認のまま総額から外しています。" },
+      { title: "結論", body: "確認済みなのは年次総額、追加seat数、Site analysis上限です。必要人数、権限、監査頻度、移行条件がこの範囲に収まるかを確認してから組織適合を判断します。" },
+    ],
+    xPoints: [
+      "購入直前画面で確認したAgencyの年次請求総額は1,172.40 USD。97.70 USD/月は比較用の月額換算です。(2/8)",
+      "同じAgencyの月払いは141.00 USD。期間限定表示はなく、年払い総額は月払い12回分より約31%低い計算です。(3/8)",
+      "公式表記は5 extra seats available。総seat数や管理者数へは読み替えず、権限の詳細も別に確認します。(4/8)",
+      "Site analysisは150 requests / 24h。月間監査ページ数やクロールURL数とは異なる指標です。(5/8)",
+      "組織向け移行支援費は未確認。料金表に見当たらないことを0 USDの根拠にはしません。(6/8)",
+      "年額・追加seat・分析上限だけで組織適合とは断定せず、必要人数、権限、監査頻度、移行条件を照合します。(7/8)",
+    ],
+    articleUrl: "https://saastcolab.jp/pilot/enterprise-fit",
+    observedOn: "2026-08-02（checkout）と2026-08-09（機能上限）",
+    nextReviewOn: "2026-08-31（checkout総額）と2026-09-07（機能上限）",
+  },
   P06: {
     title: "Mangools Basicは年払いで279.60 USD低い",
     summary: "Mangools Basicは月払い61.00 USD、年払い総額452.40 USDでした。月払いを12回続ける732.00 USDと比べると、年払いは279.60 USD、約38%低くなります。ただし途中解約時の返金・残存支払は未確認です。",
@@ -228,6 +251,10 @@ const verifiedDerivativeSpecs: Readonly<Partial<Record<PilotPage["id"], Verified
     nextReviewOn: "2026-09-07",
   },
 };
+
+export const verifiedDerivativeArticleIds = Object.freeze(
+  Object.keys(verifiedDerivativeSpecs).sort(),
+) as readonly PilotPage["id"][];
 
 function buildVerifiedDerivative(articleId: PilotPage["id"], spec: VerifiedDerivativeSpec): DerivativeTemplate {
   const sectionText = spec.sections.map((section) => `## ${section.title}\n\n${section.body}`).join("\n\n");

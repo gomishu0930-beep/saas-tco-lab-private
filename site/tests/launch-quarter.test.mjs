@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { buildDerivativeTemplate } from "../app/lib/derivative-templates.ts";
+import {
+  buildDerivativeTemplate,
+  verifiedDerivativeArticleIds,
+} from "../app/lib/derivative-templates.ts";
 import {
   firstReleasePilotIds,
   launchDraftPriority,
@@ -242,8 +245,17 @@ test("servers calculator is zero-input and detailed inputs live only on methodol
   assert.match(methodologySource, /<TcoCalculator\b/);
 });
 
-test("released note and X derivatives contain verified copy while held pages fail closed", () => {
-  const released = new Set(["P01", "P02", "P03", "P04", "P06", "P07", "P08", "P10", "P12"]);
+test("released note and X derivatives contain verified copy while held pages fail closed", async () => {
+  const launchState = JSON.parse(await readFile(
+    new URL("../../docs/EDITORIAL_LAUNCH_STATE.json", import.meta.url),
+    "utf8",
+  ));
+  assert.deepEqual(
+    [...verifiedDerivativeArticleIds],
+    [...launchState.deployed_articles].sort(),
+    "derivatives must cover the exact deployed article set",
+  );
+  const released = new Set(verifiedDerivativeArticleIds);
   for (const page of launchPriorityPages()) {
     const template = buildDerivativeTemplate(page);
     assert.match(template.note, /^\[PR\]/, page.id);

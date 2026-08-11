@@ -140,3 +140,25 @@ test("next-to-read derives links from pilot pages and excludes noindex or unappr
     reviewApprovedArticleIds: new Set(["P01", "P02", "P03"]),
   }), []);
 });
+
+test("next-to-read rotates through every approved article instead of concentrating on the first three", () => {
+  const approvedIds = "P01,P02,P03,P04,P05,P06,P07,P08,P10,P12";
+  const reviews = new Set(approvedIds.split(","));
+  const links = new Map(pilotPages
+    .filter((page) => reviews.has(page.id))
+    .map((page) => [page.id, nextToReadPages(page, {
+      indexGo: true,
+      approvedArticleIdsValue: approvedIds,
+      articleReviewsCurrent: true,
+      reviewApprovedArticleIds: reviews,
+    }).map((candidate) => candidate.id)]));
+
+  assert.deepEqual(links.get("P02"), ["P03", "P04", "P05"]);
+  assert.deepEqual(links.get("P12"), ["P01", "P02", "P03"]);
+  for (const articleId of reviews) {
+    assert.ok(
+      [...links.values()].some((targets) => targets.includes(articleId)),
+      `${articleId}: at least one approved inbound link`,
+    );
+  }
+});

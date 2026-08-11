@@ -99,10 +99,14 @@ site、secret scan）後、commit `d2aa788`をpushし、Sites version 17・runti
 `rel="sponsored noopener noreferrer"`を満たし、robots allowlistとsitemap 9件が一致した。P05/P09/P11は
 noindex、canonicalなし、CTAなしを維持する。
 
-公開9記事のnote/X再配信素材も確認済みclaimだけで再生成した。各noteは約1,300〜1,500字、Xは8投稿、
+先行公開9記事のnote/X再配信素材も確認済みclaimだけで再生成した。各noteは約1,300〜1,500字、Xは8投稿、
 PR表記を先頭、記事URLを末尾に固定し、公開用placeholderを除去した。3-voice／claim-evidence packageは
 一時領域で9件すべて`ready_for_human_review`、material claim coverage 100%、authorityなしを確認した。
 P18固定scopeを増やさないため検証用control artifactはrepositoryへ残さず、既存の回帰testだけを保存する。
+2026-08-11のP05公開後、P05も承認済みの年次総額、追加seat、Site analysis上限、移行支援費unknownだけで
+同じnote/X形式へ追加した。再配信templateの対象を`EDITORIAL_LAUNCH_STATE`の公開10記事と一致させ、P09/P11は
+確認待ち・公開URLなしを維持する。関連記事は公開記事順を巡回する3リンクへ変更し、全10記事に少なくとも1本の
+承認済み記事内linkが入ることを回帰testへ固定した。投稿・予約投稿は引き続きHuman操作である。
 
 観測contract v2.3では価格表示を`none`、`annual_discount_permanent`、`time_limited_promo`、`unknown`の
 4区分とする。計算HOLDは期間限定promoとunknownだけである。2026-08-02にHuman token

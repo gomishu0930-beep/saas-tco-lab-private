@@ -14,8 +14,7 @@ export function nextToReadPages(
   controls: NavigationControls,
 ): readonly PilotPage[] {
   const approved = approvedArticleIds(controls.approvedArticleIdsValue);
-  return pilotPages.filter((candidate) => {
-    if (candidate.id === current.id) return false;
+  const eligible = pilotPages.filter((candidate) => {
     return evaluatePublicationGate({
       articleId: candidate.id,
       indexGo: controls.indexGo,
@@ -27,5 +26,11 @@ export function nextToReadPages(
       destinationConfigured: false,
       disclosureBeforeCta: true,
     }).indexable;
-  }).slice(0, 3);
+  });
+  const currentIndex = eligible.findIndex((candidate) => candidate.id === current.id);
+  if (currentIndex < 0) return eligible.slice(0, 3);
+  return Array.from(
+    { length: Math.min(3, Math.max(0, eligible.length - 1)) },
+    (_, offset) => eligible[(currentIndex + offset + 1) % eligible.length],
+  );
 }

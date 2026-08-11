@@ -599,6 +599,33 @@ test("approved P05 is ready for an exact ten-article release without widening P0
   assert.ok(cta > disclosure);
   assert.match(p05Body, /rel="sponsored noopener noreferrer"/i);
 
+  const releasedPaths = [
+    "/pilot/pricing-calculator",
+    "/pilot/plan-comparison",
+    "/pilot/alternatives",
+    "/pilot/small-team-fit",
+    "/pilot/enterprise-fit",
+    "/pilot/annual-vs-monthly",
+    "/pilot/usage-overage",
+    "/pilot/addon-cost",
+    "/pilot/japan-tax",
+    "/pilot/evidence-method",
+  ];
+  const inboundCounts = new Map(releasedPaths.map((path) => [path, 0]));
+  for (const path of releasedPaths) {
+    const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
+    const body = await response.text();
+    const nextReading = body.match(/<section\b[^>]*class="[^"]*next-reading[^"]*"[\s\S]*?<\/section>/i)?.[0] ?? "";
+    const targets = [...nextReading.matchAll(/href="(\/pilot\/[^"]+)\/"/gi)].map((match) => match[1]);
+    assert.equal(targets.length, 3, `${path}: three next-reading links`);
+    assert.ok(!targets.includes(path), `${path}: no self-link`);
+    for (const target of targets) {
+      assert.ok(inboundCounts.has(target), `${path}: only released targets`);
+      inboundCounts.set(target, (inboundCounts.get(target) ?? 0) + 1);
+    }
+  }
+  for (const [path, count] of inboundCounts) assert.ok(count > 0, `${path}: has inbound link`);
+
   for (const path of ["/pilot/migration-cost", "/pilot/break-even"]) {
     const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
     assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i, path);

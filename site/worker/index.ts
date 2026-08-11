@@ -403,7 +403,7 @@ async function withNextReading(
   const placeholder = body.match(placeholderPattern)?.[0];
   if (!placeholder) return new Response(body, response);
 
-  const candidates = [...placeholder.matchAll(/<template\b[^>]*>/gi)]
+  const candidateByPath = new Map([...placeholder.matchAll(/<template\b[^>]*>/gi)]
     .map((match) => ({
       path: htmlAttribute(match[0], "data-next-reading-path"),
       title: htmlAttribute(match[0], "data-next-reading-title"),
@@ -416,6 +416,18 @@ async function withNextReading(
       && candidate.path !== currentPath
       && indexPaths.has(candidate.path)
     ))
+    .map((candidate) => [candidate.path as string, candidate]));
+  const orderedIndexablePaths = [...ARTICLE_PATH_TO_ID.keys()].filter((path) => indexPaths.has(path));
+  const currentIndex = orderedIndexablePaths.indexOf(currentPath);
+  const rotatedPaths = currentIndex < 0
+    ? orderedIndexablePaths
+    : [
+        ...orderedIndexablePaths.slice(currentIndex + 1),
+        ...orderedIndexablePaths.slice(0, currentIndex),
+      ];
+  const candidates = rotatedPaths
+    .map((path) => candidateByPath.get(path))
+    .filter((candidate): candidate is { path: string; title: string; outcome: string } => Boolean(candidate))
     .slice(0, 3);
   const replacement = candidates.length
     ? `<section class="shell page-section next-reading" aria-labelledby="runtime-next-reading"><div class="section-heading"><p class="eyebrow">次に読む</p><h2 id="runtime-next-reading">関連する料金記事</h2></div><ul>${candidates.map((candidate) => `<li><a href="${escapeHtmlAttribute(candidate.path as string)}/">${escapeHtmlAttribute(candidate.title as string)}</a><span>${escapeHtmlAttribute(candidate.outcome as string)}</span></li>`).join("")}</ul></section>`
