@@ -301,10 +301,19 @@ def _external_action_queue(
         program = programs[research_id]
         if program.partnership_status.value != "not_applied":
             continue
+        detail_reviewed = program.condition_review_status.value == "detail_reviewed"
         actions.append({
             "label": f"もしも {program.program_name}提携申請",
-            "status": "reauth_then_terms_confirmation_required",
-            "token": f"asp_program_apply: GO もしも {program.program_name}",
+            "status": (
+                "terms_confirmation_required"
+                if detail_reviewed
+                else "reauth_then_terms_confirmation_required"
+            ),
+            "token": (
+                f"asp_program_terms_accept: GO もしも {program.program_name}"
+                if detail_reviewed
+                else f"asp_program_apply: GO もしも {program.program_name}"
+            ),
         })
     missing_contracts = [article_id for article_id in PILOT_IDS if article_id not in contracts]
     if missing_contracts:

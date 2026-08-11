@@ -252,15 +252,15 @@
         "unit": null
       },
       "commission_basis": "maximum_observed_tier",
-      "performance_condition": "契約期間に応じた新規アカウント登録を成果条件として検索結果概要で確認した。審査なし・本人申込可・再訪問90日で、詳細条件は提携前に再確認する。",
-      "condition_review_status": "summary_only",
+      "performance_condition": "新規アカウント登録後30日以内のConoHa WING申込を成果条件として詳細画面で確認した。30日以上の利用状況とplanで報酬tierが決まり、返金・不正利用・キャンセル・入力不備等は対象外。本人申込は1回限りで、WINGパック3か月契約の本人申込は対象外。審査なし・再訪問90日。",
+      "condition_review_status": "detail_reviewed",
       "confirmation_rate": {
         "status": "unknown",
         "percent": null
       },
       "partnership_status": "not_applied",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-07",
+      "checked_on": "2026-08-12",
       "affiliate_approval_runtime_secret": "MOSHIMO_CONOHA_WING_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "MOSHIMO_CONOHA_WING_AFFILIATE_DESTINATION"
     },
@@ -298,15 +298,15 @@
         "unit": null
       },
       "commission_basis": "maximum_observed_tier",
-      "performance_condition": "共用サーバーまたはVPSの申込完了を成果条件として検索結果概要で確認した。審査なし・本人申込可・再訪問90日・広告出稿不可で、詳細条件は提携前に再確認する。",
-      "condition_review_status": "summary_only",
+      "performance_condition": "共用サーバーまたはVPSの申込完了を成果条件として詳細画面で確認した。本人申込可、審査なし、成果承認期限120日、再訪問90日、広告出稿不可。",
+      "condition_review_status": "detail_reviewed",
       "confirmation_rate": {
         "status": "unknown",
         "percent": null
       },
       "partnership_status": "not_applied",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-07",
+      "checked_on": "2026-08-12",
       "affiliate_approval_runtime_secret": "MOSHIMO_ONAMAE_SERVER_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "MOSHIMO_ONAMAE_SERVER_AFFILIATE_DESTINATION"
     },
@@ -321,15 +321,15 @@
         "unit": null
       },
       "commission_basis": "maximum_observed_tier",
-      "performance_condition": "複数planの新規成約を成果条件として検索結果概要で確認した。審査なし・本人申込可・再訪問90日・広告出稿不可で、詳細条件は提携前に再確認する。",
-      "condition_review_status": "summary_only",
+      "performance_condition": "複数planの新規成約後、試用期間内の料金支払い完了を成果承認条件として詳細画面で確認した。返金を伴うキャンセル、トラフィックサイト、リスティング違反、不正登録等は対象外。本人申込は1回限り、審査なし、成果承認期限45日、再訪問90日、広告出稿不可。",
+      "condition_review_status": "detail_reviewed",
       "confirmation_rate": {
         "status": "unknown",
         "percent": null
       },
       "partnership_status": "not_applied",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-07",
+      "checked_on": "2026-08-12",
       "affiliate_approval_runtime_secret": "MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_DESTINATION"
     },

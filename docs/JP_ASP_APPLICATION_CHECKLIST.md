@@ -53,9 +53,9 @@ servers候補として台帳へ追加した。バリューコマースではABLE
 |ASP|Program|確認範囲|提携状態|
 |---|---|---|---|
 |もしも|ロリポップ！レンタルサーバー会員登録|新規契約・3か月以上の契約・入金。本人等の申込と更新は対象外。審査なし、再訪問90日、承認期限60日|`approved`（2026-08-09 read-back）|
-|もしも|シンレンタルサーバー|複数planの新規成約。詳細は申請前に再確認|`not_applied`|
-|もしも|ConoHa WING|契約期間に応じた新規アカウント登録。詳細は申請前に再確認|`not_applied`|
-|もしも|お名前.com レンタルサーバー|共用サーバーまたはVPSの申込完了。詳細は申請前に再確認|`not_applied`|
+|もしも|シンレンタルサーバー|複数planの新規成約後、試用期間内の料金支払い完了。本人申込は1回限り、成果承認期限45日|`terms_confirmation_required`|
+|もしも|ConoHa WING|新規account登録後30日以内のWING申込。30日以上の利用状況・planでtier確定。本人申込は1回限りで、3か月契約の本人申込は対象外|`terms_confirmation_required`|
+|もしも|お名前.com レンタルサーバー|共用サーバーまたはVPSの申込完了。本人申込可、成果承認期限120日|`terms_confirmation_required`|
 |バリューコマース|ABLENETレンタルサーバー（共用サーバー）|新規申込・決済完了と翌月利用確認、除外条件、検索広告禁止を個別画面で確認|`approved`|
 
 ## 単価×需要判定
@@ -107,11 +107,11 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 2026-08-07にSaaS TCO Lab選択済みのprogram詳細を再度read-backし、Humanの対象program名付きGOに基づいて
 申請しました。申請完了画面は確認済みですが、提携承認とは数えません。
 
-2026-08-12、もしもの残り3program（シンレンタルサーバー、ConoHa WING、お名前.com レンタルサーバー）を
-申請するため正規検索画面を開いたところ、session expiryでloginへ戻った。Safariの保存済みcredentialは
-macOSの本人認証を要求したため、passwordを取得・入力・保存せず停止した。3programは引き続き`not_applied`であり、
-HumanがOS認証を完了して`asp_reauth: done もしも`を返した後、各programの最新条件をread-backし、
-法的同意を伴う最終button直前にprogram名付き`asp_program_terms_accept`を一括提示する。
+2026-08-12、SafariでHuman本人認証が完了した後、もしもの残り3program（シンレンタルサーバー、
+ConoHa WING、お名前.com レンタルサーバー）を正規画面で再検索し、各詳細条件をread-backした。
+いずれも`saaslab`を提携対象として、`未申請`・`審査なし`・申請button表示を確認した。非公開の報酬値、
+広告link、tracking IDはrepoへ保存していない。3programは申請button直前の`terms_confirmation_required`であり、
+法的同意を伴う最終buttonはprogram名付き`asp_program_terms_accept`受領後に1回だけ押す。
 
 ## 推奨申請順
 

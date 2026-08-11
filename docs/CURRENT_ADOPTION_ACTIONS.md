@@ -393,11 +393,12 @@ robots allowlistも10記事で一致した。P09/P11はnoindex・canonicalなし
 contract・端末・外部へ保存せず、既存の承認済み証拠再利用、v2.3 validation、Human確定を通過しても
 記事と全fieldは`unreviewed`のままである。実測値自体はまだ未入力なので、P09/P11のnoindex・CTA無効は維持する。
 
-2026-08-12、もしもの残り3program（シンレンタルサーバー、ConoHa WING、お名前.com レンタルサーバー）の
-申請再開を試みたが、正規検索画面はsession expiryでloginへ戻った。Safariの保存済みcredentialはmacOSの
-本人認証を要求したため、passwordを取得・入力・保存せず停止した。外部申請、規約同意、提携状態変更は0件で、
-3programは`not_applied`を維持する。HumanがSafari上で本人認証を完了するまでは、login後の条件確認と
-法的同意を伴う最終申請buttonへ進まない。
+2026-08-12、SafariでHuman本人認証が完了し、もしもの残り3program（シンレンタルサーバー、ConoHa WING、
+お名前.com レンタルサーバー）を正規検索画面と各詳細画面でread-backした。いずれも`saaslab`を対象に
+`未申請`・`審査なし`・申請button表示を確認し、成果条件、否認条件、承認期限を台帳のsafe-summaryへ更新した。
+非公開の報酬値、広告link、tracking IDは保存していない。外部申請、規約同意、提携状態変更はまだ0件であり、
+3programは申請button直前の`terms_confirmation_required`である。法的同意を伴う最終申請buttonは、
+program名付き`asp_program_terms_accept`を行為時に受領した後で1回だけ押す。
 
 P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go: GO P01 PR先頭追記`により、
 公開記事の本文先頭へ`[PR]`を追記し、公開read-backで反映を確認しました。localの再配信templateは

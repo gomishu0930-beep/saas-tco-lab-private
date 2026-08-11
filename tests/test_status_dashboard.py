@@ -113,12 +113,12 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         "token": "mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension",
     }
     assert [item["token"] for item in data["externalActions"][1:4]] == [
-        "asp_program_apply: GO もしも シンレンタルサーバー",
-        "asp_program_apply: GO もしも ConoHa WING",
-        "asp_program_apply: GO もしも お名前.com レンタルサーバー",
+        "asp_program_terms_accept: GO もしも シンレンタルサーバー",
+        "asp_program_terms_accept: GO もしも ConoHa WING",
+        "asp_program_terms_accept: GO もしも お名前.com レンタルサーバー",
     ]
     assert all(
-        item["status"] == "reauth_then_terms_confirmation_required"
+        item["status"] == "terms_confirmation_required"
         for item in data["externalActions"][1:4]
     )
     assert data["externalActions"][4]["status"] == "contract_input_required"
