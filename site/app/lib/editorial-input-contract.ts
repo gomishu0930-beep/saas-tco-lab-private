@@ -1,4 +1,5 @@
 import { pilotFieldScope, type PilotPage, type PilotNumericField } from "./pilot-pages.ts";
+import type { ServerZeroInputContract } from "./tco.ts";
 
 export type EditorialScopeKind = "vendor_plan" | "human_scenario";
 export type EditorialValueStatus = "known" | "unknown" | "not_applicable";
@@ -88,6 +89,41 @@ export type EditorialValidation = {
   errors: Readonly<Record<string, readonly string[]>>;
   calculationBlockers: readonly string[];
   contract: EditorialContract | null;
+};
+
+type ServerCandidateArtifact = {
+  schema_version: "1.0";
+  category_id: "servers";
+  template_kind: "pricing_tco";
+  state: "candidate_only";
+  numeric_fields: EditorialContract["numeric_fields"];
+};
+
+export type ServerCandidateEvidence = {
+  vendorId: string;
+  planId: string;
+  displayName: string;
+  knownCount: number;
+  unknownCount: number;
+  notApplicableCount: number;
+  fields: EditorialContract["numeric_fields"];
+  calculatorContract: ServerZeroInputContract;
+  tcoBlockers: readonly string[];
+  suitabilityBlockers: readonly string[];
+};
+
+export const serverEvidenceLabels: Readonly<Record<string, string>> = {
+  "pricing.initial_fee": "初期費用",
+  "pricing.base_price": "12か月の基本料金",
+  "pricing.renewal_fee": "更新時請求額",
+  "servers.campaign_price": "キャンペーン価格",
+  "servers.campaign_period_months": "キャンペーン適用期間",
+  "servers.domain_benefit_amount": "ドメイン特典の確認額",
+  "servers.domain_benefit_period_months": "ドメイン特典の適用期間",
+  "servers.compute_hours": "計算資源の時間上限",
+  "servers.storage_gb": "ストレージ容量",
+  "servers.data_transfer_gb": "データ転送量",
+  "servers.backup_price": "バックアップ料金",
 };
 
 type EditorialEvidenceReuseRule = {
@@ -1130,4 +1166,119 @@ export function reusableEditorialEvidence(
   return appliedFields.length || explicitUnknownFields.length
     ? { appliedFields, explicitUnknownFields, rows }
     : null;
+}
+
+function safeServerEvidenceSlug(value: unknown): value is string {
+  return typeof value === "string" && /^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$/.test(value);
+}
+
+function safeServerEvidenceUrl(value: unknown, expectedHost: string): value is string {
+  if (typeof value !== "string") return false;
+  try {
+    const url = new URL(value);
+    return url.protocol === "https:"
+      && url.hostname === expectedHost
+      && url.port === ""
+      && url.username === ""
+      && url.password === ""
+      && url.hash === ""
+      && [...url.searchParams.keys()].every((key) => !/^(?:utm_|ref|aff|partner|clickid|subid)/i.test(key));
+  } catch {
+    return false;
+  }
+}
+
+function latestServerEvidenceDay(values: readonly (string | null | undefined)[]): string | null {
+  const days = values.filter((value): value is string => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value));
+  return days.length ? [...days].sort().at(-1) ?? null : null;
+}
+
+function earliestServerEvidenceDay(values: readonly (string | null | undefined)[]): string | null {
+  const days = values.filter((value): value is string => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value));
+  return days.length ? [...days].sort()[0] ?? null : null;
+}
+
+/**
+ * Convert a Pydantic-validated candidate artifact into display-only evidence.
+ * The resulting calculator row is deliberately unknown and unranked: candidate
+ * evidence is not article approval, canonical price, index, or CTA authority.
+ */
+export function reviewedServerCandidateEvidence(
+  input: unknown,
+  displayName: string,
+  expectedSourceHost: string,
+): ServerCandidateEvidence | null {
+  if (!input || typeof input !== "object") return null;
+  const candidate = input as Partial<ServerCandidateArtifact>;
+  if (
+    candidate.schema_version !== "1.0"
+    || candidate.category_id !== "servers"
+    || candidate.template_kind !== "pricing_tco"
+    || candidate.state !== "candidate_only"
+    || !Array.isArray(candidate.numeric_fields)
+    || candidate.numeric_fields.length !== Object.keys(serverEvidenceLabels).length
+  ) return null;
+
+  const fields = candidate.numeric_fields as EditorialContract["numeric_fields"];
+  const identities = new Set(fields.map((field) => `${field.vendor_id ?? ""}\u0000${field.plan_id ?? ""}`));
+  const fieldNames = new Set(fields.map((field) => field.field));
+  if (
+    identities.size !== 1
+    || fieldNames.size !== Object.keys(serverEvidenceLabels).length
+    || Object.keys(serverEvidenceLabels).some((field) => !fieldNames.has(field))
+    || fields.some((field) => (
+      !safeServerEvidenceSlug(field.vendor_id)
+      || !safeServerEvidenceSlug(field.plan_id)
+      || !safeServerEvidenceUrl(field.source_url, expectedSourceHost)
+      || field.entered_by !== "human"
+      || field.rights_path !== "human_editorial"
+      || field.review_status !== "approved"
+    ))
+  ) return null;
+
+  const vendorId = fields[0].vendor_id!;
+  const planId = fields[0].plan_id!;
+  const assessment = assessServerPromotionCandidate(fields);
+  const observedOn = latestServerEvidenceDay(fields.map((field) => field.observed_on));
+  const nextReviewOn = earliestServerEvidenceDay(fields.map((field) => field.next_review_on));
+  const unknownReason = assessment.tcoBlockers.length || assessment.suitabilityBlockers.length
+    ? "期間限定表示、更新時請求額または用途条件に未確認項目があるため総額を算出しません"
+    : "記事確認前のため計算対象外";
+
+  return {
+    vendorId,
+    planId,
+    displayName,
+    knownCount: fields.filter((field) => field.value_status === "known").length,
+    unknownCount: fields.filter((field) => field.value_status === "unknown").length,
+    notApplicableCount: fields.filter((field) => field.value_status === "not_applicable").length,
+    fields,
+    tcoBlockers: assessment.tcoBlockers,
+    suitabilityBlockers: assessment.suitabilityBlockers,
+    calculatorContract: {
+      articleReviewStatus: "unreviewed",
+      plans: [{
+        vendorId,
+        planId,
+        displayName,
+        priceStatus: "unknown",
+        reviewStatus: "unreviewed",
+        eligibleUseCases: [],
+        quote: null,
+        serverTerms: null,
+        unknownReason,
+        observedOn,
+        nextReviewOn,
+      }],
+    },
+  };
+}
+
+export function serverEvidenceValue(
+  field: EditorialContract["numeric_fields"][number],
+): string {
+  if (field.value_status === "unknown") return "未確認";
+  if (field.value_status === "not_applicable") return `該当なし${field.unknown_reason ? `（${field.unknown_reason}）` : ""}`;
+  const currency = field.currency_status === "known" && field.currency ? `${field.currency} ` : "";
+  return `${currency}${field.value ?? ""}${field.unit ? ` ${field.unit}` : ""}`.trim();
 }

@@ -9,7 +9,8 @@ domain GOからindex GOやCTA GOを推論しない。
 開示先行gate、Mangools CTAを確認済みです。P09/P11は自データ未取得のため未承認で、CTAも無効です。
 Search Console domain propertyと専用GA4 streamも連携済みです。serversはSVR01
 candidate-only contractをlocal保存済みで、XServerビジネス、ロリポップ、ABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
-価格のcanonical採用・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。
+SVR01のlocal標本では確認済み11 fieldを証拠表として表示するが、期間限定表示・更新額・用途条件が未確認のため
+価格のcanonical採用・TCO・順位・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。
 
 ## 今使うtoken
 

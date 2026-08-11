@@ -344,6 +344,18 @@ runtime destinationがすべて成立したpartnerだけを表示します。1�
 キャッシュバック、更新額、ドメイン特典の実額・期間は推測せずunknownを維持する。基本料金自体も
 `time_limited_promo`分類のため、TCO・用途判定・contract昇格・順位・記事・index・CTAは引き続きHOLDである。
 
+2026-08-11、上記candidate-only contractをSVR01のlocal記事標本へ読取専用で接続した。表示対象は
+Human確認済み11 fieldのうちknown 4、unknown 6、not_applicable 1で、値・公式出典URL・観測日・
+次回確認日を証拠表へ表示する。公式出典は`business.xserver.ne.jp`のHTTPS・追跡parameterなしだけを
+allowlistし、review未完了、field欠落、別host、tracking URLは全表示をfail-closedで拒否する。
+zero-input計算機には価格を投入せず「未確認」行として順位から除外するため、canonical価格、TCO、用途判定、
+記事承認、index、CTAのHOLDは変わらない。SVR02–SVR20も従来どおり値なし・noindex・CTA無効である。
+
+同日、拡張需要の残り150語について、CRM残り10、forms 40、email marketing 40、SEO追加60を
+凍結slateからquery-only textへ生成する`prepare-kwfinder-upload`を追加した。出力は固定P18 scope外の
+`outputs/`へ置き、元slateとの完全一致、重複0、範囲外slice拒否を回帰testで固定した。需要値の取得、
+KWFinderのProcess、CSV export、raw保存は行っていない。
+
 既存のHuman承認済みMangools観測を別記事で再入力しないため、`/operator`へ証拠再利用prefillを追加しました。
 P04は最低利用者数と月契約料金、P08は基本料金・必須addon料金・必要利用者数、P10は表示価格と税fieldだけを
 同じvendor・planかつ同じ値型の承認済みfieldから候補化します。P04の未観測Human時間、P08のaddon課金単位、

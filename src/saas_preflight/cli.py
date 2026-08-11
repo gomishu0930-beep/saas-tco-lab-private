@@ -171,6 +171,15 @@ def _parser() -> argparse.ArgumentParser:
     keyword_universe.add_argument("--minimum-keywords", type=int, default=100)
     keyword_universe.add_argument("--maximum-keywords", type=int, default=200)
 
+    kwfinder_upload = commands.add_parser(
+        "prepare-kwfinder-upload",
+        help="Write an exact query-only slice of a frozen slate for Human KWFinder input.",
+    )
+    kwfinder_upload.add_argument("universe", type=Path)
+    kwfinder_upload.add_argument("--output", type=Path, required=True)
+    kwfinder_upload.add_argument("--start-index", type=int, default=0)
+    kwfinder_upload.add_argument("--limit", type=int)
+
     mangools_export = commands.add_parser(
         "validate-mangools-export",
         help="Validate one Human-exported KWFinder CSV and emit a safe aggregate only.",
@@ -785,6 +794,35 @@ def run(argv: Sequence[str] | None = None) -> int:
                 maximum_keywords=args.maximum_keywords,
             )
             _emit(summarize_keyword_universe(rows).as_dict())
+            return 0
+
+        if args.command == "prepare-kwfinder-upload":
+            rows = load_keyword_universe(
+                args.universe, minimum_keywords=1, maximum_keywords=200
+            )
+            if args.start_index < 0 or args.start_index >= len(rows):
+                raise ValueError("start-index must select a row in the frozen slate")
+            if args.limit is not None and args.limit <= 0:
+                raise ValueError("limit must be positive")
+            selected = rows[
+                args.start_index:
+                None if args.limit is None else args.start_index + args.limit
+            ]
+            if args.limit is not None and len(selected) != args.limit:
+                raise ValueError("requested slice extends beyond the frozen slate")
+            content = "\n".join(row.query for row in selected) + "\n"
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(content, encoding="utf-8")
+            _emit(
+                {
+                    "count": len(selected),
+                    "output": str(args.output.resolve()),
+                    "query_values_emitted_to_stdout": False,
+                    "source_sha256": summarize_keyword_universe(rows).sha256,
+                    "start_index": args.start_index,
+                    "status": "ready_for_human_kwfinder_input",
+                }
+            )
             return 0
 
         if args.command == "validate-mangools-export":

@@ -104,7 +104,8 @@ test("renders every synthetic-only local decision route with landmarks", async (
 test("operator and pilot index report ten live articles while P09 and P11 remain held", async () => {
   const operator = await (await render("/operator")).text();
   assert.match(operator, /P01–P08・P10・P12（10\/12）/);
-  assert.match(operator, /P01–P05・P06–P08・P10・P12承認・公開済み/);
+  assert.match(operator, /P01–P08・P10・P12承認・公開済み/);
+  assert.match(operator, /SVR01は11項目確認済み・TCO条件待ち/);
   assert.doesNotMatch(operator, /release待ち|P01–P03 公開中/);
 
   const pilot = await (await render("/pilot")).text();
@@ -297,7 +298,16 @@ test("servers operator and all twenty article routes remain candidate-only and f
   for (const path of SERVER_CANDIDATE_PATHS) {
     const article = await (await render(path)).text();
     assert.match(article, /data-server-article-state="candidate_only"/, path);
-    assert.match(article, /承認済みのservers価格contractはまだありません/, path);
+    if (path.endsWith("candidate=SVR01")) {
+      assert.match(article, /確認済み(?:<!-- -->)?4(?:<!-- -->)?項目、未確認(?:<!-- -->)?6(?:<!-- -->)?項目、[\s\S]{0,40}該当なし(?:<!-- -->)?1(?:<!-- -->)?項目/, path);
+      assert.match(article, /data-ranking-eligible="false"[\s\S]{0,400}<strong>未確認<\/strong>/, path);
+      assert.match(article, /JPY 50160 \/ yr/, path);
+      assert.match(article, /期間限定表示と更新額未確認が残るため、総額・順位・推奨は表示しません/, path);
+      assert.match(article, /href="https:\/\/business\.xserver\.ne\.jp\//, path);
+    } else {
+      assert.match(article, /承認済みのservers価格contractはまだありません/, path);
+      assert.doesNotMatch(article, /https:\/\/business\.xserver\.ne\.jp\//, path);
+    }
     assert.match(article, /公開条件をすべて通過したpartnerがないためCTAは無効/, path);
     assert.ok(article.indexOf("article-pr-disclosure") < article.indexOf("data-server-template-step=\"calculator\""), path);
     assert.ok(article.indexOf("data-server-template-step=\"calculator\"") < article.indexOf("data-server-template-step=\"cta_slot\""), path);

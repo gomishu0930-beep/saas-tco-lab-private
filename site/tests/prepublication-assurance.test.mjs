@@ -58,6 +58,14 @@ const ROUTES = [
 ];
 const ARTICLE_ROUTES = ROUTES.filter((path) => path.startsWith("/pilot/"));
 const ROUTE_PATHS = new Set(ROUTES.map(normalizedRoute));
+const SVR01_ROUTE = "/servers/business-server-pricing?candidate=SVR01";
+const ALLOWED_EVIDENCE_HOSTS = new Set([
+  "saastcolab.jp",
+  "mangools.com",
+  "seranking.com",
+  "www.semrush.com",
+  "business.xserver.ne.jp",
+]);
 const pages = new Map();
 
 async function render(path) {
@@ -206,7 +214,7 @@ test("every P01-P12 article renders PR disclosure before a disabled CTA", () => 
   }
 });
 
-test("every servers candidate stays noindex, zero-value, CTA-disabled, and disclosure-first", () => {
+test("every servers candidate stays noindex, unranked, CTA-disabled, and disclosure-first", () => {
   assert.equal(SERVER_CANDIDATE_ROUTES.length, 20);
   for (const path of SERVER_CANDIDATE_ROUTES) {
     const html = pages.get(path);
@@ -216,7 +224,13 @@ test("every servers candidate stays noindex, zero-value, CTA-disabled, and discl
     assert.ok(disclosurePosition >= 0 && disclosurePosition < calculatorPosition, `${path}: disclosure first`);
     assert.match(html, /記事制作に生成AIを補助的に使用する場合があります/, `${path}: AI assistance disclosure`);
     assert.ok(calculatorPosition < ctaPosition, `${path}: calculator before CTA`);
-    assert.match(html, /承認済みのservers価格contractはまだありません/, path);
+    if (path === SVR01_ROUTE) {
+      assert.match(html, /確認済み(?:<!-- -->)?4(?:<!-- -->)?項目、未確認(?:<!-- -->)?6(?:<!-- -->)?項目、[\s\S]{0,40}該当なし(?:<!-- -->)?1(?:<!-- -->)?項目/, path);
+      assert.match(html, /data-ranking-eligible="false"[\s\S]{0,400}<strong>未確認<\/strong>/, path);
+      assert.match(html, /期間限定表示と更新額未確認が残るため、総額・順位・推奨は表示しません/, path);
+    } else {
+      assert.match(html, /承認済みのservers価格contractはまだありません/, path);
+    }
     assert.match(html, /公開条件をすべて通過したpartnerがないためCTAは無効/, path);
     assert.doesNotMatch(html, /data-server-cta-mode="(?:single|comparison)"|rel=["'][^"']*sponsored/i, path);
   }
@@ -276,7 +290,18 @@ test("navigation, skip links, and every rendered link stay internal and valid", 
         assert.match(html, new RegExp(`\\bid=["']${target}["']`, "i"), `${path}: ${href}`);
         continue;
       }
-      assert.equal(href.startsWith("/"), true, `${path}: external link ${href}`);
+      if (/^https:\/\//i.test(href)) {
+        const external = new URL(href);
+        assert.equal(path, SVR01_ROUTE, `${path}: unexpected external evidence link`);
+        assert.equal(ALLOWED_EVIDENCE_HOSTS.has(external.hostname), true, `${path}: external evidence host`);
+        assert.equal(external.search, "", `${path}: evidence link query`);
+        assert.equal(external.hash, "", `${path}: evidence link fragment`);
+        const rel = (attributes(anchor).get("rel") ?? "").split(/\s+/);
+        assert.ok(rel.includes("noopener") && rel.includes("noreferrer"), `${path}: external evidence rel`);
+        assert.equal(rel.includes("sponsored"), false, `${path}: evidence link is not CTA`);
+        continue;
+      }
+      assert.equal(href.startsWith("/"), true, `${path}: non-internal link ${href}`);
       assert.equal(href.startsWith("//"), false, `${path}: protocol-relative link`);
       assert.equal(
         ROUTE_PATHS.has(normalizedRoute(href)),
@@ -336,12 +361,6 @@ test("comparison tables expose captions, scoped headers, adjacent disclosure, an
 });
 
 test("pre-public HTML contains no canonical, runtime origin, tracking URL, or active CTA", () => {
-  const allowedEvidenceHosts = new Set([
-    "saastcolab.jp",
-    "mangools.com",
-    "seranking.com",
-    "www.semrush.com",
-  ]);
   for (const path of ROUTES) {
     const html = pages.get(path);
     assert.doesNotMatch(
@@ -357,7 +376,7 @@ test("pre-public HTML contains no canonical, runtime origin, tracking URL, or ac
     const externalTextUrls = [...htmlWithoutScripts.matchAll(/https:\/\/([^\s<]+)/gi)];
     for (const match of externalTextUrls) {
       const host = match[1].replace(/\/$/, "").split("/")[0];
-      assert.equal(allowedEvidenceHosts.has(host), true, `${path}: unapproved external evidence host ${host}`);
+      assert.equal(ALLOWED_EVIDENCE_HOSTS.has(host), true, `${path}: unapproved external evidence host ${host}`);
     }
     assert.doesNotMatch(html, /saas-tco-lab-jp\.shukun0930\.chatgpt\.site/i, `${path}: runtime origin`);
     assert.doesNotMatch(html, /[?&](?:utm_|ref|aff|partner|clickid|subid)/i, `${path}: tracking URL`);

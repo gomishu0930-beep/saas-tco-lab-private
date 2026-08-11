@@ -10,7 +10,9 @@ import {
   emptyEditorialRow,
   extractPriceTextCandidates,
   prefillExtractedCandidate,
+  reviewedServerCandidateEvidence,
   reusableEditorialEvidence,
+  serverEvidenceValue,
   validateEditorialInput,
   valuesFromContract,
 } from "../app/lib/editorial-input-contract.ts";
@@ -20,6 +22,11 @@ const approvedSourceContracts = ["P01", "P02", "P03", "P06", "P07"].map((article
   new URL(`../../artifacts/editorial-inputs/${articleId}-editorial-input.json`, import.meta.url),
   "utf8",
 )));
+
+const approvedServerCandidate = JSON.parse(readFileSync(
+  new URL("../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v2-2026-08-08.json", import.meta.url),
+  "utf8",
+));
 
 function oneFieldPage(field) {
   return {
@@ -485,6 +492,45 @@ test("servers promotion assessment accepts explicit approved values and not-appl
   assert.equal(assessment.suitabilityReady, true);
   assert.equal(assessment.contractPromotionReady, true);
   assert.deepEqual(assessment.reviewBlockers, []);
+});
+
+test("reviewed servers evidence is display-only, unranked, and host constrained", () => {
+  const evidence = reviewedServerCandidateEvidence(
+    approvedServerCandidate,
+    "XServerビジネス 共有スタンダード（12か月）",
+    "business.xserver.ne.jp",
+  );
+  assert.ok(evidence);
+  assert.deepEqual(
+    [evidence.knownCount, evidence.unknownCount, evidence.notApplicableCount],
+    [4, 6, 1],
+  );
+  assert.equal(evidence.calculatorContract.articleReviewStatus, "unreviewed");
+  assert.equal(evidence.calculatorContract.plans[0].priceStatus, "unknown");
+  assert.equal(evidence.calculatorContract.plans[0].quote, null);
+  assert.equal(evidence.calculatorContract.plans[0].serverTerms, null);
+  assert.ok(evidence.tcoBlockers.length > 0);
+  assert.ok(evidence.suitabilityBlockers.length > 0);
+
+  const basePrice = evidence.fields.find((field) => field.field === "pricing.base_price");
+  const renewal = evidence.fields.find((field) => field.field === "pricing.renewal_fee");
+  const transfer = evidence.fields.find((field) => field.field === "servers.data_transfer_gb");
+  assert.equal(serverEvidenceValue(basePrice), "JPY 50160 / yr");
+  assert.equal(serverEvidenceValue(renewal), "未確認");
+  assert.match(serverEvidenceValue(transfer), /^該当なし/);
+
+  const unreviewed = structuredClone(approvedServerCandidate);
+  unreviewed.numeric_fields[0].review_status = "unreviewed";
+  assert.equal(reviewedServerCandidateEvidence(unreviewed, "XServerビジネス", "business.xserver.ne.jp"), null);
+
+  for (const sourceUrl of [
+    "https://example.com/price/",
+    "https://business.xserver.ne.jp/price/?utm_source=test",
+  ]) {
+    const unsafe = structuredClone(approvedServerCandidate);
+    unsafe.numeric_fields[0].source_url = sourceUrl;
+    assert.equal(reviewedServerCandidateEvidence(unsafe, "XServerビジネス", "business.xserver.ne.jp"), null);
+  }
 });
 
 test("remaining articles reuse only approved same-type evidence as unreviewed form candidates", () => {

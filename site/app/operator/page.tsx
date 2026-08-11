@@ -25,11 +25,11 @@ const remainingHumanWork = [
     timing: "記事準備時",
     title: "公式価格を見て、この画面へ入力",
     minutes: "記事ごと",
-    status: "P01–P05・P06–P08・P10・P12承認・公開済み / P09・P11自データ待ち / SVR01追加観測待ち",
+    status: "P01–P08・P10・P12承認・公開済み / P09・P11自データ待ち / SVR01は11項目確認済み・TCO条件待ち",
     why: "価格確認checklistの公式URLをHumanが開き、必要箇所を貼り付けて候補抽出できます。候補はHuman確認前にcontractへ入りません。",
     steps: ["記事とvendorを選ぶ", "料金表を貼り付けて候補を事前入力する", "出典・観測日・次回確認日と前回差分を確認する", "Human確認後のJSONを保存し、本文標本を確認する"],
     done: "article_approve: <P-ID,...>",
-    next: "P09・P11の自データ取得と、SVR01のservers候補contract更新を継続",
+    next: "P09・P11の自データ取得と、SVR01の期間限定表示・更新額の再確認を継続",
   },
   {
     id: "H3",

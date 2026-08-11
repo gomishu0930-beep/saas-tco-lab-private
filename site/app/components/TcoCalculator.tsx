@@ -245,7 +245,7 @@ export function ServerZeroInputCalculator({
         <div>
           <p className="eyebrow">ZERO-INPUT TCO</p>
           <h2>確認済み価格で総額を比較</h2>
-          <p>金額・人数・税区分は入力せず、Human承認済みの価格記録だけを端末内で再計算します。</p>
+          <p>金額・人数・税区分は入力せず、確認済みの価格記録だけを端末内で再計算します。</p>
         </div>
         <div className="server-zero-input-controls">
           <fieldset>
@@ -307,7 +307,7 @@ export function ServerZeroInputCalculator({
             </table>
           </div>
           <p className="server-zero-input-note">
-            未確認の行は0円に置き換えず、順位から除外します。用途適合もHuman承認済みの分類だけを使います。
+            未確認の行は0円に置き換えず、順位から除外します。用途適合も確認済みの分類だけを使います。
           </p>
         </div>
       ) : (

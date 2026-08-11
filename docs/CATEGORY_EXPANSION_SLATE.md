@@ -83,6 +83,13 @@ serversの`volume_floor_met_not_proven`は、known行だけで月20万円逆算�
 あり、売上達成・総需要・カテゴリ採用の確定ではない。no_dataは0へ置換していない。残りslateはKWFinderの
 検索回数カウンター回復後に再開し、部分CSVの集計値はrepositoryへ保存しない。
 
+2026-08-11、残り150語を手入力せず正規画面へ渡せるよう、凍結slateのexact sliceをquery-only textへ
+生成する`prepare-kwfinder-upload`を追加した。CRM残り10は`--start-index 30 --limit 10`、formsと
+email marketingは`--start-index 0 --limit 40`、SEO追加は`--start-index 0 --limit 60`を使う。
+出力は固定scope外の`outputs/`へ置き、元slateとの完全一致・重複0・範囲外拒否をtestで固定する。
+これはHuman export用の入力補助であり、需要値、query別volume、取得済み判定、外部取得権限を含まない。
+KWFinderのProcessとCSV exportは引き続きHumanが正規画面で行い、完全なcategory CSVだけを行単位validatorへ渡す。
+
 ## 2026-08-06 category primary decision
 
 Human Approver `omishu`の`category_primary: GO servers`により、新規投資の第一カテゴリをserversへ固定する。

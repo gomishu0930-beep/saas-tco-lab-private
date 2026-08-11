@@ -376,7 +376,7 @@ export function ServerArticleTemplate({
     <main id="main-content" className="page-main" data-server-article-state={article.state}>
       <AdvertisingDisclosure />
       <header className="shell page-header">
-        <p className="eyebrow">SERVERS / HUMAN REVIEW REQUIRED</p>
+        <p className="eyebrow">SERVERS / PRICE REVIEW IN PROGRESS</p>
         <h1>{article.titleTemplate}</h1>
         <p>{article.readerQuestion}</p>
       </header>

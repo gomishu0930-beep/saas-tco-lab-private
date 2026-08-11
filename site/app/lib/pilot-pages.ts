@@ -172,7 +172,7 @@ const serverArticleSeeds = [
       { title: "比較前提", focus: "用途・契約期間・必要容量・転送量" },
       { title: "料金と上限", focus: "初期費用・基本料金・容量・転送・backup" },
       { title: "12か月TCO", focus: "通常料金と期間限定料金を分離した合計" },
-      { title: "反証", focus: "税・更新・特典条件・超過費用のunknown" },
+      { title: "反証", focus: "税・更新・特典条件・超過費用の未確認項目" },
       { title: "選び方", focus: "最安ではなく用途条件を満たす候補" },
     ],
   },
@@ -273,7 +273,7 @@ function standardServerSections(readerQuestion: string): ServerArticleSlateEntry
     { title: "比較前提", focus: "用途・契約期間・容量・転送・backup条件を固定する" },
     { title: "料金と上限", focus: "初期費用・基本料金・更新料・campaign・domain特典を分離する" },
     { title: "12か月TCO", focus: "計算機の入力値・結果・請求時期を明示する" },
-    { title: "反証", focus: "unknown、対象外、期間限定条件、解約・移行条件を確認する" },
+    { title: "反証", focus: "未確認項目、対象外、期間限定条件、解約・移行条件を確認する" },
     { title: "選び方", focus: "安さだけでなく必須条件と乗り換え余地で絞る" },
   ];
 }

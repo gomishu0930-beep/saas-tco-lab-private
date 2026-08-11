@@ -28,6 +28,11 @@ UNIVERSE_PATH = ROOT / "examples" / "jp_ja_keyword_universe_v1.csv"
 SERVER_SLATE_PATH = ROOT / "examples" / "jp_ja_keyword_slate_v2_servers.csv"
 
 
+def _queries(path: Path) -> list[str]:
+    with path.open(encoding="utf-8", newline="") as handle:
+        return [row["query"] for row in csv.DictReader(handle)]
+
+
 def _export(
     tmp_path: Path,
     *,
@@ -135,6 +140,65 @@ def test_human_export_emits_only_safe_capacity_summary(tmp_path: Path) -> None:
     assert summary.scope_expansion_recommended is False
     assert summary.raw_saved is False
     assert summary.query_values_saved is False
+
+
+def test_kwfinder_upload_command_writes_exact_frozen_slate_derivatives(
+    tmp_path: Path,
+) -> None:
+    examples = ROOT / "examples"
+    cases = [
+        (
+            examples / "jp_ja_keyword_slate_v2_crm.csv",
+            30,
+            10,
+        ),
+        (
+            examples / "jp_ja_keyword_slate_v2_forms.csv",
+            0,
+            40,
+        ),
+        (
+            examples / "jp_ja_keyword_slate_v2_email_marketing.csv",
+            0,
+            40,
+        ),
+        (
+            examples / "jp_ja_keyword_universe_v2_seo_extension.csv",
+            0,
+            60,
+        ),
+    ]
+    for index, (slate_path, start_index, limit) in enumerate(cases):
+        upload_path = tmp_path / f"upload-{index}.txt"
+        assert run([
+            "prepare-kwfinder-upload",
+            str(slate_path),
+            "--output",
+            str(upload_path),
+            "--start-index",
+            str(start_index),
+            "--limit",
+            str(limit),
+        ]) == 0
+        upload_queries = upload_path.read_text(encoding="utf-8").splitlines()
+        expected = _queries(slate_path)[start_index:start_index + limit]
+        assert upload_queries == expected
+        assert len(upload_queries) == len(set(query.casefold() for query in upload_queries))
+
+
+def test_kwfinder_upload_command_rejects_out_of_range_slice(tmp_path: Path) -> None:
+    target = tmp_path / "invalid.txt"
+    assert run([
+        "prepare-kwfinder-upload",
+        str(ROOT / "examples" / "jp_ja_keyword_slate_v2_crm.csv"),
+        "--output",
+        str(target),
+        "--start-index",
+        "39",
+        "--limit",
+        "2",
+    ]) == 2
+    assert not target.exists()
 
 
 def test_low_volume_recommends_scope_expansion_even_at_impossible_full_capture(tmp_path: Path) -> None:
