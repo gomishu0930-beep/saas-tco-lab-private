@@ -79,13 +79,16 @@ test("partner ledger keeps Japanese ASP account and program approval evidence ex
   );
   assert.equal(
     ledger.program_research.filter((entry) => entry.partnership_status === "approved").length,
-    3,
+    6,
   );
   assert.ok(
     ledger.program_research
       .filter((entry) => !new Set([
         "a8net-xserver-business",
+        "moshimo-conoha-wing",
         "moshimo-lolipop-rental-server",
+        "moshimo-onamae-rental-server",
+        "moshimo-shin-rental-server",
         "valuecommerce-ablenet-shared-server",
       ]).has(entry.research_id))
       .every((entry) => entry.partnership_status === "not_applied"),

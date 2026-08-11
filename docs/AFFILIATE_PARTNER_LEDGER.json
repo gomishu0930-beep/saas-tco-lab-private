@@ -258,7 +258,7 @@
         "status": "unknown",
         "percent": null
       },
-      "partnership_status": "not_applied",
+      "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
       "checked_on": "2026-08-12",
       "affiliate_approval_runtime_secret": "MOSHIMO_CONOHA_WING_AFFILIATE_APPROVAL_CURRENT",
@@ -304,7 +304,7 @@
         "status": "unknown",
         "percent": null
       },
-      "partnership_status": "not_applied",
+      "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
       "checked_on": "2026-08-12",
       "affiliate_approval_runtime_secret": "MOSHIMO_ONAMAE_SERVER_AFFILIATE_APPROVAL_CURRENT",
@@ -327,7 +327,7 @@
         "status": "unknown",
         "percent": null
       },
-      "partnership_status": "not_applied",
+      "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
       "checked_on": "2026-08-12",
       "affiliate_approval_runtime_secret": "MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_APPROVAL_CURRENT",

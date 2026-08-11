@@ -17,7 +17,7 @@ program条件要約、確認日とruntime secretの参照名だけを記録す�
 |ASP|Account状態|個別program|提携状態|CTA|
 |---|---|---|---|---|
 |A8.net|`registered`|7候補調査済み、XServerビジネスは参加中programとして確認済み|`approved`（XServerビジネス）|記事・destination・CTA gate未完了のため不可|
-|もしもアフィリエイト|`registered`|servers候補4件調査済み、ロリポップ！レンタルサーバー提携承認済み|`approved`|runtime destination・servers記事承認・partner別CTA GOまで不可|
+|もしもアフィリエイト|`registered`|servers候補4件（ロリポップ、シンレンタルサーバー、ConoHa WING、お名前.com）提携承認済み|`approved`|runtime destination・servers記事承認・partner別CTA GOまで不可|
 |バリューコマース|`registered`|ABLENET共用サーバーの個別条件確認済み|`approved`（ABLENET共用サーバー）|記事・destination・CTA gate未完了のため不可|
 |Mangools|`approved`|確認済み|`approved`|既存gate合格時だけ可|
 
@@ -53,9 +53,9 @@ servers候補として台帳へ追加した。バリューコマースではABLE
 |ASP|Program|確認範囲|提携状態|
 |---|---|---|---|
 |もしも|ロリポップ！レンタルサーバー会員登録|新規契約・3か月以上の契約・入金。本人等の申込と更新は対象外。審査なし、再訪問90日、承認期限60日|`approved`（2026-08-09 read-back）|
-|もしも|シンレンタルサーバー|複数planの新規成約後、試用期間内の料金支払い完了。本人申込は1回限り、成果承認期限45日|`terms_confirmation_required`|
-|もしも|ConoHa WING|新規account登録後30日以内のWING申込。30日以上の利用状況・planでtier確定。本人申込は1回限りで、3か月契約の本人申込は対象外|`terms_confirmation_required`|
-|もしも|お名前.com レンタルサーバー|共用サーバーまたはVPSの申込完了。本人申込可、成果承認期限120日|`terms_confirmation_required`|
+|もしも|シンレンタルサーバー|複数planの新規成約後、試用期間内の料金支払い完了。本人申込は1回限り、成果承認期限45日|`approved`（2026-08-12 read-back）|
+|もしも|ConoHa WING|新規account登録後30日以内のWING申込。30日以上の利用状況・planでtier確定。本人申込は1回限りで、3か月契約の本人申込は対象外|`approved`（2026-08-12 read-back）|
+|もしも|お名前.com レンタルサーバー|共用サーバーまたはVPSの申込完了。本人申込可、成果承認期限120日|`approved`（2026-08-12 read-back）|
 |バリューコマース|ABLENETレンタルサーバー（共用サーバー）|新規申込・決済完了と翌月利用確認、除外条件、検索広告禁止を個別画面で確認|`approved`|
 
 ## 単価×需要判定
@@ -89,7 +89,7 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 |対象|現在地|次の解除条件|
 |---|---|---|
 |A8.net|`ACCOUNT REGISTERED / XSERVER APPROVED`|2026-08-08に参加中プログラム一覧で提携承認をread-back済み。servers記事承認、runtime destination、開示先行、partner別CTA gateがそろうまではCTA不可|
-|もしもアフィリエイト|`ACCOUNT + MEDIA REGISTERED / LOLIPOP APPROVED`|2026-08-09にsaastcolab.jpのメディア登録とロリポップ通常Affiliateプログラムの提携中表示をread-back済み|
+|もしもアフィリエイト|`ACCOUNT + MEDIA REGISTERED / 4 SERVER PROGRAMS APPROVED`|2026-08-09にロリポップ、2026-08-12にシンレンタルサーバー、ConoHa WING、お名前.comの提携中表示をread-back済み|
 |バリューコマース|`ACCOUNT REGISTERED / ABLENET APPROVED`|個別条件と「提携済み」を2026-08-08にread-back済み。servers記事承認、runtime destination、開示先行、partner別CTA gateがそろうまではCTA不可|
 
 公開originのread-only確認結果:
@@ -108,15 +108,14 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 申請しました。申請完了画面は確認済みですが、提携承認とは数えません。
 
 2026-08-12、SafariでHuman本人認証が完了した後、もしもの残り3program（シンレンタルサーバー、
-ConoHa WING、お名前.com レンタルサーバー）を正規画面で再検索し、各詳細条件をread-backした。
-いずれも`saaslab`を提携対象として、`未申請`・`審査なし`・申請button表示を確認した。非公開の報酬値、
-広告link、tracking IDはrepoへ保存していない。3programは申請button直前の`terms_confirmation_required`であり、
-法的同意を伴う最終buttonはprogram名付き`asp_program_terms_accept`受領後に1回だけ押す。
+ConoHa WING、お名前.com レンタルサーバー）についてprogram名付き`asp_program_terms_accept`を受領し、
+`saaslab`を対象に申請した。正規検索画面のread-backでは3programとも`提携中`である。非公開の報酬値、
+広告link、tracking IDはrepoへ保存していない。CTAはruntime destination設定、記事承認、partner別GOまで無効を維持する。
 
 ## 推奨申請順
 
 1. A8.net: 会員登録に入会時審査がないため最初に実行する。ただしprogram提携は別審査として扱う。
-2. もしもアフィリエイト: Account・メディア登録済み。第一候補のロリポップ！レンタルサーバーは提携承認済み。CTAは別GOまで無効。
+2. もしもアフィリエイト: Account・メディア登録済み。servers候補4programは提携承認済み。CTAは別GOまで無効。
 3. バリューコマース: Account本登録済み。ABLENET共用サーバーは提携承認済みで、CTAは記事・destination・個別gateを待つ。
 
 この順番は承認を保証しない。3社accountの成立を、個別SaaS partnerとのAffiliate提携承認として数えない。

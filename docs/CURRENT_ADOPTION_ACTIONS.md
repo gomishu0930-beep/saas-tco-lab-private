@@ -166,7 +166,7 @@ XServerビジネスも開示先行、runtime destination設定、partner別`cta_
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答。2026-07-26追送済み|0|rights回答を待つ。紹介IDは共有しない|
 |A8.net|Account登録済み、XServerビジネス提携承認済み|条件要約を台帳v1.1へ記録。報酬値は非保存|1|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
-|もしもアフィリエイト|Account・saastcolab.jpメディア登録済み、ロリポップ提携承認済み・他3件未申請|ロリポップの詳細条件と承認状態を台帳へ記録。報酬値は非保存|1|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
+|もしもアフィリエイト|Account・saastcolab.jpメディア登録済み、servers候補4件すべて提携承認済み|ロリポップ、シンレンタルサーバー、ConoHa WING、お名前.comの承認状態を台帳へ記録。報酬値は非保存|4|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
 |バリューコマース|Account本登録済み、ABLENET共用サーバー提携承認済み|個別条件を台帳v1.1へ要約。報酬値は非保存|1|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
 |HubSpot|2026-08-03 Impact画面でDeclined（low reach）を確認|未回答。2026-07-26追送済み|0|公開・流入実績を作るまで再申請しない。拒否を承認済みと数えない|
 |Semrush|Impact Marketplaceは2026-08-09に却下済み。個別申請は未成立|回答あり|0|公開記事・流入実績を蓄積し、再申請条件を満たした後に新しいexact GOで再評価する|
@@ -274,7 +274,7 @@ index・runtime destination・partner別CTAは未実行であり、production de
 再認証なしで表示できました。未提携・SaaS TCO Lab選択済みを確認後に申請し、完了画面をread-backしました。
 もしもアフィリエイトは本登録済み管理画面へアクセスでき、`レンタルサーバー`検索12件から
 シンレンタルサーバー、ConoHa WING、ロリポップ！レンタルサーバー、お名前.comレンタルサーバーを
-優先候補として台帳へ追加しました。ロリポップ！は2026-08-09に提携承認済みで、他3件は未申請です。
+優先候補として台帳へ追加しました。ロリポップ！は2026-08-09、残り3件は2026-08-12に提携承認をread-back済みです。
 非公開の報酬値・広告ID・tracking URLは保存していません。
 ロリポップ！は詳細画面で、3か月以上の新規契約と入金、本人等の申込・更新等の対象外条件、審査なし、
 再訪問90日、承認期限60日、広告出稿条件を確認し、safe-summaryだけを台帳へ更新しました。
@@ -394,11 +394,11 @@ contract・端末・外部へ保存せず、既存の承認済み証拠再利用
 記事と全fieldは`unreviewed`のままである。実測値自体はまだ未入力なので、P09/P11のnoindex・CTA無効は維持する。
 
 2026-08-12、SafariでHuman本人認証が完了し、もしもの残り3program（シンレンタルサーバー、ConoHa WING、
-お名前.com レンタルサーバー）を正規検索画面と各詳細画面でread-backした。いずれも`saaslab`を対象に
-`未申請`・`審査なし`・申請button表示を確認し、成果条件、否認条件、承認期限を台帳のsafe-summaryへ更新した。
-非公開の報酬値、広告link、tracking IDは保存していない。外部申請、規約同意、提携状態変更はまだ0件であり、
-3programは申請button直前の`terms_confirmation_required`である。法的同意を伴う最終申請buttonは、
-program名付き`asp_program_terms_accept`を行為時に受領した後で1回だけ押す。
+お名前.com レンタルサーバー）を正規検索画面でread-backした。Humanからprogram名付きの
+`asp_program_terms_accept`を受領後、`saaslab`を対象に各申請buttonを1回だけ処理した。シンレンタルサーバーと
+お名前.com レンタルサーバーは直後に`提携中`へ変わったことを確認した。ConoHa WINGも再検索時点で`提携中`を
+確認した。非公開の報酬値、広告link、tracking IDは保存していない。4programの提携承認だけを記録し、
+runtime destination設定とCTA有効化は別GOのまま維持する。
 
 P01のnote記事は2026-08-04に公開済みです。2026-08-06の`note_edit_go: GO P01 PR先頭追記`により、
 公開記事の本文先頭へ`[PR]`を追記し、公開read-backで反映を確認しました。localの再配信templateは
