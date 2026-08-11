@@ -6,6 +6,8 @@ import {
   assessServerPromotionCandidate,
   annualDiscountPercent,
   annualMonthlyEquivalent,
+  buildP09OwnedDataPrefill,
+  buildP11OwnedDataPrefill,
   emptyEditorialField,
   emptyEditorialRow,
   extractPriceTextCandidates,
@@ -354,6 +356,133 @@ test("permanent annual discount uses the fixed monthly-reference derivation", ()
   const rejected = validateEditorialInput(page, [row]);
   assert.equal(rejected.contract, null);
   assert.match(JSON.stringify(rejected.errors), /月払い価格/);
+});
+
+test("P09 owned-data prefill preserves vendor unknowns and emits only unreviewed Human observations", () => {
+  const page = pilotPages.find(candidate => candidate.id === "P09");
+  const reusable = reusableEditorialEvidence(page, approvedSourceContracts);
+  const prefill = buildP09OwnedDataPrefill({
+    overlapMonths: "1",
+    workHours: "6.25",
+    hourlyCost: "3000",
+    trainingHours: "1.5",
+    currency: "JPY",
+    observedOn: "2026-08-11",
+    nextReviewOn: "2026-09-10",
+  });
+  assert.deepEqual(prefill.errors, {});
+  assert.deepEqual(prefill.warnings, []);
+  const rows = reusable.rows.map(row => row.scopeKind === "human_scenario" ? {
+    ...row,
+    scenarioBasis: prefill.scenarioBasis,
+    values: { ...row.values, ...prefill.values },
+  } : row);
+  const validation = validateEditorialInput(page, rows);
+  assert.deepEqual(validation.errors, {});
+  assert.equal(validation.contract?.article_review_status, "unreviewed");
+  assert.ok(validation.contract?.numeric_fields.every(field => field.review_status === "unreviewed"));
+  assert.equal(validation.contract?.numeric_fields.find(field => field.field === "migration.work_hours")?.value, "6.25");
+  assert.equal(validation.contract?.numeric_fields.find(field => field.field === "migration.work_hours")?.unit, "hours");
+  assert.equal(validation.contract?.numeric_fields.find(field => field.field === "migration.hourly_cost")?.currency, "JPY");
+  assert.equal(validation.contract?.numeric_fields.find(field => field.field === "migration.hourly_cost")?.source_url, null);
+  assert.equal(validation.contract?.numeric_fields.find(field => field.field === "migration.support_price")?.value_status, "unknown");
+});
+
+test("P09 owned-data prefill rejects missing or negative observations without a partial candidate", () => {
+  const result = buildP09OwnedDataPrefill({
+    overlapMonths: "-1",
+    workHours: "",
+    hourlyCost: "3000円",
+    trainingHours: "1",
+    currency: "$",
+    observedOn: "2026-08-11",
+    nextReviewOn: "2027-08-11",
+  });
+  assert.ok(Object.keys(result.errors).length >= 4);
+  assert.deepEqual(result.values, {});
+  assert.equal(result.scenarioBasis, "");
+});
+
+test("P11 owned-data prefill compares complete calendar months with exact decimal subtraction", () => {
+  const page = pilotPages.find(candidate => candidate.id === "P11");
+  const prefill = buildP11OwnedDataPrefill({
+    baselineMonth: "2026-06",
+    comparisonMonth: "2026-07",
+    baselineHours: "40.125",
+    comparisonHours: "30.025",
+    hourlyCost: "3000",
+    implementationCost: "12000",
+    monthlyTco: "5000",
+    currency: "JPY",
+    observedOn: "2026-08-11",
+    nextReviewOn: "2026-09-10",
+  });
+  assert.deepEqual(prefill.errors, {});
+  assert.equal(prefill.values["break_even.monthly_hours_saved"].value, "10.1");
+  assert.equal(prefill.values["break_even.monthly_hours_saved"].unit, "hours / calendar month");
+  assert.match(prefill.scenarioBasis, /月途中の値は外挿せず/);
+  const scenario = emptyEditorialRow(page, "human_scenario", "scenario-1");
+  scenario.scenarioBasis = prefill.scenarioBasis;
+  scenario.values = { ...scenario.values, ...prefill.values };
+  const validation = validateEditorialInput(page, [scenario]);
+  assert.deepEqual(validation.errors, {});
+  assert.equal(validation.contract?.numeric_fields.find(field => field.field === "break_even.implementation_cost")?.billing_period, "one_time");
+  assert.equal(validation.contract?.numeric_fields.find(field => field.field === "break_even.monthly_tco")?.billing_period, "monthly");
+  assert.ok(validation.contract?.numeric_fields.every(field => field.acquisition_method === "human_scenario_input"));
+});
+
+test("P11 owned-data prefill rejects non-sequential months and warns instead of hiding a negative result", () => {
+  const invalid = buildP11OwnedDataPrefill({
+    baselineMonth: "2026-07",
+    comparisonMonth: "2026-07",
+    baselineHours: "30",
+    comparisonHours: "40",
+    hourlyCost: "3000",
+    implementationCost: "12000",
+    monthlyTco: "5000",
+    currency: "JPY",
+    observedOn: "2026-08-11",
+    nextReviewOn: "2026-09-10",
+  });
+  assert.match(JSON.stringify(invalid.errors), /比較月/);
+  assert.deepEqual(invalid.values, {});
+
+  const negative = buildP11OwnedDataPrefill({
+    baselineMonth: "2026-06",
+    comparisonMonth: "2026-07",
+    baselineHours: "30",
+    comparisonHours: "40",
+    hourlyCost: "3000",
+    implementationCost: "12000",
+    monthlyTco: "5000",
+    currency: "JPY",
+    observedOn: "2026-08-11",
+    nextReviewOn: "2026-09-10",
+  });
+  assert.deepEqual(negative.errors, {});
+  assert.equal(negative.values["break_even.monthly_hours_saved"].value, "-10");
+  assert.match(negative.warnings.join(" "), /増加/);
+  const scenario = emptyEditorialRow(pilotPages.find(candidate => candidate.id === "P11"), "human_scenario", "scenario-1");
+  scenario.scenarioBasis = negative.scenarioBasis;
+  scenario.values = { ...scenario.values, ...negative.values };
+  const validation = validateEditorialInput(pilotPages.find(candidate => candidate.id === "P11"), [scenario]);
+  assert.deepEqual(validation.errors, {});
+  assert.equal(validation.contract?.numeric_fields.find(field => field.field === "break_even.monthly_hours_saved")?.value, "-10");
+
+  const incomplete = buildP11OwnedDataPrefill({
+    baselineMonth: "2026-07",
+    comparisonMonth: "2026-08",
+    baselineHours: "40",
+    comparisonHours: "30",
+    hourlyCost: "3000",
+    implementationCost: "12000",
+    monthlyTco: "5000",
+    currency: "JPY",
+    observedOn: "2026-08-11",
+    nextReviewOn: "2026-09-10",
+  });
+  assert.match(JSON.stringify(incomplete.errors), /全日が終了した暦月/);
+  assert.deepEqual(incomplete.values, {});
 });
 
 test("copied price text yields explicit local candidates without inventing missing fields", () => {

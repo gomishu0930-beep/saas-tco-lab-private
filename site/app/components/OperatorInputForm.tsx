@@ -5,6 +5,8 @@ import { useEffect, useMemo, useState } from "react";
 import {
   annualDiscountPercent,
   annualMonthlyEquivalent,
+  buildP09OwnedDataPrefill,
+  buildP11OwnedDataPrefill,
   emptyEditorialField,
   emptyEditorialRow,
   extractPriceTextCandidates,
@@ -16,6 +18,9 @@ import {
   type EditorialFieldFormValue,
   type EditorialRowFormValue,
   type ExtractedPriceCandidate,
+  type OwnedDataPrefill,
+  type P09OwnedDataInput,
+  type P11OwnedDataInput,
   type PriceTextExtraction,
 } from "../lib/editorial-input-contract";
 import { editorialContract } from "../lib/editorial-contracts";
@@ -112,6 +117,42 @@ function contractRowsByIdentity(page: PilotPage, contract: EditorialContract | n
   return new Map(rows.map((row) => [rowIdentity(row), row]));
 }
 
+function rowsHaveInput(rows: readonly EditorialRowFormValue[]) {
+  return rows.some((row) => row.vendorId || row.planId || row.billingToggleState || row.saleBannerState || Object.values(row.values).some((field) => (
+    field.billingToggleState || field.saleBannerState || field.value || field.unit || field.unknownReason || field.monthlyReferenceValue || field.sourceUrl || field.observedOn || field.nextReviewOn
+  )));
+}
+
+const emptyP09OwnedData: P09OwnedDataInput = {
+  overlapMonths: "",
+  workHours: "",
+  hourlyCost: "",
+  trainingHours: "",
+  currency: "JPY",
+  observedOn: "",
+  nextReviewOn: "",
+};
+
+const emptyP11OwnedData: P11OwnedDataInput = {
+  baselineMonth: "",
+  comparisonMonth: "",
+  baselineHours: "",
+  comparisonHours: "",
+  hourlyCost: "",
+  implementationCost: "",
+  monthlyTco: "",
+  currency: "JPY",
+  observedOn: "",
+  nextReviewOn: "",
+};
+
+const emptyOwnedDataResult: OwnedDataPrefill = {
+  errors: {},
+  warnings: [],
+  scenarioBasis: "",
+  values: {},
+};
+
 const emptyExtraction: PriceTextExtraction = { error: null, candidates: [] };
 
 export function OperatorInputForm() {
@@ -127,6 +168,10 @@ export function OperatorInputForm() {
   const [pastedText, setPastedText] = useState("");
   const [extraction, setExtraction] = useState<PriceTextExtraction>(emptyExtraction);
   const [candidateTargets, setCandidateTargets] = useState<Record<string, string>>({});
+  const [p09OwnedData, setP09OwnedData] = useState<P09OwnedDataInput>(emptyP09OwnedData);
+  const [p11OwnedData, setP11OwnedData] = useState<P11OwnedDataInput>(emptyP11OwnedData);
+  const [ownedDataResult, setOwnedDataResult] = useState<OwnedDataPrefill>(emptyOwnedDataResult);
+  const [ownedDataState, setOwnedDataState] = useState("未反映");
   const [sessionStartedAt, setSessionStartedAt] = useState<number | null>(null);
   const [clockNow, setClockNow] = useState<number | null>(null);
   const page = pilotPages.find((candidate) => candidate.id === articleId) ?? pilotPages[0];
@@ -140,9 +185,7 @@ export function OperatorInputForm() {
     [page, sourceContracts],
   );
   const json = confirmedContract ? `${JSON.stringify(confirmedContract, null, 2)}\n` : "";
-  const hasStarted = rows.some((row) => row.vendorId || row.planId || row.billingToggleState || row.saleBannerState || Object.values(row.values).some((field) => (
-    field.billingToggleState || field.saleBannerState || field.value || field.unit || field.unknownReason || field.monthlyReferenceValue || field.sourceUrl || field.observedOn || field.nextReviewOn
-  )));
+  const hasStarted = rowsHaveInput(rows);
   const errorCount = Object.values(validation.errors).reduce((total, messages) => total + messages.length, 0);
   const previousRows = contractRowsByIdentity(page, previousContract);
   const candidateOptions = rows.flatMap((row) => rowFields(page, row).map((field) => ({ row, field })));
@@ -190,6 +233,8 @@ export function OperatorInputForm() {
     setPastedText("");
     setExtraction(emptyExtraction);
     setCandidateTargets({});
+    setOwnedDataResult(emptyOwnedDataResult);
+    setOwnedDataState("未反映");
     resetConfirmation();
   }
 
@@ -294,6 +339,40 @@ export function OperatorInputForm() {
     resetConfirmation();
   }
 
+  function applyOwnedDataCandidate() {
+    const result = page.id === "P09"
+      ? buildP09OwnedDataPrefill(p09OwnedData)
+      : page.id === "P11"
+        ? buildP11OwnedDataPrefill(p11OwnedData)
+        : emptyOwnedDataResult;
+    setOwnedDataResult(result);
+    if (Object.keys(result.errors).length) {
+      setOwnedDataState("修正が必要です");
+      return;
+    }
+    setCurrentRows((current) => {
+      const seed = reusableEvidence && !rowsHaveInput(current)
+        ? reusableEvidence.rows.map((row) => ({ ...row, values: { ...row.values } }))
+        : current;
+      let scenarioFound = false;
+      const merged = seed.map((row) => {
+        if (row.scopeKind !== "human_scenario") return row;
+        scenarioFound = true;
+        return {
+          ...row,
+          scenarioBasis: result.scenarioBasis,
+          values: { ...row.values, ...result.values },
+        };
+      });
+      if (!scenarioFound) {
+        const scenario = emptyEditorialRow(page, "human_scenario", "scenario-1");
+        merged.push({ ...scenario, scenarioBasis: result.scenarioBasis, values: { ...scenario.values, ...result.values } });
+      }
+      return merged;
+    });
+    setOwnedDataState("候補を一般入力欄へ反映済み・Human確認前");
+  }
+
   function loadPrevious() {
     const stored = parseStoredContract(page, window.localStorage.getItem(storageKey(page.id)))
       ?? editorialContract(page);
@@ -386,6 +465,51 @@ export function OperatorInputForm() {
       </section> : null}
 
       <form onSubmit={(event) => event.preventDefault()} noValidate>
+        {page.id === "P09" || page.id === "P11" ? <section className="operator-owned-data" aria-labelledby="operator-owned-data-title">
+          <div className="operator-paste-heading">
+            <div><p className="eyebrow">OWNED DATA / LOCAL ONLY</p><h3 id="operator-owned-data-title">{page.id}の自データを実測値から候補化</h3></div>
+            <p>一般相場やvendor資料から補完せず、SaaS TCO Lab自身の記録だけを入力します。候補はこの画面のmemory内だけで処理し、下のHuman確定操作まではcontract・端末・外部へ保存しません。</p>
+          </div>
+
+          {page.id === "P09" ? <>
+            <p className="operator-owned-data-note">実際に完了した移行1回について、重複契約・作業・教育を直接記録します。時間単価はHumanの評価条件であり、公式料金と混ぜません。</p>
+            <div className="operator-owned-data-grid">
+              <label>重複契約月数<input type="number" min="0" step="0.01" value={p09OwnedData.overlapMonths} onChange={(event) => setP09OwnedData((current) => ({ ...current, overlapMonths: event.target.value }))} placeholder="例: 1" /></label>
+              <label>移行作業時間<input type="number" min="0" step="0.01" value={p09OwnedData.workHours} onChange={(event) => setP09OwnedData((current) => ({ ...current, workHours: event.target.value }))} placeholder="hours" /></label>
+              <label>教育時間<input type="number" min="0" step="0.01" value={p09OwnedData.trainingHours} onChange={(event) => setP09OwnedData((current) => ({ ...current, trainingHours: event.target.value }))} placeholder="hours" /></label>
+              <label>時間単価<input type="number" min="0" step="0.01" value={p09OwnedData.hourlyCost} onChange={(event) => setP09OwnedData((current) => ({ ...current, hourlyCost: event.target.value }))} placeholder="数値のみ" /></label>
+              <label>ISO通貨<input value={p09OwnedData.currency} onChange={(event) => setP09OwnedData((current) => ({ ...current, currency: event.target.value.toUpperCase() }))} maxLength={3} autoComplete="off" /></label>
+              <label>観測日<input type="date" value={p09OwnedData.observedOn} onChange={(event) => setP09OwnedData((current) => ({ ...current, observedOn: event.target.value }))} /></label>
+              <label>次回確認日<input type="date" value={p09OwnedData.nextReviewOn} onChange={(event) => setP09OwnedData((current) => ({ ...current, nextReviewOn: event.target.value }))} /></label>
+            </div>
+          </> : <>
+            <p className="operator-owned-data-note">導入前後の完全な暦月を1か月ずつ比較します。月途中の値を30日換算せず、削減時間は「基準月 − 比較月」で決定論的に計算します。</p>
+            <div className="operator-owned-data-grid">
+              <label>導入前の基準月<input type="month" value={p11OwnedData.baselineMonth} onChange={(event) => setP11OwnedData((current) => ({ ...current, baselineMonth: event.target.value }))} /></label>
+              <label>導入後の比較月<input type="month" value={p11OwnedData.comparisonMonth} onChange={(event) => setP11OwnedData((current) => ({ ...current, comparisonMonth: event.target.value }))} /></label>
+              <label>基準月の作業時間<input type="number" min="0" step="0.01" value={p11OwnedData.baselineHours} onChange={(event) => setP11OwnedData((current) => ({ ...current, baselineHours: event.target.value }))} placeholder="hours" /></label>
+              <label>比較月の作業時間<input type="number" min="0" step="0.01" value={p11OwnedData.comparisonHours} onChange={(event) => setP11OwnedData((current) => ({ ...current, comparisonHours: event.target.value }))} placeholder="hours" /></label>
+              <label>時間単価<input type="number" min="0" step="0.01" value={p11OwnedData.hourlyCost} onChange={(event) => setP11OwnedData((current) => ({ ...current, hourlyCost: event.target.value }))} placeholder="数値のみ" /></label>
+              <label>導入費<input type="number" min="0" step="0.01" value={p11OwnedData.implementationCost} onChange={(event) => setP11OwnedData((current) => ({ ...current, implementationCost: event.target.value }))} placeholder="数値のみ" /></label>
+              <label>月額TCO<input type="number" min="0" step="0.01" value={p11OwnedData.monthlyTco} onChange={(event) => setP11OwnedData((current) => ({ ...current, monthlyTco: event.target.value }))} placeholder="数値のみ" /></label>
+              <label>ISO通貨<input value={p11OwnedData.currency} onChange={(event) => setP11OwnedData((current) => ({ ...current, currency: event.target.value.toUpperCase() }))} maxLength={3} autoComplete="off" /></label>
+              <label>観測日<input type="date" value={p11OwnedData.observedOn} onChange={(event) => setP11OwnedData((current) => ({ ...current, observedOn: event.target.value }))} /></label>
+              <label>次回確認日<input type="date" value={p11OwnedData.nextReviewOn} onChange={(event) => setP11OwnedData((current) => ({ ...current, nextReviewOn: event.target.value }))} /></label>
+            </div>
+          </>}
+
+          {Object.keys(ownedDataResult.errors).length ? <ul className="operator-field-errors" role="alert">
+            {Object.entries(ownedDataResult.errors).flatMap(([key, messages]) => messages.map((message) => <li key={`${key}-${message}`}>{message}</li>))}
+          </ul> : null}
+          {ownedDataResult.warnings.length ? <ul className="operator-owned-data-warnings">
+            {ownedDataResult.warnings.map((warning) => <li key={warning}>{warning}</li>)}
+          </ul> : null}
+          <div className="operator-paste-actions">
+            <button type="button" onClick={applyOwnedDataCandidate}>実測値を未承認候補へ反映</button>
+            <span aria-live="polite">{ownedDataState}</span>
+          </div>
+        </section> : null}
+
         <section className="operator-paste-parser" aria-labelledby="operator-paste-title">
           <div className="operator-paste-heading">
             <div><p className="eyebrow">LOCAL PASTE ANALYSIS</p><h3 id="operator-paste-title">価格ページのコピーテキストを解析</h3></div>

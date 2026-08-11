@@ -450,6 +450,36 @@ export type PriceTextExtraction = {
   candidates: readonly ExtractedPriceCandidate[];
 };
 
+export type P09OwnedDataInput = {
+  overlapMonths: string;
+  workHours: string;
+  hourlyCost: string;
+  trainingHours: string;
+  currency: string;
+  observedOn: string;
+  nextReviewOn: string;
+};
+
+export type P11OwnedDataInput = {
+  baselineMonth: string;
+  comparisonMonth: string;
+  baselineHours: string;
+  comparisonHours: string;
+  hourlyCost: string;
+  implementationCost: string;
+  monthlyTco: string;
+  currency: string;
+  observedOn: string;
+  nextReviewOn: string;
+};
+
+export type OwnedDataPrefill = {
+  errors: Readonly<Record<string, readonly string[]>>;
+  warnings: readonly string[];
+  scenarioBasis: string;
+  values: Readonly<Record<string, EditorialFieldFormValue>>;
+};
+
 const safeQueryKeys = new Set([
   "billing", "country", "currency", "edition", "lang", "locale", "period", "plan", "region",
 ]);
@@ -600,6 +630,198 @@ function unsignedDecimalParts(value: string): { coefficient: bigint; scaleDigits
   return {
     coefficient: BigInt(`${match[1]}${fraction}`),
     scaleDigits: fraction.length,
+  };
+}
+
+function ownedDecimal(
+  errors: Record<string, string[]>,
+  key: string,
+  value: string,
+  label: string,
+): string | null {
+  const normalized = value.trim();
+  const match = /^(\d+)(?:\.(\d+))?$/.exec(normalized);
+  if (!normalized) {
+    addError(errors, key, `${label}を入力してください。未観測値は候補へ反映しません。`);
+    return null;
+  }
+  if (!match) {
+    addError(errors, key, `${label}は0以上の数値だけで入力してください。単位は自動で分離します。`);
+    return null;
+  }
+  const fraction = match[2] ?? "";
+  if (`${match[1]}${fraction}`.length > 30) addError(errors, key, `${label}は合計30桁以内にしてください。`);
+  if (fraction.length > 8) addError(errors, key, `${label}は小数8桁以内にしてください。`);
+  return normalized;
+}
+
+function ownedObservationDates(
+  errors: Record<string, string[]>,
+  observedOn: string,
+  nextReviewOn: string,
+) {
+  const observedDay = isoDay(observedOn);
+  const nextReviewDay = isoDay(nextReviewOn);
+  if (observedDay === null) addError(errors, "observedOn", "実測を確認した日をYYYY-MM-DD形式で入力してください。");
+  if (nextReviewDay === null) addError(errors, "nextReviewOn", "次回確認日をYYYY-MM-DD形式で入力してください。");
+  if (observedDay !== null && nextReviewDay !== null) {
+    if (nextReviewDay <= observedDay) addError(errors, "nextReviewOn", "次回確認日は観測日より後にしてください。");
+    else if (nextReviewDay - observedDay > 180) addError(errors, "nextReviewOn", "次回確認日は観測日から180日以内にしてください。");
+  }
+}
+
+function ownedCurrency(errors: Record<string, string[]>, value: string): string | null {
+  const normalized = value.trim().toUpperCase();
+  if (!/^[A-Z]{3}$/.test(normalized)) {
+    addError(errors, "currency", "時間単価・費用に使うISO通貨codeを英大文字3文字で入力してください（例: JPY）。");
+    return null;
+  }
+  return normalized;
+}
+
+function monthIndex(errors: Record<string, string[]>, key: string, value: string, label: string): number | null {
+  const match = /^(\d{4})-(\d{2})$/.exec(value.trim());
+  if (!match) {
+    addError(errors, key, `${label}をYYYY-MM形式で入力してください。`);
+    return null;
+  }
+  const month = Number(match[2]);
+  if (month < 1 || month > 12) {
+    addError(errors, key, `${label}の月は01〜12で入力してください。`);
+    return null;
+  }
+  return Number(match[1]) * 12 + month - 1;
+}
+
+function subtractUnsignedDecimals(leftValue: string, rightValue: string): string {
+  const left = unsignedDecimalParts(leftValue);
+  const right = unsignedDecimalParts(rightValue);
+  if (!left || !right) throw new Error("validated decimal required");
+  const scaleDigits = Math.max(left.scaleDigits, right.scaleDigits);
+  const leftCoefficient = left.coefficient * (10n ** BigInt(scaleDigits - left.scaleDigits));
+  const rightCoefficient = right.coefficient * (10n ** BigInt(scaleDigits - right.scaleDigits));
+  const difference = leftCoefficient - rightCoefficient;
+  const negative = difference < 0n;
+  const absolute = negative ? -difference : difference;
+  const scale = 10n ** BigInt(scaleDigits);
+  const whole = absolute / scale;
+  const fraction = scaleDigits
+    ? (absolute % scale).toString().padStart(scaleDigits, "0").replace(/0+$/u, "")
+    : "";
+  const normalized = fraction ? `${whole}.${fraction}` : whole.toString();
+  return negative && absolute !== 0n ? `-${normalized}` : normalized;
+}
+
+function ownedScenarioField(
+  value: string,
+  unit: string,
+  observedOn: string,
+  nextReviewOn: string,
+): EditorialFieldFormValue {
+  return {
+    ...emptyEditorialField(),
+    value,
+    unit,
+    observedOn,
+    nextReviewOn,
+  };
+}
+
+function ownedScenarioPrice(
+  value: string,
+  unit: string,
+  billingPeriod: "monthly" | "one_time" | "per_usage",
+  currency: string,
+  observedOn: string,
+  nextReviewOn: string,
+): EditorialFieldFormValue {
+  return {
+    ...ownedScenarioField(value, unit, observedOn, nextReviewOn),
+    currencyStatus: "known",
+    currency,
+    billingPeriod,
+    taxTreatment: "not_applicable",
+    observedPriceBasis: "human_scenario",
+  };
+}
+
+/** Build unreviewed P09 form candidates only from Human-entered direct observations. */
+export function buildP09OwnedDataPrefill(input: P09OwnedDataInput): OwnedDataPrefill {
+  const errors: Record<string, string[]> = {};
+  const overlapMonths = ownedDecimal(errors, "overlapMonths", input.overlapMonths, "重複契約月数");
+  const workHours = ownedDecimal(errors, "workHours", input.workHours, "移行作業時間");
+  const hourlyCost = ownedDecimal(errors, "hourlyCost", input.hourlyCost, "時間単価");
+  const trainingHours = ownedDecimal(errors, "trainingHours", input.trainingHours, "教育時間");
+  const currency = ownedCurrency(errors, input.currency);
+  ownedObservationDates(errors, input.observedOn, input.nextReviewOn);
+  if (Object.keys(errors).length || !overlapMonths || !workHours || !hourlyCost || !trainingHours || !currency) {
+    return { errors, warnings: [], scenarioBasis: "", values: {} };
+  }
+  return {
+    errors,
+    warnings: [],
+    scenarioBasis: "SaaS TCO Labの実移行で重複契約月数・移行作業時間・教育時間を直接記録し、時間単価はHuman設定値として分離した。",
+    values: {
+      "migration.overlap_months": ownedScenarioField(overlapMonths, "months", input.observedOn, input.nextReviewOn),
+      "migration.work_hours": ownedScenarioField(workHours, "hours", input.observedOn, input.nextReviewOn),
+      "migration.hourly_cost": ownedScenarioPrice(hourlyCost, "/ hour", "per_usage", currency, input.observedOn, input.nextReviewOn),
+      "migration.training_hours": ownedScenarioField(trainingHours, "hours", input.observedOn, input.nextReviewOn),
+    },
+  };
+}
+
+/** Compare two complete calendar months without extrapolating partial-period data. */
+export function buildP11OwnedDataPrefill(input: P11OwnedDataInput): OwnedDataPrefill {
+  const errors: Record<string, string[]> = {};
+  const baselineIndex = monthIndex(errors, "baselineMonth", input.baselineMonth, "導入前の基準月");
+  const comparisonIndex = monthIndex(errors, "comparisonMonth", input.comparisonMonth, "導入後の比較月");
+  if (baselineIndex !== null && comparisonIndex !== null && comparisonIndex <= baselineIndex) {
+    addError(errors, "comparisonMonth", "導入後の比較月は、導入前の基準月より後にしてください。");
+  }
+  const observedMonthMatch = /^(\d{4})-(\d{2})-\d{2}$/.exec(input.observedOn.trim());
+  const observedMonthIndex = observedMonthMatch
+    ? Number(observedMonthMatch[1]) * 12 + Number(observedMonthMatch[2]) - 1
+    : null;
+  if (
+    comparisonIndex !== null
+    && observedMonthIndex !== null
+    && comparisonIndex >= observedMonthIndex
+  ) {
+    addError(errors, "comparisonMonth", "比較月は観測日より前の、全日が終了した暦月を選んでください。月途中の値は使用できません。");
+  }
+  const baselineHours = ownedDecimal(errors, "baselineHours", input.baselineHours, "導入前の月間作業時間");
+  const comparisonHours = ownedDecimal(errors, "comparisonHours", input.comparisonHours, "導入後の月間作業時間");
+  const hourlyCost = ownedDecimal(errors, "hourlyCost", input.hourlyCost, "時間単価");
+  const implementationCost = ownedDecimal(errors, "implementationCost", input.implementationCost, "導入費");
+  const monthlyTco = ownedDecimal(errors, "monthlyTco", input.monthlyTco, "月額TCO");
+  const currency = ownedCurrency(errors, input.currency);
+  ownedObservationDates(errors, input.observedOn, input.nextReviewOn);
+  if (
+    Object.keys(errors).length
+    || !baselineHours
+    || !comparisonHours
+    || !hourlyCost
+    || !implementationCost
+    || !monthlyTco
+    || !currency
+  ) return { errors, warnings: [], scenarioBasis: "", values: {} };
+
+  const monthlyHoursSaved = subtractUnsignedDecimals(baselineHours, comparisonHours);
+  const warnings = monthlyHoursSaved.startsWith("-")
+    ? ["導入後の作業時間が導入前より長いため、月間時間差は負値です。削減とは表現せず増加として確認してください。"]
+    : monthlyHoursSaved === "0"
+      ? ["導入前後の月間作業時間は同じです。削減効果0として確認してください。"]
+      : [];
+  return {
+    errors,
+    warnings,
+    scenarioBasis: `${input.baselineMonth}と${input.comparisonMonth}の完全な暦月の実測時間を比較した。月途中の値は外挿せず、差は基準月−比較月で算出した。`,
+    values: {
+      "break_even.monthly_hours_saved": ownedScenarioField(monthlyHoursSaved, "hours / calendar month", input.observedOn, input.nextReviewOn),
+      "break_even.hourly_cost": ownedScenarioPrice(hourlyCost, "/ hour", "per_usage", currency, input.observedOn, input.nextReviewOn),
+      "break_even.implementation_cost": ownedScenarioPrice(implementationCost, "one-time implementation", "one_time", currency, input.observedOn, input.nextReviewOn),
+      "break_even.monthly_tco": ownedScenarioPrice(monthlyTco, "/ month", "monthly", currency, input.observedOn, input.nextReviewOn),
+    },
   };
 }
 

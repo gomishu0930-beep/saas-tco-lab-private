@@ -19,7 +19,7 @@ SVR01のlocal標本では確認済み11 fieldを証拠表として表示する�
 |Domain開始|`domain: GO <domain> / HOLD`|`domain: GO example.jp`|exact domainのdomain dayだけを開始|
 |価格表示分類|`sale_banner_state: <class> <partner>`|`sale_banner_state: annual_discount_permanent mangools`|`none` / `annual_discount_permanent` / `time_limited_promo` / `unknown`のHuman分類を記録|
 |Checkout再観測完了（必要時）|`checkout_values: done`|`checkout_values: done`|既存確定値を更新する再観測時だけ使用。Mangools初回値は2026-08-02に取込済み|
-|記事入力完了|`article_input: done <P-ID>`|`article_input: done P01`|Operatorが出力したcontractの取込・再検証を依頼|
+|記事入力完了|`article_input: done <P-ID>`|`article_input: done P09`|Operatorが出力したcontractの取込・再検証を依頼。P09/P11は記事選択後の「自データを実測値から候補化」→一般入力欄確認→Human確定の順で使う|
 |記事証拠不足|`article_evidence: pending <P-ID,...>`|`article_evidence: pending P09,P11`|contractは構造合格だが確認済み実値がなく、記事承認・公開へ進めない状態を記録|
 |P05公式field修正（完了）|`p05_field_scope: approve mangools_agency_actual_fields`|`p05_field_scope: approve mangools_agency_actual_fields`|2026-08-09にfield修正・記事承認、2026-08-11に限定release済み。再返信不要|
 |記事承認|`article_approve: <P-IDまたはSVR-ID,...>`|`article_approve: P01,P02,P03`|列挙した記事本文だけをHuman承認。serversは価格・TCO・用途判定がREADYのSVR-IDだけ有効|

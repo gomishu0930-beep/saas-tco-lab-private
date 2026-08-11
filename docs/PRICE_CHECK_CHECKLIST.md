@@ -144,8 +144,8 @@ Operatorのtimerは端末内の経過表示だけに使い、時間、貼り付�
 |記事|確認場所|最小field|Humanが確定できない場合|
 |---|---|---|---|
 |P05|Mangoolsのplans-and-pricing、同planの機能上限、checkout直前画面|管理者seat数、対象packageのcheckout請求総額、監査ページ上限、移行支援料金|公式に記載が見つからないだけでは0または`not_applicable`にしない。`unknown`と確認した画面を記録する|
-|P09|Mangoolsの公式料金・support/help画面と、実際に行った移行の作業記録|公式移行支援料金、重複契約月数、作業時間、時間単価、教育時間|実移行前はHuman scenario 4 fieldをunknownのままにし、記事公開を急がない|
-|P11|SaaS TCO Lab自身の同一期間における導入前後記録|月間削減時間、時間単価、導入費、月額TCO|自データがない間は全field unknown。vendor資料や一般相場で補完しない|
+|P09|Mangoolsの公式料金・support/help画面と、実際に完了した移行1回の作業記録|公式移行支援料金、重複契約月数、作業時間、時間単価、教育時間|`/operator`でP09を選び、自データcardへ実測値を入力する。実移行前はHuman scenario 4 fieldをunknownのままにし、記事公開を急がない|
+|P11|SaaS TCO Lab自身の導入前後における完全な暦月の記録|基準月・比較月の作業時間、時間単価、導入費、月額TCO|`/operator`でP11を選ぶ。月途中の値を外挿せず、基準月−比較月の差を候補化する。自データがない間は全field unknown。vendor資料や一般相場で補完しない|
 |P12|全記事contractの観測日・次回確認日とHumanの運用方針|共通確認間隔を採用する場合はその日数|field別の次回確認日だけを使う方針なら、Humanがその方針を明示確認した後に`not_applicable`と理由を記録する|
 
 P12の`not_applicable`は「未確認」と同義ではない。2026-08-09に共通間隔を使わず各観測の次回確認日を
