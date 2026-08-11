@@ -525,7 +525,7 @@ def _launch_quarter() -> dict[str, Any]:
         "weeklyPlan": [
             {"date": "7/31–8/2", "label": "domain day・P01–P03最終標本"},
             {"date": "8/3–8/9", "label": "第1弾記事承認・index準備"},
-            {"date": "8/10–8/16", "label": "拡張需要残り150語Human export・P05 release判断"},
+            {"date": "8/10–8/16", "label": "拡張需要残り150語Human export"},
             {"date": "8/17–8/31", "label": "P09/P11自データ観測・servers価格確認"},
             {"date": "9月", "label": "残記事・embed・note/X・Impact/ASP審査"},
             {"date": "10/1–10/24", "label": "取引意図記事改稿・内部導線"},

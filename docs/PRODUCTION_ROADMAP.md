@@ -64,11 +64,11 @@ Gate D、3社×6プランgold set、C1–C7の合格を入口条件にしない�
 |順序|現在状態|入口／GO|実装・Human処理|出口|
 |---:|---|---|---|---|
 |L1|完了 — 2026-08-03|2026-08-02 `domain: GO saastcolab.jp`受領。`saastcolab.jp`登録完了、Sites指定DNS保存・個別自動更新ON、2026-08-03 HTTPS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認済み|完了状態を維持し、index／CTAを別GOまでHOLD|domain切替とreadback合格|
-|L2|12/12入力・10/12承認・9/12公開|L1完了|承認済みP05は個別release GO待ち。P09/P11の自データを取得して承認する。P01–P04・P06–P08・P10・P12は公開済み|12記事の公開候補が承認済み|
-|L3|9記事完了 — 2026-08-09|`index_go: GO`と対象記事の承認|承認済み9記事だけnoindex解除し、sitemap 9件・他route noindexを外部read-back済み|承認記事のindexability readback合格|
-|L4|Mangools 9記事で稼働 — 2026-08-09|`cta_go: GO mangools`と記事release承認|開示先行、Mangools送客先host、`rel="sponsored noopener noreferrer"`を外部read-back済み|MangoolsだけCTA稼働|
+|L2|12/12入力・10/12承認・10/12公開|L1完了|P09/P11の自データを取得して承認する。P01–P08・P10・P12は公開済み|12記事の公開候補が承認済み|
+|L3|10記事完了 — 2026-08-11|`index_go: GO`と対象記事の承認|承認済み10記事だけnoindex解除し、sitemap 10件・他route noindexを外部read-back済み|承認記事のindexability readback合格|
+|L4|Mangools 10記事で稼働 — 2026-08-11|`cta_go: GO mangools`と記事release承認|開示先行、Mangools送客先host、`rel="sponsored noopener noreferrer"`を外部read-back済み|MangoolsだけCTA稼働|
 
-L1は`saastcolab.jp`の購入・DNS保存・個別自動更新ON・TLS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認まで完了した。P01–P03は2026-08-03に本文・TCO承認、index GO、Mangools CTA GOを満たした。P06/P07は2026-08-08、P04/P08/P10/P12は2026-08-09に同じrelease境界で本番反映し、9記事のindex・CTA・sitemap境界を外部read-backした。P05/P09/P11はnoindex・CTA無効を維持する。Mangools以外のpartner CTAも無効である。
+L1は`saastcolab.jp`の購入・DNS保存・個別自動更新ON・TLS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認まで完了した。P01–P03は2026-08-03に本文・TCO承認、index GO、Mangools CTA GOを満たした。P06/P07は2026-08-08、P04/P08/P10/P12は2026-08-09、P05は2026-08-11に同じrelease境界で本番反映し、10記事のindex・CTA・sitemap境界を外部read-backした。P09/P11はnoindex・CTA無効を維持する。Mangools以外のpartner CTAも無効である。
 
 ### Launch最終シーケンス — event-driven
 
@@ -93,7 +93,7 @@ unknownのまま関連する横断順位だけを停止し、記事・index・CT
 |---|---|---|---|
 |7/31–8/2|domain dayとP01–P03最終標本|domain token、価格・記事確認|L1 read-back、P01–P03承認候補|
 |8/3–8/9|第1弾release準備|`article_approve`、domain反映後の`index_go`|承認記事だけindex候補|
-|8/10–8/16|拡張需要CSVとP05 release準備|CRM残り10・forms 40・email marketing 40・SEO追加60のHuman export、P05 release判断|残り150語の行単位検証、P05の10記事release候補QA|
+|8/10–8/16|拡張需要CSV|CRM残り10・forms 40・email marketing 40・SEO追加60のHuman export|残り150語の行単位検証|
 |8/17–8/31|P09/P11自データとservers観測|実運用値・通常料金/更新条件をHuman確認|P09/P11の観測開始、servers candidate更新|
 |9月|残記事、embed、note/X Human再配信、Impact/ASP審査|投稿・申請・回答判断だけ|index/impression/clickの週次観測|
 |10/1–10/24|取引意図記事の改稿と内部導線|標本確認だけ|比較可能な連続2期間|

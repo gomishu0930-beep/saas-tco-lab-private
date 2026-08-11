@@ -58,7 +58,7 @@ function PublicEditorialHome() {
           <dl className="proof-grid">
             <div><dt>対象</dt><dd>JP / ja</dd></div>
             <div><dt>算定</dt><dd>12か月TCO</dd></div>
-            <div><dt>公開記事</dt><dd>9本</dd></div>
+            <div><dt>公開記事</dt><dd>10本</dd></div>
             <div><dt>広告導線</dt><dd>Mangools</dd></div>
           </dl>
           <p className="proof-note">

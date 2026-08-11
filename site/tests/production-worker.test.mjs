@@ -346,10 +346,10 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
   }
 });
 
-test("public trust pages describe the live nine-article affiliate state", async () => {
+test("public trust pages describe the live ten-article affiliate state", async () => {
   const home = await (await fetch(`${baseUrl}/`)).text();
   assert.match(home, /PUBLIC EDITORIAL/);
-  assert.match(home, /公開記事[\s\S]{0,80}9本/);
+  assert.match(home, /公開記事[\s\S]{0,80}10本/);
   assert.match(home, /広告導線[\s\S]{0,80}Mangools/);
   assert.match(home, /href="\/pilot\/pricing-calculator\//);
   assert.match(home, /href="\/pilot\/plan-comparison\//);
@@ -359,7 +359,7 @@ test("public trust pages describe the live nine-article affiliate state", async 
 
   const disclosure = await (await fetch(`${baseUrl}/disclosure/`)).text();
   assert.match(disclosure, /現在の広告状態: Mangoolsのみ有効/);
-  assert.match(disclosure, /Human承認済みの9記事/);
+  assert.match(disclosure, /Human承認済みの10記事/);
   assert.doesNotMatch(disclosure, /実アフィリエイトリンクを含みません|公開承認済みAffiliate CTA 0件/);
 
   const about = await (await fetch(`${baseUrl}/about/`)).text();

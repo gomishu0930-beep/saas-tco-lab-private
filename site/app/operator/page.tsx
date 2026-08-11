@@ -25,7 +25,7 @@ const remainingHumanWork = [
     timing: "記事準備時",
     title: "公式価格を見て、この画面へ入力",
     minutes: "記事ごと",
-    status: "P01–P05・P06–P08・P10・P12承認済み / P05は公開GO待ち / SVR01追加観測待ち",
+    status: "P01–P05・P06–P08・P10・P12承認・公開済み / P09・P11自データ待ち / SVR01追加観測待ち",
     why: "価格確認checklistの公式URLをHumanが開き、必要箇所を貼り付けて候補抽出できます。候補はHuman確認前にcontractへ入りません。",
     steps: ["記事とvendorを選ぶ", "料金表を貼り付けて候補を事前入力する", "出典・観測日・次回確認日と前回差分を確認する", "Human確認後のJSONを保存し、本文標本を確認する"],
     done: "article_approve: <P-ID,...>",
@@ -97,7 +97,7 @@ export default function OperatorPage() {
           <h2 id="operator-summary-title">Human作業を4種類へ集約</h2>
         </div>
         <dl>
-          <div><dt>本番公開</dt><dd>P01–P04・P06–P08・P10・P12（9/12）</dd></div>
+          <div><dt>本番公開</dt><dd>P01–P08・P10・P12（10/12）</dd></div>
           <div><dt>この入力画面</dt><dd>NOINDEX</dd></div>
           <div><dt>CTA</dt><dd>本番Mangoolsのみ / ローカル候補DISABLED</dd></div>
         </dl>
@@ -116,7 +116,7 @@ export default function OperatorPage() {
           </div>
           <p>
             2026-08-09の公式料金画面と承認済みP02 checkout証拠に基づき、P05 contractと本文へ反映しました。
-            公開、index、CTAは別gateのままです。
+            2026-08-11に限定releaseし、index・既存Mangools CTA対象へ追加済みです。
           </p>
         </div>
         <div className="route-grid" data-p05-field-candidate-count={p05FieldScopeCandidates.length}>

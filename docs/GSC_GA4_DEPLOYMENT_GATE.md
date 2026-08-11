@@ -70,6 +70,10 @@ analytics scope拡張をこの承認へ含めない。
   検出動画0へ更新された。公開sitemapの9 URLと一致する。一方、ページ集計は最終更新2026-08-07、
   登録済み1、未登録3で、未登録理由は`検出 - インデックス未登録`のままである。sitemapでの検出と
   index登録を混同せず、再送信、URL検査登録、設定変更は行っていない。
+- 同日、承認済みP05を10記事目として追加公開し、公開sitemapとrobots allowlistが10記事で一致すること、
+  P01–P08・P10・P12だけが`index, follow`・canonical・開示先行Mangools CTAを満たすことを外部read-backした。
+  P09/P11はnoindex・canonicalなし・CTAなしを維持する。Search Console側は直前確認の検出9ページが正本で、
+  次回の自動再読込まで10ページ検出とは扱わず、sitemap再送信やURL検査登録は行っていない。
 - 2026-08-09にP04/P08/P10を追加したSites version 15を公開し、公開sitemapとrobots allowlistが
   承認済み8記事で一致することを外部read-backした。Search Consoleの既存sitemap submissionは維持し、
   再送信・URL検査登録は行わず次回読込を待つ。
