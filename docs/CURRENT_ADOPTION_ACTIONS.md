@@ -578,6 +578,13 @@ Search Console側の次回再読込までは検出5ページのまま処理待�
 `page_view`、`qualified_session`、`outbound_click`がすべて0、Realtimeも0である。再送信、URL検査登録、
 設定変更、テスト送信は行っていない。
 
+同日後続のread-only確認で、Search Consoleのsitemapは最終読み込み2026-08-12、検出10ページへ更新され、
+公開sitemap 10 URLと一致した。検索clicksは0、ページ集計は登録済み1・未登録3のままなので、10記事の
+index完了とは扱わない。GA4 Realtimeと直近7日間は0で、過去28日イベント表は`page_view` 7、
+`qualified_session` 7、`outbound_click`は行なしである。Impact Marketplaceは`Declined`のまま変化なし。
+対象vendor・ASPの直近7日メールにも新しい情報要求、実質回答、Affiliate承認はなかった。外部送信、
+再送信、URL検査登録、設定変更、CTA変更は行っていない。
+
 ```text
 gsc_verification_deploy: GO / STOP
 ga4_tag_deploy: GO / STOP

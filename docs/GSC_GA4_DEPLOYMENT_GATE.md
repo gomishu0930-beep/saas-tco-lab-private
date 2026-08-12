@@ -96,6 +96,10 @@ analytics scope拡張をこの承認へ含めない。
   集計期間の表示回数とclicksは0で、10記事のindex完了とは扱わない。GA4は表示上の直近7日間で
   `page_view`、`qualified_session`、`outbound_click`がすべて0、Realtimeも0である。再送信、URL検査登録、
   設定変更、テスト送信は行っていない。
+- 同日後続のread-only確認で、GSCのsitemapは最終読み込み2026-08-12、検出10ページへ更新され、
+  公開sitemap 10 URLと一致した。検索clicksは0、ページ集計は登録済み1・未登録3のままであり、10記事の
+  index完了とは扱わない。GA4はRealtimeと直近7日間が0、過去28日イベント表は`page_view` 7、
+  `qualified_session` 7、`outbound_click`行なしである。既存の実装確認訪問を含むため需要・CVRへ算入しない。
 - 拡張計測はOFF。内部traffic filterは不可逆な除外を避けるためtestのまま維持し、対象sourceを
   確定した別承認後だけactiveへ移す。
 
