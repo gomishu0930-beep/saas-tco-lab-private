@@ -1,7 +1,7 @@
 # 日本ASP申請準備checklist
 
 基準日: 2026-08-12（Asia/Tokyo）
-状態: `A8 XSERVER APPROVED / MOSHIMO LOLIPOP APPROVED / VALUECOMMERCE ABLENET APPROVED`
+状態: `6 SERVER PROGRAMS APPROVED / SERVER CTA DISABLED`
 
 この文書はA8.net、もしもアフィリエイト、バリューコマースの申請画面で迷わないための準備表である。
 account作成、規約同意、本人確認、口座登録、送信はHumanだけが行う。credential、本人情報、口座、電話番号、
@@ -76,7 +76,7 @@ servers候補として台帳へ追加した。バリューコマースではABLE
 
 |姿勢|調査案|Hard gate|停止条件|
 |---|---|---|---|
-|conservative|serversの既知需要と承認済み3programを記事候補へ対応付ける|SVR01のcanonical価格・記事承認・runtime destination・partner別CTA GOが未完了|提携否認、またはHuman価格観測不能|
+|conservative|serversの既知需要と承認済み6programを記事候補へ対応付ける|SVR01のcanonical価格・記事承認・runtime destination・partner別CTA GOが未完了|提携否認、またはHuman価格観測不能|
 |balanced|serversの6記事slate・価格観測・TCO対応をlocalで先行し、1 vendorずつ検証|価格・提携・公開は各別gate|golden不一致、unknownの推測補完、需要または提携の否定証拠|
 |aggressive|5カテゴリを同時申請・同時公開する|需要unknownかつ提携未承認のため`ineligible`|現状は開始しない|
 
@@ -98,9 +98,9 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 - P01–P03はHuman承認済みでindex可、PR開示先行、Mangools CTAだけが有効。他記事・他partner CTAはfail-closedを維持する。
 - 申請URL、公開origin、canonical originは`https://saastcolab.jp`で一致する。
 
-したがって、Account登録はA8.net、もしも、バリューコマースの三社で完了した。
-次にHumanが行うのは対象program名を明示した個別提携GOと審査結果のread-backである。提携結果が台帳で`approved`になるまで、
-三社のCTAは有効化しない。
+したがって、Account登録はA8.net、もしも、バリューコマースの三社で完了し、serversの個別programは6件が
+`approved`である。次にHumanが行うのは、Human確認済み価格を使ったservers記事の承認と、対象programごとの
+runtime destination設定・partner別CTA GOである。これらがそろうまで、servers CTAはすべて無効とする。
 
 2026-08-06の画面確認では、A8.netのXServerビジネス詳細画面で選択中のappeal siteがSaaS TCO Labではなく
 既存の別mediaだった。その後、A8の登録site `SaaS TCO Lab`を主サイトへ変更して画面read-back済みである。

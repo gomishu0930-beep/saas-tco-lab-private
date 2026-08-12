@@ -414,9 +414,30 @@ export function ServerArticleTemplate({
           <span
             className="cta-disabled"
             aria-describedby="article-pr-disclosure"
+            data-server-affiliate-cta-placeholder="moshimo-conoha-wing"
+          >
+            ConoHa WING紹介リンクは無効です
+          </span>
+          <span
+            className="cta-disabled"
+            aria-describedby="article-pr-disclosure"
             data-server-affiliate-cta-placeholder="moshimo-lolipop-rental-server"
           >
             ロリポップ！紹介リンクは無効です
+          </span>
+          <span
+            className="cta-disabled"
+            aria-describedby="article-pr-disclosure"
+            data-server-affiliate-cta-placeholder="moshimo-onamae-rental-server"
+          >
+            お名前.com レンタルサーバー紹介リンクは無効です
+          </span>
+          <span
+            className="cta-disabled"
+            aria-describedby="article-pr-disclosure"
+            data-server-affiliate-cta-placeholder="moshimo-shin-rental-server"
+          >
+            シンレンタルサーバー紹介リンクは無効です
           </span>
           <span
             className="cta-disabled"

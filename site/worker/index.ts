@@ -25,6 +25,12 @@ interface ProductionEnv {
   A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION?: string;
   MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT?: string;
   MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION?: string;
+  MOSHIMO_CONOHA_WING_AFFILIATE_APPROVAL_CURRENT?: string;
+  MOSHIMO_CONOHA_WING_AFFILIATE_DESTINATION?: string;
+  MOSHIMO_ONAMAE_SERVER_AFFILIATE_APPROVAL_CURRENT?: string;
+  MOSHIMO_ONAMAE_SERVER_AFFILIATE_DESTINATION?: string;
+  MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_APPROVAL_CURRENT?: string;
+  MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_DESTINATION?: string;
   VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT?: string;
   VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION?: string;
   IMAGES: {
@@ -182,7 +188,10 @@ interface AffiliateCtaControls {
 
 type ServerAffiliatePartnerId =
   | "a8net-xserver-business"
+  | "moshimo-conoha-wing"
   | "moshimo-lolipop-rental-server"
+  | "moshimo-onamae-rental-server"
+  | "moshimo-shin-rental-server"
   | "valuecommerce-ablenet-shared-server";
 
 interface ServerAffiliatePartnerControl {
@@ -199,7 +208,10 @@ interface ServerAffiliateCtaControls {
 
 const SERVER_AFFILIATE_PARTNER_IDS: readonly ServerAffiliatePartnerId[] = [
   "a8net-xserver-business",
+  "moshimo-conoha-wing",
   "moshimo-lolipop-rental-server",
+  "moshimo-onamae-rental-server",
+  "moshimo-shin-rental-server",
   "valuecommerce-ablenet-shared-server",
 ];
 
@@ -291,7 +303,7 @@ function validatedServerAffiliateDestination(
       && destination.pathname === "/svt/ejp"
     ) return destination.href;
     if (
-      partnerId === "moshimo-lolipop-rental-server"
+      partnerId.startsWith("moshimo-")
       && destination.hostname.toLowerCase() === "af.moshimo.com"
       && destination.pathname === "/af/c/click"
       && ["a_id", "p_id", "pc_id", "pl_id"].every((key) => Boolean(destination.searchParams.get(key)))
@@ -343,6 +355,33 @@ function serverAffiliateCtaControls(
         env.MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION,
       );
       if (destination) partners.push({ destination, id: partnerId, label: "ロリポップ！公式サイトを見る" });
+      continue;
+    }
+    if (partnerId === "moshimo-conoha-wing") {
+      if (env.MOSHIMO_CONOHA_WING_AFFILIATE_APPROVAL_CURRENT?.trim().toLowerCase() !== "true") continue;
+      const destination = validatedServerAffiliateDestination(
+        partnerId,
+        env.MOSHIMO_CONOHA_WING_AFFILIATE_DESTINATION,
+      );
+      if (destination) partners.push({ destination, id: partnerId, label: "ConoHa WING公式サイトを見る" });
+      continue;
+    }
+    if (partnerId === "moshimo-onamae-rental-server") {
+      if (env.MOSHIMO_ONAMAE_SERVER_AFFILIATE_APPROVAL_CURRENT?.trim().toLowerCase() !== "true") continue;
+      const destination = validatedServerAffiliateDestination(
+        partnerId,
+        env.MOSHIMO_ONAMAE_SERVER_AFFILIATE_DESTINATION,
+      );
+      if (destination) partners.push({ destination, id: partnerId, label: "お名前.com レンタルサーバー公式サイトを見る" });
+      continue;
+    }
+    if (partnerId === "moshimo-shin-rental-server") {
+      if (env.MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_APPROVAL_CURRENT?.trim().toLowerCase() !== "true") continue;
+      const destination = validatedServerAffiliateDestination(
+        partnerId,
+        env.MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_DESTINATION,
+      );
+      if (destination) partners.push({ destination, id: partnerId, label: "シンレンタルサーバー公式サイトを見る" });
       continue;
     }
     if (partnerId === "valuecommerce-ablenet-shared-server") {

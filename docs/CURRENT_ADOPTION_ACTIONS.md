@@ -323,14 +323,21 @@ read-backし、台帳を`approved`へ更新しました。非公開報酬、確�
 申請中0件をread-backし、同じ個別GOのscopeで通常Affiliateプログラムだけを申請して即時承認を確認しました。
 
 同日、ValueCommerceのABLENET共用サーバーは個別条件の確認後に提携申請し、「提携済み」をread-backしました。
-serversカテゴリの承認済みprogramはXServerビジネス、ロリポップ、ABLENETの3件です。ただしconfirmed commission shareは
-未観測であり、各partnerともruntime destination・記事承認・開示先行・個別`cta_go`がそろうまでCTAへ出しません。
+その後の2026-08-12 read-backまでに、serversカテゴリの承認済みprogramはXServerビジネス、ロリポップ、
+ABLENET、シンレンタルサーバー、ConoHa WING、お名前.com レンタルサーバーの6件になりました。ただし
+confirmed commission shareは未観測であり、各partnerともruntime destination・記事承認・開示先行・
+個別`cta_go`がそろうまでCTAへ出しません。
 
-2026-08-09、上記3件のCTAをrepositoryへURL保存せず実行時だけ有効化するserver runtime gateを実装しました。
+2026-08-09、当時承認済みだった3件のCTAをrepositoryへURL保存せず実行時だけ有効化するserver runtime gateを実装しました。
 SVR01のexact承認、`INDEX_GO`、`CTA_GO`、partner別`SERVER_CTA_GO`、提携有効フラグ、ASP固有host/pathの
 runtime destinationがすべて成立したpartnerだけを表示します。1社だけ成立した場合は単独CTA、2社以上成立時は
 比較CTAとし、PR開示より前には挿入しません。query付きSVR02–SVR20候補はSVR01が承認されてもnoindex・CTA無効を
 維持します。現productionにはserver承認・destination・server CTA GOを設定していないため、公開状態は変わりません。
+
+2026-08-12、同じfail-closed条件のまま、server runtime gateを承認済み6programへ拡張しました。追加対象は
+シンレンタルサーバー、ConoHa WING、お名前.com レンタルサーバーです。各destinationはもしもの正規host・path・
+必須query keyをruntimeで検証し、値はrepositoryへ保存しません。productionのserver承認・destination・server CTA GOは
+未設定のため、外部表示とCTA状態は変わりません。
 
 同日、XServerビジネスの正規公開画面を追加でread-only確認しました。機能一覧は共有serverについて
 「転送量課金なし」「転送量無制限」を明示しています。一方、契約更新simulationは共有スタンダードと12か月を

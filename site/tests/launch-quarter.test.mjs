@@ -215,7 +215,10 @@ test("servers template fixes disclosure, calculator, result, CTA slot, evidence 
   assert.deepEqual([...positions].sort((left, right) => left - right), positions);
   assert.match(templateSource, /data-server-affiliate-cta-state="disabled"/);
   assert.match(templateSource, /data-server-affiliate-cta-placeholder="a8net-xserver-business"/);
+  assert.match(templateSource, /data-server-affiliate-cta-placeholder="moshimo-conoha-wing"/);
   assert.match(templateSource, /data-server-affiliate-cta-placeholder="moshimo-lolipop-rental-server"/);
+  assert.match(templateSource, /data-server-affiliate-cta-placeholder="moshimo-onamae-rental-server"/);
+  assert.match(templateSource, /data-server-affiliate-cta-placeholder="moshimo-shin-rental-server"/);
   assert.match(templateSource, /data-server-affiliate-cta-placeholder="valuecommerce-ablenet-shared-server"/);
   assert.doesNotMatch(templateSource, /href=|rel="sponsored/);
 });
