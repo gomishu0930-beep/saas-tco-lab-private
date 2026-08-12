@@ -243,10 +243,11 @@ dashboardで警告します。2026-12-31の固定撤退ラインは公開20本�
 2026-08-09、accountingはKWFinder正規画面のJapan指定で40/40を再取得し、凍結slate完全一致を
 validatorで確認しました。known 9、no_data 31、rejected 0、known合計6,320/月、no_data率77.5%で、
 必要22,227 sessionのknown下限を下回ります。したがってaccountingは現時点で拡張せず、P18固定scopeを増やさないため
-safe-summaryは既存のカテゴリ表へ記録しました。CRMは同日に30/40まで取得しましたが、完全一致前の部分合計は採用せず、残り10語を
-検索回数枠の回復後に取得します。forms、email_marketing、SEO追加60語は引き続き未観測です。
+safe-summaryは既存のカテゴリ表へ記録しました。CRM用として同日に保存された30行のCSVは、2026-08-12の
+凍結slate再監査で40語との完全一致に失敗しました。query別値や部分合計は採用せず、CRMは0/40の未観測へ戻して
+全40語を再exportします。forms、email_marketing、SEO追加60語も引き続き未観測です。
 同日の再試行では、KWFinder正規画面が検索枠の単純な日次resetではなく`plan upgrade required`を表示しました。
-残りはCRM 10、forms 40、email_marketing 40、SEO追加60の計150語です。自動upgradeや課金は行わず、
+残りはCRM 40、forms 40、email_marketing 40、SEO追加60の計180語です。自動upgradeや課金は行わず、
 Basic月払い61.00 USDを上限とする1か月利用とexport後の自動更新停止について、exact Human支払承認を待ちます。
 
 Z6–Z7としてservers記事の計算機をzero-inputへ固定しました。記事には承認済みcontractから事前計算する
@@ -358,10 +359,15 @@ allowlistし、review未完了、field欠落、別host、tracking URLは全表�
 zero-input計算機には価格を投入せず「未確認」行として順位から除外するため、canonical価格、TCO、用途判定、
 記事承認、index、CTAのHOLDは変わらない。SVR02–SVR20も従来どおり値なし・noindex・CTA無効である。
 
-同日、拡張需要の残り150語について、CRM残り10、forms 40、email marketing 40、SEO追加60を
+同日、拡張需要のHuman export用として、CRM残り10、forms 40、email marketing 40、SEO追加60を
 凍結slateからquery-only textへ生成する`prepare-kwfinder-upload`を追加した。出力は固定P18 scope外の
 `outputs/`へ置き、元slateとの完全一致、重複0、範囲外slice拒否を回帰testで固定した。需要値の取得、
 KWFinderのProcess、CSV export、raw保存は行っていない。
+
+2026-08-12のローカル再監査で、CRMの既存30行CSVが凍結40語との完全一致に失敗していることを確認した。
+部分CSVを取得済みに数えず、`outputs/kwfinder_crm_40.txt`を全40語から再生成した。これによりHuman export待ちは
+CRM 40、forms 40、email marketing 40、SEO追加60の計180語である。raw CSV、query、query別volumeは
+repositoryへ保存せず、完全一致したカテゴリだけをsafe-summaryへ進める。
 
 既存のHuman承認済みMangools観測を別記事で再入力しないため、`/operator`へ証拠再利用prefillを追加しました。
 P04は最低利用者数と月契約料金、P08は基本料金・必須addon料金・必要利用者数、P10は表示価格と税fieldだけを

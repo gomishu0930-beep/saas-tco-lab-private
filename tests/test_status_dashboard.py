@@ -108,7 +108,7 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert [item["priority"] for item in data["externalActions"]] == [1, 2]
     assert data["externalActions"][0] == {
         "priority": 1,
-        "label": "KWFinder拡張需要の残り150語をHuman export",
+        "label": "KWFinder拡張需要の残り180語をHuman export",
         "status": "human_export_required",
         "token": "mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension",
     }

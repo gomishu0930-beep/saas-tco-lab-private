@@ -87,7 +87,7 @@ servers候補として台帳へ追加した。バリューコマースではABLE
 |accounting|6,320（9/40 known、no_data率77.5%）|マネーフォワード クラウド会計|`restricted`|`restricted`|必要22,227 sessionのknown下限未達。現時点では拡張しない|
 |forms|`unknown`|formrun|`restricted`|`restricted`|需要CSV未取得のため判定しない|
 |email_marketing|`unknown`|WiLL Mail|`restricted`|`restricted`|需要CSV未取得のため判定しない|
-|crm|`unknown`（30/40の部分結果は不採用）|A8.net直接program未確認|`unknown`|`unknown`|残り10語と、もしも・バリューコマースのprogram確認を待つ|
+|crm|`unknown`（既存30行CSVは凍結slate不一致で不採用）|A8.net直接program未確認|`unknown`|`unknown`|全40語の再exportと、もしも・バリューコマースのprogram確認を待つ|
 
 ### Evidence-gated next step
 

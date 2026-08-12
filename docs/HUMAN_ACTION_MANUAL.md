@@ -32,7 +32,7 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
 |H10|一部完了|実データ、indexing、Affiliate CTA、独自domain、法的表示を個別承認する|10分|独自domainで10記事を公開済み。P09/P11は自データ待ちでnoindex・CTA無効|各対象へのexact `GO`|実運用releaseをreadbackし、rollback可能性を確認する|
-|H11|今すぐ|KWFinder正規画面で残り150語を4回に分けてHuman exportする|15–25分|Mangools Basic有効、KWFinder 100/100、入力用10・40・40・60語を`outputs/`へ生成・行数確認済み|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension`|raw CSVをrepo外で行単位検証し、safe-summaryだけをdashboardへ反映する|
+|H11|今すぐ|KWFinder正規画面で残り180語を4回に分けてHuman exportする|20–30分|Mangools Basic有効、KWFinder 100/100、入力用40・40・40・60語を`outputs/`へ生成・行数確認済み|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension`|raw CSVをrepo外で行単位検証し、safe-summaryだけをdashboardへ反映する|
 |H12|実作業時|OperatorのP09/P11で作業timerを開始・停止し、秒数を確認して端末内台帳へ追記する|開始・停止各数秒|計測・Human確認・append-only合計・候補反映まで実装済み。実測sessionはまだ0件|必要な実作業後に`article_input: done P09`または`article_input: done P11`|確認済み合計だけを既存contract validatorへ通し、unreviewed標本を生成する|
 
 ## 今すぐ返信するテンプレート
@@ -80,7 +80,7 @@ Silver tier 25%、cookie 30日、PayPal、支払申請条件は承認済み売�
 social profile、誤認表示、self-referral、未承諾emailです。これはAffiliate利用状態の確認であり、
 価格データの取得・保存・比較表示・TCO派生・履歴利用の許諾回答ではありません。
 
-### H11 — KWFinder 残り150語のHuman export
+### H11 — KWFinder 残り180語のHuman export
 
 2026-08-12の正規Dashboardで`Mangools Basic`が有効、KWFinderが`100 / 100 req.`、
 1回のimport上限が200語であることをread-only確認済みです。追加課金やupgradeは不要です。
@@ -88,7 +88,7 @@ Safariの`Import | KWFinder`タブを使い、次の4ファイルを**混ぜず�
 
 |順番|入力ファイル|行数|保存時の識別名|
 |---:|---|---:|---|
-|1|`outputs/kwfinder_crm_remaining_10.txt`|10|`crm-remaining-10`|
+|1|`outputs/kwfinder_crm_40.txt`|40|`crm-40`|
 |2|`outputs/kwfinder_forms_40.txt`|40|`forms-40`|
 |3|`outputs/kwfinder_email_marketing_40.txt`|40|`email-marketing-40`|
 |4|`outputs/kwfinder_seo_extension_60.txt`|60|`seo-extension-60`|
@@ -107,6 +107,10 @@ CSVは`outputs/`またはrepositoryへ置かず、Safariのdownload先に残し�
 Codexがdownloadファイルをlocalで検証し、raw、query別volume、Mangools固有IDを保存せず、
 known / no_data / rejected、known合計、no_data率だけをrepositoryへ反映します。Process、Export、
 API取得、browser自動取得をCodexへ再委任しません。
+
+以前の`kwfinder_crm_remaining_10.txt`は使いません。過去のCRM 30行CSVが凍結40語との完全一致に失敗したため、
+CRMは全40語を1回で再exportします。KWFinder結果が40行にならない場合も完了扱いにせず、そのCSVだけを保存して
+`HOLD`として知らせてください。
 
 ### H12 — P09 / P11 自データの実測
 

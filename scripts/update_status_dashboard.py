@@ -279,17 +279,17 @@ def _external_action_queue(
         and "Mangools Basic契約有効化済み" not in adoption
     ):
         actions.append({
-            "label": "KWFinder拡張需要150語の一時upgrade・export",
+            "label": "KWFinder拡張需要180語の一時upgrade・export",
             "status": "payment_approval_required",
             "token": "mangools_upgrade: GO Basic monthly 61.00 USD max_total 61.00 USD cancel_after_export / HOLD",
         })
     if (
         "Mangools Basic契約有効化済み" in adoption
-        and "残りはCRM 10、forms 40、email_marketing 40、SEO追加60" in adoption
-        and "拡張需要150語のHuman export完了" not in adoption
+        and "残りはCRM 40、forms 40、email_marketing 40、SEO追加60" in adoption
+        and "拡張需要180語のHuman export完了" not in adoption
     ):
         actions.append({
-            "label": "KWFinder拡張需要の残り150語をHuman export",
+            "label": "KWFinder拡張需要の残り180語をHuman export",
             "status": "human_export_required",
             "token": "mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension",
         })
@@ -552,7 +552,7 @@ def _launch_quarter() -> dict[str, Any]:
         "weeklyPlan": [
             {"date": "7/31–8/2", "label": "domain day・P01–P03最終標本"},
             {"date": "8/3–8/9", "label": "第1弾記事承認・index準備"},
-            {"date": "8/10–8/16", "label": "拡張需要残り150語Human export"},
+            {"date": "8/10–8/16", "label": "拡張需要残り180語Human export"},
             {"date": "8/17–8/31", "label": "P09/P11 Operator timer実測・servers価格確認"},
             {"date": "9月", "label": "残記事・embed・note/X・Impact/ASP審査"},
             {"date": "10/1–10/24", "label": "取引意図記事改稿・内部導線"},

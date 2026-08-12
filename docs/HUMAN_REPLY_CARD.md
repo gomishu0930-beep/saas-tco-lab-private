@@ -29,8 +29,8 @@ SVR01のlocal標本では確認済み11 fieldを証拠表として表示する�
 |Impact feed有無|`impact_feed_check: <available\|unavailable\|unclear> <partner>`|`impact_feed_check: available HubSpot`|承認済みpartnerのcatalog表示有無だけを記録|
 |Impact feed A1登録|`impact_feed_a1: GO <partner> / HOLD <partner>`|`impact_feed_a1: HOLD HubSpot`|全利用scopeを確認したexact feedだけsource policy候補へ登録。取得は開始しない|
 |Mangools需要CSV|`mangools_csv: done / pending`|`mangools_csv: done`|凍結済みquery CSVのlocal検証を開始|
-|Mangools一時upgrade（完了）|`mangools_upgrade: done Basic monthly`|`mangools_upgrade: done Basic monthly`|2026-08-09に正規DashboardでBasic有効化をread-back済み。残り150語はHuman exportのみ。export完了後の更新停止はHuman本人が実行する|
-|拡張需要CSVの残り150語|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension / pending`|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension`|CRM残り10、forms 40、email marketing 40、SEO追加60をHuman export後に行単位validatorへ渡す。自動取得は行わない|
+|Mangools一時upgrade（完了）|`mangools_upgrade: done Basic monthly`|`mangools_upgrade: done Basic monthly`|2026-08-09に正規DashboardでBasic有効化をread-back済み。残り180語はHuman exportのみ。export完了後の更新停止はHuman本人が実行する|
+|拡張需要CSVの残り180語|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension / pending`|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension`|CRM 40、forms 40、email marketing 40、SEO追加60をHuman export後に行単位validatorへ渡す。自動取得は行わない|
 |Scope拡大準備|`scope_expand: GO (準備scope) / HOLD`|`scope_expand: GO (準備scope)`|2026-08-05受領済み。query・checklist・template準備だけで、公開・申請・照会は許可しない|
 |優先カテゴリ|`category_primary: GO <category> / HOLD`|`category_primary: GO servers`|2026-08-06受領済み。serversのlocal記事・観測表・計算機準備だけを許可|
 |日本ASP申請|`asp_signup: GO <ASP> / HOLD <ASP>`|`asp_signup: GO A8.net`|列挙したASPのHuman申請だけを開始|

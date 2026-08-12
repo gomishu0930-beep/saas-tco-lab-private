@@ -74,7 +74,7 @@ query別volume、Mangools固有IDはrepositoryへ保存しない。v1.1の150語
 |---|---:|---|---|---|---|
 |servers|40 / 40|`artifacts/editorial-inputs/demand-safe-summaries/servers-2026-08-06.json`|14 / 26 / 0|28,220 / 0.65000000|必要22,227のknown下限は超えるが、拡張目安5万未満。候補維持|
 |accounting|40 / 40|本表（P18固定scope維持のため新規artifactなし）|9 / 31 / 0|6,320 / 0.77500000|known下限は必要22,227を下回り、no_data率も高い。現時点では拡張しない|
-|crm|30 / 40|未生成|未判定|未判定|2026-08-09に30語取得。残り10語は検索回数回復待ち。部分合計は需要判断へ使わない|
+|crm|0 / 40 usable|未生成|未判定|未判定|2026-08-12再監査で既存30行CSVが凍結40語との完全一致に失敗。全40語を再exportする|
 |forms|0 / 40|未生成|未判定|未判定|検索回数回復待ち|
 |email_marketing|0 / 40|未生成|未判定|未判定|検索回数回復待ち|
 |seo_tools_v2_extension|0 / 60|未生成|未判定|未判定|検索回数回復待ち|
@@ -83,12 +83,17 @@ serversの`volume_floor_met_not_proven`は、known行だけで月20万円逆算�
 あり、売上達成・総需要・カテゴリ採用の確定ではない。no_dataは0へ置換していない。残りslateはKWFinderの
 検索回数カウンター回復後に再開し、部分CSVの集計値はrepositoryへ保存しない。
 
-2026-08-11、残り150語を手入力せず正規画面へ渡せるよう、凍結slateのexact sliceをquery-only textへ
-生成する`prepare-kwfinder-upload`を追加した。CRM残り10は`--start-index 30 --limit 10`、formsと
+2026-08-11、未取得語を手入力せず正規画面へ渡せるよう、凍結slateのexact sliceをquery-only textへ
+生成する`prepare-kwfinder-upload`を追加した。当初CRM残り10は`--start-index 30 --limit 10`、formsと
 email marketingは`--start-index 0 --limit 40`、SEO追加は`--start-index 0 --limit 60`を使う。
 出力は固定scope外の`outputs/`へ置き、元slateとの完全一致・重複0・範囲外拒否をtestで固定する。
 これはHuman export用の入力補助であり、需要値、query別volume、取得済み判定、外部取得権限を含まない。
 KWFinderのProcessとCSV exportは引き続きHumanが正規画面で行い、完全なcategory CSVだけを行単位validatorへ渡す。
+
+2026-08-12、Downloads内のCRM既存CSVを凍結slateへ再照合したところ、完全一致要件を満たさなかった。
+取得済み30語という進捗を撤回し、`--start-index 0 --limit 40`で`outputs/kwfinder_crm_40.txt`を再生成した。
+残るHuman exportはCRM 40、forms 40、email marketing 40、SEO追加60の計180語である。これはquery集合の
+整合性監査であり、部分volumeやquery別値を需要判断へ採用しない。
 
 ## 2026-08-06 category primary decision
 
