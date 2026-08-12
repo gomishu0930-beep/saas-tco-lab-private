@@ -118,6 +118,35 @@ test("partner ledger keeps Japanese ASP account and program approval evidence ex
       (entry) => JSON.stringify(entry.next_networks) === JSON.stringify(["moshimo", "valuecommerce"]),
     ),
   );
+
+  const approvedServerPrograms = ledger.program_research
+    .filter((entry) => entry.category === "サーバー" && entry.partnership_status === "approved")
+    .sort((left, right) => left.research_id.localeCompare(right.research_id));
+  const workerSource = await readFile(new URL("../worker/index.ts", import.meta.url), "utf8");
+  const partnerIdBlock = workerSource.match(
+    /const SERVER_AFFILIATE_PARTNER_IDS:[\s\S]*?= \[([\s\S]*?)\];/,
+  );
+  assert.ok(partnerIdBlock, "server runtime partner allowlist must remain explicit");
+  const runtimePartnerIds = [...partnerIdBlock[1].matchAll(/"([a-z0-9-]+)"/g)]
+    .map((match) => match[1])
+    .sort();
+  assert.deepEqual(
+    runtimePartnerIds,
+    approvedServerPrograms.map((entry) => entry.research_id),
+    "every approved server program must have one runtime CTA gate and no unapproved program may enter it",
+  );
+  const templateSource = await readFile(
+    new URL("../app/components/PilotArticle.tsx", import.meta.url),
+    "utf8",
+  );
+  for (const program of approvedServerPrograms) {
+    assert.match(workerSource, new RegExp(program.affiliate_approval_runtime_secret));
+    assert.match(workerSource, new RegExp(program.destination_runtime_secret));
+    assert.match(
+      templateSource,
+      new RegExp(`data-server-affiliate-cta-placeholder=["']${program.research_id}["']`),
+    );
+  }
 });
 
 test("launch drafting prioritizes transaction intent while retaining P01-P03 release batch", () => {
