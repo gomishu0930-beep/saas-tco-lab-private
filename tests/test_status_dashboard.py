@@ -237,6 +237,7 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     assert result.returncode == 0, result.stderr
     data = _dashboard_data(dashboard)
     assert data["kpis"][0]["value"] == 1
+    assert data["phase"] == "公開後成長運転—1記事公開・11記事証拠/承認待ち"
 
 
 def test_pending_p06_p07_review_cards_are_contract_driven(tmp_path: Path) -> None:

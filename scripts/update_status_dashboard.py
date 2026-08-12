@@ -603,7 +603,9 @@ def _regenerate(
     data["asOf"] = as_of
     data["reportingPeriod"] = external["period"]
     data["phase"] = (
-        "editorial launch—記事入力・承認中"
+        f"公開後成長運転—{published_count}記事公開・{12 - approved_count}記事証拠/承認待ち"
+        if published_count > 0
+        else "editorial launch—記事入力・承認中"
         if domain_state in {"GO", "DONE"}
         else "Launch Quarter準備— domain GO待ち"
     )
