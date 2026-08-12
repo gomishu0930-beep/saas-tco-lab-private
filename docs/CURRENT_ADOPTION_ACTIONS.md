@@ -400,6 +400,15 @@ robots allowlistも10記事で一致した。P09/P11はnoindex・canonicalなし
 contract・端末・外部へ保存せず、既存の承認済み証拠再利用、v2.3 validation、Human確定を通過しても
 記事と全fieldは`unreviewed`のままである。実測値自体はまだ未入力なので、P09/P11のnoindex・CTA無効は維持する。
 
+2026-08-12、実測値が存在する前の手入力も減らすため、同cardへHuman確認済み実測台帳を追加した。P09は
+移行作業と教育、P11は導入前作業と導入後作業を秒単位で開始・停止できる。停止した秒数はmemory上の候補に
+とどまり、Humanが秒数・作業区分・計測対象月・確認日を明示確認したsessionだけをPIIなしで端末内へ
+append-only保存する。計測対象月と確認日の暦月が異なる行、記事と作業区分が不一致の行、0秒・不正・重複行は
+fail-closedで全行停止する。確認済みsessionは決定論的に月別合計し、秒から時間への換算は小数8桁の
+ROUND_HALF_UPだけを用いる。P09は移行作業・教育の両方、P11は選択した導入前後の完全暦月の両方が
+そろった場合だけ既存の未承認入力候補へ反映する。台帳追加・合計反映後もcontract、記事、index、CTAは
+自動承認せず、P09/P11の実値がまだ存在しない現在のHOLDを維持する。
+
 2026-08-12、SafariでHuman本人認証が完了し、もしもの残り3program（シンレンタルサーバー、ConoHa WING、
 お名前.com レンタルサーバー）を正規検索画面でread-backした。Humanからprogram名付きの
 `asp_program_terms_accept`を受領後、`saaslab`を対象に各申請buttonを1回だけ処理した。シンレンタルサーバーと

@@ -480,6 +480,205 @@ export type OwnedDataPrefill = {
   values: Readonly<Record<string, EditorialFieldFormValue>>;
 };
 
+export type OwnedObservationArticleId = "P09" | "P11";
+
+export type OwnedObservationKind =
+  | "p09_migration_work"
+  | "p09_training"
+  | "p11_baseline_work"
+  | "p11_comparison_work";
+
+export type ConfirmedOwnedObservation = {
+  schema_version: "owned-observation-1";
+  observation_id: string;
+  article_id: OwnedObservationArticleId;
+  kind: OwnedObservationKind;
+  calendar_month: string;
+  elapsed_seconds: string;
+  confirmed_on: string;
+  authority: "human_confirmed";
+};
+
+export type OwnedObservationDraft = {
+  articleId: OwnedObservationArticleId;
+  kind: OwnedObservationKind;
+  calendarMonth: string;
+  elapsedSeconds: string;
+  confirmedOn: string;
+  observationId: string;
+};
+
+const ownedObservationArticleKinds: Readonly<Record<OwnedObservationArticleId, ReadonlySet<OwnedObservationKind>>> = {
+  P09: new Set(["p09_migration_work", "p09_training"]),
+  P11: new Set(["p11_baseline_work", "p11_comparison_work"]),
+};
+
+const ownedObservationIsoDayPattern = /^(\d{4})-(\d{2})-(\d{2})$/u;
+const ownedObservationCalendarMonthPattern = /^(\d{4})-(\d{2})$/u;
+const ownedObservationIdPattern = /^[A-Za-z0-9][A-Za-z0-9._:-]{0,119}$/u;
+const maximumOwnedObservationSeconds = 31_536_000n;
+
+function validOwnedObservationIsoDay(value: string): boolean {
+  const match = ownedObservationIsoDayPattern.exec(value);
+  if (!match) return false;
+  const year = Number(match[1]);
+  const month = Number(match[2]);
+  const day = Number(match[3]);
+  const parsed = new Date(Date.UTC(year, month - 1, day));
+  return parsed.getUTCFullYear() === year
+    && parsed.getUTCMonth() === month - 1
+    && parsed.getUTCDate() === day;
+}
+
+function validOwnedObservationCalendarMonth(value: string): boolean {
+  const match = ownedObservationCalendarMonthPattern.exec(value);
+  return Boolean(match && Number(match[2]) >= 1 && Number(match[2]) <= 12);
+}
+
+function normalizedOwnedObservationSeconds(value: string): bigint | null {
+  if (!/^[1-9]\d*$/u.test(value)) return null;
+  const seconds = BigInt(value);
+  return seconds <= maximumOwnedObservationSeconds ? seconds : null;
+}
+
+export function confirmOwnedObservation(
+  draft: OwnedObservationDraft,
+): { observation: ConfirmedOwnedObservation | null; errors: readonly string[] } {
+  const errors: string[] = [];
+  if (!ownedObservationArticleKinds[draft.articleId]?.has(draft.kind)) {
+    errors.push("記事と作業区分の組み合わせが正しくありません。");
+  }
+  if (!validOwnedObservationCalendarMonth(draft.calendarMonth)) {
+    errors.push("計測対象月をYYYY-MM形式で選んでください。");
+  }
+  if (!validOwnedObservationIsoDay(draft.confirmedOn)) {
+    errors.push("Human確認日をYYYY-MM-DD形式で入力してください。");
+  }
+  if (
+    validOwnedObservationCalendarMonth(draft.calendarMonth)
+    && validOwnedObservationIsoDay(draft.confirmedOn)
+    && draft.confirmedOn.slice(0, 7) !== draft.calendarMonth
+  ) {
+    errors.push("計測対象月はHuman確認日の暦月と一致させてください。別月へ付け替えません。");
+  }
+  if (!ownedObservationIdPattern.test(draft.observationId)) {
+    errors.push("端末内観測IDが正しくありません。計測をやり直してください。");
+  }
+  const seconds = normalizedOwnedObservationSeconds(draft.elapsedSeconds);
+  if (seconds === null) {
+    errors.push("計測時間は1秒以上・365日以内の整数秒にしてください。");
+  }
+  if (errors.length || seconds === null) return { observation: null, errors };
+  return {
+    errors: [],
+    observation: {
+      schema_version: "owned-observation-1",
+      observation_id: draft.observationId,
+      article_id: draft.articleId,
+      kind: draft.kind,
+      calendar_month: draft.calendarMonth,
+      elapsed_seconds: seconds.toString(),
+      confirmed_on: draft.confirmedOn,
+      authority: "human_confirmed",
+    },
+  };
+}
+
+export function parseConfirmedOwnedObservations(
+  raw: string | null,
+): { observations: readonly ConfirmedOwnedObservation[]; error: string | null } {
+  if (!raw) return { observations: [], error: null };
+  let decoded: unknown;
+  try {
+    decoded = JSON.parse(raw);
+  } catch {
+    return { observations: [], error: "端末内の確認済み実測台帳を読み込めません。値を推測せず停止します。" };
+  }
+  if (!Array.isArray(decoded) || decoded.length > 10_000) {
+    return { observations: [], error: "端末内の確認済み実測台帳の形式が正しくありません。値を推測せず停止します。" };
+  }
+  const observations: ConfirmedOwnedObservation[] = [];
+  const ids = new Set<string>();
+  for (const candidate of decoded) {
+    if (!candidate || typeof candidate !== "object") {
+      return { observations: [], error: "端末内の確認済み実測台帳に不正な行があります。全行を停止します。" };
+    }
+    const row = candidate as Partial<ConfirmedOwnedObservation>;
+    const result = confirmOwnedObservation({
+      articleId: row.article_id as OwnedObservationArticleId,
+      kind: row.kind as OwnedObservationKind,
+      calendarMonth: row.calendar_month ?? "",
+      elapsedSeconds: row.elapsed_seconds ?? "",
+      confirmedOn: row.confirmed_on ?? "",
+      observationId: row.observation_id ?? "",
+    });
+    if (
+      row.schema_version !== "owned-observation-1"
+      || row.authority !== "human_confirmed"
+      || !result.observation
+      || ids.has(result.observation.observation_id)
+    ) {
+      return { observations: [], error: "端末内の確認済み実測台帳に不正・重複行があります。全行を停止します。" };
+    }
+    ids.add(result.observation.observation_id);
+    observations.push(result.observation);
+  }
+  return { observations, error: null };
+}
+
+/** Whole seconds are deterministically rounded half-up to eight decimal hours. */
+export function secondsToDecimalHours(elapsedSeconds: string): string | null {
+  const seconds = normalizedOwnedObservationSeconds(elapsedSeconds);
+  if (seconds === null) return null;
+  const scale = 100_000_000n;
+  const denominator = 3_600n;
+  const numerator = seconds * scale;
+  let rounded = numerator / denominator;
+  if ((numerator % denominator) * 2n >= denominator) rounded += 1n;
+  const whole = rounded / scale;
+  const fraction = (rounded % scale).toString().padStart(8, "0").replace(/0+$/u, "");
+  return fraction ? `${whole}.${fraction}` : whole.toString();
+}
+
+export function summedObservationHours(
+  observations: readonly ConfirmedOwnedObservation[],
+  articleId: OwnedObservationArticleId,
+  kind: OwnedObservationKind,
+  calendarMonth?: string,
+): string | null {
+  const rows = observations.filter((observation) => (
+    observation.article_id === articleId
+    && observation.kind === kind
+    && (!calendarMonth || observation.calendar_month === calendarMonth)
+  ));
+  if (!rows.length) return null;
+  const seconds = rows.reduce((total, row) => total + BigInt(row.elapsed_seconds), 0n);
+  return secondsToDecimalHours(seconds.toString());
+}
+
+export function observationMonthTotals(
+  observations: readonly ConfirmedOwnedObservation[],
+  articleId: OwnedObservationArticleId,
+): readonly { calendarMonth: string; kind: OwnedObservationKind; hours: string; sessions: number }[] {
+  const grouped = new Map<string, ConfirmedOwnedObservation[]>();
+  for (const observation of observations) {
+    if (observation.article_id !== articleId) continue;
+    const key = `${observation.calendar_month}::${observation.kind}`;
+    grouped.set(key, [...(grouped.get(key) ?? []), observation]);
+  }
+  return [...grouped.entries()].map(([key, rows]) => {
+    const [calendarMonth, kind] = key.split("::") as [string, OwnedObservationKind];
+    return {
+      calendarMonth,
+      kind,
+      hours: summedObservationHours(rows, articleId, kind, calendarMonth) ?? "0",
+      sessions: rows.length,
+    };
+  }).sort((left, right) => (
+    left.calendarMonth.localeCompare(right.calendarMonth) || left.kind.localeCompare(right.kind)
+  ));
+}
+
 const safeQueryKeys = new Set([
   "billing", "country", "currency", "edition", "lang", "locale", "period", "plan", "region",
 ]);
@@ -1074,7 +1273,7 @@ export function validateEditorialInput(
       const unit = current.unit.trim().replace(/\s+/g, " ");
       const unknownReason = current.unknownReason.trim().replace(/\s+/g, " ");
       let contractValue: string | null = null;
-      let contractUnit: string | null = null;
+      let contractUnit: string | null;
       let contractUnknownReason: string | null = null;
 
       if (valueStatus === "known") {

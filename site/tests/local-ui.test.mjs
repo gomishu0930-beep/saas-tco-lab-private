@@ -106,7 +106,9 @@ test("operator and pilot index report ten live articles while P09 and P11 remain
   assert.match(operator, /P01–P08・P10・P12（10\/12）/);
   assert.match(operator, /P01–P08・P10・P12承認・公開済み/);
   assert.match(operator, /SVR01は11項目確認済み・TCO条件待ち/);
-  assert.match(operator, /P09\/P11は自データcardで直接観測を候補化/);
+  assert.match(operator, /P09\/P11は作業timerを開始・停止/);
+  assert.match(operator, /作業timerを開始・停止/);
+  assert.match(operator, /端末内append-only台帳/);
   assert.doesNotMatch(operator, /release待ち|P01–P03 公開中/);
 
   const pilot = await (await render("/pilot")).text();

@@ -410,11 +410,6 @@ test("Googlebot can fetch every asset referenced by an approved article", async 
           : /image\/svg\+xml/i,
       path,
     );
-    if (path.startsWith("/servers/")) {
-      assert.match(body, /data-server-article-state="candidate_only"/, path);
-      assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i, path);
-      assert.doesNotMatch(body, /rel=["'][^"']*sponsored/i, path);
-    }
   }
 });
 

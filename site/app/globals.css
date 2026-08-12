@@ -316,8 +316,14 @@ body:has(.embed-page) > .skip-link { display: none; }
 .operator-owned-data-note { margin: 0 0 16px; padding: 12px 14px; background: #fff4db; color: #665837; font-size: 0.72rem; }
 .operator-owned-data-grid { display: grid; grid-template-columns: repeat(4, minmax(150px, 1fr)); gap: 14px; margin-bottom: 15px; }
 .operator-owned-data-grid label { display: grid; gap: 5px; color: var(--muted); font-size: 0.68rem; font-weight: 800; }
-.operator-owned-data-grid input { min-height: 43px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 0; background: white; color: var(--ink); font: 700 0.78rem ui-monospace, monospace; }
+.operator-owned-data-grid input, .operator-owned-data-grid select { min-height: 43px; padding: 8px 10px; border: 1px solid var(--line); border-radius: 0; background: white; color: var(--ink); font: 700 0.78rem ui-monospace, monospace; }
 .operator-owned-data-warnings { margin: 12px 0 0; padding-left: 18px; color: #8b5c00; font-size: 0.7rem; font-weight: 750; }
+.operator-measurement-recorder { margin: 0 0 20px; padding: 18px; border: 1px solid #846b2d; background: white; }
+.operator-measurement-recorder h4 { margin: 0; font: 500 clamp(1.05rem, 2vw, 1.35rem)/1.2 Georgia, "Yu Mincho", serif; }
+.operator-measurement-recorder > p { color: var(--muted); font-size: 0.7rem; }
+.operator-measurement-clock { display: flex; align-items: baseline; gap: 12px; margin: 8px 0 12px; }
+.operator-measurement-clock strong { font: 800 clamp(1.4rem, 4vw, 2.2rem)/1 ui-monospace, monospace; }
+.operator-measurement-clock span { color: var(--muted); font-size: 0.68rem; font-weight: 800; }
 .operator-paste-heading, .operator-previous-heading { display: flex; justify-content: space-between; gap: 32px; align-items: end; margin-bottom: 15px; }
 .operator-paste-heading h3, .operator-previous-heading h3 { margin: 0; font: 500 clamp(1.35rem, 3vw, 2rem)/1.2 Georgia, "Yu Mincho", serif; }
 .operator-paste-heading > p { max-width: 520px; margin: 0; color: var(--muted); font-size: 0.73rem; }

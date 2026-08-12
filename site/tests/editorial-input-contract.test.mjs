@@ -8,13 +8,18 @@ import {
   annualMonthlyEquivalent,
   buildP09OwnedDataPrefill,
   buildP11OwnedDataPrefill,
+  confirmOwnedObservation,
   emptyEditorialField,
   emptyEditorialRow,
   extractPriceTextCandidates,
+  observationMonthTotals,
+  parseConfirmedOwnedObservations,
   prefillExtractedCandidate,
   reviewedServerCandidateEvidence,
   reusableEditorialEvidence,
+  secondsToDecimalHours,
   serverEvidenceValue,
+  summedObservationHours,
   validateEditorialInput,
   valuesFromContract,
 } from "../app/lib/editorial-input-contract.ts";
@@ -483,6 +488,90 @@ test("P11 owned-data prefill rejects non-sequential months and warns instead of 
   });
   assert.match(JSON.stringify(incomplete.errors), /全日が終了した暦月/);
   assert.deepEqual(incomplete.values, {});
+});
+
+test("owned observation ledger persists only explicit Human-confirmed whole-second sessions", () => {
+  const confirmed = confirmOwnedObservation({
+    articleId: "P09",
+    kind: "p09_migration_work",
+    calendarMonth: "2026-08",
+    elapsedSeconds: "3600",
+    confirmedOn: "2026-08-12",
+    observationId: "P09:p09_migration_work:1",
+  });
+  assert.deepEqual(confirmed.errors, []);
+  assert.equal(confirmed.observation?.authority, "human_confirmed");
+  assert.equal(confirmed.observation?.elapsed_seconds, "3600");
+
+  const wrongArticle = confirmOwnedObservation({
+    articleId: "P11",
+    kind: "p09_migration_work",
+    calendarMonth: "2026-08",
+    elapsedSeconds: "3600",
+    confirmedOn: "2026-08-12",
+    observationId: "P11:wrong-kind:1",
+  });
+  assert.equal(wrongArticle.observation, null);
+  assert.match(wrongArticle.errors.join(" "), /記事と作業区分/);
+
+  const reassignedMonth = confirmOwnedObservation({
+    articleId: "P11",
+    kind: "p11_baseline_work",
+    calendarMonth: "2026-07",
+    elapsedSeconds: "3600",
+    confirmedOn: "2026-08-12",
+    observationId: "P11:p11_baseline_work:1",
+  });
+  assert.equal(reassignedMonth.observation, null);
+  assert.match(reassignedMonth.errors.join(" "), /別月へ付け替えません/);
+});
+
+test("owned observation ledger sums confirmed seconds deterministically without inferred time", () => {
+  assert.equal(secondsToDecimalHours("3600"), "1");
+  assert.equal(secondsToDecimalHours("90"), "0.025");
+  assert.equal(secondsToDecimalHours("1"), "0.00027778");
+  assert.equal(secondsToDecimalHours("0"), null);
+
+  const rows = [
+    ["baseline-a", "p11_baseline_work", "1800", "2026-08"],
+    ["baseline-b", "p11_baseline_work", "2700", "2026-08"],
+    ["comparison-a", "p11_comparison_work", "3600", "2026-09"],
+  ].map(([observationId, kind, elapsedSeconds, calendarMonth]) => confirmOwnedObservation({
+    articleId: "P11",
+    kind,
+    calendarMonth,
+    elapsedSeconds,
+    confirmedOn: `${calendarMonth}-12`,
+    observationId,
+  }).observation).filter(Boolean);
+  assert.equal(rows.length, 3);
+  assert.equal(summedObservationHours(rows, "P11", "p11_baseline_work", "2026-08"), "1.25");
+  assert.equal(summedObservationHours(rows, "P11", "p11_comparison_work", "2026-09"), "1");
+  assert.deepEqual(observationMonthTotals(rows, "P11"), [
+    { calendarMonth: "2026-08", kind: "p11_baseline_work", hours: "1.25", sessions: 2 },
+    { calendarMonth: "2026-09", kind: "p11_comparison_work", hours: "1", sessions: 1 },
+  ]);
+});
+
+test("owned observation ledger rejects the entire local ledger on tampering or duplicate IDs", () => {
+  const row = confirmOwnedObservation({
+    articleId: "P09",
+    kind: "p09_training",
+    calendarMonth: "2026-08",
+    elapsedSeconds: "120",
+    confirmedOn: "2026-08-12",
+    observationId: "training-1",
+  }).observation;
+  assert.ok(row);
+  assert.deepEqual(parseConfirmedOwnedObservations(JSON.stringify([row])).observations, [row]);
+
+  const duplicate = parseConfirmedOwnedObservations(JSON.stringify([row, row]));
+  assert.deepEqual(duplicate.observations, []);
+  assert.match(duplicate.error, /不正・重複/);
+
+  const tampered = parseConfirmedOwnedObservations(JSON.stringify([{ ...row, authority: "ai_generated" }]));
+  assert.deepEqual(tampered.observations, []);
+  assert.match(tampered.error, /不正・重複/);
 });
 
 test("copied price text yields explicit local candidates without inventing missing fields", () => {

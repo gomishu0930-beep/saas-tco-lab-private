@@ -33,6 +33,7 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
 |H10|一部完了|実データ、indexing、Affiliate CTA、独自domain、法的表示を個別承認する|10分|独自domainで10記事を公開済み。P09/P11は自データ待ちでnoindex・CTA無効|各対象へのexact `GO`|実運用releaseをreadbackし、rollback可能性を確認する|
 |H11|今すぐ|KWFinder正規画面で残り150語を4回に分けてHuman exportする|15–25分|Mangools Basic有効、KWFinder 100/100、入力用10・40・40・60語を`outputs/`へ生成・行数確認済み|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension`|raw CSVをrepo外で行単位検証し、safe-summaryだけをdashboardへ反映する|
+|H12|実作業時|OperatorのP09/P11で作業timerを開始・停止し、秒数を確認して端末内台帳へ追記する|開始・停止各数秒|計測・Human確認・append-only合計・候補反映まで実装済み。実測sessionはまだ0件|必要な実作業後に`article_input: done P09`または`article_input: done P11`|確認済み合計だけを既存contract validatorへ通し、unreviewed標本を生成する|
 
 ## 今すぐ返信するテンプレート
 
@@ -106,6 +107,23 @@ CSVは`outputs/`またはrepositoryへ置かず、Safariのdownload先に残し�
 Codexがdownloadファイルをlocalで検証し、raw、query別volume、Mangools固有IDを保存せず、
 known / no_data / rejected、known合計、no_data率だけをrepositoryへ反映します。Process、Export、
 API取得、browser自動取得をCodexへ再委任しません。
+
+### H12 — P09 / P11 自データの実測
+
+1. `http://localhost:3000/operator`を開き、記事でP09またはP11を選びます。
+2. P09は`移行作業`または`教育`、P11は`導入前作業`または`導入後作業`を選びます。
+3. 実作業の開始時に`計測開始`、終了時に`計測停止`を押します。停止まではmemoryだけで、保存されません。
+4. 表示された秒数、作業区分、計測対象月、Human確認日を確認し、正しい場合だけ
+   `このN秒をHuman確認して追記`を押します。誤りなら`候補を破棄`します。
+5. 確定sessionはPIIなしでこのbrowserの端末内台帳へ追記され、既存行の上書き・削除は行いません。
+6. P09は移行作業と教育が両方そろった後、P11は導入前後それぞれの完全な暦月が終了した後、
+   `確認済み合計を上の自データ欄へ反映`を押します。
+7. 重複契約月数、時間単価、導入費、月額TCO等のtimerで測れない値はHuman実値だけを入力します。
+8. `実測値を未承認候補へ反映`→一般入力欄の差分確認→`Human確認して証拠contractを確定`の順で進めます。
+9. JSON保存後に`article_input: done P09`または`article_input: done P11`と返信します。
+
+P11は月途中を外挿しません。計測対象月とHuman確認日の暦月が違うsessionも保存しないため、過去月の時間を
+記憶から遡及入力する用途には使えません。実測がない場合はunknownのままです。
 
 ### H5 — SE Ranking
 

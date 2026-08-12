@@ -7,10 +7,15 @@ import {
   annualMonthlyEquivalent,
   buildP09OwnedDataPrefill,
   buildP11OwnedDataPrefill,
+  confirmOwnedObservation,
   emptyEditorialField,
   emptyEditorialRow,
   extractPriceTextCandidates,
+  observationMonthTotals,
+  parseConfirmedOwnedObservations,
   prefillExtractedCandidate,
+  secondsToDecimalHours,
+  summedObservationHours,
   validateEditorialInput,
   valuesFromContract,
   reusableEditorialEvidence,
@@ -18,7 +23,10 @@ import {
   type EditorialFieldFormValue,
   type EditorialRowFormValue,
   type ExtractedPriceCandidate,
+  type ConfirmedOwnedObservation,
   type OwnedDataPrefill,
+  type OwnedObservationArticleId,
+  type OwnedObservationKind,
   type P09OwnedDataInput,
   type P11OwnedDataInput,
   type PriceTextExtraction,
@@ -473,6 +481,14 @@ export function OperatorInputForm() {
 
           {page.id === "P09" ? <>
             <p className="operator-owned-data-note">実際に完了した移行1回について、重複契約・作業・教育を直接記録します。時間単価はHumanの評価条件であり、公式料金と混ぜません。</p>
+            <OwnedObservationRecorder
+              key="P09-owned-recorder"
+              articleId="P09"
+              applyP09Totals={(workHours, trainingHours) => {
+                setP09OwnedData((current) => ({ ...current, workHours, trainingHours }));
+                setOwnedDataState("Human確認済み台帳の時間合計を自データ欄へ反映済み・contract未反映");
+              }}
+            />
             <div className="operator-owned-data-grid">
               <label>重複契約月数<input type="number" min="0" step="0.01" value={p09OwnedData.overlapMonths} onChange={(event) => setP09OwnedData((current) => ({ ...current, overlapMonths: event.target.value }))} placeholder="例: 1" /></label>
               <label>移行作業時間<input type="number" min="0" step="0.01" value={p09OwnedData.workHours} onChange={(event) => setP09OwnedData((current) => ({ ...current, workHours: event.target.value }))} placeholder="hours" /></label>
@@ -484,6 +500,22 @@ export function OperatorInputForm() {
             </div>
           </> : <>
             <p className="operator-owned-data-note">導入前後の完全な暦月を1か月ずつ比較します。月途中の値を30日換算せず、削減時間は「基準月 − 比較月」で決定論的に計算します。</p>
+            <OwnedObservationRecorder
+              key="P11-owned-recorder"
+              articleId="P11"
+              baselineMonth={p11OwnedData.baselineMonth}
+              comparisonMonth={p11OwnedData.comparisonMonth}
+              applyP11Totals={(baselineMonth, comparisonMonth, baselineHours, comparisonHours) => {
+                setP11OwnedData((current) => ({
+                  ...current,
+                  baselineMonth,
+                  comparisonMonth,
+                  baselineHours,
+                  comparisonHours,
+                }));
+                setOwnedDataState("Human確認済み台帳の完全暦月合計を自データ欄へ反映済み・contract未反映");
+              }}
+            />
             <div className="operator-owned-data-grid">
               <label>導入前の基準月<input type="month" value={p11OwnedData.baselineMonth} onChange={(event) => setP11OwnedData((current) => ({ ...current, baselineMonth: event.target.value }))} /></label>
               <label>導入後の比較月<input type="month" value={p11OwnedData.comparisonMonth} onChange={(event) => setP11OwnedData((current) => ({ ...current, comparisonMonth: event.target.value }))} /></label>
@@ -601,6 +633,231 @@ export function OperatorInputForm() {
       </form>
     </section>
   );
+}
+
+const ownedLedgerStorageKey = "saas-tco-lab:human-confirmed-owned-observations-v1";
+
+const ownedKindLabels: Readonly<Record<OwnedObservationKind, string>> = {
+  p09_migration_work: "P09 移行作業",
+  p09_training: "P09 教育",
+  p11_baseline_work: "P11 導入前作業",
+  p11_comparison_work: "P11 導入後作業",
+};
+
+const ownedArticleKinds: Readonly<Record<OwnedObservationArticleId, readonly OwnedObservationKind[]>> = {
+  P09: ["p09_migration_work", "p09_training"],
+  P11: ["p11_baseline_work", "p11_comparison_work"],
+};
+
+function localDay(date = new Date()): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+function elapsedLabel(seconds: number): string {
+  const hours = Math.floor(seconds / 3_600);
+  const minutes = Math.floor((seconds % 3_600) / 60);
+  const remainder = seconds % 60;
+  return [hours, minutes, remainder].map((value) => String(value).padStart(2, "0")).join(":");
+}
+
+function OwnedObservationRecorder({
+  articleId,
+  baselineMonth,
+  comparisonMonth,
+  applyP09Totals,
+  applyP11Totals,
+}: {
+  articleId: OwnedObservationArticleId;
+  baselineMonth?: string;
+  comparisonMonth?: string;
+  applyP09Totals?: (workHours: string, trainingHours: string) => void;
+  applyP11Totals?: (
+    baselineMonth: string,
+    comparisonMonth: string,
+    baselineHours: string,
+    comparisonHours: string,
+  ) => void;
+}) {
+  const [kind, setKind] = useState<OwnedObservationKind>(ownedArticleKinds[articleId][0]);
+  const [calendarMonth, setCalendarMonth] = useState("");
+  const [confirmedOn, setConfirmedOn] = useState("");
+  const [observations, setObservations] = useState<readonly ConfirmedOwnedObservation[]>([]);
+  const [ledgerState, setLedgerState] = useState("確認済み台帳を読込中");
+  const [startedAt, setStartedAt] = useState<number | null>(null);
+  const [measurementClockNow, setMeasurementClockNow] = useState<number | null>(null);
+  const [candidateSeconds, setCandidateSeconds] = useState<string | null>(null);
+  const [candidateId, setCandidateId] = useState("");
+  const [candidateErrors, setCandidateErrors] = useState<readonly string[]>([]);
+
+  useEffect(() => {
+    const task = window.setTimeout(() => {
+      const today = localDay();
+      setCalendarMonth(today.slice(0, 7));
+      setConfirmedOn(today);
+      const parsed = parseConfirmedOwnedObservations(window.localStorage.getItem(ownedLedgerStorageKey));
+      setObservations(parsed.observations);
+      setLedgerState(parsed.error ?? (parsed.observations.length ? `${parsed.observations.length}件読込済み` : "確認済み観測なし"));
+    }, 0);
+    return () => window.clearTimeout(task);
+  }, []);
+
+  useEffect(() => {
+    if (startedAt === null) return undefined;
+    const timer = window.setInterval(() => setMeasurementClockNow(Date.now()), 1_000);
+    return () => window.clearInterval(timer);
+  }, [startedAt]);
+
+  const elapsedSeconds = startedAt === null || measurementClockNow === null
+    ? 0
+    : Math.max(0, Math.floor((measurementClockNow - startedAt) / 1_000));
+  const totals = useMemo(
+    () => observationMonthTotals(observations, articleId),
+    [articleId, observations],
+  );
+
+  function startMeasurement() {
+    const now = Date.now();
+    setStartedAt(now);
+    setMeasurementClockNow(now);
+    setCandidateSeconds(null);
+    setCandidateId("");
+    setCandidateErrors([]);
+    setLedgerState("計測中・未保存");
+  }
+
+  function stopMeasurement() {
+    if (startedAt === null) return;
+    const seconds = Math.max(0, Math.floor((Date.now() - startedAt) / 1_000));
+    setStartedAt(null);
+    setMeasurementClockNow(null);
+    setCandidateSeconds(String(seconds));
+    setCandidateId(`${articleId}:${kind}:${Date.now()}`);
+    setCandidateErrors([]);
+    setLedgerState("計測停止・Human確認前・未保存");
+  }
+
+  function discardCandidate() {
+    setCandidateSeconds(null);
+    setCandidateId("");
+    setCandidateErrors([]);
+    setLedgerState(observations.length ? `${observations.length}件確認済み` : "確認済み観測なし");
+  }
+
+  function confirmCandidate() {
+    if (candidateSeconds === null) return;
+    const result = confirmOwnedObservation({
+      articleId,
+      kind,
+      calendarMonth,
+      elapsedSeconds: candidateSeconds,
+      confirmedOn,
+      observationId: candidateId,
+    });
+    if (!result.observation) {
+      setCandidateErrors(result.errors);
+      setLedgerState("修正が必要です・未保存");
+      return;
+    }
+    const current = parseConfirmedOwnedObservations(window.localStorage.getItem(ownedLedgerStorageKey));
+    if (current.error) {
+      setCandidateErrors([current.error]);
+      setLedgerState("台帳error・未保存");
+      return;
+    }
+    const next = [...current.observations, result.observation];
+    try {
+      window.localStorage.setItem(ownedLedgerStorageKey, JSON.stringify(next));
+    } catch {
+      setCandidateErrors(["端末内へ保存できませんでした。候補は確定せず、外部送信もしていません。"]);
+      setLedgerState("端末保存error・未保存");
+      return;
+    }
+    setObservations(next);
+    setCandidateSeconds(null);
+    setCandidateId("");
+    setCandidateErrors([]);
+    setLedgerState(`${next.length}件確認済み・端末内append-only保存`);
+  }
+
+  function applyTotals() {
+    if (articleId === "P09" && applyP09Totals) {
+      const work = summedObservationHours(observations, "P09", "p09_migration_work");
+      const training = summedObservationHours(observations, "P09", "p09_training");
+      if (!work || !training) {
+        setCandidateErrors(["移行作業と教育の両方にHuman確認済み観測が必要です。未観測値は補完しません。"]);
+        return;
+      }
+      applyP09Totals(work, training);
+      setCandidateErrors([]);
+      setLedgerState("P09確認済み合計を未承認入力候補へ反映済み");
+      return;
+    }
+    if (articleId === "P11" && applyP11Totals) {
+      if (!baselineMonth || !comparisonMonth) {
+        setCandidateErrors(["上の入力欄で導入前の基準月と導入後の比較月を選んでください。"]);
+        return;
+      }
+      const baseline = summedObservationHours(observations, "P11", "p11_baseline_work", baselineMonth);
+      const comparison = summedObservationHours(observations, "P11", "p11_comparison_work", comparisonMonth);
+      if (!baseline || !comparison) {
+        setCandidateErrors(["選択した完全暦月の導入前・導入後観測が両方必要です。月途中や未観測値は補完しません。"]);
+        return;
+      }
+      applyP11Totals(baselineMonth, comparisonMonth, baseline, comparison);
+      setCandidateErrors([]);
+      setLedgerState("P11確認済み月合計を未承認入力候補へ反映済み");
+    }
+  }
+
+  return <section className="operator-measurement-recorder" aria-labelledby={`owned-recorder-${articleId}`}>
+    <div className="operator-paste-heading">
+      <div>
+        <p className="eyebrow">CONFIRMED OBSERVATION LEDGER</p>
+        <h4 id={`owned-recorder-${articleId}`}>実作業をその場で計測</h4>
+      </div>
+      <p>計測停止まではmemoryだけです。秒数を確認して明示的に確定したsessionだけ、PIIなしで端末内台帳へ追記します。既存行は上書き・削除しません。</p>
+    </div>
+    <div className="operator-owned-data-grid">
+      <label>作業区分<select value={kind} disabled={startedAt !== null || candidateSeconds !== null} onChange={(event) => setKind(event.target.value as OwnedObservationKind)}>
+        {ownedArticleKinds[articleId].map((candidate) => <option value={candidate} key={candidate}>{ownedKindLabels[candidate]}</option>)}
+      </select></label>
+      <label>計測対象月<input type="month" value={calendarMonth} disabled={startedAt !== null || candidateSeconds !== null} onChange={(event) => setCalendarMonth(event.target.value)} /></label>
+      <label>Human確認日<input type="date" value={confirmedOn} disabled={startedAt !== null} onChange={(event) => setConfirmedOn(event.target.value)} /></label>
+    </div>
+    <div className="operator-measurement-clock" aria-live="polite">
+      <strong>{elapsedLabel(elapsedSeconds)}</strong>
+      <span>{startedAt === null ? "停止中" : "計測中・未保存"}</span>
+    </div>
+    <div className="operator-paste-actions">
+      <button type="button" onClick={startMeasurement} disabled={startedAt !== null || candidateSeconds !== null}>計測開始</button>
+      <button type="button" onClick={stopMeasurement} disabled={startedAt === null}>計測停止</button>
+      {candidateSeconds !== null ? <>
+        <button type="button" onClick={confirmCandidate}>この{candidateSeconds}秒をHuman確認して追記</button>
+        <button type="button" onClick={discardCandidate}>候補を破棄</button>
+      </> : null}
+      <span>{ledgerState}</span>
+    </div>
+    {candidateSeconds !== null ? <p>
+      未保存候補: {candidateSeconds}秒 = {secondsToDecimalHours(candidateSeconds) ?? "1秒以上の計測が必要"}時間
+    </p> : null}
+    {candidateErrors.length ? <ul className="operator-field-errors" role="alert">
+      {candidateErrors.map((error) => <li key={error}>{error}</li>)}
+    </ul> : null}
+    {totals.length ? <div className="table-scroll" tabIndex={0} aria-label={`${articleId}の確認済み実測合計`}>
+      <table className="operator-diff-table">
+        <caption>Human確認済みsessionだけの月別合計</caption>
+        <thead><tr><th>月</th><th>区分</th><th>session数</th><th>合計時間</th></tr></thead>
+        <tbody>{totals.map((total) => <tr key={`${total.calendarMonth}-${total.kind}`}>
+          <td>{total.calendarMonth}</td><td>{ownedKindLabels[total.kind]}</td><td>{total.sessions}</td><td>{total.hours}時間</td>
+        </tr>)}</tbody>
+      </table>
+    </div> : <p>Human確認済みsessionはまだありません。</p>}
+    <button type="button" onClick={applyTotals} disabled={!totals.length}>確認済み合計を上の自データ欄へ反映</button>
+    <p><small>台帳合計を反映しても記事・fieldはunreviewedです。P11は完全に終了した暦月だけが後段validationを通ります。</small></p>
+  </section>;
 }
 
 function EditorialFieldset({
