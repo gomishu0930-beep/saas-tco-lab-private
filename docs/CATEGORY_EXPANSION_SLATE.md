@@ -240,7 +240,9 @@ authorityを持たない。数値は将来のHuman観測値だけを受け入れ
 1. Humanが対象slateのKWFinder exportを行う別GOを返す。
 2. rawをrepo外に置いたまま、query count可変のsafe-summary intakeを後方互換で検証する。
 3. serversはHuman選定済みのため、`docs/PRICE_CHECK_CHECKLIST.md`に沿って1 vendor・1 planずつ価格を観測する。
-4. XServerビジネスとABLENETの提携は承認済みだが、記事承認、公開、index、runtime destination、partner別CTA gateはそれぞれ独立して満たす。
+4. serversはXServerビジネス、ロリポップ、ABLENET、シンレンタルサーバー、ConoHa WING、
+   お名前.com レンタルサーバーの6programが提携承認済みである。ただし、記事承認、公開、index、
+   runtime destination、partner別CTA gateはそれぞれ独立して満たす。
 5. accounting / forms / crm / email_marketingは需要未観測のためunknownを維持し、有望と判定しない。
 
 R1–R6、P06–P09、既存ASP申請準備の優先順位は変更しない。

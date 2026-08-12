@@ -25,6 +25,23 @@ program条件要約、確認日とruntime secretの参照名だけを記録す�
 Account登録だけではCTAを許可しない。対象programの提携承認、規約・開示要件の確認、runtime destination設定、
 開示先行の検証、対象partnerを明記した`cta_go`がすべて揃った場合だけ有効化する。
 
+### 承認済みservers programのruntime参照
+
+値はすべてproduction環境のsecretとして設定し、repository、返信、logへ貼らない。下表は参照名だけを正本台帳から
+転記したもので、設定済みという意味ではない。
+
+|partner ID|提携状態|承認状態参照|destination参照|
+|---|---|---|---|
+|`a8net-xserver-business`|approved|`A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT`|`A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION`|
+|`moshimo-conoha-wing`|approved|`MOSHIMO_CONOHA_WING_AFFILIATE_APPROVAL_CURRENT`|`MOSHIMO_CONOHA_WING_AFFILIATE_DESTINATION`|
+|`moshimo-lolipop-rental-server`|approved|`MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT`|`MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION`|
+|`moshimo-onamae-rental-server`|approved|`MOSHIMO_ONAMAE_SERVER_AFFILIATE_APPROVAL_CURRENT`|`MOSHIMO_ONAMAE_SERVER_AFFILIATE_DESTINATION`|
+|`moshimo-shin-rental-server`|approved|`MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_APPROVAL_CURRENT`|`MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_DESTINATION`|
+|`valuecommerce-ablenet-shared-server`|approved|`VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT`|`VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION`|
+
+記事別GOは`SERVER_CTA_GO`へ上表のpartner IDだけを重複なく渡す。提携状態参照が`true`、destinationがASP固有の
+HTTPS host・path・必須parameter検証に合格し、SVR記事の承認とindexが成立したpartnerだけを表示する。
+
 ## 2026-08-06 A8.net program調査
 
 Humanの`asp_program_search: GO A8.net`に基づき、ログイン済み正規画面をread-onlyで確認した。提携申請、
