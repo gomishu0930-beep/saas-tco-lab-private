@@ -152,7 +152,7 @@ class MangoolsSlateDemandSafeSummary(StrictModel):
     acquisition_method: Literal["human_ui_export"] = "human_ui_export"
     raw_saved: Literal[False] = False
     query_values_saved: Literal[False] = False
-    slate_id: str = Field(pattern=r"^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$")
+    slate_id: str = Field(pattern=r"^[a-z0-9]+(?:[a-z0-9_-]*[a-z0-9])?$")
     source_file_count: int = Field(ge=1, le=20)
     keyword_count: int = Field(ge=1, le=200)
     known_volume_count: int = Field(ge=0, le=200)
@@ -223,6 +223,108 @@ class MangoolsSlateDemandSafeSummary(StrictModel):
                 "scope expansion recommendation does not match the known volume floor"
             )
         return self
+
+
+_EXPANSION_SET_SLATE_IDS = (
+    "crm",
+    "forms",
+    "email_marketing",
+    "seo_tools_v2_extension",
+)
+
+
+class MangoolsExpansionSetSafeSummary(StrictModel):
+    """Safe aggregate envelope for the four remaining expansion slates."""
+
+    schema_version: Literal["1.0"] = "1.0"
+    provider: Literal["mangools_kwfinder_human_csv"] = "mangools_kwfinder_human_csv"
+    acquisition_method: Literal["human_ui_export"] = "human_ui_export"
+    raw_saved: Literal[False] = False
+    query_values_saved: Literal[False] = False
+    all_complete: Literal[True] = True
+    slate_ids: tuple[
+        Literal["crm"],
+        Literal["forms"],
+        Literal["email_marketing"],
+        Literal["seo_tools_v2_extension"],
+    ]
+    summaries: tuple[
+        MangoolsSlateDemandSafeSummary,
+        MangoolsSlateDemandSafeSummary,
+        MangoolsSlateDemandSafeSummary,
+        MangoolsSlateDemandSafeSummary,
+    ]
+    total_keyword_count: Literal[180]
+    total_known_volume_count: int = Field(ge=0, le=180)
+    total_no_data_volume_count: int = Field(ge=0, le=180)
+    total_rejected_volume_count: int = Field(ge=0, le=180)
+    known_monthly_search_volume_total: Decimal = Field(ge=0)
+    observed_on: date
+    next_review_on: date
+
+    @model_validator(mode="after")
+    def validate_expansion_set(self) -> Self:
+        if self.slate_ids != _EXPANSION_SET_SLATE_IDS:
+            raise ValueError("expansion set slate_ids must match the frozen four-slate order")
+        if tuple(summary.slate_id for summary in self.summaries) != self.slate_ids:
+            raise ValueError("expansion summaries must match slate_ids in exact order")
+        if tuple(summary.keyword_count for summary in self.summaries) != (40, 40, 40, 60):
+            raise ValueError("expansion summaries must contain exact 40/40/40/60 query counts")
+        if any(
+            summary.observed_on != self.observed_on
+            or summary.next_review_on != self.next_review_on
+            for summary in self.summaries
+        ):
+            raise ValueError("expansion summaries must share one observation window")
+        expected_counts = (
+            sum(summary.known_volume_count for summary in self.summaries),
+            sum(summary.no_data_volume_count for summary in self.summaries),
+            sum(summary.rejected_volume_count for summary in self.summaries),
+        )
+        if expected_counts != (
+            self.total_known_volume_count,
+            self.total_no_data_volume_count,
+            self.total_rejected_volume_count,
+        ):
+            raise ValueError("expansion aggregate counts must match its summaries")
+        if sum(expected_counts) != self.total_keyword_count:
+            raise ValueError("expansion aggregate counts must total 180")
+        if self.known_monthly_search_volume_total != sum(
+            (summary.known_monthly_search_volume_total for summary in self.summaries),
+            start=Decimal(0),
+        ):
+            raise ValueError("expansion known volume total must match its summaries")
+        return self
+
+
+def build_mangools_expansion_set_safe_summary(
+    summaries: tuple[
+        MangoolsSlateDemandSafeSummary,
+        MangoolsSlateDemandSafeSummary,
+        MangoolsSlateDemandSafeSummary,
+        MangoolsSlateDemandSafeSummary,
+    ],
+) -> MangoolsExpansionSetSafeSummary:
+    """Build a fail-closed envelope only after all four exact slates validate."""
+
+    if len(summaries) != 4:
+        raise ValueError("expansion set requires exactly four complete summaries")
+    observed_on = summaries[0].observed_on
+    next_review_on = summaries[0].next_review_on
+    return MangoolsExpansionSetSafeSummary(
+        slate_ids=_EXPANSION_SET_SLATE_IDS,
+        summaries=summaries,
+        total_keyword_count=180,
+        total_known_volume_count=sum(item.known_volume_count for item in summaries),
+        total_no_data_volume_count=sum(item.no_data_volume_count for item in summaries),
+        total_rejected_volume_count=sum(item.rejected_volume_count for item in summaries),
+        known_monthly_search_volume_total=sum(
+            (item.known_monthly_search_volume_total for item in summaries),
+            start=Decimal(0),
+        ),
+        observed_on=observed_on,
+        next_review_on=next_review_on,
+    )
 
 
 class MangoolsCsvError(ValueError):

@@ -369,6 +369,11 @@ KWFinderのProcess、CSV export、raw保存は行っていない。
 CRM 40、forms 40、email marketing 40、SEO追加60の計180語である。raw CSV、query、query別volumeは
 repositoryへ保存せず、完全一致したカテゴリだけをsafe-summaryへ進める。
 
+同日、Human export後の手作業をなくすため`validate-mangools-expansion-set`を追加した。4つのCSVと凍結slateを
+一括検証し、40 / 40 / 40 / 60行の完全一致時だけPydantic正本のsafe-summary envelopeをstdoutへ出す。
+1カテゴリでも不完全なら部分summaryを採用しない。schemaは生成物として固定し、raw保存・query表示・network取得・
+自動export・需要値の推測は行わない。
+
 既存のHuman承認済みMangools観測を別記事で再入力しないため、`/operator`へ証拠再利用prefillを追加しました。
 P04は最低利用者数と月契約料金、P08は基本料金・必須addon料金・必要利用者数、P10は表示価格と税fieldだけを
 同じvendor・planかつ同じ値型の承認済みfieldから候補化します。P04の未観測Human時間、P08のaddon課金単位、

@@ -17,6 +17,7 @@ from saas_preflight.mangools_export import (
     MangoolsCsvHeaderError,
     MangoolsSlateDemandSafeSummary,
     MangoolsVolumeStatus,
+    build_mangools_expansion_set_safe_summary,
     classify_mangools_volume,
     validate_mangools_human_export,
     validate_mangools_human_export_batches,
@@ -110,6 +111,37 @@ def _slate_exports(tmp_path: Path, *, row_limit: int = 40) -> tuple[Path, ...]:
     return tuple(targets)
 
 
+def _single_slate_export(
+    tmp_path: Path,
+    slate_path: Path,
+    *,
+    name: str,
+    row_limit: int | None = None,
+) -> Path:
+    rows = load_keyword_universe(
+        slate_path, minimum_keywords=1, maximum_keywords=200
+    )
+    if row_limit is not None:
+        rows = rows[:row_limit]
+    buffer = io.StringIO(newline="")
+    writer = csv.DictWriter(
+        buffer,
+        fieldnames=["Keyword", "Avg. Search Volume (Last Known Values)", "Location"],
+    )
+    writer.writeheader()
+    for row in rows:
+        writer.writerow(
+            {
+                "Keyword": row.query,
+                "Avg. Search Volume (Last Known Values)": 100,
+                "Location": "Japan",
+            }
+        )
+    target = tmp_path / f"{name}.csv"
+    target.write_text(buffer.getvalue(), encoding="utf-8")
+    return target
+
+
 def _validate_slate(paths: tuple[Path, ...]) -> MangoolsSlateDemandSafeSummary:
     rows = load_keyword_universe(
         SERVER_SLATE_PATH, minimum_keywords=40, maximum_keywords=40
@@ -149,8 +181,8 @@ def test_kwfinder_upload_command_writes_exact_frozen_slate_derivatives(
     cases = [
         (
             examples / "jp_ja_keyword_slate_v2_crm.csv",
-            30,
-            10,
+            0,
+            40,
         ),
         (
             examples / "jp_ja_keyword_slate_v2_forms.csv",
@@ -199,6 +231,95 @@ def test_kwfinder_upload_command_rejects_out_of_range_slice(tmp_path: Path) -> N
         "2",
     ]) == 2
     assert not target.exists()
+
+
+def test_expansion_set_command_emits_only_four_complete_safe_summaries(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    examples = ROOT / "examples"
+    exports = {
+        "crm": _single_slate_export(
+            tmp_path, examples / "jp_ja_keyword_slate_v2_crm.csv", name="crm-40"
+        ),
+        "forms": _single_slate_export(
+            tmp_path, examples / "jp_ja_keyword_slate_v2_forms.csv", name="forms-40"
+        ),
+        "email": _single_slate_export(
+            tmp_path,
+            examples / "jp_ja_keyword_slate_v2_email_marketing.csv",
+            name="email-marketing-40",
+        ),
+        "seo": _single_slate_export(
+            tmp_path,
+            examples / "jp_ja_keyword_universe_v2_seo_extension.csv",
+            name="seo-extension-60",
+        ),
+    }
+    first_query = _queries(examples / "jp_ja_keyword_slate_v2_crm.csv")[0]
+
+    assert run([
+        "validate-mangools-expansion-set",
+        "--crm", str(exports["crm"]),
+        "--forms", str(exports["forms"]),
+        "--email-marketing", str(exports["email"]),
+        "--seo-tools-v2-extension", str(exports["seo"]),
+        "--slates-dir", str(examples),
+        "--observed-on", "2026-08-12",
+        "--next-review-on", "2026-09-10",
+    ]) == 0
+    output = capsys.readouterr().out
+    assert first_query not in output
+    assert '"all_complete": true' in output
+    assert '"total_keyword_count": 180' in output
+    assert '"total_known_volume_count": 180' in output
+    assert '"known_monthly_search_volume_total": "18000"' in output
+    assert output.count('"query_values_saved": false') == 5
+
+
+def test_expansion_set_command_rejects_partial_crm_without_safe_envelope(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    examples = ROOT / "examples"
+    crm = _single_slate_export(
+        tmp_path,
+        examples / "jp_ja_keyword_slate_v2_crm.csv",
+        name="crm-partial",
+        row_limit=30,
+    )
+    complete = {
+        "forms": _single_slate_export(
+            tmp_path, examples / "jp_ja_keyword_slate_v2_forms.csv", name="forms"
+        ),
+        "email": _single_slate_export(
+            tmp_path,
+            examples / "jp_ja_keyword_slate_v2_email_marketing.csv",
+            name="email",
+        ),
+        "seo": _single_slate_export(
+            tmp_path,
+            examples / "jp_ja_keyword_universe_v2_seo_extension.csv",
+            name="seo",
+        ),
+    }
+
+    assert run([
+        "validate-mangools-expansion-set",
+        "--crm", str(crm),
+        "--forms", str(complete["forms"]),
+        "--email-marketing", str(complete["email"]),
+        "--seo-tools-v2-extension", str(complete["seo"]),
+        "--slates-dir", str(examples),
+        "--observed-on", "2026-08-12",
+        "--next-review-on", "2026-09-10",
+    ]) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "observed 30 of 40" in captured.err
+
+
+def test_expansion_envelope_rejects_missing_summary() -> None:
+    with pytest.raises(ValueError, match="exactly four"):
+        build_mangools_expansion_set_safe_summary(())  # type: ignore[arg-type]
 
 
 def test_low_volume_recommends_scope_expansion_even_at_impossible_full_capture(tmp_path: Path) -> None:

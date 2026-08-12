@@ -93,7 +93,7 @@ unknownのまま関連する横断順位だけを停止し、記事・index・CT
 |---|---|---|---|
 |7/31–8/2|domain dayとP01–P03最終標本|domain token、価格・記事確認|L1 read-back、P01–P03承認候補|
 |8/3–8/9|第1弾release準備|`article_approve`、domain反映後の`index_go`|承認記事だけindex候補|
-|8/10–8/16|拡張需要CSV|CRM 40・forms 40・email marketing 40・SEO追加60のHuman export|残り180語の行単位検証|
+|8/10–8/16|拡張需要CSV|CRM 40・forms 40・email marketing 40・SEO追加60のHuman export|one-commandで残り180語を完全一致検証しsafe-summaryだけ採用|
 |8/17–8/31|P09/P11自データとservers観測|OperatorのHuman確認済みappend-only実測台帳で実運用値を計測し、通常料金/更新条件をHuman確認|P09/P11の観測開始、servers candidate更新|
 |9月|残記事、embed、note/X Human再配信、Impact/ASP審査|投稿・申請・回答判断だけ|index/impression/clickの週次観測|
 |10/1–10/24|取引意図記事の改稿と内部導線|標本確認だけ|比較可能な連続2期間|

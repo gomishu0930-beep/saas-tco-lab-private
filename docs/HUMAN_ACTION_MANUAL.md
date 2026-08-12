@@ -108,6 +108,23 @@ Codexがdownloadファイルをlocalで検証し、raw、query別volume、Mangoo
 known / no_data / rejected、known合計、no_data率だけをrepositoryへ反映します。Process、Export、
 API取得、browser自動取得をCodexへ再委任しません。
 
+4件受領後は`validate-mangools-expansion-set`を1回だけ実行します。CRM / forms / email marketing /
+SEO追加の全query集合が各凍結slateと完全一致し、40 / 40 / 40 / 60行がそろった場合だけ、4カテゴリの
+safe-summary envelopeを出力します。1カテゴリでも欠落・混在・重複・Japan以外・header不一致があれば、
+部分summaryを採用せず全体をfail-closedにします。出力は集計、hash、観測日、次回確認日だけで、raw CSVと
+query文字列を含みません。
+
+```bash
+uv run saas-preflight validate-mangools-expansion-set \
+  --crm <crm-40.csv> \
+  --forms <forms-40.csv> \
+  --email-marketing <email-marketing-40.csv> \
+  --seo-tools-v2-extension <seo-extension-60.csv> \
+  --slates-dir examples \
+  --observed-on <YYYY-MM-DD> \
+  --next-review-on <YYYY-MM-DD>
+```
+
 以前の`kwfinder_crm_remaining_10.txt`は使いません。過去のCRM 30行CSVが凍結40語との完全一致に失敗したため、
 CRMは全40語を1回で再exportします。KWFinder結果が40行にならない場合も完了扱いにせず、そのCSVだけを保存して
 `HOLD`として知らせてください。

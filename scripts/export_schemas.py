@@ -154,6 +154,7 @@ from saas_preflight.measurement_integrity import (
 )
 from saas_preflight.mangools_export import (
     MangoolsDemandSafeSummary,
+    MangoolsExpansionSetSafeSummary,
     MangoolsSlateDemandSafeSummary,
 )
 from saas_preflight.preview import PreviewPage
@@ -334,6 +335,7 @@ SCHEMA_MODELS = {
     "operations-evidence.schema.json": OperationsEvidence,
     "demand-summary-batch.schema.json": DemandSummaryBatch,
     "mangools-demand-safe-summary.schema.json": MangoolsDemandSafeSummary,
+    "mangools-expansion-set-safe-summary.schema.json": MangoolsExpansionSetSafeSummary,
     "mangools-slate-demand-safe-summary.schema.json": MangoolsSlateDemandSafeSummary,
     "cohort-summary-batch.schema.json": CohortSummaryBatch,
     "operations-summary-batch.schema.json": OperationsSummaryBatch,

@@ -289,7 +289,7 @@ def _external_action_queue(
         and "拡張需要180語のHuman export完了" not in adoption
     ):
         actions.append({
-            "label": "KWFinder拡張需要の残り180語をHuman export",
+            "label": "KWFinder拡張需要180語をHuman export（one-command intake準備済み）",
             "status": "human_export_required",
             "token": "mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension",
         })

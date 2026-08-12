@@ -62,6 +62,7 @@ from .launch_handoff import (
 from .launch_semantics import LaunchSemanticAuthorityPins
 from .keyword_universe import load_keyword_universe, summarize_keyword_universe
 from .mangools_export import (
+    build_mangools_expansion_set_safe_summary,
     validate_mangools_human_export,
     validate_mangools_human_export_batches,
 )
@@ -214,6 +215,39 @@ def _parser() -> argparse.ArgumentParser:
         default=Decimal("60"),
     )
     mangools_slate_export.add_argument(
+        "--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15")
+    )
+
+    mangools_expansion_set = commands.add_parser(
+        "validate-mangools-expansion-set",
+        help="Validate all four remaining Human-exported expansion slates at once.",
+    )
+    mangools_expansion_set.add_argument("--crm", type=Path, required=True)
+    mangools_expansion_set.add_argument("--forms", type=Path, required=True)
+    mangools_expansion_set.add_argument(
+        "--email-marketing", type=Path, required=True
+    )
+    mangools_expansion_set.add_argument(
+        "--seo-tools-v2-extension", type=Path, required=True
+    )
+    mangools_expansion_set.add_argument(
+        "--slates-dir", type=Path, default=Path("examples")
+    )
+    mangools_expansion_set.add_argument(
+        "--observed-on", type=date.fromisoformat, required=True
+    )
+    mangools_expansion_set.add_argument(
+        "--next-review-on", type=date.fromisoformat, required=True
+    )
+    mangools_expansion_set.add_argument(
+        "--monthly-revenue-target-jpy", type=int, default=200_000
+    )
+    mangools_expansion_set.add_argument(
+        "--assumed-confirmed-epc-jpy",
+        type=_decimal_argument,
+        default=Decimal("60"),
+    )
+    mangools_expansion_set.add_argument(
         "--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15")
     )
 
@@ -858,6 +892,45 @@ def run(argv: Sequence[str] | None = None) -> int:
                 assumed_outbound_ctr=args.assumed_outbound_ctr,
             )
             _emit(summary.model_dump(mode="json"))
+            return 0
+
+        if args.command == "validate-mangools-expansion-set":
+            specifications = (
+                ("crm", args.crm, "jp_ja_keyword_slate_v2_crm.csv"),
+                ("forms", args.forms, "jp_ja_keyword_slate_v2_forms.csv"),
+                (
+                    "email_marketing",
+                    args.email_marketing,
+                    "jp_ja_keyword_slate_v2_email_marketing.csv",
+                ),
+                (
+                    "seo_tools_v2_extension",
+                    args.seo_tools_v2_extension,
+                    "jp_ja_keyword_universe_v2_seo_extension.csv",
+                ),
+            )
+            summaries = []
+            for slate_id, csv_path, universe_name in specifications:
+                rows = load_keyword_universe(
+                    args.slates_dir / universe_name,
+                    minimum_keywords=1,
+                    maximum_keywords=200,
+                )
+                summaries.append(
+                    validate_mangools_human_export_batches(
+                        (csv_path,),
+                        slate_id=slate_id,
+                        universe_rows=rows,
+                        universe_sha256=summarize_keyword_universe(rows).sha256,
+                        observed_on=args.observed_on,
+                        next_review_on=args.next_review_on,
+                        monthly_revenue_target_jpy=args.monthly_revenue_target_jpy,
+                        assumed_confirmed_epc_jpy=args.assumed_confirmed_epc_jpy,
+                        assumed_outbound_ctr=args.assumed_outbound_ctr,
+                    )
+                )
+            summary_set = build_mangools_expansion_set_safe_summary(tuple(summaries))
+            _emit(summary_set.model_dump(mode="json"))
             return 0
 
         if args.command == "store-plan":

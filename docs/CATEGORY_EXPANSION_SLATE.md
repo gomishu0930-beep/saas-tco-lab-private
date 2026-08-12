@@ -95,6 +95,11 @@ KWFinderのProcessとCSV exportは引き続きHumanが正規画面で行い、�
 残るHuman exportはCRM 40、forms 40、email marketing 40、SEO追加60の計180語である。これはquery集合の
 整合性監査であり、部分volumeやquery別値を需要判断へ採用しない。
 
+4件のexport後は`validate-mangools-expansion-set`で一括受入する。各slateの既存validatorを順に通し、
+4件すべてが完全な場合だけ`MangoolsExpansionSetSafeSummary`を構築する。envelopeは4つのsafe-summary、
+合計180行のknown / no_data / rejected件数、known合計、hash、観測窓だけを含む。rawとquery値は保存せず、
+途中失敗時はenvelope自体を出さない。
+
 ## 2026-08-06 category primary decision
 
 Human Approver `omishu`の`category_primary: GO servers`により、新規投資の第一カテゴリをserversへ固定する。
