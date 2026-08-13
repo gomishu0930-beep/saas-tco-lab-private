@@ -45,21 +45,21 @@ export default function RootLayout({
               </span>
             </Link>
             <nav aria-label="主要ナビゲーション">
-              <Link href="/methodology/">算定方法</Link>
+              <Link href="/methodology">算定方法</Link>
               {productionRuntime ? (
                 <>
-                  <Link href="/pilot/pricing-calculator/">料金記事</Link>
-                  <Link href="/pilot/evidence-method/">根拠方針</Link>
+                  <Link href="/pilot/pricing-calculator">料金記事</Link>
+                  <Link href="/pilot/evidence-method">根拠方針</Link>
                 </>
               ) : (
                 <>
-                  <Link href="/comparison/">比較</Link>
-                  <Link href="/learning/">学習と施策</Link>
-                  <Link href="/readiness/">公開準備</Link>
-                  <Link href="/operator/">あなたの操作</Link>
+                  <Link href="/comparison">比較</Link>
+                  <Link href="/learning">学習と施策</Link>
+                  <Link href="/readiness">公開準備</Link>
+                  <Link href="/operator">あなたの操作</Link>
                 </>
               )}
-              <Link href="/disclosure/">広告表示</Link>
+              <Link href="/disclosure">広告表示</Link>
             </nav>
             <span className="noindex-badge">CONTROLLED</span>
           </div>
@@ -76,23 +76,23 @@ export default function RootLayout({
               <p>Human review / index gate / CTA gate</p>
             </div>
             <nav aria-label="フッターナビゲーション">
-              <Link href="/about/">About</Link>
-              <Link href="/operator-information/">運営者情報</Link>
-              <Link href="/privacy/">プライバシー</Link>
-              <Link href="/contact/">お問い合わせ</Link>
-              <Link href="/advertising-policy/">広告ポリシー</Link>
-              <Link href="/methodology/">算定方法</Link>
-              <Link href="/disclosure/">広告表示</Link>
+              <Link href="/about">About</Link>
+              <Link href="/operator-information">運営者情報</Link>
+              <Link href="/privacy">プライバシー</Link>
+              <Link href="/contact">お問い合わせ</Link>
+              <Link href="/advertising-policy">広告ポリシー</Link>
+              <Link href="/methodology">算定方法</Link>
+              <Link href="/disclosure">広告表示</Link>
               {productionRuntime ? (
                 <>
-                  <Link href="/pilot/pricing-calculator/">料金記事</Link>
-                  <Link href="/pilot/evidence-method/">根拠方針</Link>
+                  <Link href="/pilot/pricing-calculator">料金記事</Link>
+                  <Link href="/pilot/evidence-method">根拠方針</Link>
                 </>
               ) : (
                 <>
-                  <Link href="/readiness/">公開準備</Link>
-                  <Link href="/learning/">学習と施策</Link>
-                  <Link href="/operator/">あなたの操作</Link>
+                  <Link href="/readiness">公開準備</Link>
+                  <Link href="/learning">学習と施策</Link>
+                  <Link href="/operator">あなたの操作</Link>
                 </>
               )}
             </nav>

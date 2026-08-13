@@ -314,7 +314,7 @@ export function ServerZeroInputCalculator({
         <p className="server-zero-input-error" role="alert">計算停止: {outcome.error}</p>
       )}
       <p className="server-zero-input-methodology">
-        任意条件を試す場合は<Link href="/methodology/#detailed-calculator">詳細計算モード</Link>を利用できます。
+        任意条件を試す場合は<Link href="/methodology#detailed-calculator">詳細計算モード</Link>を利用できます。
       </p>
     </div>
   );

@@ -128,7 +128,7 @@ test("P01 renders reader copy and approved evidence without an input calculator"
   assert.match(html, /class="article-lead">Mangools Basicの確認済み実額はUSD 452\.40（年次請求）で、/);
   const readerBody = html.match(/<section[^>]*aria-labelledby="P01-article-structure"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.doesNotMatch(readerBody, /vendor|billing toggle|価格表示分類|Human scenario|contract/i);
-  assert.match(readerBody, /href="\/methodology\/#detailed-calculator"/);
+  assert.match(readerBody, /href="\/methodology#detailed-calculator"/);
   assert.match(html, />12か月TCO<\/h2>/);
   assert.match(html, /USD 452\.40/);
   assert.match(html, /USD 37\.70 \/ mo/);
@@ -325,7 +325,7 @@ test("calculator embed is zero-input gated and links to the methodology detail m
   assert.match(html, /PR・広告に関する表示/);
   assert.match(html, /埋め込み用TCO表示/);
   assert.match(html, /承認済み価格を待っています/);
-  assert.match(html, /href="\/methodology\/#detailed-calculator"/);
+  assert.match(html, /href="\/methodology#detailed-calculator"/);
   assert.doesNotMatch(html, /<input\b|<select\b/i);
   assert.ok(html.indexOf("article-pr-disclosure") < html.indexOf("embed-zero-input-title"));
   assert.match(html, /name="robots"[^>]*content="noindex, nofollow, noarchive, nosnippet"/i);

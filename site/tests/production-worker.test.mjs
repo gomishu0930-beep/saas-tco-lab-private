@@ -294,7 +294,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       const nextReadingPosition = documentHtml.indexOf('class="shell page-section next-reading"');
       assert.ok(nextReadingPosition > ctaPosition, `${path}: next-to-read after CTA`);
       const nextReading = documentHtml.slice(nextReadingPosition, documentHtml.indexOf("</section>", nextReadingPosition));
-      assert.match(nextReading, /href="\/pilot\/(?:pricing-calculator|plan-comparison|alternatives|annual-vs-monthly|usage-overage)\/"/i, path);
+      assert.match(nextReading, /href="\/pilot\/(?:pricing-calculator|plan-comparison|alternatives|annual-vs-monthly|usage-overage)"/i, path);
       assert.doesNotMatch(nextReading, /small-team-fit|enterprise-fit|addon-cost|migration-cost/i, path);
       assert.doesNotMatch(
         documentHtml,
@@ -351,9 +351,9 @@ test("public trust pages describe the live eleven-article affiliate state", asyn
   assert.match(home, /PUBLIC EDITORIAL/);
   assert.match(home, /公開記事[\s\S]{0,80}11本/);
   assert.match(home, /広告導線[\s\S]{0,80}Mangools/);
-  assert.match(home, /href="\/pilot\/pricing-calculator\//);
-  assert.match(home, /href="\/pilot\/plan-comparison\//);
-  assert.match(home, /href="\/pilot\/evidence-method\//);
+  assert.match(home, /href="\/pilot\/pricing-calculator"/);
+  assert.match(home, /href="\/pilot\/plan-comparison"/);
+  assert.match(home, /href="\/pilot\/evidence-method"/);
   assert.doesNotMatch(home, /href="\/pilot\/migration-cost\//);
   assert.doesNotMatch(home, /PUBLIC PRELAUNCH|広告リンク[\s\S]{0,50}0件|実在サービスの価格・評価・送客リンクは表示していません/);
 
@@ -381,7 +381,7 @@ test("production exposes a deterministic tracking-free calculator loader", async
   assert.match(response.headers.get("content-type"), /application\/javascript/i);
   assert.equal(response.headers.get("access-control-allow-origin"), "*");
   const body = await response.text();
-  assert.match(body, /\/embed\/tco-calculator\//);
+  assert.match(body, /\/embed\/tco-calculator"/);
   assert.match(body, /document\.currentScript/);
   assert.doesNotMatch(body, /utm_|affiliate|partner|clickid|subid|cookie/i);
 });
@@ -456,6 +456,7 @@ test("production robots and sitemap expose only the five approved articles", asy
   assert.equal(
     await response.text(),
     "User-agent: *\n" +
+      "Allow: /$\n" +
       "Allow: /assets/\n" +
       "Allow: /favicon.svg$\n" +
       "Allow: /sitemap.xml$\n" +
@@ -529,6 +530,10 @@ test("the approved nine-article release candidate stays scoped and disclosure-fi
     assert.equal(response.headers.get("x-robots-tag"), "index, follow", path);
     const body = await response.text();
     assert.match(body, new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${path}">`, "i"), path);
+    assert.match(body, new RegExp(`<meta property="og:url" content="https://saastcolab\\.jp${path}"`, "i"), path);
+    for (const match of body.matchAll(/href="(\/[^"#?]*)(?:[#?][^"]*)?"/gi)) {
+      assert.ok(match[1] === "/" || !match[1].endsWith("/"), `${path}: redirecting internal link ${match[1]}`);
+    }
     const disclosure = body.indexOf('data-affiliate-disclosure-status="enabled"');
     const cta = body.indexOf(
       '<a class="cta-active" data-affiliate-cta-partner="mangools"',
@@ -611,7 +616,7 @@ test("approved P05 is ready for an exact ten-article release without widening P0
     const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
     const body = await response.text();
     const nextReading = body.match(/<section\b[^>]*class="[^"]*next-reading[^"]*"[\s\S]*?<\/section>/i)?.[0] ?? "";
-    const targets = [...nextReading.matchAll(/href="(\/pilot\/[^"]+)\/"/gi)].map((match) => match[1]);
+    const targets = [...nextReading.matchAll(/href="(\/pilot\/[^"/]+)"/gi)].map((match) => match[1]);
     assert.equal(targets.length, 3, `${path}: three next-reading links`);
     assert.ok(!targets.includes(path), `${path}: no self-link`);
     for (const target of targets) {
@@ -687,6 +692,7 @@ test("approved P09 widens the release to exactly eleven articles while P11 stays
   const robots = await worker.fetch(new Request("https://saastcolab.jp/robots.txt"), env, ctx);
   const robotsText = await robots.text();
   assert.match(robotsText, /Allow: \/pilot\/migration-cost\$/);
+  assert.match(robotsText, /Allow: \/\$/);
   assert.doesNotMatch(robotsText, /Allow: \/pilot\/break-even\$/);
 
   const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);

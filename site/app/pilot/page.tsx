@@ -26,7 +26,7 @@ export default function PilotIndexPage() {
             const approvedCandidate = editorialContract(page)?.article_review_status === "approved";
             return <article key={page.slug}>
               <span>{page.id} / 優先 {String(index + 1).padStart(2, "0")}{firstRelease.has(page.id as (typeof firstReleasePilotIds)[number]) ? " / 公開第1弾" : ""}{approvedCandidate ? " / 承認済み公開候補" : ""}</span>
-              <h2><Link href={`/pilot/${page.slug}/`}>{page.title}</Link></h2>
+              <h2><Link href={`/pilot/${page.slug}`}>{page.title}</Link></h2>
               <p>{page.question}</p>
             </article>;
           })}

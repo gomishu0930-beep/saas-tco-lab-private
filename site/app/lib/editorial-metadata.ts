@@ -20,7 +20,7 @@ export function editorialMetadata(page: PilotPage): Metadata {
     destinationConfigured: false,
     disclosureBeforeCta: true,
   });
-  const url = `https://saastcolab.jp/pilot/${page.slug}/`;
+  const url = `https://saastcolab.jp/pilot/${page.slug}`;
   return {
     title: presentation.title,
     description: presentation.description,

@@ -35,10 +35,10 @@ export function PolicyPage({
         ))}
       </section>
       <section className="shell page-section policy-page-links" aria-label="関連情報">
-        <Link className="text-link" href="/operator-information/">運営者情報</Link>
-        <Link className="text-link" href="/privacy/">プライバシーポリシー</Link>
-        <Link className="text-link" href="/contact/">お問い合わせ</Link>
-        <Link className="text-link" href="/advertising-policy/">広告掲載ポリシー</Link>
+        <Link className="text-link" href="/operator-information">運営者情報</Link>
+        <Link className="text-link" href="/privacy">プライバシーポリシー</Link>
+        <Link className="text-link" href="/contact">お問い合わせ</Link>
+        <Link className="text-link" href="/advertising-policy">広告掲載ポリシー</Link>
       </section>
     </main>
   );

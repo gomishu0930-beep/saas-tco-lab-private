@@ -390,13 +390,28 @@ test("every article exposes text-only Open Graph and Twitter metadata", () => {
     const html = pages.get(path);
     assert.match(html, /<meta property="og:title" content="[^"]+"\/>/i, path);
     assert.match(html, /<meta property="og:description" content="[^"]+"\/>/i, path);
-    assert.match(html, /<meta property="og:url" content="https:\/\/saastcolab\.jp\/pilot\/[^"]+\/"\/>/i, path);
+    assert.match(html, /<meta property="og:url" content="https:\/\/saastcolab\.jp\/pilot\/[^"/]+"\/>/i, path);
     assert.match(html, /<meta property="og:site_name" content="SaaS TCO Lab"\/>/i, path);
     assert.match(html, /<meta property="og:type" content="article"\/>/i, path);
     assert.match(html, /<meta name="twitter:card" content="summary"\/>/i, path);
     assert.match(html, /<meta name="twitter:title" content="[^"]+"\/>/i, path);
     assert.match(html, /<meta name="twitter:description" content="[^"]+"\/>/i, path);
     assert.doesNotMatch(html, /property="og:image"|name="twitter:image"/i, path);
+  }
+});
+
+test("article metadata and internal links use the canonical no-trailing-slash form", () => {
+  for (const path of ARTICLE_ROUTES) {
+    const html = pages.get(path);
+    const ogUrl = html.match(/<meta property="og:url" content="([^"]+)"\/>/i)?.[1];
+    assert.equal(ogUrl, `https://saastcolab.jp${path}`, `${path}: Open Graph URL`);
+
+    for (const anchor of openingTags(html, "a")) {
+      const href = attributes(anchor).get("href");
+      if (!href?.startsWith("/") || href === "/") continue;
+      const pathname = href.split(/[?#]/, 1)[0];
+      assert.equal(pathname.endsWith("/"), false, `${path}: redirecting internal link ${href}`);
+    }
   }
 });
 

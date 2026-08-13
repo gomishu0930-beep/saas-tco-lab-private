@@ -30,7 +30,7 @@ export default function EmbeddedTcoCalculatorPage() {
             <span>表示状態</span><strong>未確認</strong><small>承認済み行だけを表示します</small>
           </output>
           <p className="calculator-source">
-            <Link href="/methodology/#detailed-calculator" target="_top">詳細計算モード</Link>
+            <Link href="/methodology#detailed-calculator" target="_top">詳細計算モード</Link>
             <span>任意入力式は算定方法ページへ移設しました。</span>
           </p>
         </div>

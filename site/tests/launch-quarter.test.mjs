@@ -263,7 +263,7 @@ test("servers calculator is zero-input and detailed inputs live only on methodol
   assert.match(zeroInputSource, /calculateServerZeroInputTable/);
   assert.match(zeroInputSource, /未確認/);
   assert.doesNotMatch(zeroInputSource, /<input\b|<select\b/i);
-  assert.match(zeroInputSource, /href="\/methodology\/#detailed-calculator"/);
+  assert.match(zeroInputSource, /href="\/methodology#detailed-calculator"/);
 
   const articleSource = await readFile(
     new URL("../app/components/PilotArticle.tsx", import.meta.url),

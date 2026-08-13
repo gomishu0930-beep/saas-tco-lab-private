@@ -469,7 +469,7 @@ async function withNextReading(
     .filter((candidate): candidate is { path: string; title: string; outcome: string } => Boolean(candidate))
     .slice(0, 3);
   const replacement = candidates.length
-    ? `<section class="shell page-section next-reading" aria-labelledby="runtime-next-reading"><div class="section-heading"><p class="eyebrow">次に読む</p><h2 id="runtime-next-reading">関連する料金記事</h2></div><ul>${candidates.map((candidate) => `<li><a href="${escapeHtmlAttribute(candidate.path as string)}/">${escapeHtmlAttribute(candidate.title as string)}</a><span>${escapeHtmlAttribute(candidate.outcome as string)}</span></li>`).join("")}</ul></section>`
+    ? `<section class="shell page-section next-reading" aria-labelledby="runtime-next-reading"><div class="section-heading"><p class="eyebrow">次に読む</p><h2 id="runtime-next-reading">関連する料金記事</h2></div><ul>${candidates.map((candidate) => `<li><a href="${escapeHtmlAttribute(candidate.path as string)}">${escapeHtmlAttribute(candidate.title as string)}</a><span>${escapeHtmlAttribute(candidate.outcome as string)}</span></li>`).join("")}</ul></section>`
     : "";
   const headers = new Headers(response.headers);
   headers.delete("content-length");
@@ -666,7 +666,7 @@ function sitemapXml(indexPaths: ReadonlySet<string>): string {
 
 function embedLoaderScript(requestUrl: string): string {
   const origin = new URL(requestUrl).origin;
-  const iframeUrl = `${origin}/embed/tco-calculator/`;
+  const iframeUrl = `${origin}/embed/tco-calculator`;
   return `(()=>{const s=document.currentScript;if(!s)return;const f=document.createElement("iframe");f.src=${JSON.stringify(iframeUrl)};f.title="SaaS TCO Lab 12か月TCO計算機";f.loading="lazy";f.referrerPolicy="no-referrer";f.style.cssText="width:100%;height:"+(s.dataset.height||"760")+"px;border:0;display:block";s.insertAdjacentElement("afterend",f)})();`;
 }
 
@@ -707,7 +707,7 @@ const worker = {
     if (url.pathname === "/robots.txt") {
       const allowed = [...indexPaths].sort().map((path) => `Allow: ${path}$`).join("\n");
       const body = allowed
-        ? `User-agent: *\nAllow: /assets/\nAllow: /favicon.svg$\nAllow: /sitemap.xml$\n${allowed}\nDisallow: /\nSitemap: ${CANONICAL_PUBLIC_ORIGIN}/sitemap.xml\n`
+        ? `User-agent: *\nAllow: /$\nAllow: /assets/\nAllow: /favicon.svg$\nAllow: /sitemap.xml$\n${allowed}\nDisallow: /\nSitemap: ${CANONICAL_PUBLIC_ORIGIN}/sitemap.xml\n`
         : "User-agent: *\nDisallow: /\n";
       return new Response(body, {
         status: 200,

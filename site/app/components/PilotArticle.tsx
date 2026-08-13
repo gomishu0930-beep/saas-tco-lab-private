@@ -204,7 +204,7 @@ export function PilotArticle({
         </div>
         <p className="article-lead">{presentation.lead}</p>
         <p className="article-methodology-link">
-          数値の確認方法と任意条件の試算は<Link href="/methodology/#detailed-calculator">詳細計算モード</Link>にまとめています。
+          数値の確認方法と任意条件の試算は<Link href="/methodology#detailed-calculator">詳細計算モード</Link>にまとめています。
         </p>
         <div className="editorial-sections">
           {draft.sections.map((section, index) => (
@@ -330,7 +330,7 @@ export function PilotArticle({
           <ul>
             {nextPages.map((candidate) => (
               <li key={candidate.id}>
-                <Link href={`/pilot/${candidate.slug}/`}>{candidate.title}</Link>
+                <Link href={`/pilot/${candidate.slug}`}>{candidate.title}</Link>
                 <span>{candidate.readerOutcome}</span>
               </li>
             ))}
@@ -352,7 +352,7 @@ export function PilotArticle({
       )}
 
       <section className="shell page-section">
-        <Link className="text-link" href={publicPrelaunch ? "/" : "/pilot/"}>
+        <Link className="text-link" href={publicPrelaunch ? "/" : "/pilot"}>
           {publicPrelaunch ? "SaaS TCO Labへ戻る" : "12本の記事一覧へ戻る"}
         </Link>
       </section>

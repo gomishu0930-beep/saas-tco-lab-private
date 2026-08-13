@@ -9,19 +9,19 @@ const productionRuntime = process.env.SAAS_RUNTIME_MODE === "production";
 function PublicEditorialHome() {
   const samples = [
     {
-      href: "/pilot/pricing-calculator/",
+      href: "/pilot/pricing-calculator",
       number: "01",
       title: "12か月TCO",
       body: "Human確認済みの年次請求総額から、12か月の支払額と未確認条件を分けて示します。",
     },
     {
-      href: "/pilot/plan-comparison/",
+      href: "/pilot/plan-comparison",
       number: "02",
       title: "プラン比較",
       body: "Basic・Premium・Agencyの年次請求総額を、同じ通貨・税表示の範囲で比較します。",
     },
     {
-      href: "/pilot/evidence-method/",
+      href: "/pilot/evidence-method",
       number: "03",
       title: "根拠の検証",
       body: "価格や上限をfield単位で管理し、出所・権利・期限が欠けたclaimを公開しません。",
@@ -42,10 +42,10 @@ function PublicEditorialHome() {
             12か月TCOと適合条件を検証する独立メディアです。
           </p>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/methodology/">
+            <Link className="button button-primary" href="/methodology">
               算定方法を見る <span aria-hidden="true">→</span>
             </Link>
-            <Link className="text-link" href="/pilot/pricing-calculator/">
+            <Link className="text-link" href="/pilot/pricing-calculator">
               公開中の料金記事を見る
             </Link>
           </div>
@@ -126,10 +126,10 @@ export default function Home() {
               公開前のため、現在は合成データだけを表示しています。
             </p>
             <div className="hero-actions">
-              <Link className="button button-primary" href="/comparison/">
+              <Link className="button button-primary" href="/comparison">
                 比較結果を見る <span aria-hidden="true">→</span>
               </Link>
-              <Link className="text-link" href="/methodology/">
+              <Link className="text-link" href="/methodology">
                 算定方法を確認
               </Link>
             </div>
@@ -175,7 +175,7 @@ export default function Home() {
           </div>
           <ComparisonTable data={syntheticComparison} compact />
           <div className="section-action">
-            <Link className="button button-secondary" href="/comparison/">
+            <Link className="button button-secondary" href="/comparison">
               条件と根拠をすべて表示 <span aria-hidden="true">→</span>
             </Link>
           </div>

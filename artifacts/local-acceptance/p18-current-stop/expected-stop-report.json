@@ -2,13 +2,13 @@
   "authority": "none",
   "decision": "stop",
   "evaluated_at": "2026-07-22T09:00:00Z",
-  "expected_tree_sha256": "368c3aad95d24b644b79763eb140571d7fd275edf4da7ca3451ee00e1266a643",
+  "expected_tree_sha256": "d8fe945f8c170493e5e4e9844a5615f766915c57b480bde0e9d26b4bcee47ab1",
   "external_mutation_authorized": false,
   "first_external_gate": "rights_evidence",
   "local_integration_accepted": false,
-  "manifest_sha256": "b7e8a182b4b574779b921bdc811b4b3055439a0f88e962778ab952cbb90474b6",
+  "manifest_sha256": "031c416fc4283b735776127bef6ee0ca4c1a4d4758025d685bfa35a06cbbc9f3",
   "next_gate": "local_verification",
-  "observed_tree_sha256": "368c3aad95d24b644b79763eb140571d7fd275edf4da7ca3451ee00e1266a643",
+  "observed_tree_sha256": "d8fe945f8c170493e5e4e9844a5615f766915c57b480bde0e9d26b4bcee47ab1",
   "production_write_authorized": false,
   "public_release_authorized": false,
   "reasons": [
@@ -17,11 +17,11 @@
     "verification_synthetic",
     "verification_trust_missing"
   ],
-  "report_sha256": "686b56c6f82ea3b136f7e339827dc7f9a516ddbab6b3707be51a987122067cee",
+  "report_sha256": "5a52c53f3891380830edb7e4f7f55b1c2a7a6eaefad3cb05b59628d9f14d4e15",
   "required_inputs": [
     "current_signed_verification_bundle"
   ],
   "scale_authorized": false,
   "schema_version": "1.0",
-  "verification_bundle_sha256": "e3416b2ae3293c1736b92a970e3bdb71eb874b6851588b6c3dd32c4816dd87b8"
+  "verification_bundle_sha256": "a082d430fbafff35d93801c0e3f0aac2a5fa9ef258c9fde956392bcc109f60ca"
 }

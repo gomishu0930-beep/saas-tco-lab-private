@@ -122,6 +122,15 @@ analytics scope拡張をこの承認へ含めない。
   2026-08-13・検出10ページだった。公開sitemap 11 URLとの差1件を未登録理由や失敗へ補完しない。GA4は
   過去28日で`page_view` 10、`qualified_session` 8、`outbound_click`行なし、Realtime 0だった。
   自己確認訪問を分離できないため月次KPIへ転記せず、GSC/GA4とも設定変更・テスト送信を行っていない。
+- 2026-08-14のindex障害調査では、P01のURL検査は`検出 - インデックス未登録`、前回crawlなしで、
+  sitemapと外部参照元は認識済みだった。公開URLのlive testもSearch Console側の一時エラーとなり、
+  crawl不可やquota超過とは補完しない。ページ集計の唯一の登録済み例は旧`http://saastcolab.jp/`で、
+  `robots.txt によりブロックされましたが、インデックスに登録しました`、最終crawl 2026-08-03だった。
+  公開11記事はHTTP 200、`index, follow`、self-canonical、sitemap/robots allowlist一致、asset取得可能を確認した。
+- 同調査で、canonical/sitemapは末尾slashなしなのに、記事HTMLの内部linkと`og:url`が末尾slash付きで
+  308を挟む不一致を全11記事で確認した。公開対象を増やさず内部link、`og:url`、embed URLをcanonical形式へ
+  統一し、robotsへ`Allow: /$`を追加した。これはhomeをindex対象へ追加する変更ではなく、Googleが既に把握した
+  旧HTTP homeのredirect先をcrawlしてnoindexを読めるようにするための限定修正である。
 
 ## GO後の実行と合格条件
 
