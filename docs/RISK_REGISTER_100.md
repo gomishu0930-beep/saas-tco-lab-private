@@ -1,6 +1,6 @@
 # リスク登録簿 100件 — SaaS TCO Lab / servers主戦場
 
-基準日: 2026-08-06(Asia/Tokyo)
+基準日: 2026-08-13(Asia/Tokyo)
 sanitization_authority: `human_authorized_sanitization`
 review_status: `unreviewed`
 
@@ -57,7 +57,7 @@ Tierは事後に上げてよいが、T1を増やすときは記事本数の目�
 |C007|T3|新規ドメインの評価期間で3〜6か月伸びない|12月末の撤退ライン判定まで待つ。途中の順位で一喜一憂しない|6か月経過してもGSC clicks 100/月未満|撤退ライン発動、転換候補を検討|
 |C008|T1|記事がインデックスされない|sitemap自動更新、内部リンク、GSC URL検査のHuman手順をrunbook化|公開7日後もインデックス未登録|別GO後にHumanが個別登録を判断し、内部リンクを増やす|
 |C009|T2|流入が1記事に集中し他が死ぬ|上位記事から他記事への内部リンクを必ず設置|上位1記事がsessionsの70%超|上位記事のテーマを分割して周辺記事を増やす|
-|C010|T2|SNS流入がゼロのまま|公開ごとにnote/X用の再編集版を出す(templateはQ5で用意済)|60日でSNS経由sessionsが月50未満|SNSを捨てSEOへ集中、または配信形式を変更|
+|C010|T2|SNS流入がゼロ、または別brand accountのconnector値を誤算入する|公開ごとにnote/X用の再編集版を出し、投稿・分析前にSaaS専用account bindingをread-backする。別bindingならconnectorをfail-closedで停止|60日でSNS経由sessionsが月50未満、またはbinding不一致を1回検知|connectorを再認証するまでSafari上のSaaS運用と分離し、実績へ算入しない。正常化後も低流入ならSNSを捨てSEOへ集中、または配信形式を変更|
 |C011|T3|被リンクが全くつかない|計算機embedと方法論ページを被リンク獲得資産にする|180日で参照ドメイン3未満|被リンクを前提にしない語(超ロングテール)へ絞る|
 |C012|T2|直帰率が高く質のあるセッションにならない|冒頭に答え(総額表)を置き、次に読むを設置|qualified_session率が20%未満|記事冒頭の構成を再設計、または対象語を見直す|
 

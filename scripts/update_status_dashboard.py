@@ -554,9 +554,9 @@ def _launch_quarter() -> dict[str, Any]:
             {"date": "7/31–8/2", "label": "domain day・P01–P03最終標本"},
             {"date": "8/3–8/9", "label": "第1弾記事承認・index準備"},
             {"date": "8/10–8/16", "label": "拡張需要180語完了・カテゴリ別判定反映"},
-            {"date": "8/17–8/31", "label": "P09/P11 Operator timer実測・servers価格確認"},
-            {"date": "9月", "label": "残記事・embed・note/X・Impact/ASP審査"},
-            {"date": "10/1–10/24", "label": "取引意図記事改稿・内部導線"},
+            {"date": "8/17–8/31", "label": "servers価格確認・P11完全暦月計測の準備"},
+            {"date": "9月", "label": "P11導入前の完全暦月計測・embed・Impact/ASP審査"},
+            {"date": "10/1–10/24", "label": "P11導入後の完全暦月計測・取引意図記事改稿"},
             {"date": "10/25–10/31", "label": "固定閾値で継続・拡張・縮小判定"},
         ],
         "thresholds": [

@@ -1,6 +1,6 @@
 # 現時点の導入 — あなたの操作表
 
-基準日: 2026-08-12（Asia/Tokyo）
+基準日: 2026-08-13（Asia/Tokyo）
 
 2026-07-28のHuman decision `DR-2026-07-28-REVENUE-TRACK`により、P0–P18はmaintenance only、
 人手予算はlaunch trackへ全振りする。rights model v2では、自動取得・価格DB・履歴DBはstrict gateを
@@ -457,6 +457,11 @@ brand、domain、repo、credential、analyticsの分離を維持します。2026
 冒頭PR表示、承認済みP01 claim、`saastcolab.jp`の記事URLだけでXスレッド8件を公開した。
 ASP広告link、非公開報酬、tracking IDは含めていない。公開後のread-backで`@saastcolab`の(1/8)と(8/8)を確認した。
 
+2026-08-13、X API connectorをread-onlyで照合したところ、SaaS専用accountではないbindingを返した。
+FANZA運用とのbrand・credential・analytics分離を優先し、このconnector経由の投稿・分析を即時停止した。
+Safari上の`@saastcolab`公開状態は変更せず、connectorをSaaS専用accountへ再認証してbindingをread-backするまで
+X API値をSaaS TCO Labの実績へ算入しない。
+
 2026-08-09、公開後もhomepage、広告表示、About、運営者情報、privacyに残っていた「公開前・CTA 0件」の
 旧表示を現在の9記事・Mangools CTA稼働状態へ更新した。homepageから未承認P09へのlinkを削除し、承認済み
 P01/P02/P12だけを案内する。`CHECK-ALL: PASS`後のcommit `1d9389b`をSites version 19として公開した。
@@ -622,6 +627,15 @@ index完了とは扱わない。GA4 Realtimeと直近7日間は0で、過去28�
 `qualified_session` 7、`outbound_click`は行なしである。Impact Marketplaceは`Declined`のまま変化なし。
 対象vendor・ASPの直近7日メールにも新しい情報要求、実質回答、Affiliate承認はなかった。外部送信、
 再送信、URL検査登録、設定変更、CTA変更は行っていない。
+
+2026-08-13のread-only再確認では、Search Consoleのperformance対象期間2026-08-02〜08-11は
+表示回数0・clicks 0だった。現在のsitemap行は`成功しました`、最終読み込み2026-08-11、検出9ページを表示し、
+前日の検出10ページ記録と一致しない。公開sitemapとrobots allowlistは承認済み11記事で一致するため、
+既存`/sitemap.xml`だけを再送信し、未承認route・URL検査登録・index範囲は変更していない。Google側の再処理が
+完了するまで検出11件やindex完了とは扱わない。ページ集計は最終更新2026-08-07、登録済み1・未登録3のままである。
+GA4は2026-08-06〜08-12のevents合計0、Realtime過去30分も0だった。公開HTMLには同意制御bootstrapと
+`page_view`・`qualified_session`・`outbound_click`の明示event経路が存在することを外部read-backしたが、
+無流入と同意未取得を分離できないため、計測停止・CVR・収益を推測しない。
 
 ```text
 gsc_verification_deploy: GO / STOP

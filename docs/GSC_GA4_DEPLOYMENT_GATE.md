@@ -1,6 +1,6 @@
 # GSC / GA4 deployment gate
 
-基準日: 2026-08-12（Asia/Tokyo）
+基準日: 2026-08-13（Asia/Tokyo）
 
 ## 現在地
 
@@ -106,6 +106,14 @@ analytics scope拡張をこの承認へ含めない。
   `index, follow`、canonical、確認済みHuman作業費2,006.67 JPYと公式支援費unknown、開示先行Mangools CTA、
   送客hostとlink属性のgateに合格した。P11はHTTP 200・noindex・canonicalなし・CTAなしを維持し、
   sitemapとrobots allowlistは11記事で一致した。GSCへのURL検査登録要求は行っていない。
+- 同日のGSC再確認で、performance対象期間2026-08-02〜08-11は表示回数0・clicks 0、ページ集計は
+  最終更新2026-08-07の登録済み1・未登録3だった。sitemap行は`成功しました`、最終読み込み2026-08-11、
+  検出9ページを表示し、前日に記録した検出10ページと一致しない。公開sitemapの承認済み11 URLだけを
+  同じsubmissionへ再送信し、未承認route・URL検査登録・index対象は増やしていない。再処理が完了するまで
+  11件検出やindex完了とは扱わない。
+- GA4の2026-08-06〜08-12 events reportは合計0、Realtime過去30分も0だった。公開HTMLには同意制御bootstrap、
+  `page_view`、`qualified_session`、`outbound_click`の明示経路が存在する。無流入と同意未取得を分離できないため、
+  0件を計測停止・需要・CVR・収益の証拠へ補完せず、設定変更やテスト送信も行っていない。
 
 ## GO後の実行と合格条件
 

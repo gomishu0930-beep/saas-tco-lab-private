@@ -4,13 +4,16 @@
 measurement ID、partner ID、tracking ID、支払情報、メール本文は追記しない。GOは書かれたscopeだけに有効で、
 domain GOからindex GOやCTA GOを推論しない。
 
-現在地: P01–P12は12/12入力済み、10/12承認・公開済みです。
-2026-08-11の外部read-backでP01–P08・P10・P12の10記事だけのindex・sitemap、P09/P11のnoindex、
-開示先行gate、Mangools CTAを確認済みです。P09/P11は自データ未取得のため未承認で、CTAも無効です。
+現在地: P01–P12は12/12入力済み、11/12承認・公開済みです。
+2026-08-13の外部read-backでP01–P10・P12の11記事だけのindex・sitemap、P11のnoindex、
+開示先行gate、Mangools CTAを確認済みです。P09はHuman確認済み実測contractを承認・公開済みで、
+P11だけが2026年9月・10月の完全暦月データ待ちです。
 Search Console domain propertyと専用GA4 streamも連携済みです。serversはSVR01
 candidate-only contractをlocal保存済みで、XServerビジネス、ロリポップ、ABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
 SVR01のlocal標本では確認済み11 fieldを証拠表として表示するが、期間限定表示・更新額・用途条件が未確認のため
-価格のcanonical採用・TCO・順位・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みである。
+価格のcanonical採用・TCO・順位・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みです。
+X API connectorは2026-08-13のread-only照合でSaaS専用accountではないbindingを返したため使用停止中で、
+Safari上のSaaS専用運用と混ぜません。
 
 ## 今使うtoken
 
@@ -19,8 +22,8 @@ SVR01のlocal標本では確認済み11 fieldを証拠表として表示する�
 |Domain開始|`domain: GO <domain> / HOLD`|`domain: GO example.jp`|exact domainのdomain dayだけを開始|
 |価格表示分類|`sale_banner_state: <class> <partner>`|`sale_banner_state: annual_discount_permanent mangools`|`none` / `annual_discount_permanent` / `time_limited_promo` / `unknown`のHuman分類を記録|
 |Checkout再観測完了（必要時）|`checkout_values: done`|`checkout_values: done`|既存確定値を更新する再観測時だけ使用。Mangools初回値は2026-08-02に取込済み|
-|記事入力完了|`article_input: done <P-ID>`|`article_input: done P09`|Operatorが出力したcontractの取込・再検証を依頼。P09/P11は実作業をtimerで計測→秒数をHuman確認してappend-only台帳へ追記→確認済み合計を自データ候補へ反映→一般入力欄確認→Human確定の順で使う|
-|記事証拠不足|`article_evidence: pending <P-ID,...>`|`article_evidence: pending P09,P11`|contractは構造合格だが確認済み実値がなく、記事承認・公開へ進めない状態を記録|
+|記事入力完了|`article_input: done <P-ID>`|`article_input: done P11`|Operatorが出力したcontractの取込・再検証を依頼。P09は完了済み。P11は導入前後の完全暦月をtimerで計測→秒数をHuman確認してappend-only台帳へ追記→確認済み合計を自データ候補へ反映→一般入力欄確認→Human確定の順で使う|
+|記事証拠不足|`article_evidence: pending <P-ID,...>`|`article_evidence: pending P11`|contractは構造合格だが確認済み実値がなく、記事承認・公開へ進めない状態を記録|
 |P05公式field修正（完了）|`p05_field_scope: approve mangools_agency_actual_fields`|`p05_field_scope: approve mangools_agency_actual_fields`|2026-08-09にfield修正・記事承認、2026-08-11に限定release済み。再返信不要|
 |記事承認|`article_approve: <P-IDまたはSVR-ID,...>`|`article_approve: P01,P02,P03`|列挙した記事本文だけをHuman承認。serversは価格・TCO・用途判定がREADYのSVR-IDだけ有効|
 |記事修正|`article_revise: <P-ID> <修正点>`|`article_revise: P01 税区分を再確認`|対象記事をunreviewedへ戻す|
