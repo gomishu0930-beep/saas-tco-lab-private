@@ -38,10 +38,10 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
 |A-H10|editorial production稼働|Sitesを公開originとして採用し、rights model v2のHuman editorial laneだけを本番化|2026-07-26 public-prelaunch GOと後続のdomain・記事・index・CTA・deploy承認|10記事の外部readbackとfail-closed経路を継続監視。automated data pathはGate A–Cまで停止|cloud root credential|
-|A-H11|進行中 — 12/12入力・11/12承認・10/12公開|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P10・P12を承認済み。P01–P08・P10・P12はindex・Mangools CTA対象として外部read-back済み|P09は実測・記事承認済みだがrelease別GO待ち。P11は完全暦月の自データ待ち。両記事ともnoindex・CTA無効を維持|raw本文、PII、credential、tracking ID|
+|A-H11|進行中 — 12/12入力・11/12承認・11/12公開|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P10・P12を承認済みかつindex・Mangools CTA対象として外部read-back済み|P11は完全暦月の自データ待ちでnoindex・CTA無効を維持|raw本文、PII、credential、tracking ID|
 |A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|10記事releaseのdomain・redirect・計測境界を維持する|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
 |A-H13|完了 — v1.1分類済み|KWFinder正規画面からJP/ja CSVをHuman exportする|2026-08-05 batch-e/fを含む150件をexport・検証済み|rawをrepositoryへ保存せず、known/no_data/rejectedを分離したsafe-summaryだけを扱う|account情報、raw CSVのrepo保存、no_dataの0補完|
-|A-H14|完了 — 10記事index境界確認済み|index解除対象を確定する|2026-08-03 `index_go: GO`、2026-08-08〜11の最優先タスク一括承認を受領|承認済みP01–P08・P10・P12だけindex可。その他記事と他HTML routeはnoindex|verification・tracking ID|
+|A-H14|完了 — 11記事index境界確認済み|index解除対象を確定する|2026-08-03 `index_go: GO`、2026-08-08〜13の最優先タスク一括承認を受領|承認済みP01–P10・P12だけindex可。P11と他HTML routeはnoindex|verification・tracking ID|
 
 2026-08-02、Human ApproverがMangoolsの年次checkout総額452.40／632.40／1,172.40 USD、
 同planの月払い比較値61.00／81.00／141.00 USD、Japan選択時VAT 0表示を確認し、P01–P03の
@@ -432,8 +432,10 @@ ROUND_HALF_UPだけを用いる。P09は移行作業・教育の両方、P11は�
 重複契約0か月、時間単価6,000 JPY/時は、月20万円目標と月2,000分のHuman予算から導く明示的な
 機会費用scenarioとして別途Human承認した。確認済み台帳合計は移行作業0.32694444時間、教育0.0075時間で、
 観測日2026-08-13、次回確認日2026-09-13としてP09 contractへ反映した。公式移行支援費はunknownを維持する。
-Humanはcontract候補を確定し、継続指示「承認系に関してはすべて承認扱い」をP09記事標本へ限定適用したため、
-P09は記事承認済み・release待ちとなった。production deploy・index・CTAは別gateであり、現在もnoindex・CTA無効である。
+Humanはcontract候補を確定し、継続指示「承認系に関してはすべて承認扱い」をP09記事標本と限定releaseへ適用した。
+`CHECK-ALL: PASS`後のcommit `4e95a0a`をSitesへ公開し、P09は`index, follow`・canonical・開示先行Mangools CTA、
+送客host `mangools.com`、`rel="sponsored noopener noreferrer"`を外部read-back済みである。公開sitemapとrobots
+allowlistは11記事で一致した。
 P11は月途中を外挿せず、2026年9月の導入前月と10月の導入後月を完全に計測してから候補化する。
 
 2026-08-12、SafariでHuman本人認証が完了し、もしもの残り3program（シンレンタルサーバー、ConoHa WING、

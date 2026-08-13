@@ -31,7 +31,7 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 |H7|回答到着時|各社回答の権限・scopeについて最終判断する|1社5分|未到着|Codexのfield別判定案に`approve`または`reject`|`SourcePolicy`へfield単位で反映し、許可済みsourceだけadapterを実装する|
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
-|H10|一部完了|実データ、indexing、Affiliate CTA、独自domain、法的表示を個別承認する|10分|独自domainで10記事を公開済み。P09は実測・記事承認済みでrelease別GO待ち、P11は自データ待ち。両記事ともnoindex・CTA無効|各対象へのexact `GO`|実運用releaseをreadbackし、rollback可能性を確認する|
+|H10|一部完了|実データ、indexing、Affiliate CTA、独自domain、法的表示を個別承認する|10分|独自domainで11記事を公開済み。P09も外部read-back合格。P11だけが完全暦月の自データ待ちでnoindex・CTA無効|各対象へのexact `GO`|実運用releaseをreadbackし、rollback可能性を確認する|
 |H11|完了|KWFinder正規画面で残り180語を4回に分けてHuman exportする|0分|2026-08-13に40・40・40・60語の完全一致、Japan限定、重複0、rejected 0を確認済み|追加操作なし|safe-summaryをdashboardへ反映し、raw CSVはrepo外に維持する|
 |H12|P09完了・P11暦月待ち|OperatorのP09/P11で作業timerを開始・停止し、秒数を確認して端末内台帳へ追記する|承認だけ|P09は移行1,177秒・教育27秒を確認済みcontractへ反映し記事承認済み。P11は2026年9月の導入前月と10月の導入後月を完全計測する|P11候補完成後に最終承認だけ返す|確認済み合計だけを既存contract validatorへ通し、P11標本を生成する|
 

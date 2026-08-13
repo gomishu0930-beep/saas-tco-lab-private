@@ -102,6 +102,10 @@ analytics scope拡張をこの承認へ含めない。
   `qualified_session` 7、`outbound_click`行なしである。既存の実装確認訪問を含むため需要・CVRへ算入しない。
 - 拡張計測はOFF。内部traffic filterは不可逆な除外を避けるためtestのまま維持し、対象sourceを
   確定した別承認後だけactiveへ移す。
+- 2026-08-13、Human確認済みP09を11記事目として限定releaseした。外部read-backでP09はHTTP 200、
+  `index, follow`、canonical、確認済みHuman作業費2,006.67 JPYと公式支援費unknown、開示先行Mangools CTA、
+  送客hostとlink属性のgateに合格した。P11はHTTP 200・noindex・canonicalなし・CTAなしを維持し、
+  sitemapとrobots allowlistは11記事で一致した。GSCへのURL検査登録要求は行っていない。
 
 ## GO後の実行と合格条件
 
