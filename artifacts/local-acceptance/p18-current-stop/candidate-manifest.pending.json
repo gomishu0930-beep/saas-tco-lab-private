@@ -447,8 +447,8 @@
       "executable": false,
       "path": "artifacts/editorial-inputs/P09-editorial-input.json",
       "schema_version": "1.0",
-      "sha256": "bd865dc2096410ec9f1edf6a0d6e438afd7f4038cb448ceccb9c162984ea7e32",
-      "size_bytes": 7232
+      "sha256": "84103c50d14a7a5229cf7b1b96e16c6907bc00d4c774d59d89b0d776967e74f8",
+      "size_bytes": 6921
     },
     {
       "executable": false,
@@ -510,8 +510,8 @@
       "executable": false,
       "path": "docs/CATEGORY_EXPANSION_SLATE.md",
       "schema_version": "1.0",
-      "sha256": "ed25fc30fdd3afd9a6248bcf926546621c51d063b30d9244137357eaac5ab521",
-      "size_bytes": 20431
+      "sha256": "0934db1355376f6b96fe132c083cbc8856a5dc0e406efcf82a63d3a3098657d8",
+      "size_bytes": 20941
     },
     {
       "executable": false,
@@ -524,15 +524,15 @@
       "executable": false,
       "path": "docs/CURRENT_ADOPTION_ACTIONS.md",
       "schema_version": "1.0",
-      "sha256": "76d5f16377557a1c2fed606ec045245bf123d5a189fd24cec0f2b4011d2be302",
-      "size_bytes": 67610
+      "sha256": "bde7f71a6167edba44d675989312adeecdab998dfd188fd3268705ffbf46ec2e",
+      "size_bytes": 69488
     },
     {
       "executable": false,
       "path": "docs/CURRENT_ADOPTION_IMPLEMENTATION_STATUS.json",
       "schema_version": "1.0",
-      "sha256": "0375e9ebce075e32c7410ac0a1755977d6f24aaa5eef12cfbaaa7b5ac8506fed",
-      "size_bytes": 11771
+      "sha256": "5e341886fc186004a2ddd2bcb684c6b1abbe4a4f5f3c78ea1246941a5f2d8481",
+      "size_bytes": 11599
     },
     {
       "executable": false,
@@ -566,8 +566,8 @@
       "executable": false,
       "path": "docs/EDITORIAL_LAUNCH_STATE.json",
       "schema_version": "1.0",
-      "sha256": "eb1cd5923690a9235014280d36f38a95fcebc717948a1ff7995d2999112f29a5",
-      "size_bytes": 746
+      "sha256": "0a367cc611e153d3be0521f84cd5246259e315338ae4c43fdcb4d91bfcaed197",
+      "size_bytes": 766
     },
     {
       "executable": false,
@@ -608,8 +608,8 @@
       "executable": false,
       "path": "docs/HUMAN_ACTION_MANUAL.md",
       "schema_version": "1.0",
-      "sha256": "7dac6de7d12c57280df604dd350d827ed9c7eda965c824dc05856438b7d42dcf",
-      "size_bytes": 20716
+      "sha256": "9b9cd5a544b1f8fb7e7bc18512d1d8512b1be7160dc66b81572c13c771b0d6fe",
+      "size_bytes": 20943
     },
     {
       "executable": false,
@@ -860,8 +860,8 @@
       "executable": false,
       "path": "docs/PRODUCTION_ROADMAP.md",
       "schema_version": "1.0",
-      "sha256": "78957c533d0bddf941abc85fe2b7c3172dddefb36b47f3fc41b3d24131e5047e",
-      "size_bytes": 54421
+      "sha256": "e876a1b5bcb8175b9da3cd816da97f2e6a6ed273d571b8930053f78573b2118f",
+      "size_bytes": 54619
     },
     {
       "executable": false,
@@ -2918,8 +2918,8 @@
       "executable": true,
       "path": "scripts/update_status_dashboard.py",
       "schema_version": "1.0",
-      "sha256": "788bf557aee275fffef0899e60211e2ce8f4a460e5dc91a86db5aa9f5c4665d2",
-      "size_bytes": 34928
+      "sha256": "e1c9fa71f80efcaa22d035cdf7f3df3b5453d5e0145a3ab06484f7f98bcce1c3",
+      "size_bytes": 34958
     },
     {
       "executable": false,
@@ -3044,7 +3044,7 @@
       "executable": false,
       "path": "site/app/disclosure/page.tsx",
       "schema_version": "1.0",
-      "sha256": "6d5953cef3778776636d95d8aad06eff23a07e0d351b49d6715cfed81e71eb62",
+      "sha256": "895d92b213922f48695bd3b2238c2cbc627c346292edab067e6cd3a19009614c",
       "size_bytes": 2109
     },
     {
@@ -3100,8 +3100,8 @@
       "executable": false,
       "path": "site/app/lib/derivative-templates.ts",
       "schema_version": "1.0",
-      "sha256": "444b5e2ea5e4d70e92b2a50e4c67d8ba5ef67c25214ad620904e6865d06d8320",
-      "size_bytes": 33133
+      "sha256": "7af9b1c052b9eb8b7b828ac989bfbd643b8a5846b9a230102b2b6a1072c5974a",
+      "size_bytes": 35825
     },
     {
       "executable": false,
@@ -3128,8 +3128,8 @@
       "executable": false,
       "path": "site/app/lib/editorial-presentation.ts",
       "schema_version": "1.0",
-      "sha256": "4c22367aca4bf9124e66c17d76a8597c17813460e6aafd09a189ef4f89896714",
-      "size_bytes": 5480
+      "sha256": "1cfc69ad0faae7365f6689caea9438acf526a48af06f1a5cfbf15efb21da0a4f",
+      "size_bytes": 7592
     },
     {
       "executable": false,
@@ -3191,8 +3191,8 @@
       "executable": false,
       "path": "site/app/operator/page.tsx",
       "schema_version": "1.0",
-      "sha256": "cdb6394db451526cbd415638e007d7317478944d381467724a16e8d424879a51",
-      "size_bytes": 10375
+      "sha256": "0dca89bfa8d42995b9fd82336183856e2fc7ca563e6cf23f487c2dfbab50c70f",
+      "size_bytes": 10385
     },
     {
       "executable": false,
@@ -3205,7 +3205,7 @@
       "executable": false,
       "path": "site/app/page.tsx",
       "schema_version": "1.0",
-      "sha256": "6700d8602e0e95f8e6adab7f6bb965df60f21d0b9bba011ada2ed0288eb30649",
+      "sha256": "5d1470d2358005259e786e14c829be60abfda826385aca1c0d2a6574a4aaba6e",
       "size_bytes": 9249
     },
     {
@@ -3268,8 +3268,8 @@
       "executable": false,
       "path": "site/app/pilot/page.tsx",
       "schema_version": "1.0",
-      "sha256": "ed6d5e57945b388667086cabc0b292f1d104c69ddc7b787b4d19dee5a5e8c142",
-      "size_bytes": 1912
+      "sha256": "f24271f8406abb2cd12f6d78c552960bffa6a8989166c5f2d33b880cf0650f96",
+      "size_bytes": 1915
     },
     {
       "executable": false,
@@ -3422,8 +3422,8 @@
       "executable": false,
       "path": "site/tests/editorial-presentation.test.mjs",
       "schema_version": "1.0",
-      "sha256": "41d10cc2681e20f265126187a7369a7260bc320462624651304201a7c51661cd",
-      "size_bytes": 6379
+      "sha256": "2af3601e20f2489c56bd2a85259107d5e90222da3034fbfbc3b2e80a9dda3cf3",
+      "size_bytes": 7228
     },
     {
       "executable": false,
@@ -3436,8 +3436,8 @@
       "executable": false,
       "path": "site/tests/local-ui.test.mjs",
       "schema_version": "1.0",
-      "sha256": "ebf3cf234abe7027e1c388006b6597685277ce024de359390a421303a3c65722",
-      "size_bytes": 17785
+      "sha256": "d6b2a1bdd1fa168db60f3078eff2e5df8467eb78fa35c982822db94f8ecbdd7d",
+      "size_bytes": 17767
     },
     {
       "executable": false,
@@ -3450,8 +3450,8 @@
       "executable": false,
       "path": "site/tests/production-worker.test.mjs",
       "schema_version": "1.0",
-      "sha256": "4d4ee7d65309d55eed12aec5195b7a14cc0fee7cc1759a89ecb14b381d5e2dfc",
-      "size_bytes": 35905
+      "sha256": "3cb214be8ccb40be79d9ea06dd8f7c35e4fbbbd4c6589a827a445d3a66e4a77b",
+      "size_bytes": 38577
     },
     {
       "executable": false,
@@ -3765,8 +3765,8 @@
       "executable": false,
       "path": "status-dashboard.html",
       "schema_version": "1.0",
-      "sha256": "0451891ea82287fdf8c55fd38d0ae2cbbc78e39ddd53581c93f701d7e8db6b06",
-      "size_bytes": 28047
+      "sha256": "3c35e772e6d60f42f178a891efd38be8de533b4981bd1b1721202cfac68615a8",
+      "size_bytes": 26761
     },
     {
       "executable": false,
@@ -4045,8 +4045,8 @@
       "executable": false,
       "path": "tests/test_status_dashboard.py",
       "schema_version": "1.0",
-      "sha256": "b2a931e0d67d76c483188fecc080cb3c5dc5c98d2545c1e141e7a285c6c78c4d",
-      "size_bytes": 16299
+      "sha256": "9ec77352b2ae874f110380a504e7352a3c16e54405cdb5f9d9ecf6f68ae8fe60",
+      "size_bytes": 15988
     },
     {
       "executable": false,
@@ -4099,15 +4099,15 @@
     }
   ],
   "integration_verification": null,
-  "manifest_sha256": "a43b54c2fe0ca4255fb51a7eaaca785483015b14831b9c6416a27387cc25900b",
+  "manifest_sha256": "84a20e62b312f05fc721266f5b98276f13c27260dd8a21e8352d280f53ec8ec7",
   "previous_candidate_record_sha256": "81a4d2088b968f79293d7ae7d0ad8be37bca1fa909e3c330bf7b05ebd9e3abd8",
   "schema_version": "2.0",
   "scope_paths_sha256": "a940a77d2c262cb16d38f559918a0c453c0ece0fd49e074c8e4a3aa07444d945",
   "scope_profile": "p11-p21-editorial-contracts-local-candidate-v8",
   "tco_qa_verification": null,
-  "tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+  "tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
   "verification": {
-    "bundle_sha256": "1c69dab9e2006aa0125ab5cf5de7b5195646abacbadc8d72361a62c3d5957977",
+    "bundle_sha256": "a746bf0a27248c10578beb555c7d44793c9793452825adf49e58119c91c08c28",
     "facts": [
       {
         "assertions_executed": 1,
@@ -4132,7 +4132,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-1",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4160,7 +4160,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-2",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4188,7 +4188,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-3",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4217,7 +4217,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-4",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4246,7 +4246,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-5",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4272,7 +4272,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-6",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4304,7 +4304,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-7",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4335,7 +4335,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-8",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4362,7 +4362,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-9",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4390,7 +4390,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-10",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4418,7 +4418,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-11",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4445,7 +4445,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-12",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4472,7 +4472,7 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-13",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
@@ -4499,14 +4499,14 @@
         "provenance": "synthetic_contract",
         "schema_version": "1.0",
         "skipped": 0,
-        "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+        "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
         "tool_name": "synthetic-p18-check-14",
         "tool_version": "0.0.0-synthetic",
         "working_directory": "repository-root"
       }
     ],
     "schema_version": "2.0",
-    "subject_tree_sha256": "9bbaeeab05608cc9462ebd108cb1d933e01752124f9be20b8186691906943a04",
+    "subject_tree_sha256": "5a9b7945e2796b9f5f2448ada07c90554bd1d02bfd2f2fab8d334d949dce620f",
     "verified_runner_consumption_receipt": null
   },
   "verified_runner_authority_pins": null,

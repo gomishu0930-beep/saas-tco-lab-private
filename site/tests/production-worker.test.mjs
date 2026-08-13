@@ -346,10 +346,10 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
   }
 });
 
-test("public trust pages describe the live ten-article affiliate state", async () => {
+test("public trust pages describe the live eleven-article affiliate state", async () => {
   const home = await (await fetch(`${baseUrl}/`)).text();
   assert.match(home, /PUBLIC EDITORIAL/);
-  assert.match(home, /公開記事[\s\S]{0,80}10本/);
+  assert.match(home, /公開記事[\s\S]{0,80}11本/);
   assert.match(home, /広告導線[\s\S]{0,80}Mangools/);
   assert.match(home, /href="\/pilot\/pricing-calculator\//);
   assert.match(home, /href="\/pilot\/plan-comparison\//);
@@ -359,7 +359,7 @@ test("public trust pages describe the live ten-article affiliate state", async (
 
   const disclosure = await (await fetch(`${baseUrl}/disclosure/`)).text();
   assert.match(disclosure, /現在の広告状態: Mangoolsのみ有効/);
-  assert.match(disclosure, /Human承認済みの10記事/);
+  assert.match(disclosure, /Human承認済みの11記事/);
   assert.doesNotMatch(disclosure, /実アフィリエイトリンクを含みません|公開承認済みAffiliate CTA 0件/);
 
   const about = await (await fetch(`${baseUrl}/about/`)).text();
@@ -640,6 +640,59 @@ test("approved P05 is ready for an exact ten-article release without widening P0
   assert.equal(locations.length, 10);
   assert.ok(locations.includes("https://saastcolab.jp/pilot/enterprise-fit"));
   assert.ok(!locations.includes("https://saastcolab.jp/pilot/migration-cost"));
+  assert.ok(!locations.includes("https://saastcolab.jp/pilot/break-even"));
+});
+
+test("approved P09 widens the release to exactly eleven articles while P11 stays fail-closed", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("p09-eleven-article-release", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P12",
+    CTA_GO: "GO",
+    CTA_APPROVED_PARTNER: "mangools",
+    MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "true",
+    MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/#a1234567890bcdef123456789",
+  };
+  const ctx = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+
+  const p09Path = "/pilot/migration-cost";
+  const p09 = await worker.fetch(new Request(`https://saastcolab.jp${p09Path}`), env, ctx);
+  assert.equal(p09.status, 200);
+  assert.equal(p09.headers.get("x-robots-tag"), "index, follow");
+  const p09Body = await p09.text();
+  assert.match(p09Body, new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${p09Path}">`, "i"));
+  assert.match(p09Body, /JPY 2,006\.67/);
+  assert.match(p09Body, /公式移行支援費は未確認/);
+  const disclosure = p09Body.indexOf('data-affiliate-disclosure-status="enabled"');
+  const cta = p09Body.indexOf('<a class="cta-active" data-affiliate-cta-partner="mangools"');
+  assert.ok(disclosure >= 0);
+  assert.ok(cta > disclosure);
+  assert.match(p09Body, /rel="sponsored noopener noreferrer"/i);
+
+  const p11Path = "/pilot/break-even";
+  const p11 = await worker.fetch(new Request(`https://saastcolab.jp${p11Path}`), env, ctx);
+  assert.match(p11.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i);
+  const p11Body = await p11.text();
+  assert.doesNotMatch(p11Body, /<link\s+rel=["']canonical["']/i);
+  assert.doesNotMatch(p11Body, /data-affiliate-cta-partner|rel=["'][^"']*sponsored/i);
+
+  const robots = await worker.fetch(new Request("https://saastcolab.jp/robots.txt"), env, ctx);
+  const robotsText = await robots.text();
+  assert.match(robotsText, /Allow: \/pilot\/migration-cost\$/);
+  assert.doesNotMatch(robotsText, /Allow: \/pilot\/break-even\$/);
+
+  const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
+  const locations = [...((await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g))].map((match) => match[1]);
+  assert.equal(locations.length, 11);
+  assert.ok(locations.includes("https://saastcolab.jp/pilot/migration-cost"));
   assert.ok(!locations.includes("https://saastcolab.jp/pilot/break-even"));
 });
 

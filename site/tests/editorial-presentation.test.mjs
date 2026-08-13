@@ -1,10 +1,16 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 
 import { nextToReadPages } from "../app/lib/article-navigation.ts";
 import { calculatorPrefill } from "../app/lib/calculator-prefill.ts";
 import { editorialPresentation } from "../app/lib/editorial-presentation.ts";
 import { pilotPages } from "../app/lib/pilot-pages.ts";
+
+const p09Contract = JSON.parse(readFileSync(
+  new URL("../../artifacts/editorial-inputs/P09-editorial-input.json", import.meta.url),
+  "utf8",
+));
 
 function approvedContract() {
   return {
@@ -104,6 +110,16 @@ test("articles without an approved price use an honest no-amount fallback", () =
   assert.equal(presentation.title, "SaaS料金: 確認済み実額なし・12か月TCOは確認中｜小規模チーム適合");
   assert.match(presentation.lead, /^確認済みの実額はまだなく、/);
   assert.doesNotMatch(presentation.title, /[¥$€£]|\b(?:JPY|USD|EUR)\s+\d/);
+});
+
+test("P09 derives the Human migration labor cost while keeping official support unknown", () => {
+  const page = pilotPages.find((candidate) => candidate.id === "P09");
+  assert.ok(page);
+  const presentation = editorialPresentation(page, p09Contract);
+  assert.equal(presentation.title, "移行作業費用(2026年8月確認): JPY 2,006.67・公式支援費は未確認｜移行コスト");
+  assert.match(presentation.description, /Human作業費JPY 2,006\.67/);
+  assert.match(presentation.lead, /^確認済み実測に基づくHuman作業費はJPY 2,006\.67/);
+  assert.match(presentation.lead, /移行費用全体の確定額ではありません/);
 });
 
 test("calculator prefill copies only approved amount, currency, period, seats, tax, and source", () => {

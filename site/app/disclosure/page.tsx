@@ -38,7 +38,7 @@ export default function DisclosurePage() {
         <p className="eyebrow">CURRENT STATE</p>
         <h2 id="current-state">現在の広告状態: Mangoolsのみ有効</h2>
         <p>
-          Human承認済みの10記事に限り、記事冒頭のPR表示より後でMangools CTAを有効にしています。
+          Human承認済みの11記事に限り、記事冒頭のPR表示より後でMangools CTAを有効にしています。
           他partnerは提携・掲載先・広告表示・個別CTA承認の全条件が一致するまで無効です。
         </p>
       </section>

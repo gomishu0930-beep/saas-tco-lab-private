@@ -38,7 +38,7 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
 |A-H10|editorial production稼働|Sitesを公開originとして採用し、rights model v2のHuman editorial laneだけを本番化|2026-07-26 public-prelaunch GOと後続のdomain・記事・index・CTA・deploy承認|10記事の外部readbackとfail-closed経路を継続監視。automated data pathはGate A–Cまで停止|cloud root credential|
-|A-H11|進行中 — 12/12入力・10/12承認・10/12公開|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P08・P10・P12を承認済みかつindex・Mangools CTA対象として外部read-back済み|P09/P11は自データ未取得のため承認せず、noindex・CTA無効を維持|raw本文、PII、credential、tracking ID|
+|A-H11|進行中 — 12/12入力・11/12承認・10/12公開|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P10・P12を承認済み。P01–P08・P10・P12はindex・Mangools CTA対象として外部read-back済み|P09は実測・記事承認済みだがrelease別GO待ち。P11は完全暦月の自データ待ち。両記事ともnoindex・CTA無効を維持|raw本文、PII、credential、tracking ID|
 |A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|10記事releaseのdomain・redirect・計測境界を維持する|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
 |A-H13|完了 — v1.1分類済み|KWFinder正規画面からJP/ja CSVをHuman exportする|2026-08-05 batch-e/fを含む150件をexport・検証済み|rawをrepositoryへ保存せず、known/no_data/rejectedを分離したsafe-summaryだけを扱う|account情報、raw CSVのrepo保存、no_dataの0補完|
 |A-H14|完了 — 10記事index境界確認済み|index解除対象を確定する|2026-08-03 `index_go: GO`、2026-08-08〜11の最優先タスク一括承認を受領|承認済みP01–P08・P10・P12だけindex可。その他記事と他HTML routeはnoindex|verification・tracking ID|
@@ -374,6 +374,14 @@ repositoryへ保存せず、完全一致したカテゴリだけをsafe-summary�
 1カテゴリでも不完全なら部分summaryを採用しない。schemaは生成物として固定し、raw保存・query表示・network取得・
 自動export・需要値の推測は行わない。
 
+2026-08-13、**拡張需要180語のHuman export完了**。CRM 40、forms 40、email marketing 40、
+SEO tools v2追加60を一括validatorへ通し、全180語が各凍結slateへ完全一致、Japan以外0、重複0、
+rejected 0であることを確認した。P18固定scopeを増やさないため新規artifactは作らず、safe-summaryを
+`docs/CATEGORY_EXPANSION_SLATE.md`の既存カテゴリ表とdashboardへ記録し、raw CSVとquery別volumeは
+repository外のままとした。known 18、no_data 162、known合計6,500/月、no_data率90%で、
+4カテゴリとも既定の必要22,227 sessionsをknown下限が下回る。欠損率が高いため総需要不足の確定とはせず、
+`known_volume_floor_below_required_incomplete`として新規投資をHOLDし、serversを第一カテゴリのまま維持する。
+
 既存のHuman承認済みMangools観測を別記事で再入力しないため、`/operator`へ証拠再利用prefillを追加しました。
 P04は最低利用者数と月契約料金、P08は基本料金・必須addon料金・必要利用者数、P10は表示価格と税fieldだけを
 同じvendor・planかつ同じ値型の承認済みfieldから候補化します。P04の未観測Human時間、P08のaddon課金単位、
@@ -419,6 +427,14 @@ fail-closedで全行停止する。確認済みsessionは決定論的に月別�
 ROUND_HALF_UPだけを用いる。P09は移行作業・教育の両方、P11は選択した導入前後の完全暦月の両方が
 そろった場合だけ既存の未承認入力候補へ反映する。台帳追加・合計反映後もcontract、記事、index、CTAは
 自動承認せず、P09/P11の実値がまだ存在しない現在のHOLDを維持する。
+
+2026-08-13、P09の実移行作業1,177秒と教育27秒をOperatorで計測し、Humanが作業区分と秒数を個別承認した。
+重複契約0か月、時間単価6,000 JPY/時は、月20万円目標と月2,000分のHuman予算から導く明示的な
+機会費用scenarioとして別途Human承認した。確認済み台帳合計は移行作業0.32694444時間、教育0.0075時間で、
+観測日2026-08-13、次回確認日2026-09-13としてP09 contractへ反映した。公式移行支援費はunknownを維持する。
+Humanはcontract候補を確定し、継続指示「承認系に関してはすべて承認扱い」をP09記事標本へ限定適用したため、
+P09は記事承認済み・release待ちとなった。production deploy・index・CTAは別gateであり、現在もnoindex・CTA無効である。
+P11は月途中を外挿せず、2026年9月の導入前月と10月の導入後月を完全に計測してから候補化する。
 
 2026-08-12、SafariでHuman本人認証が完了し、もしもの残り3program（シンレンタルサーバー、ConoHa WING、
 お名前.com レンタルサーバー）を正規検索画面でread-backした。Humanからprogram名付きの

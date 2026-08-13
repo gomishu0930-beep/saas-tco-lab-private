@@ -25,11 +25,11 @@ const remainingHumanWork = [
     timing: "記事準備時",
     title: "公式価格を見て、この画面へ入力",
     minutes: "記事ごと",
-    status: "P01–P08・P10・P12承認・公開済み / P09・P11自データ待ち / SVR01は11項目確認済み・TCO条件待ち",
-    why: "価格確認checklistの公式URLをHumanが開き、必要箇所を貼り付けて候補抽出できます。P09/P11は作業timerを開始・停止し、秒数をHuman確認したsessionだけを端末内append-only台帳へ追記できます。候補はHuman確認前にcontractへ入りません。",
-    steps: ["記事とvendorを選ぶ。P09/P11は作業を計測し、秒数確認後だけ台帳へ追記する", "料金表またはHuman確認済み台帳合計を候補へ反映する", "出典・観測日・次回確認日と前回差分を確認する", "Human確認後のJSONを保存し、article_input: done <P-ID>を返す"],
+    status: "P01–P10・P12承認・公開済み / P11は完全暦月の自データ待ち / SVR01は11項目確認済み・TCO条件待ち",
+    why: "価格確認checklistの公式URLをHumanが開き、必要箇所を貼り付けて候補抽出できます。P11は作業timerを開始・停止し、秒数をHuman確認したsessionだけを端末内append-only台帳へ追記できます。候補はHuman確認前にcontractへ入りません。",
+    steps: ["記事とvendorを選ぶ。P11は完全暦月の作業を計測し、秒数確認後だけ台帳へ追記する", "料金表またはHuman確認済み台帳合計を候補へ反映する", "出典・観測日・次回確認日と前回差分を確認する", "Human確認後のJSONを保存し、article_input: done <P-ID>を返す"],
     done: "article_approve: <P-ID,...>",
-    next: "P09・P11の自データ取得と、SVR01の期間限定表示・更新額の再確認を継続",
+    next: "P11の完全暦月データ取得と、SVR01の期間限定表示・更新額の再確認を継続",
   },
   {
     id: "H3",
@@ -97,7 +97,7 @@ export default function OperatorPage() {
           <h2 id="operator-summary-title">Human作業を4種類へ集約</h2>
         </div>
         <dl>
-          <div><dt>本番公開</dt><dd>P01–P08・P10・P12（10/12）</dd></div>
+          <div><dt>本番公開</dt><dd>P01–P10・P12（11/12）</dd></div>
           <div><dt>この入力画面</dt><dd>NOINDEX</dd></div>
           <div><dt>CTA</dt><dd>本番Mangoolsのみ / ローカル候補DISABLED</dd></div>
         </dl>

@@ -74,10 +74,10 @@ query別volume、Mangools固有IDはrepositoryへ保存しない。v1.1の150語
 |---|---:|---|---|---|---|
 |servers|40 / 40|`artifacts/editorial-inputs/demand-safe-summaries/servers-2026-08-06.json`|14 / 26 / 0|28,220 / 0.65000000|必要22,227のknown下限は超えるが、拡張目安5万未満。候補維持|
 |accounting|40 / 40|本表（P18固定scope維持のため新規artifactなし）|9 / 31 / 0|6,320 / 0.77500000|known下限は必要22,227を下回り、no_data率も高い。現時点では拡張しない|
-|crm|0 / 40 usable|未生成|未判定|未判定|2026-08-12再監査で既存30行CSVが凍結40語との完全一致に失敗。全40語を再exportする|
-|forms|0 / 40|未生成|未判定|未判定|検索回数回復待ち|
-|email_marketing|0 / 40|未生成|未判定|未判定|検索回数回復待ち|
-|seo_tools_v2_extension|0 / 60|未生成|未判定|未判定|検索回数回復待ち|
+|crm|40 / 40|本表（P18固定scope維持のため新規artifactなし）|8 / 32 / 0|5,530 / 0.80000000|known下限は必要22,227未満。no_data率80%のため不足確定ではないが、新規投資はHOLD|
+|forms|40 / 40|本表（P18固定scope維持のため新規artifactなし）|4 / 36 / 0|490 / 0.90000000|known下限は必要22,227未満。no_data率90%のため不足確定ではないが、新規投資はHOLD|
+|email_marketing|40 / 40|本表（P18固定scope維持のため新規artifactなし）|5 / 35 / 0|470 / 0.87500000|known下限は必要22,227未満。no_data率87.5%のため不足確定ではないが、新規投資はHOLD|
+|seo_tools_v2_extension|60 / 60|本表（P18固定scope維持のため新規artifactなし）|1 / 59 / 0|10 / 0.98333333|既存SEOニッチへの追加known下限は小さい。no_data率98.33%のため不足確定ではないが、追加投資はHOLD|
 
 serversの`volume_floor_met_not_proven`は、known行だけで月20万円逆算の必要sessionを超えたという下限判定で
 あり、売上達成・総需要・カテゴリ採用の確定ではない。no_dataは0へ置換していない。残りslateはKWFinderの

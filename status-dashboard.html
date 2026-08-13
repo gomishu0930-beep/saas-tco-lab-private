@@ -150,15 +150,15 @@
 <script>
 // DASHBOARD_DATA_START
 const DATA = {
-  "asOf": "2026-08-12",
+  "asOf": "2026-08-13",
   "reportingPeriod": "2026-07",
-  "phase": "公開後成長運転—10記事公開・2記事証拠/承認待ち",
+  "phase": "公開後成長運転—11記事公開・1記事証拠/承認待ち",
   "kpis": [
     {
       "label": "公開記事数",
-      "value": 10,
+      "value": 11,
       "target": 12,
-      "sub": "入力 12/12・承認 10/12"
+      "sub": "入力 12/12・承認 11/12"
     },
     {
       "label": "インデックス数",
@@ -224,14 +224,14 @@ const DATA = {
     {
       "id": "L2",
       "name": "記事実値入力・承認",
-      "status": "12/12入力・10/12承認",
+      "status": "12/12入力・11/12承認",
       "note": "有効contractとHuman記事承認だけを算入"
     },
     {
       "id": "L3",
       "name": "noindex解除",
       "status": "GO",
-      "note": "index承認 10本・記事承認だけでは追加しない"
+      "note": "index承認 11本・記事承認だけでは追加しない"
     },
     {
       "id": "L4",
@@ -365,7 +365,7 @@ const DATA = {
     {
       "riskId": "editorial-coverage",
       "level": "warn",
-      "label": "編集記事は10/12承認。未承認記事はnoindex・CTA無効を維持"
+      "label": "編集記事は11/12承認。未承認記事はnoindex・CTA無効を維持"
     },
     {
       "riskId": "server-candidate-only",
@@ -387,12 +387,12 @@ const DATA = {
       "D10 servers記事はzero-input、入力式はmethodologyだけに分離"
     ],
     "scopeExpansion": {
-      "state": "PREPARATION GO",
-      "observedKnownVolume": 9610,
+      "state": "MEASURED 180/180",
+      "observedKnownVolume": 6500,
       "requiredSessions": 22227,
-      "noDataRate": "77.33%",
-      "frozenQueries": 260,
-      "externalActions": "HOLD"
+      "noDataRate": "90.00%",
+      "frozenQueries": 180,
+      "externalActions": "DONE"
     },
     "weeklyPlan": [
       {
@@ -405,7 +405,7 @@ const DATA = {
       },
       {
         "date": "8/10–8/16",
-        "label": "拡張需要残り180語Human export"
+        "label": "拡張需要180語完了・カテゴリ別判定反映"
       },
       {
         "date": "8/17–8/31",
@@ -476,36 +476,12 @@ const DATA = {
   "externalActions": [
     {
       "priority": 1,
-      "label": "KWFinder拡張需要180語をHuman export（one-command intake準備済み）",
-      "status": "human_export_required",
-      "token": "mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension"
-    },
-    {
-      "priority": 2,
-      "label": "P09,P11のHuman確認済み実測（Operator timer準備済み）",
+      "label": "P11のHuman確認済み実測（Operator timer準備済み）",
       "status": "owned_data_waiting",
-      "token": "article_evidence: pending P09,P11"
+      "token": "article_evidence: pending P11"
     }
   ],
   "articleReviews": [
-    {
-      "articleId": "P09",
-      "title": "移行コスト",
-      "previewUrl": "http://localhost:3000/pilot/migration-cost",
-      "confirmed": [],
-      "notApplicable": [],
-      "unresolved": [
-        "移行支援料金: unknown（公式価格ページで移行支援料金を確認できていない）",
-        "重複契約月数: unknown（SaaS TCO Labで実移行をまだ行っておらず、重複契約期間を観測していない）",
-        "移行作業時間: unknown（SaaS TCO Labで実移行をまだ行っておらず、移行作業時間を観測していない）",
-        "Human時間単価: unknown（移行担当者の時間単価をHumanシナリオとしてまだ確定していない）",
-        "教育時間: unknown（SaaS TCO Labで実移行をまだ行っておらず、教育時間を観測していない）"
-      ],
-      "observedOn": "2026-08-01",
-      "nextReviewOn": "2026-08-31",
-      "reviewState": "evidence_required",
-      "token": "article_evidence: pending P09"
-    },
     {
       "articleId": "P11",
       "title": "損益分岐",

@@ -86,6 +86,27 @@ function confirmedAmount(field: ImportedField): string {
   return `${field.currency} ${field.value}`;
 }
 
+function approvedKnownField(contract: EditorialContract | null, fieldName: string): ImportedField | null {
+  return contract?.numeric_fields.find((field) => (
+    field.field === fieldName
+    && field.review_status === "approved"
+    && field.value_status === "known"
+    && field.value !== null
+  )) ?? null;
+}
+
+function migrationLaborCost(contract: EditorialContract | null): { amount: string; currency: string; observedOn: string } | null {
+  if (contract?.article_id !== "P09" || contract.article_review_status !== "approved") return null;
+  const work = approvedKnownField(contract, "migration.work_hours");
+  const training = approvedKnownField(contract, "migration.training_hours");
+  const hourly = approvedKnownField(contract, "migration.hourly_cost");
+  if (!work || !training || !hourly || hourly.currency_status !== "known" || !hourly.currency) return null;
+  const values = [work.value, training.value, hourly.value].map(Number);
+  if (values.some((value) => !Number.isFinite(value) || value < 0)) return null;
+  const amount = Math.round(((values[0] + values[1]) * values[2] + Number.EPSILON) * 100) / 100;
+  return { amount: amount.toFixed(2), currency: hourly.currency, observedOn: hourly.observed_on };
+}
+
 export type EditorialPresentation = {
   title: string;
   description: string;
@@ -102,6 +123,19 @@ export function editorialPresentation(
   const firstVendorId = contract?.numeric_fields.find((field) => field.vendor_id)?.vendor_id ?? null;
   const vendorName = vendorDisplayName(price?.vendor_id ?? firstVendorId);
   const conclusion = pageConclusions[page.id];
+  const migrationCost = migrationLaborCost(contract);
+
+  if (migrationCost) {
+    const month = observedMonth(migrationCost.observedOn);
+    const amount = `${migrationCost.currency} ${Number(migrationCost.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return {
+      title: `移行作業費用(${month}確認): ${amount}・公式支援費は未確認｜${page.title}`,
+      description: `実移行の作業時間と教育時間からHuman作業費${amount}を算定。重複契約は0か月、公式移行支援費は未確認として分けて説明します。`,
+      lead: `確認済み実測に基づくHuman作業費は${amount}で、重複契約は0か月です。公式移行支援費は未確認のため、移行費用全体の確定額ではありません。`,
+      observedMonth: month,
+      vendorName: "SaaS",
+    };
+  }
 
   if (!price) {
     const title = `${vendorName}料金: 確認済み実額なし・12か月TCOは確認中｜${page.title}`;

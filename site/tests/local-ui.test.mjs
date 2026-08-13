@@ -101,19 +101,19 @@ test("renders every synthetic-only local decision route with landmarks", async (
   }
 });
 
-test("operator and pilot index report ten live articles while P09 and P11 remain held", async () => {
+test("operator and pilot index report eleven live articles while P11 remains held", async () => {
   const operator = await (await render("/operator")).text();
-  assert.match(operator, /P01–P08・P10・P12（10\/12）/);
-  assert.match(operator, /P01–P08・P10・P12承認・公開済み/);
+  assert.match(operator, /P01–P10・P12（11\/12）/);
+  assert.match(operator, /P01–P10・P12承認・公開済み/);
   assert.match(operator, /SVR01は11項目確認済み・TCO条件待ち/);
-  assert.match(operator, /P09\/P11は作業timerを開始・停止/);
+  assert.match(operator, /P11は作業timerを開始・停止/);
   assert.match(operator, /作業timerを開始・停止/);
   assert.match(operator, /端末内append-only台帳/);
   assert.doesNotMatch(operator, /release待ち|P01–P03 公開中/);
 
   const pilot = await (await render("/pilot")).text();
-  assert.match(pilot, /P01–P08・P10・P12の10本はHuman承認後に公開済み/);
-  assert.match(pilot, /P09・P11/);
+  assert.match(pilot, /P01–P10・P12の11本はHuman承認後に公開済み/);
+  assert.match(pilot, /P11は完全暦月/);
   assert.match(pilot, /noindex・CTA無効を維持/);
   assert.doesNotMatch(pilot, /index GO未受領/);
 });
