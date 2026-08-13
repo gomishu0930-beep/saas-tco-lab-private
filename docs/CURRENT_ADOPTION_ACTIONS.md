@@ -343,6 +343,10 @@ runtime destinationがすべて成立したpartnerだけを表示します。1�
 必須query keyをruntimeで検証し、値はrepositoryへ保存しません。productionのserver承認・destination・server CTA GOは
 未設定のため、外部表示とCTA状態は変わりません。
 
+2026-08-14、台帳で承認済みの6programについて、Sites runtimeの提携承認状態参照だけを`true`へ同期した。
+広告destination、`INDEX_APPROVED_SERVER_ARTICLES`、`SERVER_CTA_GO`は設定していないため、server記事は
+noindex、CTA無効のままである。秘密の広告URL・tracking ID・非公開報酬は取得・表示・保存していない。
+
 同日、XServerビジネスの正規公開画面を追加でread-only確認しました。機能一覧は共有serverについて
 「転送量課金なし」「転送量無制限」を明示しています。一方、契約更新simulationは共有スタンダードと12か月を
 選択しても`--円/月`のままで、更新時請求総額を確定できませんでした。したがって転送量は数値上限なしの
@@ -361,6 +365,14 @@ Human確認済み11 fieldのうちknown 4、unknown 6、not_applicable 1で、�
 allowlistし、review未完了、field欠落、別host、tracking URLは全表示をfail-closedで拒否する。
 zero-input計算機には価格を投入せず「未確認」行として順位から除外するため、canonical価格、TCO、用途判定、
 記事承認、index、CTAのHOLDは変わらない。SVR02–SVR20も従来どおり値なし・noindex・CTA無効である。
+
+2026-08-14、公式料金画面を再確認し、共有スタンダード12か月の一括前払50,160円（税込）と
+初期費用16,500円（税込）の表示をread-onlyで確認した。一方、保存済みHuman承認contractでは両fieldが
+`time_limited_promo`に分類されており、rights model v2.3はこの分類を計算HOLDとする。したがって個別表示値は
+証拠表へ維持するが、価格本体とキャンペーンの関係をHumanが再確認するまで66,660円の合算を本文・計算機・
+構造化データへ出さないようfail-closedを強化した。更新時請求額、domain特典価値、compute上限、用途適合も
+unknownのままであり、TCO・順位・推奨・article approval・index・CTAはHOLDを維持する。過渡的に作成した
+66,660円をmaterial claimとする3稿はrelease evidenceへ採用せず、価格分類確定後に再生成する。
 
 同日、拡張需要のHuman export用として、CRM残り10、forms 40、email marketing 40、SEO追加60を
 凍結slateからquery-only textへ生成する`prepare-kwfinder-upload`を追加した。出力は固定P18 scope外の

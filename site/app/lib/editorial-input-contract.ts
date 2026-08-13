@@ -107,9 +107,20 @@ export type ServerCandidateEvidence = {
   unknownCount: number;
   notApplicableCount: number;
   fields: EditorialContract["numeric_fields"];
+  initialPayment: ServerInitialPaymentProjection | null;
   calculatorContract: ServerZeroInputContract;
   tcoBlockers: readonly string[];
   suitabilityBlockers: readonly string[];
+};
+
+export type ServerInitialPaymentProjection = {
+  amount: string;
+  annualCheckoutTotal: string;
+  initialFee: string;
+  currency: string;
+  taxTreatment: "included" | "excluded";
+  observedOn: string;
+  nextReviewOn: string;
 };
 
 export const serverEvidenceLabels: Readonly<Record<string, string>> = {
@@ -1619,6 +1630,66 @@ function earliestServerEvidenceDay(values: readonly (string | null | undefined)[
   return days.length ? [...days].sort()[0] ?? null : null;
 }
 
+function addUnsignedDecimals(left: string, right: string): string | null {
+  const decimalPattern = /^(?:0|[1-9]\d*)(?:\.\d+)?$/;
+  if (!decimalPattern.test(left) || !decimalPattern.test(right)) return null;
+  const [leftInteger, leftFraction = ""] = left.split(".");
+  const [rightInteger, rightFraction = ""] = right.split(".");
+  const scale = Math.max(leftFraction.length, rightFraction.length);
+  const leftMinor = BigInt(`${leftInteger}${leftFraction.padEnd(scale, "0")}`);
+  const rightMinor = BigInt(`${rightInteger}${rightFraction.padEnd(scale, "0")}`);
+  const total = (leftMinor + rightMinor).toString().padStart(scale + 1, "0");
+  if (scale === 0) return total;
+  const integer = total.slice(0, -scale);
+  const fraction = total.slice(-scale).replace(/0+$/, "");
+  return fraction ? `${integer}.${fraction}` : integer;
+}
+
+/**
+ * Derive only the amount charged at a new annual contract checkout.
+ * This is deliberately narrower than TCO: renewal, cashback, domain value,
+ * and suitability stay unknown and cannot enter ranking or recommendations.
+ */
+export function serverInitialPaymentProjection(
+  fields: readonly EditorialContract["numeric_fields"][number][],
+): ServerInitialPaymentProjection | null {
+  const initial = fields.find((field) => field.field === "pricing.initial_fee");
+  const annual = fields.find((field) => field.field === "pricing.base_price");
+  if (!initial || !annual) return null;
+  if (
+    initial.value_status !== "known"
+    || annual.value_status !== "known"
+    || initial.review_status !== "approved"
+    || annual.review_status !== "approved"
+    || initial.currency_status !== "known"
+    || annual.currency_status !== "known"
+    || !initial.currency
+    || initial.currency !== annual.currency
+    || initial.billing_period !== "one_time"
+    || annual.billing_period !== "annual"
+    || annual.observed_price_basis !== "checkout_billed_total"
+    || !["none", "annual_discount_permanent"].includes(initial.sale_banner_state ?? "")
+    || !["none", "annual_discount_permanent"].includes(annual.sale_banner_state ?? "")
+    || !initial.value
+    || !annual.value
+    || initial.tax_treatment !== annual.tax_treatment
+    || !["included", "excluded"].includes(initial.tax_treatment ?? "")
+  ) return null;
+  const amount = addUnsignedDecimals(initial.value, annual.value);
+  const observedOn = latestServerEvidenceDay([initial.observed_on, annual.observed_on]);
+  const nextReviewOn = earliestServerEvidenceDay([initial.next_review_on, annual.next_review_on]);
+  if (!amount || !observedOn || !nextReviewOn) return null;
+  return {
+    amount,
+    annualCheckoutTotal: annual.value,
+    initialFee: initial.value,
+    currency: initial.currency,
+    taxTreatment: initial.tax_treatment as "included" | "excluded",
+    observedOn,
+    nextReviewOn,
+  };
+}
+
 /**
  * Convert a Pydantic-validated candidate artifact into display-only evidence.
  * The resulting calculator row is deliberately unknown and unranked: candidate
@@ -1674,6 +1745,7 @@ export function reviewedServerCandidateEvidence(
     unknownCount: fields.filter((field) => field.value_status === "unknown").length,
     notApplicableCount: fields.filter((field) => field.value_status === "not_applicable").length,
     fields,
+    initialPayment: serverInitialPaymentProjection(fields),
     tcoBlockers: assessment.tcoBlockers,
     suitabilityBlockers: assessment.suitabilityBlockers,
     calculatorContract: {

@@ -375,9 +375,9 @@ def _external_action_queue(
         and "time_limited_promo" in adoption
     ):
         actions.append({
-            "label": "SVR01の通常価格・更新額・campaign適用期間を公式画面で再確認",
+            "label": "SVR01の価格本体・キャンペーン分類を再確認",
             "status": "human_official_price_observation_required",
-            "token": "server_price_input: done SVR01",
+            "token": "svr01_candidates: corrections pricing.initial_fee.sale_banner_state=<class>,pricing.base_price.sale_banner_state=<class>",
         })
     unreviewed_contracts = [
         article_id
@@ -743,7 +743,7 @@ def _regenerate(
         dynamic_risks.append({
             "riskId": "server-candidate-only",
             "level": "warn",
-            "label": "servers価格はcandidate-only。記事承認・index・partner別CTAは未実行",
+            "label": "SVR01は年次表示50,160円・初期費用16,500円を個別確認済み。期間限定分類のため合算・TCO・記事承認・index・CTAは未実行",
         })
     if server_partner_policy["warning"]:
         dynamic_risks.append({

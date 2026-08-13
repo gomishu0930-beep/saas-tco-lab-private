@@ -164,14 +164,14 @@ const serverReviewVoices = ["analyst", "editor", "skeptical_buyer"] as const;
 const serverArticleSeeds = [
   {
     id: "SVR01", slug: "business-server-pricing", topic: "法人向け料金", sourceQuery: "法人向け サーバー 料金", queryMatch: "exact",
-    titleTemplate: "法人向けサーバー料金: 初期費用・更新料込み12か月TCO",
-    readerQuestion: "法人用途で必要な費用を含む初年度総額はいくらか",
+    titleTemplate: "法人向けサーバー料金: XServerビジネスの年次表示額・初期費用と未確認条件",
+    readerQuestion: "新規12か月契約の表示額と、総額計算前に残る未確認条件は何か",
     state: "candidate_only", reviewVoices: serverReviewVoices,
     sections: [
-      { title: "結論", focus: "確認済みの初年度総額と選択条件" },
+      { title: "結論", focus: "確認済みの年次表示額・初期費用と計算停止理由" },
       { title: "比較前提", focus: "用途・契約期間・必要容量・転送量" },
       { title: "料金と上限", focus: "初期費用・基本料金・容量・転送・backup" },
-      { title: "12か月TCO", focus: "通常料金と期間限定料金を分離した合計" },
+      { title: "12か月の表示額", focus: "通常料金と期間限定表示を分離し、未承認の合算を行わない" },
       { title: "反証", focus: "税・更新・特典条件・超過費用の未確認項目" },
       { title: "選び方", focus: "最安ではなく用途条件を満たす候補" },
     ],

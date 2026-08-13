@@ -181,6 +181,8 @@ test("servers launch slate fixes twenty long-tail candidates and defers big-word
   assert.ok(serverArticleSlate.every((article) => article.queryMatch === "exact"));
   assert.match(serverArticleSlate.find((article) => article.id === "SVR05").titleTemplate, /2年目料金/);
   assert.match(serverArticleSlate.find((article) => article.id === "SVR06").titleTemplate, /二重支払い/);
+  assert.match(serverArticleSlate.find((article) => article.id === "SVR01").titleTemplate, /年次表示額・初期費用と未確認条件/);
+  assert.doesNotMatch(serverArticleSlate.find((article) => article.id === "SVR01").titleTemplate, /更新料込み|TCO/);
   const firstWaveQueries = new Set(serverArticleSlate.map((article) => article.sourceQuery));
   for (const hub of serverBigWordHubs) {
     assert.equal(hub.state, "deferred_internal_link_hub");

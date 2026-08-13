@@ -19,6 +19,7 @@ import {
   reusableEditorialEvidence,
   secondsToDecimalHours,
   serverEvidenceValue,
+  serverInitialPaymentProjection,
   summedObservationHours,
   validateEditorialInput,
   valuesFromContract,
@@ -729,6 +730,20 @@ test("reviewed servers evidence is display-only, unranked, and host constrained"
   assert.equal(evidence.calculatorContract.plans[0].serverTerms, null);
   assert.ok(evidence.tcoBlockers.length > 0);
   assert.ok(evidence.suitabilityBlockers.length > 0);
+  assert.equal(evidence.initialPayment, null);
+
+  const permanentDisplay = structuredClone(approvedServerCandidate.numeric_fields);
+  permanentDisplay.find((field) => field.field === "pricing.initial_fee").sale_banner_state = "none";
+  permanentDisplay.find((field) => field.field === "pricing.base_price").sale_banner_state = "annual_discount_permanent";
+  assert.deepEqual(serverInitialPaymentProjection(permanentDisplay), {
+    amount: "66660",
+    annualCheckoutTotal: "50160",
+    initialFee: "16500",
+    currency: "JPY",
+    taxTreatment: "included",
+    observedOn: "2026-08-08",
+    nextReviewOn: "2026-09-06",
+  });
 
   const basePrice = evidence.fields.find((field) => field.field === "pricing.base_price");
   const renewal = evidence.fields.find((field) => field.field === "pricing.renewal_fee");
@@ -736,6 +751,14 @@ test("reviewed servers evidence is display-only, unranked, and host constrained"
   assert.equal(serverEvidenceValue(basePrice), "JPY 50160 / yr");
   assert.equal(serverEvidenceValue(renewal), "未確認");
   assert.match(serverEvidenceValue(transfer), /^該当なし/);
+
+  const mixedCurrency = structuredClone(approvedServerCandidate.numeric_fields);
+  mixedCurrency.find((field) => field.field === "pricing.initial_fee").currency = "USD";
+  assert.equal(serverInitialPaymentProjection(mixedCurrency), null);
+
+  const wrongBasis = structuredClone(approvedServerCandidate.numeric_fields);
+  wrongBasis.find((field) => field.field === "pricing.base_price").observed_price_basis = "displayed_price";
+  assert.equal(serverInitialPaymentProjection(wrongBasis), null);
 
   const unreviewed = structuredClone(approvedServerCandidate);
   unreviewed.numeric_fields[0].review_status = "unreviewed";

@@ -305,7 +305,12 @@ test("servers operator and all twenty article routes remain candidate-only and f
       assert.match(article, /確認済み(?:<!-- -->)?4(?:<!-- -->)?項目、未確認(?:<!-- -->)?6(?:<!-- -->)?項目、[\s\S]{0,40}該当なし(?:<!-- -->)?1(?:<!-- -->)?項目/, path);
       assert.match(article, /data-ranking-eligible="false"[\s\S]{0,400}<strong>未確認<\/strong>/, path);
       assert.match(article, /JPY 50160 \/ yr/, path);
-      assert.match(article, /期間限定表示と更新額未確認が残るため、総額・順位・推奨は表示しません/, path);
+      assert.match(article, /年次請求50,160 JPYと初期費用16,500 JPYは個別の確認値/, path);
+      assert.match(article, /合算値を本文・計算機・構造化データへ出しません/, path);
+      assert.doesNotMatch(article, /66,?660/, path);
+      assert.match(article, /合算総額・TCO・順位・推奨は表示しません/, path);
+      assert.match(article, /他社より安いとは断定せず/, path);
+      assert.match(article, /価格本体とキャンペーンの関係をHumanが再確認/, path);
       assert.match(article, /href="https:\/\/business\.xserver\.ne\.jp\//, path);
     } else {
       assert.match(article, /承認済みのservers価格contractはまだありません/, path);

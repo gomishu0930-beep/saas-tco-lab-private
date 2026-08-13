@@ -10,8 +10,8 @@ domain GOからindex GOやCTA GOを推論しない。
 P11だけが2026年9月・10月の完全暦月データ待ちです。
 Search Console domain propertyと専用GA4 streamも連携済みです。serversはSVR01
 candidate-only contractをlocal保存済みで、XServerビジネス、ロリポップ、ABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
-SVR01のlocal標本では確認済み11 fieldを証拠表として表示するが、期間限定表示・更新額・用途条件が未確認のため
-価格のcanonical採用・TCO・順位・servers記事公開は未完了。Xは`@saastcolab`でP01初回スレッド8件を公開済みです。
+SVR01のlocal標本では確認済み11 fieldを証拠表として表示します。年次表示50,160円と初期費用16,500円は
+個別の確認値ですが、両fieldが`time_limited_promo`分類のため合算値を確定せず、TCO・順位・servers記事公開も未完了です。Xは`@saastcolab`でP01初回スレッド8件を公開済みです。
 X API connectorは2026-08-13のread-only照合でSaaS専用accountではないbindingを返したため使用停止中で、
 Safari上のSaaS専用運用と混ぜません。
 
@@ -49,7 +49,7 @@ Safari上のSaaS専用運用と混ぜません。
 |バリューコマース本登録完了|`valuecommerce_registration: done`|`valuecommerce_registration: done`|本登録案内メールの期限内URLからHumanが手続きを完了した後、ABLENET候補の個別条件をread-onlyで再確認|
 |servers候補入力|`server_price_input: done <SVR-ID>`|`server_price_input: done SVR01`|`/operator/servers/`の候補値をHumanが確認し、確定ボタンを押して保存したcandidate-only JSONをlocal検証。公開・CTAには効かない|
 |SVR01公式画面候補の確認|`svr01_candidates: confirm_all` または `svr01_candidates: corrections <field>: <value>`|`svr01_candidates: confirm_all`|`/operator/servers/`の「公式画面の確認候補」9件をHuman本人が読み、すべて正しければ一括確認、相違があればfield単位で訂正する。確認前はcontract・TCO・順位・記事・CTAへ採用しない|
-|servers記事承認|`article_approve: <SVR-ID>`|`article_approve: SVR01`|TCO・用途判定・Human確認がすべてREADYの本文だけを承認。index・CTAには効かない|
+|servers記事承認|`article_approve: <SVR-ID>`|`article_approve: SVR01`|当該本文が扱うmaterial claimとHuman確認がREADYの場合だけ承認。SVR01は価格表示分類の再確認前はHOLD。index・CTAには効かない|
 |servers destination設定完了|`server_destination_configured: done <partner-id,...>`|`server_destination_configured: done a8net-xserver-business`|ASP正規画面で取得した広告linkをruntime secretへ設定した事実だけを通知。URL・tracking ID・secret値は返信・repo保存しない|
 |servers記事index|`index_go: GO <SVR-ID> / HOLD <SVR-ID>`|`index_go: GO SVR01`|Human承認済みの列挙記事だけをindex対象へ加える。CTAには効かない|
 |servers partner CTA|`server_cta_go: GO <SVR-ID> partners=<partner-id,...> / HOLD <SVR-ID>`|`server_cta_go: GO SVR01 partners=a8net-xserver-business`|記事承認・index・現行提携・runtime destination・開示先行が全て成立した列挙partnerだけを有効化。未列挙partnerと未承認記事は無効|
