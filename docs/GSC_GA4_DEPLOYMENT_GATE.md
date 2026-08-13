@@ -131,6 +131,11 @@ analytics scope拡張をこの承認へ含めない。
   308を挟む不一致を全11記事で確認した。公開対象を増やさず内部link、`og:url`、embed URLをcanonical形式へ
   統一し、robotsへ`Allow: /$`を追加した。これはhomeをindex対象へ追加する変更ではなく、Googleが既に把握した
   旧HTTP homeのredirect先をcrawlしてnoindexを読めるようにするための限定修正である。
+- 修正版をSites version 24へ公開した。外部read-backでsitemapの11 URLすべてがHTTP 200、`index, follow`、
+  self-canonical、同一の`og:url`、redirectを挟まない内部linkを満たし、参照assetもHTTP 200だった。P11は
+  noindex・canonicalなし・CTAなし、P01は開示先行・Mangools CTA・`rel=sponsored noopener noreferrer`を維持した。
+  Search Consoleでは旧HTTP homeのrobots警告について修正検証を開始し、開始日2026-08-14をread-backした。
+  検証完了や記事index完了とは扱わない。
 
 ## GO後の実行と合格条件
 
