@@ -345,8 +345,20 @@ const DATA = {
       "label": "約8本・Impact・W6・ASP申請可能状態"
     },
     {
+      "date": "2026-09-01",
+      "label": "P11導入前月の完全暦月計測開始"
+    },
+    {
+      "date": "2026-10-01",
+      "label": "P11導入後月の完全暦月計測開始"
+    },
+    {
       "date": "2026-10-31",
       "label": "現ニッチ90日固定判定・カテゴリ別判断"
+    },
+    {
+      "date": "2026-11-01以降",
+      "label": "P11の2完全暦月を比較しcontract候補化"
     },
     {
       "date": "2026-11",
@@ -371,6 +383,11 @@ const DATA = {
       "riskId": "editorial-coverage",
       "level": "warn",
       "label": "編集記事は11/12承認。未承認記事はnoindex・CTA無効を維持"
+    },
+    {
+      "riskId": "gsc-processing",
+      "level": "warn",
+      "label": "GSCはsitemap 10/11検出・P01登録要求一時エラー。通常クロール待ち"
     },
     {
       "riskId": "server-candidate-only",
@@ -481,6 +498,12 @@ const DATA = {
   "externalActions": [
     {
       "priority": 1,
+      "label": "SVR01の通常価格・更新額・campaign適用期間を公式画面で再確認",
+      "status": "human_official_price_observation_required",
+      "token": "server_price_input: done SVR01"
+    },
+    {
+      "priority": 2,
       "label": "P11のHuman確認済み実測（Operator timer準備済み）",
       "status": "owned_data_waiting",
       "token": "article_evidence: pending P11"

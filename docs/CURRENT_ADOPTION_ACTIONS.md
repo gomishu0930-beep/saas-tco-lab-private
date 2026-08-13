@@ -145,7 +145,8 @@ business purposeの需要判断に限定し、volumeのsafe-summaryだけをrepo
 2026-08-09、Humanが完了したcheckout後の正規Dashboardをread-onlyで確認し、
 **Mangools Basic契約有効化済み**と記録した。credential、認証URL、請求手段、invoice、個人情報は
 保存していない。残りqueryの取得は引き続きHuman exportに限定し、API・browser自動取得へは拡張しない。
-export完了後の更新停止は、Human本人がsubscription画面で実行するまで未完了である。
+残りqueryは2026-08-13までにHuman export・検証を完了した。2026-08-14にsubscriptionの自動更新を停止し、
+2026-09-10まで利用可能であることを正規plan画面でread-back済みである。追加Human操作は不要である。
 
 ## Affiliate提携とrights回答の現在地
 
@@ -441,6 +442,13 @@ allowlistは11記事で一致した。
 2026-08-14、Human Approverからexact token `contract_approve: GO P09`を受領し、2026-08-13観測contractの
 値・scopeを明示的に追認した。新しい値、公開対象、CTA scopeは追加していない。
 P11は月途中を外挿せず、2026年9月の導入前月と10月の導入後月を完全に計測してから候補化する。
+
+同日の公開後監視では、Gmailに新しい実質回答・Affiliate承認・情報要求はなく、既知のImpact却下通知と
+本人操作に対応するlogin通知だけを確認した。送信、既読化、label変更、archiveは行っていない。GSCは
+検索clicks 0、登録済み1、未登録3、sitemap成功・最終読込2026-08-13・検出10で、公開sitemap 11 URLへの
+追随待ちである。GA4は過去28日で`page_view` 10、`qualified_session` 8、`outbound_click`行なし、
+Realtime 0だった。実装確認訪問を分離できないため需要・CVR・収益へ算入しない。公開read-backでは
+sitemapとrobots allowlistは承認済み11記事で一致し、P09はindex・CTA有効、P11はnoindex・CTA無効を維持した。
 
 2026-08-12、SafariでHuman本人認証が完了し、もしもの残り3program（シンレンタルサーバー、ConoHa WING、
 お名前.com レンタルサーバー）を正規検索画面でread-backした。Humanからprogram名付きの

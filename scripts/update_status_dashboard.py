@@ -369,6 +369,16 @@ def _external_action_queue(
             "status": "human_field_attestation_required",
             "token": "svr01_candidates: confirm_all / corrections <field>: <value>",
         })
+    if (
+        "11 fieldをfield-review済みに更新" in adoption
+        and "基本料金自体も" in adoption
+        and "time_limited_promo" in adoption
+    ):
+        actions.append({
+            "label": "SVR01の通常価格・更新額・campaign適用期間を公式画面で再確認",
+            "status": "human_official_price_observation_required",
+            "token": "server_price_input: done SVR01",
+        })
     unreviewed_contracts = [
         article_id
         for article_id in PILOT_IDS
@@ -606,6 +616,7 @@ def _regenerate(
     cta_count = sum(value in {"GO", "DONE"} for value in state["affiliate_cta"].values())
     domain_state = state["domain_state"]
     index_state = state["index_state"]
+    adoption = (root / "docs" / "CURRENT_ADOPTION_ACTIONS.md").read_text(encoding="utf-8")
     data["asOf"] = as_of
     data["reportingPeriod"] = external["period"]
     data["phase"] = (
@@ -694,7 +705,10 @@ def _regenerate(
         {"date": "2026-08 第1週", "label": "P01–P03 Human記事承認"},
         {"date": "2026-08-05", "label": "W6 150 query完了・拡張準備260 query凍結"},
         {"date": "2026-08-31", "label": "約8本・Impact・W6・ASP申請可能状態"},
+        {"date": "2026-09-01", "label": "P11導入前月の完全暦月計測開始"},
+        {"date": "2026-10-01", "label": "P11導入後月の完全暦月計測開始"},
         {"date": "2026-10-31", "label": "現ニッチ90日固定判定・カテゴリ別判断"},
+        {"date": "2026-11-01以降", "label": "P11の2完全暦月を比較しcontract候補化"},
         {"date": "2026-11", "label": "Human予算を720分へ戻すか再判定"},
         {"date": "2026-12-31", "label": "20本・GSC clicks 300/月・confirmed 1件の固定撤退判定"},
     ]
@@ -704,6 +718,7 @@ def _regenerate(
     }
     generated_risk_ids = {
         "editorial-coverage",
+        "gsc-processing",
         "server-candidate-only",
         "server-partner-dependency",
     }
@@ -717,6 +732,12 @@ def _regenerate(
             "riskId": "editorial-coverage",
             "level": "warn",
             "label": f"編集記事は{approved_count}/12承認。未承認記事はnoindex・CTA無効を維持",
+        })
+    if "sitemap成功・最終読込2026-08-13・検出10" in adoption:
+        dynamic_risks.append({
+            "riskId": "gsc-processing",
+            "level": "warn",
+            "label": "GSCはsitemap 10/11検出・P01登録要求一時エラー。通常クロール待ち",
         })
     if server_contract_ready:
         dynamic_risks.append({

@@ -105,8 +105,15 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert all(item["done"] for item in data["work"])
     assert any(item["label"] == "SVR01–SVR20 noindex候補view" for item in data["work"])
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
-    assert [item["priority"] for item in data["externalActions"]] == [1]
-    assert data["externalActions"][0]["status"] == "contract_input_required"
+    assert [item["priority"] for item in data["externalActions"]] == [1, 2]
+    assert any(
+        item["status"] == "human_official_price_observation_required"
+        for item in data["externalActions"]
+    )
+    assert any(
+        item["status"] == "contract_input_required"
+        for item in data["externalActions"]
+    )
     assert all(
         item["status"] != "human_field_attestation_required"
         for item in data["externalActions"]
@@ -118,6 +125,7 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert all("独自domain未取得" not in item["label"] for item in data["risks"])
     assert all("JP/ja需要規模が未検証" not in item["label"] for item in data["risks"])
     assert any(item.get("riskId") == "editorial-coverage" for item in data["risks"])
+    assert any(item.get("riskId") == "gsc-processing" for item in data["risks"])
     assert any(item.get("riskId") == "server-candidate-only" for item in data["risks"])
     assert data["launchQuarter"]["humanBudgetMinutesPerMonth"] == 2000
     assert data["launchQuarter"]["decisionDate"] == "2026-10-31"
@@ -159,6 +167,8 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         "pivotCandidates": ["embed配布", "note有料", "受託"],
     }
     assert data["deadlines"][-1]["date"] == "2026-12-31"
+    assert any(item["date"] == "2026-09-01" for item in data["deadlines"])
+    assert any(item["date"] == "2026-11-01以降" for item in data["deadlines"])
     assert "monthly.csv" not in dashboard.read_text(encoding="utf-8")
 
 
