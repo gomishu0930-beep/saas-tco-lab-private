@@ -309,7 +309,25 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       );
       assert.doesNotMatch(body, /<link\s+rel=["']canonical["']/i, path);
       assert.doesNotMatch(documentHtml, /rel=["'][^"']*sponsored|data-affiliate-cta-partner/i, path);
-      assert.doesNotMatch(documentHtml, /<a\b[^>]*href=["']https?:\/\//i, path);
+      if (path === "/servers/business-server-pricing?candidate=SVR01") {
+        const externalEvidenceLinks = [
+          ...documentHtml.matchAll(/<a\b[^>]*href="(https?:\/\/[^"#?]+)"[^>]*>/gi),
+        ];
+        assert.ok(externalEvidenceLinks.length > 0, `${path}: official evidence links`);
+        for (const [, href] of externalEvidenceLinks) {
+          const evidenceUrl = new URL(href);
+          assert.equal(evidenceUrl.hostname, "business.xserver.ne.jp", `${path}: evidence host`);
+          assert.equal(evidenceUrl.search, "", `${path}: evidence query`);
+          assert.equal(evidenceUrl.hash, "", `${path}: evidence fragment`);
+        }
+        for (const [anchor] of externalEvidenceLinks) {
+          const rel = anchor.match(/\brel="([^"]*)"/i)?.[1]?.split(/\s+/) ?? [];
+          assert.ok(rel.includes("noopener") && rel.includes("noreferrer"), `${path}: evidence rel`);
+          assert.equal(rel.includes("sponsored"), false, `${path}: evidence is not CTA`);
+        }
+      } else {
+        assert.doesNotMatch(documentHtml, /<a\b[^>]*href=["']https?:\/\//i, path);
+      }
       assert.doesNotMatch(documentHtml, /data-saastco-affiliate-cta/i, path);
     }
     const csp = response.headers.get("content-security-policy");
@@ -831,6 +849,38 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   assert.match(body, /href="https:\/\/ck\.jp\.ap\.valuecommerce\.com\/servlet\/referral\?sid=synthetic&amp;pid=synthetic"/);
   assert.equal((body.match(/rel="sponsored noopener noreferrer"/g) ?? []).length, 6);
   assert.doesNotMatch(body, /data-affiliate-cta-partner="mangools"/);
+});
+
+test("SVR01 public preview exposes only individual evidence while index and CTA stay held", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("server-public-preview", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const response = await worker.fetch(
+    new Request("https://saastcolab.jp/servers/business-server-pricing"),
+    {
+      ASSETS: {
+        fetch: async () => new Response("Not found", { status: 404 }),
+      },
+      INDEX_GO: "GO",
+      INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P12",
+      CTA_GO: "GO",
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
+  );
+  assert.equal(response.status, 200);
+  assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i);
+  const body = await response.text();
+  const disclosurePosition = body.indexOf('id="article-pr-disclosure"');
+  const evidencePosition = body.indexOf("年次請求50,160 JPYと初期費用16,500 JPY");
+  assert.ok(disclosurePosition >= 0 && disclosurePosition < evidencePosition);
+  assert.match(body, /合算値を本文・計算機・構造化データへ出しません/);
+  assert.doesNotMatch(body, /66,?660/);
+  assert.match(body, /data-ranking-eligible="false"[\s\S]{0,400}<strong>未確認<\/strong>/);
+  assert.match(body, /data-server-affiliate-cta-state="disabled"/);
+  assert.doesNotMatch(body, /rel="sponsored noopener noreferrer"/);
 });
 
 test("server query variants and incomplete partner gates remain fail-closed", async () => {

@@ -12,7 +12,6 @@ import {
 } from "../../lib/editorial-input-contract";
 import { serverArticleSlate, serverCtaPresentationPolicy } from "../../lib/pilot-pages";
 
-const localRuntime = process.env.SAAS_RUNTIME_MODE !== "production";
 const svr01Evidence = reviewedServerCandidateEvidence(
   savedSvr01Candidate,
   "XServerビジネス 共有スタンダード（12か月）",
@@ -46,7 +45,7 @@ export async function generateMetadata({ searchParams }: ServerCandidatePageProp
 
 export default async function BusinessServerPricingPage({ searchParams }: ServerCandidatePageProps) {
   const article = await requestedArticle(searchParams);
-  const evidence = localRuntime && article.id === "SVR01" ? svr01Evidence : null;
+  const evidence = article.id === "SVR01" ? svr01Evidence : null;
   const initialPayment = evidence?.initialPayment;
   const evidenceValue = (fieldName: string) => {
     const field = evidence?.fields.find((item) => item.field === fieldName);
