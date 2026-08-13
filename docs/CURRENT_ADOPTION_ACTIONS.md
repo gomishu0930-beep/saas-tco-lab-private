@@ -1,6 +1,6 @@
 # 現時点の導入 — あなたの操作表
 
-基準日: 2026-08-13（Asia/Tokyo）
+基準日: 2026-08-14（Asia/Tokyo）
 
 2026-07-28のHuman decision `DR-2026-07-28-REVENUE-TRACK`により、P0–P18はmaintenance only、
 人手予算はlaunch trackへ全振りする。rights model v2では、自動取得・価格DB・履歴DBはstrict gateを
@@ -37,9 +37,9 @@ field-level書面許諾をlaunch blockerにしない。
 |A-H07|Affiliate承認後|各partnerからexportを本人取得可能にする|`affiliate_export_ready: <partner>`|safe summary、status mapping、settlement reconcile|tracking ID、税務/受取情報|
 |A-H08|見送り|Notionを使うか決める|2026-07-26 `notion: skip`|GitHubを技術正本として継続。運用上の必要が実証された時だけ再評価|個人workspace全体|
 |A-H09|100 evaluated runs後|ClaudeまたはGeminiの比較課金を承認|`challenger_budget: GO <provider>`|10–20%標本benchmarkを実行|API key、非公開契約|
-|A-H10|editorial production稼働|Sitesを公開originとして採用し、rights model v2のHuman editorial laneだけを本番化|2026-07-26 public-prelaunch GOと後続のdomain・記事・index・CTA・deploy承認|10記事の外部readbackとfail-closed経路を継続監視。automated data pathはGate A–Cまで停止|cloud root credential|
+|A-H10|editorial production稼働|Sitesを公開originとして採用し、rights model v2のHuman editorial laneだけを本番化|2026-07-26 public-prelaunch GOと後続のdomain・記事・index・CTA・deploy承認|11記事の外部readbackとfail-closed経路を継続監視。automated data pathはGate A–Cまで停止|cloud root credential|
 |A-H11|進行中 — 12/12入力・11/12承認・11/12公開|Human確認済み価格をvendor・plan別に入力し、Humanシナリオを分離してP01–P12を確認|P01–P10・P12を承認済みかつindex・Mangools CTA対象として外部read-back済み|P11は完全暦月の自データ待ちでnoindex・CTA無効を維持|raw本文、PII、credential、tracking ID|
-|A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|10記事releaseのdomain・redirect・計測境界を維持する|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
+|A-H12|完了|`saastcolab.jp`の新規登録、Sites指定DNS、自動更新を完了する|2026-08-02 `domain: GO saastcolab.jp`受領。登録完了（有効期限2027-08-31）、Sites指定の4 recordをValue Domainへ保存し、個別domain設定の自動更新をON。2026-08-03にHTTPS/noindex read-back、GSC domain property所有確認、GA4 streamの新origin更新、旧originから同一path/queryへの1段301、Impact websiteのConnected確認を完了。拡張計測OFF、保持14か月、任意data sharing全OFF、internal filter test、同意前tag未読込、redirect loopなしを確認済み|11記事releaseのdomain・redirect・計測境界を維持する|registrar credential、住所、電話、メール、支払情報、DNS record値、verification値、GA4識別子|
 |A-H13|完了 — v1.1分類済み|KWFinder正規画面からJP/ja CSVをHuman exportする|2026-08-05 batch-e/fを含む150件をexport・検証済み|rawをrepositoryへ保存せず、known/no_data/rejectedを分離したsafe-summaryだけを扱う|account情報、raw CSVのrepo保存、no_dataの0補完|
 |A-H14|完了 — 11記事index境界確認済み|index解除対象を確定する|2026-08-03 `index_go: GO`、2026-08-08〜13の最優先タスク一括承認を受領|承認済みP01–P10・P12だけindex可。P11と他HTML routeはnoindex|verification・tracking ID|
 
@@ -247,8 +247,10 @@ safe-summaryは既存のカテゴリ表へ記録しました。CRM用として�
 凍結slate再監査で40語との完全一致に失敗しました。query別値や部分合計は採用せず、CRMは0/40の未観測へ戻して
 全40語を再exportします。forms、email_marketing、SEO追加60語も引き続き未観測です。
 同日の再試行では、KWFinder正規画面が検索枠の単純な日次resetではなく`plan upgrade required`を表示しました。
-残りはCRM 40、forms 40、email_marketing 40、SEO追加60の計180語です。自動upgradeや課金は行わず、
-Basic月払い61.00 USDを上限とする1か月利用とexport後の自動更新停止について、exact Human支払承認を待ちます。
+Humanのexact承認に基づきBasic月払いを有効化し、2026-08-13までにCRM 40、forms 40、
+email_marketing 40、SEO追加60の計180語をHuman export・行単位検証しました。2026-08-14に正規のplan画面で
+自動更新を停止し、`Auto-renewal has been disabled`と2026-09-10までの利用可能状態をread-backしました。
+支払手段その他の請求情報は保存していません。
 
 Z6–Z7としてservers記事の計算機をzero-inputへ固定しました。記事には承認済みcontractから事前計算する
 総額表と、12/24/36か月・用途区分のbuttonだけを置き、金額、seat、価格基準、税区分の入力欄は置きません。
@@ -436,6 +438,8 @@ Humanはcontract候補を確定し、継続指示「承認系に関してはす�
 `CHECK-ALL: PASS`後のcommit `4e95a0a`をSitesへ公開し、P09は`index, follow`・canonical・開示先行Mangools CTA、
 送客host `mangools.com`、`rel="sponsored noopener noreferrer"`を外部read-back済みである。公開sitemapとrobots
 allowlistは11記事で一致した。
+2026-08-14、Human Approverからexact token `contract_approve: GO P09`を受領し、2026-08-13観測contractの
+値・scopeを明示的に追認した。新しい値、公開対象、CTA scopeは追加していない。
 P11は月途中を外挿せず、2026年9月の導入前月と10月の導入後月を完全に計測してから候補化する。
 
 2026-08-12、SafariでHuman本人認証が完了し、もしもの残り3program（シンレンタルサーバー、ConoHa WING、
