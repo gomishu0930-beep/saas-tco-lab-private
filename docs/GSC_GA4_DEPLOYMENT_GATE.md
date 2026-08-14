@@ -139,6 +139,14 @@ analytics scope拡張をこの承認へ含めない。
 - 同日、SVR01のHuman確認済み個別証拠だけをSites version 25へ反映した。server routeはHTTP header/metaとも
   `noindex, nofollow, noarchive, nosnippet`、canonicalなし、CTAなし、sponsored linkなしで、sitemap 11 URLと
   robots allowlistにも追加していない。したがってSearch Consoleのindex対象、既存11記事、P11の境界に変更はない。
+- 同日後続のHuman再観測で通常料金と期間限定cashbackを分離し、SVR01 v3の契約時請求額66,660円を承認した。
+  `CHECK-ALL: PASS`後、Sites version 26でSVR01だけをserver index allowlistへ追加した。外部read-backで
+  SVR01はHTTP 200、`index, follow`、self-canonical、Product/Offer・FAQ・Breadcrumb JSON-LDを満たした。
+  sitemapとrobots allowlistはP記事11本+SVR01の12 URLで一致し、P11はnoindex・canonicalなし・CTAなしを維持する。
+  server runtime destinationは未設定のため、SVR01のserver CTAとsponsored linkは0件である。GSCの集計画面は
+  最終更新2026-08-07・登録済み1・未登録3のままで、公開12 URLのindex完了とは扱わない。
+- 同日のGSC sitemap再確認でも、既存submissionは`成功しました`、最終読み込み2026-08-13、検出10ページ、
+  検出動画0だった。公開sitemap 12 URLとの差2件を失敗理由へ補完せず、再送信・URL登録要求・設定変更は行わない。
 
 ## GO後の実行と合格条件
 

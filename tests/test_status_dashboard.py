@@ -95,7 +95,7 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     data = _dashboard_data(dashboard)
     assert data["reportingPeriod"] == "2026-07"
     assert {item["label"]: item["value"] for item in data["kpis"]} == {
-        "公開記事数": 0,
+        "公開記事数": 1,
         "インデックス数": 2,
         "GSC clicks(月)": 3,
         "Outbound clicks(月)": 4,
@@ -109,8 +109,8 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     )
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
     assert [item["priority"] for item in data["externalActions"]] == [1, 2]
-    assert any(
-        item["status"] == "human_official_price_observation_required"
+    assert all(
+        item["status"] != "human_official_price_observation_required"
         for item in data["externalActions"]
     )
     assert any(
@@ -129,7 +129,18 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert all("JP/ja需要規模が未検証" not in item["label"] for item in data["risks"])
     assert any(item.get("riskId") == "editorial-coverage" for item in data["risks"])
     assert any(item.get("riskId") == "gsc-processing" for item in data["risks"])
-    assert any(item.get("riskId") == "server-candidate-only" for item in data["risks"])
+    assert any(item.get("riskId") == "server-launch" for item in data["risks"])
+    assert data["serverLaunch"] == {
+        "approvedArticles": 1,
+        "deployedArticles": 1,
+        "indexApprovedArticles": 1,
+        "ctaEnabledPartners": 0,
+        "ctaHeldPartners": 6,
+    }
+    assert any(
+        item["status"] == "asp_os_authentication_or_destination_required"
+        for item in data["externalActions"]
+    )
     assert data["launchQuarter"]["humanBudgetMinutesPerMonth"] == 2000
     assert data["launchQuarter"]["decisionDate"] == "2026-10-31"
     assert data["launchQuarter"]["scopeExpansion"] == {
@@ -222,7 +233,7 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     result = _run(dashboard, state, contracts, "--no-prompt")
     assert result.returncode == 0, result.stderr
     data = _dashboard_data(dashboard)
-    assert data["kpis"][0]["value"] == 0
+    assert data["kpis"][0]["value"] == 1
     assert data["lane"][1]["status"] == "1/12入力・0/12承認"
 
     approved_contract = contract.model_copy(
@@ -234,7 +245,7 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     result = _run(dashboard, state, contracts, "--no-prompt")
     assert result.returncode == 0, result.stderr
     data = _dashboard_data(dashboard)
-    assert data["kpis"][0]["value"] == 0
+    assert data["kpis"][0]["value"] == 1
     assert data["lane"][1]["status"] == "1/12入力・1/12承認"
 
     raw_state["deployed_articles"].append("P12")
@@ -243,8 +254,8 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     result = _run(dashboard, state, contracts, "--no-prompt")
     assert result.returncode == 0, result.stderr
     data = _dashboard_data(dashboard)
-    assert data["kpis"][0]["value"] == 1
-    assert data["phase"] == "公開後成長運転—1記事公開・11記事証拠/承認待ち"
+    assert data["kpis"][0]["value"] == 2
+    assert data["phase"] == "公開後成長運転—2記事公開・P記事11本証拠/承認待ち"
 
 
 def test_pending_p06_p07_review_cards_are_contract_driven(tmp_path: Path) -> None:

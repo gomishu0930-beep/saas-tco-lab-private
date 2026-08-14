@@ -152,13 +152,13 @@
 const DATA = {
   "asOf": "2026-08-14",
   "reportingPeriod": "2026-07",
-  "phase": "公開後成長運転—11記事公開・1記事証拠/承認待ち",
+  "phase": "公開後成長運転—12記事公開・P記事1本証拠/承認待ち",
   "kpis": [
     {
       "label": "公開記事数",
-      "value": 11,
-      "target": 12,
-      "sub": "入力 12/12・承認 11/12"
+      "value": 12,
+      "target": 20,
+      "sub": "P記事 11本・servers 1本"
     },
     {
       "label": "インデックス数",
@@ -380,6 +380,11 @@ const DATA = {
       "label": "X API connectorはSaaS専用accountではないため使用停止。SafariのSaaS運用と分離"
     },
     {
+      "riskId": "server-candidate-only",
+      "level": "warn",
+      "label": "SVR01は個別証拠をnoindex公開済み。期間限定分類のため合算・TCO・記事承認・index・CTAは未実行"
+    },
+    {
       "riskId": "editorial-coverage",
       "level": "warn",
       "label": "編集記事は11/12承認。未承認記事はnoindex・CTA無効を維持"
@@ -390,9 +395,9 @@ const DATA = {
       "label": "GSCはsitemap 10/11検出・P01登録要求一時エラー。通常クロール待ち"
     },
     {
-      "riskId": "server-candidate-only",
+      "riskId": "server-launch",
       "level": "warn",
-      "label": "SVR01は個別証拠をnoindex公開済み。期間限定分類のため合算・TCO・記事承認・index・CTAは未実行"
+      "label": "SVR01は承認・index対象として公開済み。runtime destination未設定のためservers CTAは0件"
     }
   ],
   "launchQuarter": {
@@ -498,9 +503,9 @@ const DATA = {
   "externalActions": [
     {
       "priority": 1,
-      "label": "SVR01の価格本体・キャンペーン分類を再確認",
-      "status": "human_official_price_observation_required",
-      "token": "svr01_candidates: corrections pricing.initial_fee.sale_banner_state=<class>,pricing.base_price.sale_banner_state=<class>"
+      "label": "承認済みservers 6案件のruntime destination設定",
+      "status": "asp_os_authentication_or_destination_required",
+      "token": "asp_reauth: done <A8.net|もしも|バリューコマース>"
     },
     {
       "priority": 2,
@@ -527,7 +532,14 @@ const DATA = {
       "reviewState": "evidence_required",
       "token": "article_evidence: pending P11"
     }
-  ]
+  ],
+  "serverLaunch": {
+    "approvedArticles": 1,
+    "deployedArticles": 1,
+    "indexApprovedArticles": 1,
+    "ctaEnabledPartners": 0,
+    "ctaHeldPartners": 6
+  }
 };
 // DASHBOARD_DATA_END
 

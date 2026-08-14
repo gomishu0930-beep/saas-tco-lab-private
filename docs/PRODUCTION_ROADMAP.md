@@ -70,6 +70,11 @@ Gate D、3社×6プランgold set、C1–C7の合格を入口条件にしない�
 
 L1は`saastcolab.jp`の購入・DNS保存・個別自動更新ON・TLS read-back・GSC所有確認・GA4新origin更新・旧originの1段301・Impact Connected確認まで完了した。P01–P03は2026-08-03に本文・TCO承認、index GO、Mangools CTA GOを満たした。P06/P07は2026-08-08、P04/P08/P10/P12は2026-08-09、P05は2026-08-11、P09は2026-08-13に同じrelease境界で本番反映した。11記事のindex・CTA・sitemap境界を外部read-back済みである。P11は完全暦月の実測待ちでnoindex・CTA無効を維持し、Mangools以外のpartner CTAも無効である。
 
+2026-08-14、拡張カテゴリのSVR01を通常のP01–P12枠と分離して承認・index対象へ追加した。確認済みclaimは
+XServerビジネス共有スタンダードの契約時請求66,660円だけであり、24/36か月TCO、更新時料金、順位、推奨は
+unknownを維持する。公開・index対象はP記事11本+SVR01の計12本。serversは6 program承認済みだが、正規ASPの
+runtime destination未設定なのでserver CTAは0件である。
+
 ### Launch最終シーケンス — event-driven
 
 2026-08-02のHuman指示により、S0–S6をtrigger受領順に処理する。S0の最小通貨単位で割り切れない

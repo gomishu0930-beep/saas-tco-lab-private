@@ -166,9 +166,9 @@ XServerビジネスも開示先行、runtime destination設定、partner別`cta_
 |会社|Affiliate現在地|rights回答|統合gateへの算入|次の本人操作|
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答。2026-07-26追送済み|0|rights回答を待つ。紹介IDは共有しない|
-|A8.net|Account登録済み、XServerビジネス提携承認済み|条件要約を台帳v1.1へ記録。報酬値は非保存|1|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
-|もしもアフィリエイト|Account・saastcolab.jpメディア登録済み、servers候補4件すべて提携承認済み|ロリポップ、シンレンタルサーバー、ConoHa WING、お名前.comの承認状態を台帳へ記録。報酬値は非保存|4|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
-|バリューコマース|Account本登録済み、ABLENET共用サーバー提携承認済み|個別条件を台帳v1.1へ要約。報酬値は非保存|1|servers記事承認後にruntime destinationとpartner別CTA gateを設定|
+|A8.net|Account登録済み、XServerビジネス提携承認済み|条件要約を台帳v1.1へ記録。報酬値は非保存|1|正規広告linkをruntime destinationへ設定し、partner別CTA gateを検証|
+|もしもアフィリエイト|Account・saastcolab.jpメディア登録済み、servers候補4件すべて提携承認済み|ロリポップ、シンレンタルサーバー、ConoHa WING、お名前.comの承認状態を台帳へ記録。報酬値は非保存|4|端末認証後、正規広告linkをruntime destinationへ設定してpartner別CTA gateを検証|
+|バリューコマース|Account本登録済み、ABLENET共用サーバー提携承認済み|個別条件を台帳v1.1へ要約。報酬値は非保存|1|正規広告linkをruntime destinationへ設定し、partner別CTA gateを検証|
 |HubSpot|2026-08-03 Impact画面でDeclined（low reach）を確認|未回答。2026-07-26追送済み|0|公開・流入実績を作るまで再申請しない。拒否を承認済みと数えない|
 |Semrush|Impact Marketplaceは2026-08-09に却下済み。個別申請は未成立|回答あり|0|公開記事・流入実績を蓄積し、再申請条件を満たした後に新しいexact GOで再評価する|
 |SE Ranking|work email例外回答待ち|未回答。ticket 112501へ2026-07-26追送済み|0|回答まで再登録しない|
@@ -380,6 +380,21 @@ allowlistへ追加していない。外部read-backでは年次表示50,160 JPY�
 66,660円の合算は非表示、zero-input表は`未確認`かつ順位対象外、server CTAとsponsored linkは0件だった。
 公式出典linkは`business.xserver.ne.jp`のquery・fragmentなしURLだけで、`noopener noreferrer`かつ
 非sponsoredに限定した。既存P01–P10・P12の11記事index境界、P11のnoindex、Mangools CTAは変更していない。
+
+同日の後続観測では、通常の共有スタンダード12か月一括前払50,160円（税込）と初期費用16,500円（税込）を
+期間限定30%キャッシュバックとは別の料金表示としてHuman確認した。append-onlyのSVR01 v3は、この2 fieldだけを
+`sale_banner_state=none`へ更新し、契約時請求額66,660円を確認済みのmaterial claimとして採用した。更新時請求額、
+キャンペーン受取額、domain特典の金銭価値、compute上限、24/36か月TCO、順位と推奨はunknownのままである。
+`CHECK-ALL: PASS`後のcommit `c0b0dfc`をpushし、Sites version 26でSVR01だけをserver記事の承認・index対象へ
+追加した。外部read-backではHTTP 200、`index, follow`、self-canonical、66,660円、Product/Offer・FAQ・
+Breadcrumb JSON-LD、sitemap/robots allowlistへの1 URL追加を確認した。公開sitemapはP記事11本とSVR01の計12 URL。
+P11はnoindex・CTA無効を維持する。承認済みservers partnerは6件あるがruntime destinationは未設定のため、
+SVR01のserver CTAとsponsored linkは0件のままである。
+
+2026-08-14、Safariのもしも正規管理画面で`saaslab`メディアとお名前.comレンタルサーバーの`提携中`を
+read-only再確認した。広告リンク画面へ移動した時点でsessionが失効し、macOSのcredential自動入力に端末認証が
+要求されたため、秘密値を取得・表示・保存せず停止した。runtime destinationとserver CTAはfail-closedでHOLDを
+維持する。
 
 同日、拡張需要のHuman export用として、CRM残り10、forms 40、email marketing 40、SEO追加60を
 凍結slateからquery-only textへ生成する`prepare-kwfinder-upload`を追加した。出力は固定P18 scope外の

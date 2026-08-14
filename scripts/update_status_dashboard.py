@@ -20,6 +20,7 @@ from saas_preflight.editorial_input import EditorialArticleInput
 
 ROOT = Path(__file__).resolve().parents[1]
 PILOT_IDS = tuple(f"P{number:02d}" for number in range(1, 13))
+SERVER_ID_PATTERN = re.compile(r"SVR(?:0[1-9]|1[0-9]|20)")
 DATA_START = "// DASHBOARD_DATA_START\nconst DATA = "
 DATA_END = ";\n// DASHBOARD_DATA_END"
 ALLOWED_LANE_STATES = frozenset({"HOLD", "GO", "DONE"})
@@ -96,11 +97,12 @@ def _load_launch_state(path: Path) -> dict[str, Any]:
         raise DashboardInputError("editorial launch state is unreadable") from exc
     expected = {
         "schema_version", "domain", "domain_state", "index_state", "affiliate_cta",
-        "articles", "deployed_articles", "index_approved_articles",
+        "articles", "deployed_articles", "index_approved_articles", "server_articles",
+        "deployed_server_articles", "index_approved_server_articles", "server_affiliate_cta",
     }
     if not isinstance(state, dict) or set(state) != expected:
-        raise DashboardInputError("editorial launch state fields do not match ease-track-1")
-    if state["schema_version"] != "ease-track-1":
+        raise DashboardInputError("editorial launch state fields do not match ease-track-2")
+    if state["schema_version"] != "ease-track-2":
         raise DashboardInputError("unknown editorial launch state version")
     if state["domain_state"] not in ALLOWED_LANE_STATES or state["index_state"] not in ALLOWED_LANE_STATES:
         raise DashboardInputError("domain/index state must be HOLD, GO, or DONE")
@@ -128,6 +130,28 @@ def _load_launch_state(path: Path) -> dict[str, Any]:
     cta = state["affiliate_cta"]
     if not isinstance(cta, dict) or any(value not in ALLOWED_LANE_STATES for value in cta.values()):
         raise DashboardInputError("affiliate CTA states must be HOLD, GO, or DONE")
+    server_articles = state["server_articles"]
+    if (
+        not isinstance(server_articles, dict)
+        or any(not isinstance(key, str) or SERVER_ID_PATTERN.fullmatch(key) is None for key in server_articles)
+        or any(value not in ALLOWED_ARTICLE_STATES for value in server_articles.values())
+    ):
+        raise DashboardInputError("server article state must use unique SVR01-SVR20 keys and valid states")
+    for field in ("deployed_server_articles", "index_approved_server_articles"):
+        values = state[field]
+        if (
+            not isinstance(values, list)
+            or any(not isinstance(value, str) or value not in server_articles for value in values)
+            or len(values) != len(set(values))
+            or any(server_articles[value] != "approved" for value in values)
+        ):
+            raise DashboardInputError(f"{field} must contain unique approved server article IDs")
+    server_cta = state["server_affiliate_cta"]
+    if (
+        not isinstance(server_cta, dict)
+        or any(value not in ALLOWED_LANE_STATES for value in server_cta.values())
+    ):
+        raise DashboardInputError("server affiliate CTA states must be HOLD, GO, or DONE")
     return state
 
 
@@ -248,6 +272,7 @@ def _external_action_queue(
         path.name.startswith("SVR01")
         for path in (root / "artifacts" / "category-expansion-inputs").glob("*.json")
     )
+    server_article_approved = state["server_articles"].get("SVR01") == "approved"
     server_contract_confirmed = "candidate contractの構造確定" in adoption
     x_ready = "handleは`@saastcolab`" in adoption and "投稿0件" in adoption
     r1_release_done = "Sites version 11へ公開した" in adoption
@@ -360,6 +385,8 @@ def _external_action_queue(
             "token": "server_price_input: done SVR01",
         })
     if (
+        not server_article_approved
+        and
         "現在のSVR01はTCOと用途判定の" in adoption
         and "両方がHOLD" in adoption
         and "11 fieldをfield-review済みに更新" not in adoption
@@ -370,6 +397,8 @@ def _external_action_queue(
             "token": "svr01_candidates: confirm_all / corrections <field>: <value>",
         })
     if (
+        not server_article_approved
+        and
         "11 fieldをfield-review済みに更新" in adoption
         and "基本料金自体も" in adoption
         and "time_limited_promo" in adoption
@@ -378,6 +407,17 @@ def _external_action_queue(
             "label": "SVR01の価格本体・キャンペーン分類を再確認",
             "status": "human_official_price_observation_required",
             "token": "svr01_candidates: corrections pricing.initial_fee.sale_banner_state=<class>,pricing.base_price.sale_banner_state=<class>",
+        })
+    held_server_cta = sorted(
+        partner_id
+        for partner_id, status in state["server_affiliate_cta"].items()
+        if status == "HOLD"
+    )
+    if server_article_approved and held_server_cta:
+        actions.append({
+            "label": f"承認済みservers {len(held_server_cta)}案件のruntime destination設定",
+            "status": "asp_os_authentication_or_destination_required",
+            "token": "asp_reauth: done <A8.net|もしも|バリューコマース>",
         })
     unreviewed_contracts = [
         article_id
@@ -609,6 +649,15 @@ def _regenerate(
     deployed = set(state["deployed_articles"])
     index_approved = set(state["index_approved_articles"])
     published_count = len(approved & deployed)
+    approved_server_articles = {
+        article_id
+        for article_id, status in state["server_articles"].items()
+        if status == "approved"
+    }
+    deployed_server_articles = set(state["deployed_server_articles"])
+    index_approved_server_articles = set(state["index_approved_server_articles"])
+    published_server_count = len(approved_server_articles & deployed_server_articles)
+    total_published_count = published_count + published_server_count
     server_contract_ready = any(
         path.name.startswith("SVR01")
         for path in (root / "artifacts" / "category-expansion-inputs").glob("*.json")
@@ -620,14 +669,14 @@ def _regenerate(
     data["asOf"] = as_of
     data["reportingPeriod"] = external["period"]
     data["phase"] = (
-        f"公開後成長運転—{published_count}記事公開・{12 - approved_count}記事証拠/承認待ち"
-        if published_count > 0
+        f"公開後成長運転—{total_published_count}記事公開・P記事{12 - approved_count}本証拠/承認待ち"
+        if total_published_count > 0
         else "editorial launch—記事入力・承認中"
         if domain_state in {"GO", "DONE"}
         else "Launch Quarter準備— domain GO待ち"
     )
     data["kpis"] = [
-        {"label": "公開記事数", "value": published_count, "target": 12, "sub": f"入力 {input_count}/12・承認 {approved_count}/12"},
+        {"label": "公開記事数", "value": total_published_count, "target": 20, "sub": f"P記事 {published_count}本・servers {published_server_count}本"},
         {"label": "インデックス数", "value": external["indexed_articles"], "target": 12, "sub": f"index_go: {index_state}"},
         {"label": "GSC clicks(月)", "value": external["gsc_clicks"], "target": None, "sub": f"対象月 {external['period']}"},
         {"label": "Outbound clicks(月)", "value": external["outbound_clicks"], "target": 3334, "sub": "目標 3,334 / 月"},
@@ -659,6 +708,17 @@ def _regenerate(
         {"id": "L3", "name": "noindex解除", "status": index_state, "note": f"index承認 {len(index_approved)}本・記事承認だけでは追加しない"},
         {"id": "L4", "name": "CTA有効化", "status": "HOLD" if cta_count == 0 else f"{cta_count} partner GO", "note": "Affiliate承認・規約遵守・開示先行"},
     ]
+    data["serverLaunch"] = {
+        "approvedArticles": len(approved_server_articles),
+        "deployedArticles": published_server_count,
+        "indexApprovedArticles": len(index_approved_server_articles),
+        "ctaEnabledPartners": sum(
+            status in {"GO", "DONE"} for status in state["server_affiliate_cta"].values()
+        ),
+        "ctaHeldPartners": sum(
+            status == "HOLD" for status in state["server_affiliate_cta"].values()
+        ),
+    }
     data["partners"] = [
         {
             "name": "Mangools",
@@ -719,7 +779,7 @@ def _regenerate(
     generated_risk_ids = {
         "editorial-coverage",
         "gsc-processing",
-        "server-candidate-only",
+        "server-launch",
         "server-partner-dependency",
     }
     dynamic_risks = [
@@ -739,11 +799,11 @@ def _regenerate(
             "level": "warn",
             "label": "GSCはsitemap 10/11検出・P01登録要求一時エラー。通常クロール待ち",
         })
-    if server_contract_ready:
+    if published_server_count:
         dynamic_risks.append({
-            "riskId": "server-candidate-only",
+            "riskId": "server-launch",
             "level": "warn",
-            "label": "SVR01は個別証拠をnoindex公開済み。期間限定分類のため合算・TCO・記事承認・index・CTAは未実行",
+            "label": "SVR01は承認・index対象として公開済み。runtime destination未設定のためservers CTAは0件",
         })
     if server_partner_policy["warning"]:
         dynamic_risks.append({

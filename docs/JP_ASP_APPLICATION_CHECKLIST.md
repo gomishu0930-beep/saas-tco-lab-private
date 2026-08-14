@@ -93,7 +93,7 @@ servers候補として台帳へ追加した。バリューコマースではABLE
 
 |姿勢|調査案|Hard gate|停止条件|
 |---|---|---|---|
-|conservative|serversの既知需要と承認済み6programを記事候補へ対応付ける|SVR01のcanonical価格・記事承認・runtime destination・partner別CTA GOが未完了|提携否認、またはHuman価格観測不能|
+|conservative|serversの既知需要と承認済み6programを公開SVR01へ対応付ける|SVR01の確認済みclaim・記事承認・indexは完了。runtime destination・partner別CTA GOが未完了|提携否認、または正規広告linkを安全に設定不能|
 |balanced|serversの6記事slate・価格観測・TCO対応をlocalで先行し、1 vendorずつ検証|価格・提携・公開は各別gate|golden不一致、unknownの推測補完、需要または提携の否定証拠|
 |aggressive|5カテゴリを同時申請・同時公開する|需要unknownかつ提携未承認のため`ineligible`|現状は開始しない|
 
@@ -105,9 +105,9 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 
 |対象|現在地|次の解除条件|
 |---|---|---|
-|A8.net|`ACCOUNT REGISTERED / XSERVER APPROVED`|2026-08-08に参加中プログラム一覧で提携承認をread-back済み。servers記事承認、runtime destination、開示先行、partner別CTA gateがそろうまではCTA不可|
+|A8.net|`ACCOUNT REGISTERED / XSERVER APPROVED`|2026-08-08に参加中プログラム一覧で提携承認をread-back済み。SVR01承認・index・開示先行は完了。runtime destinationとpartner別CTA gateがそろうまではCTA不可|
 |もしもアフィリエイト|`ACCOUNT + MEDIA REGISTERED / 4 SERVER PROGRAMS APPROVED`|2026-08-09にロリポップ、2026-08-12にシンレンタルサーバー、ConoHa WING、お名前.comの提携中表示をread-back済み|
-|バリューコマース|`ACCOUNT REGISTERED / ABLENET APPROVED`|個別条件と「提携済み」を2026-08-08にread-back済み。servers記事承認、runtime destination、開示先行、partner別CTA gateがそろうまではCTA不可|
+|バリューコマース|`ACCOUNT REGISTERED / ABLENET APPROVED`|個別条件と「提携済み」を2026-08-08にread-back済み。SVR01承認・index・開示先行は完了。runtime destinationとpartner別CTA gateがそろうまではCTA不可|
 
 公開originのread-only確認結果:
 
