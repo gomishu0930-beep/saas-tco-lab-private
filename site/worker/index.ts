@@ -57,6 +57,8 @@ const BASE_SECURITY_HEADERS = {
   "X-Robots-Tag": "noindex, nofollow, noarchive, nosnippet",
 };
 
+const NOINDEX_FOLLOW_ROBOTS = "noindex, follow, noarchive, nosnippet";
+
 const LEGACY_PUBLIC_HOST = "saas-tco-lab-jp.shukun0930.chatgpt.site";
 const CANONICAL_PUBLIC_HOST = "saastcolab.jp";
 const CANONICAL_PUBLIC_ORIGIN = `https://${CANONICAL_PUBLIC_HOST}`;
@@ -152,10 +154,15 @@ function securityHeaders(
   analyticsEnabled = false,
   indexable = false,
   embeddable = false,
+  followableNoindex = false,
 ): Record<string, string> {
   return {
     ...BASE_SECURITY_HEADERS,
-    "X-Robots-Tag": indexable ? "index, follow" : BASE_SECURITY_HEADERS["X-Robots-Tag"],
+    "X-Robots-Tag": indexable
+      ? "index, follow"
+      : followableNoindex
+        ? NOINDEX_FOLLOW_ROBOTS
+        : BASE_SECURITY_HEADERS["X-Robots-Tag"],
     "Content-Security-Policy": analyticsEnabled
       ? embeddable ? EMBEDDABLE_ANALYTICS_CONTENT_SECURITY_POLICY : CONSENT_GATED_ANALYTICS_CONTENT_SECURITY_POLICY
       : embeddable ? EMBEDDABLE_RESTRICTED_CONTENT_SECURITY_POLICY : RESTRICTED_CONTENT_SECURITY_POLICY,
@@ -167,9 +174,12 @@ function withSecurityHeaders(
   analyticsEnabled = false,
   indexable = false,
   embeddable = false,
+  followableNoindex = false,
 ): Response {
   const headers = new Headers(response.headers);
-  for (const [name, value] of Object.entries(securityHeaders(analyticsEnabled, indexable, embeddable))) {
+  for (const [name, value] of Object.entries(
+    securityHeaders(analyticsEnabled, indexable, embeddable, followableNoindex),
+  )) {
     headers.set(name, value);
   }
   return new Response(response.body, {
@@ -624,13 +634,14 @@ async function withRuntimeHeadControls(
   response: Response,
   controls: RuntimeHeadControls,
   indexable: boolean,
+  followableNoindex: boolean,
   canonicalPath: string,
 ): Promise<Response> {
   const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
   if (
     response.status !== 200 ||
     !contentType.includes("text/html") ||
-    (!controls.markup && !indexable)
+    (!controls.markup && !indexable && !followableNoindex)
   ) {
     return response;
   }
@@ -640,6 +651,11 @@ async function withRuntimeHeadControls(
     body = body.replace(
       /<meta\s+name=["']robots["'][^>]*>/i,
       '<meta name="robots" content="index, follow">',
+    );
+  } else if (followableNoindex) {
+    body = body.replace(
+      /<meta\s+name=["']robots["'][^>]*>/i,
+      `<meta name="robots" content="${NOINDEX_FOLLOW_ROBOTS}">`,
     );
   }
   const openingHead = body.match(/<head(?:\s[^>]*)?>/i);
@@ -685,6 +701,10 @@ const worker = {
     const normalizedPath = normalizePath(url.pathname);
     const indexPaths = approvedIndexPaths(env);
     const indexable = url.search === "" && indexPaths.has(normalizedPath);
+    const followableNoindex = url.search === ""
+      && PUBLIC_ROUTES.has(normalizedPath)
+      && !ARTICLE_PATH_TO_ID.has(normalizedPath)
+      && !SERVER_ARTICLE_PATH_TO_ID.has(normalizedPath);
     const gatedPath = indexable ? normalizedPath : "";
     const ctaControls = affiliateCtaControls(env, indexPaths, gatedPath);
     const serverCtaControls = serverAffiliateCtaControls(env, indexPaths, gatedPath);
@@ -772,6 +792,7 @@ const worker = {
                 response,
                 runtimeControls,
                 indexable,
+                followableNoindex,
                 normalizedPath,
               ),
               indexable ? indexPaths : new Set(),
@@ -784,6 +805,7 @@ const worker = {
         runtimeControls.analyticsEnabled,
         indexable,
         embeddable,
+        followableNoindex,
       );
     }
     return new Response("Service Unavailable\n", {
