@@ -1,0 +1,453 @@
+{
+  "$defs": {
+    "AffiliateAccountStatus": {
+      "enum": [
+        "registration_incomplete",
+        "registered",
+        "under_review",
+        "approved"
+      ],
+      "title": "AffiliateAccountStatus",
+      "type": "string"
+    },
+    "AffiliateCommissionAmount": {
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "$ref": "#/$defs/AffiliateCommissionStatus"
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/AffiliateCommissionUnit"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "value": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "AffiliateCommissionAmount",
+      "type": "object"
+    },
+    "AffiliateCommissionStatus": {
+      "enum": [
+        "known",
+        "unknown",
+        "restricted_dashboard_only"
+      ],
+      "title": "AffiliateCommissionStatus",
+      "type": "string"
+    },
+    "AffiliateCommissionUnit": {
+      "enum": [
+        "JPY",
+        "percent"
+      ],
+      "title": "AffiliateCommissionUnit",
+      "type": "string"
+    },
+    "AffiliateConditionReviewStatus": {
+      "enum": [
+        "detail_reviewed",
+        "summary_only"
+      ],
+      "title": "AffiliateConditionReviewStatus",
+      "type": "string"
+    },
+    "AffiliateConfirmationRate": {
+      "additionalProperties": false,
+      "properties": {
+        "percent": {
+          "anyOf": [
+            {
+              "maximum": 100.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Percent"
+        },
+        "status": {
+          "$ref": "#/$defs/AffiliateConfirmationStatus"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "AffiliateConfirmationRate",
+      "type": "object"
+    },
+    "AffiliateConfirmationStatus": {
+      "enum": [
+        "known",
+        "unknown",
+        "restricted_dashboard_only"
+      ],
+      "title": "AffiliateConfirmationStatus",
+      "type": "string"
+    },
+    "AffiliateNetworkSearchCheck": {
+      "additionalProperties": false,
+      "properties": {
+        "a8_status": {
+          "const": "not_confirmed",
+          "default": "not_confirmed",
+          "title": "A8 Status",
+          "type": "string"
+        },
+        "checked_on": {
+          "format": "date",
+          "title": "Checked On",
+          "type": "string"
+        },
+        "next_networks": {
+          "items": {
+            "enum": [
+              "moshimo",
+              "valuecommerce"
+            ],
+            "type": "string"
+          },
+          "title": "Next Networks",
+          "type": "array"
+        },
+        "next_status": {
+          "const": "waiting",
+          "default": "waiting",
+          "title": "Next Status",
+          "type": "string"
+        },
+        "partner_id": {
+          "maxLength": 80,
+          "minLength": 2,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Partner Id",
+          "type": "string"
+        },
+        "partner_name": {
+          "maxLength": 120,
+          "minLength": 2,
+          "title": "Partner Name",
+          "type": "string"
+        }
+      },
+      "required": [
+        "partner_id",
+        "partner_name",
+        "next_networks",
+        "checked_on"
+      ],
+      "title": "AffiliateNetworkSearchCheck",
+      "type": "object"
+    },
+    "AffiliatePartnerLedgerEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "account_status": {
+          "$ref": "#/$defs/AffiliateAccountStatus"
+        },
+        "affiliate_approval_runtime_secret": {
+          "title": "Affiliate Approval Runtime Secret",
+          "type": "string"
+        },
+        "asp_name": {
+          "maxLength": 120,
+          "minLength": 2,
+          "title": "Asp Name",
+          "type": "string"
+        },
+        "category": {
+          "anyOf": [
+            {
+              "maxLength": 120,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Category"
+        },
+        "checked_on": {
+          "format": "date",
+          "title": "Checked On",
+          "type": "string"
+        },
+        "commission_amount": {
+          "$ref": "#/$defs/AffiliateCommissionAmount"
+        },
+        "destination_runtime_secret": {
+          "title": "Destination Runtime Secret",
+          "type": "string"
+        },
+        "disclosure_requirement": {
+          "maxLength": 500,
+          "minLength": 2,
+          "title": "Disclosure Requirement",
+          "type": "string"
+        },
+        "partner_id": {
+          "maxLength": 40,
+          "minLength": 2,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Partner Id",
+          "type": "string"
+        },
+        "partnership_status": {
+          "$ref": "#/$defs/AffiliatePartnershipStatus"
+        },
+        "performance_condition": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Performance Condition"
+        },
+        "program_name": {
+          "anyOf": [
+            {
+              "maxLength": 160,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Program Name"
+        }
+      },
+      "required": [
+        "partner_id",
+        "asp_name",
+        "account_status",
+        "commission_amount",
+        "partnership_status",
+        "disclosure_requirement",
+        "checked_on",
+        "affiliate_approval_runtime_secret",
+        "destination_runtime_secret"
+      ],
+      "title": "AffiliatePartnerLedgerEntry",
+      "type": "object"
+    },
+    "AffiliatePartnershipStatus": {
+      "enum": [
+        "not_applied",
+        "pending",
+        "approved",
+        "denied"
+      ],
+      "title": "AffiliatePartnershipStatus",
+      "type": "string"
+    },
+    "AffiliateProgramResearchEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "affiliate_approval_runtime_secret": {
+          "title": "Affiliate Approval Runtime Secret",
+          "type": "string"
+        },
+        "asp_partner_id": {
+          "maxLength": 40,
+          "minLength": 2,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Asp Partner Id",
+          "type": "string"
+        },
+        "category": {
+          "maxLength": 120,
+          "minLength": 2,
+          "title": "Category",
+          "type": "string"
+        },
+        "checked_on": {
+          "format": "date",
+          "title": "Checked On",
+          "type": "string"
+        },
+        "commission_amount": {
+          "$ref": "#/$defs/AffiliateCommissionAmount"
+        },
+        "commission_basis": {
+          "enum": [
+            "single_rate",
+            "maximum_observed_tier",
+            "unknown"
+          ],
+          "title": "Commission Basis",
+          "type": "string"
+        },
+        "condition_review_status": {
+          "$ref": "#/$defs/AffiliateConditionReviewStatus"
+        },
+        "confirmation_rate": {
+          "$ref": "#/$defs/AffiliateConfirmationRate"
+        },
+        "destination_runtime_secret": {
+          "title": "Destination Runtime Secret",
+          "type": "string"
+        },
+        "disclosure_requirement": {
+          "maxLength": 500,
+          "minLength": 2,
+          "title": "Disclosure Requirement",
+          "type": "string"
+        },
+        "partnership_status": {
+          "$ref": "#/$defs/AffiliatePartnershipStatus"
+        },
+        "performance_condition": {
+          "maxLength": 600,
+          "minLength": 2,
+          "title": "Performance Condition",
+          "type": "string"
+        },
+        "program_name": {
+          "maxLength": 200,
+          "minLength": 2,
+          "title": "Program Name",
+          "type": "string"
+        },
+        "research_id": {
+          "maxLength": 80,
+          "minLength": 2,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Research Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "research_id",
+        "asp_partner_id",
+        "program_name",
+        "category",
+        "commission_amount",
+        "commission_basis",
+        "performance_condition",
+        "condition_review_status",
+        "confirmation_rate",
+        "partnership_status",
+        "disclosure_requirement",
+        "checked_on",
+        "affiliate_approval_runtime_secret",
+        "destination_runtime_secret"
+      ],
+      "title": "AffiliateProgramResearchEntry",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "advertising_urls_saved": {
+      "const": false,
+      "default": false,
+      "title": "Advertising Urls Saved",
+      "type": "boolean"
+    },
+    "cta_gate": {
+      "const": "partner_approved+disclosure_precedes_cta+destination_configured+cta_go",
+      "default": "partner_approved+disclosure_precedes_cta+destination_configured+cta_go",
+      "title": "Cta Gate",
+      "type": "string"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/AffiliatePartnerLedgerEntry"
+      },
+      "maxItems": 50,
+      "minItems": 1,
+      "title": "Entries",
+      "type": "array"
+    },
+    "network_search_checks": {
+      "items": {
+        "$ref": "#/$defs/AffiliateNetworkSearchCheck"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Network Search Checks",
+      "type": "array"
+    },
+    "personal_data_saved": {
+      "const": false,
+      "default": false,
+      "title": "Personal Data Saved",
+      "type": "boolean"
+    },
+    "program_research": {
+      "items": {
+        "$ref": "#/$defs/AffiliateProgramResearchEntry"
+      },
+      "maxItems": 100,
+      "minItems": 1,
+      "title": "Program Research",
+      "type": "array"
+    },
+    "property_domain": {
+      "const": "saastcolab.jp",
+      "default": "saastcolab.jp",
+      "title": "Property Domain",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "1.1",
+      "default": "1.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "tracking_ids_saved": {
+      "const": false,
+      "default": false,
+      "title": "Tracking Ids Saved",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "entries",
+    "program_research",
+    "network_search_checks"
+  ],
+  "title": "AffiliatePartnerLedger",
+  "type": "object"
+}

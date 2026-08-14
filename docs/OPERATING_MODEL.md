@@ -2,7 +2,7 @@
 
 ## 1. 目的と基本原則
 
-この運用モデルは、Evidence、data contract、TCO、releaseを分業し、判断の独立性を保ちながら、月の人手を720分以内に制御するためのものです。自動化率を上げても、権利判断と外部・公開操作の責任はHuman Approverに残します。
+この運用モデルは、Evidence、data contract、TCO、releaseを分業し、判断の独立性を保ちながら、通常月の人手を720分以内に制御するためのものです。2026-08〜2026-10だけは、Human decision `DR-2026-07-28-REVENUE-TRACK`によりlaunch track限定で月2,000分へ一時変更します。自動化率を上げても、権利判断と外部・公開操作の責任はHuman Approverに残します。
 
 すべての処理は次の順序を守ります。
 
@@ -154,6 +154,10 @@ account・credential・課金・push・deploy・公開・
 ## 6. 稼働cadenceと月720分の人手budget
 
 人が操作・判断する時間を、1暦月あたり最大720分（12時間）に制限します。agentの自動実行時間は含めませんが、agentの待機監視を人が行った時間は含めます。5週ある月でも上限は増やしません。
+
+### Launch Quarterの一時override
+
+2026-08-01〜2026-10-31はlaunch trackだけを月2,000分上限とする。この増分はdomain、Human実値確認、記事承認、index/CTAの個別判断、Impact・日本ASP手続き、Human投稿へだけ配分し、automated data path、P0–P18の新規拡張、未承認source取得には使わない。通常の720分表と576/720分freezeはこの3か月のlaunch trackには適用せず、消化1,600分で新規の非必須作業を凍結し、2,000分到達後は公開安全修正・STOP判断以外を翌月へ送る。2026-11の上限はHumanが720分へ戻すか再判定する。
 
 |cadence|内容|担当と配分|月間分|
 |---|---|---|---:|

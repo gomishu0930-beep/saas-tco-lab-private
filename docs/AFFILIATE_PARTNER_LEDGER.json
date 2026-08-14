@@ -1,0 +1,410 @@
+{
+  "schema_version": "1.1",
+  "property_domain": "saastcolab.jp",
+  "tracking_ids_saved": false,
+  "advertising_urls_saved": false,
+  "personal_data_saved": false,
+  "cta_gate": "partner_approved+disclosure_precedes_cta+destination_configured+cta_go",
+  "entries": [
+    {
+      "partner_id": "a8net",
+      "asp_name": "A8.net",
+      "account_status": "registered",
+      "program_name": null,
+      "category": null,
+      "commission_amount": {
+        "status": "unknown",
+        "value": null,
+        "unit": null
+      },
+      "performance_condition": null,
+      "partnership_status": "not_applied",
+      "disclosure_requirement": "個別プログラム選定後に規約と表示要件をHuman確認する。確認前はCTA不可。",
+      "checked_on": "2026-08-06",
+      "affiliate_approval_runtime_secret": "A8NET_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "A8NET_AFFILIATE_DESTINATION"
+    },
+    {
+      "partner_id": "mangools",
+      "asp_name": "Mangools Affiliate Program",
+      "account_status": "approved",
+      "program_name": "Mangools Affiliate Program",
+      "category": "SEOツール",
+      "commission_amount": {
+        "status": "unknown",
+        "value": null,
+        "unit": null
+      },
+      "performance_condition": "規約に基づく有効な成果。詳細条件と非公開報酬は管理画面を正本とする。",
+      "partnership_status": "approved",
+      "disclosure_requirement": "PR表示をCTAより先に置き、外部リンクへsponsored、noopener、noreferrerを設定する。",
+      "checked_on": "2026-08-04",
+      "affiliate_approval_runtime_secret": "MANGOOLS_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "MANGOOLS_AFFILIATE_DESTINATION"
+    },
+    {
+      "partner_id": "moshimo",
+      "asp_name": "もしもアフィリエイト",
+      "account_status": "registered",
+      "program_name": null,
+      "category": null,
+      "commission_amount": {
+        "status": "unknown",
+        "value": null,
+        "unit": null
+      },
+      "performance_condition": null,
+      "partnership_status": "not_applied",
+      "disclosure_requirement": "個別プログラム選定後に規約と表示要件をHuman確認する。確認前はCTA不可。",
+      "checked_on": "2026-08-07",
+      "affiliate_approval_runtime_secret": "MOSHIMO_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "MOSHIMO_AFFILIATE_DESTINATION"
+    },
+    {
+      "partner_id": "valuecommerce",
+      "asp_name": "バリューコマース",
+      "account_status": "registered",
+      "program_name": null,
+      "category": null,
+      "commission_amount": {
+        "status": "unknown",
+        "value": null,
+        "unit": null
+      },
+      "performance_condition": null,
+      "partnership_status": "not_applied",
+      "disclosure_requirement": "個別プログラム選定後に規約と表示要件をHuman確認する。確認前はCTA不可。",
+      "checked_on": "2026-08-08",
+      "affiliate_approval_runtime_secret": "VALUECOMMERCE_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "VALUECOMMERCE_AFFILIATE_DESTINATION"
+    }
+  ],
+  "program_research": [
+    {
+      "research_id": "a8net-formrun",
+      "asp_partner_id": "a8net",
+      "program_name": "無料でフォーム作成から問い合わせ対応・顧客管理までできる formrun",
+      "category": "フォーム・顧客管理",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "single_rate",
+      "performance_condition": "広告主を初めて利用する申込者が無料会員登録後に有料planへ登録し、1か月以上継続する。詳細画面まで確認済み。",
+      "condition_review_status": "detail_reviewed",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "not_applied",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、A8.netとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-06",
+      "affiliate_approval_runtime_secret": "A8NET_FORMRUN_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "A8NET_FORMRUN_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "a8net-freee-accounting",
+      "asp_partner_id": "a8net",
+      "program_name": "クラウド会計ソフト freee会計",
+      "category": "会計SaaS",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "single_rate",
+      "performance_condition": "通常planの新規導入として検索結果概要で確認した。詳細条件は申請前に再確認する。",
+      "condition_review_status": "summary_only",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "not_applied",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、A8.netとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-06",
+      "affiliate_approval_runtime_secret": "A8NET_FREEE_ACCOUNTING_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "A8NET_FREEE_ACCOUNTING_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "a8net-misoca",
+      "asp_partner_id": "a8net",
+      "program_name": "クラウド見積書・納品書・請求書作成管理サービス Misoca",
+      "category": "会計・請求書SaaS",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "single_rate",
+      "performance_condition": "無料体験planの新規申込として検索結果概要で確認した。詳細条件は申請前に再確認する。",
+      "condition_review_status": "summary_only",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "not_applied",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、A8.netとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-06",
+      "affiliate_approval_runtime_secret": "A8NET_MISOCA_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "A8NET_MISOCA_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "a8net-money-forward-cloud-accounting",
+      "asp_partner_id": "a8net",
+      "program_name": "マネーフォワード クラウド会計",
+      "category": "会計SaaS",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "single_rate",
+      "performance_condition": "通常planの新規導入として検索結果概要で確認した。別の新規会員登録案件もあるため、申請前に対象programを再確認する。",
+      "condition_review_status": "summary_only",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "not_applied",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、A8.netとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-06",
+      "affiliate_approval_runtime_secret": "A8NET_MONEY_FORWARD_CLOUD_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "A8NET_MONEY_FORWARD_CLOUD_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "a8net-will-mail",
+      "asp_partner_id": "a8net",
+      "program_name": "ウィルメール WiLL Mail",
+      "category": "メール配信SaaS",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "single_rate",
+      "performance_condition": "広告主を初めて利用する法人が、トライアル申込または資料請求後のトライアル申込を行い、所定期間内に本人確認を完了する。詳細画面まで確認済み。",
+      "condition_review_status": "detail_reviewed",
+      "confirmation_rate": {
+        "status": "restricted_dashboard_only",
+        "percent": null
+      },
+      "partnership_status": "not_applied",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、A8.netとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-06",
+      "affiliate_approval_runtime_secret": "A8NET_WILL_MAIL_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "A8NET_WILL_MAIL_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "a8net-xserver-business",
+      "asp_partner_id": "a8net",
+      "program_name": "XServerビジネス",
+      "category": "サーバー",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "maximum_observed_tier",
+      "performance_condition": "6か月以上の新規契約を行い、XServerビジネスは申込後14日以内の試用期間中に料金支払を完了する。契約更新、短期契約、返金を伴う取消、リスティング違反等は対象外。詳細画面まで確認済み。",
+      "condition_review_status": "detail_reviewed",
+      "confirmation_rate": {
+        "status": "restricted_dashboard_only",
+        "percent": null
+      },
+      "partnership_status": "approved",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、リスティング広告禁止を含むA8.netとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-14",
+      "affiliate_approval_runtime_secret": "A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "a8net-yayoi-series",
+      "asp_partner_id": "a8net",
+      "program_name": "弥生シリーズ",
+      "category": "会計SaaS",
+      "commission_amount": {
+        "status": "unknown",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "unknown",
+      "performance_condition": "白色申告online等の商品別成果として検索結果概要で確認した。金額と詳細条件は申請前に再確認する。",
+      "condition_review_status": "summary_only",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "not_applied",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、A8.netとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-06",
+      "affiliate_approval_runtime_secret": "A8NET_YAYOI_SERIES_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "A8NET_YAYOI_SERIES_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "moshimo-conoha-wing",
+      "asp_partner_id": "moshimo",
+      "program_name": "ConoHa WING",
+      "category": "サーバー",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "maximum_observed_tier",
+      "performance_condition": "新規アカウント登録後30日以内のConoHa WING申込を成果条件として詳細画面で確認した。30日以上の利用状況とplanで報酬tierが決まり、返金・不正利用・キャンセル・入力不備等は対象外。本人申込は1回限りで、WINGパック3か月契約の本人申込は対象外。審査なし・再訪問90日。",
+      "condition_review_status": "detail_reviewed",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "approved",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-14",
+      "affiliate_approval_runtime_secret": "MOSHIMO_CONOHA_WING_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "MOSHIMO_CONOHA_WING_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "moshimo-lolipop-rental-server",
+      "asp_partner_id": "moshimo",
+      "program_name": "ロリポップ！レンタルサーバー会員登録",
+      "category": "サーバー",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "maximum_observed_tier",
+      "performance_condition": "複数planの新規契約後、3か月以上の契約と入金を成果条件として詳細画面で確認した。本人・関係者申込、更新、取次店経由は対象外。審査なし、再訪問90日、承認期限60日。",
+      "condition_review_status": "detail_reviewed",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "approved",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-14",
+      "affiliate_approval_runtime_secret": "MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "moshimo-onamae-rental-server",
+      "asp_partner_id": "moshimo",
+      "program_name": "お名前.com レンタルサーバー",
+      "category": "サーバー",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "maximum_observed_tier",
+      "performance_condition": "共用サーバーまたはVPSの申込完了を成果条件として詳細画面で確認した。本人申込可、審査なし、成果承認期限120日、再訪問90日、広告出稿不可。",
+      "condition_review_status": "detail_reviewed",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "approved",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-14",
+      "affiliate_approval_runtime_secret": "MOSHIMO_ONAMAE_SERVER_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "MOSHIMO_ONAMAE_SERVER_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "moshimo-shin-rental-server",
+      "asp_partner_id": "moshimo",
+      "program_name": "シンレンタルサーバー",
+      "category": "サーバー",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "maximum_observed_tier",
+      "performance_condition": "複数planの新規成約後、試用期間内の料金支払い完了を成果承認条件として詳細画面で確認した。返金を伴うキャンセル、トラフィックサイト、リスティング違反、不正登録等は対象外。本人申込は1回限り、審査なし、成果承認期限45日、再訪問90日、広告出稿不可。",
+      "condition_review_status": "detail_reviewed",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "approved",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-14",
+      "affiliate_approval_runtime_secret": "MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_DESTINATION"
+    },
+    {
+      "research_id": "valuecommerce-ablenet-shared-server",
+      "asp_partner_id": "valuecommerce",
+      "program_name": "ABLENETレンタルサーバー（共用サーバー）",
+      "category": "サーバー",
+      "commission_amount": {
+        "status": "restricted_dashboard_only",
+        "value": null,
+        "unit": null
+      },
+      "commission_basis": "single_rate",
+      "performance_condition": "Webサイトからの新規申込と決済完了を成果条件として個別画面で確認した。翌月の利用確認後に確定し、不正・重複・登録不備・キャンセル・クーリングオフ・自己申込は対象外。商標、会社名、サービス名を使う検索広告は禁止。",
+      "condition_review_status": "detail_reviewed",
+      "confirmation_rate": {
+        "status": "unknown",
+        "percent": null
+      },
+      "partnership_status": "approved",
+      "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、バリューコマースとprogram固有条件を遵守する。",
+      "checked_on": "2026-08-14",
+      "affiliate_approval_runtime_secret": "VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT",
+      "destination_runtime_secret": "VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION"
+    }
+  ],
+  "network_search_checks": [
+    {
+      "partner_id": "benchmark-email",
+      "partner_name": "Benchmark Email",
+      "a8_status": "not_confirmed",
+      "next_networks": ["moshimo", "valuecommerce"],
+      "next_status": "waiting",
+      "checked_on": "2026-08-06"
+    },
+    {
+      "partner_id": "blastmail",
+      "partner_name": "blastmail",
+      "a8_status": "not_confirmed",
+      "next_networks": ["moshimo", "valuecommerce"],
+      "next_status": "waiting",
+      "checked_on": "2026-08-06"
+    },
+    {
+      "partner_id": "conoha",
+      "partner_name": "ConoHa",
+      "a8_status": "not_confirmed",
+      "next_networks": ["moshimo", "valuecommerce"],
+      "next_status": "waiting",
+      "checked_on": "2026-08-06"
+    },
+    {
+      "partner_id": "cybozu",
+      "partner_name": "サイボウズ",
+      "a8_status": "not_confirmed",
+      "next_networks": ["moshimo", "valuecommerce"],
+      "next_status": "waiting",
+      "checked_on": "2026-08-06"
+    },
+    {
+      "partner_id": "hubspot",
+      "partner_name": "HubSpot",
+      "a8_status": "not_confirmed",
+      "next_networks": ["moshimo", "valuecommerce"],
+      "next_status": "waiting",
+      "checked_on": "2026-08-06"
+    },
+    {
+      "partner_id": "kintone",
+      "partner_name": "kintone",
+      "a8_status": "not_confirmed",
+      "next_networks": ["moshimo", "valuecommerce"],
+      "next_status": "waiting",
+      "checked_on": "2026-08-06"
+    }
+  ]
+}

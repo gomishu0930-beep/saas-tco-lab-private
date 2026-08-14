@@ -7,6 +7,7 @@ import argparse
 import json
 from pathlib import Path
 
+from saas_preflight.affiliate_partner_ledger import AffiliatePartnerLedger
 from saas_preflight.ai_routing import (
     EvaluatedModelRoute,
     ModelRouterPolicy,
@@ -35,6 +36,11 @@ from saas_preflight.external_actions import (
     ExternalActionTargetRule,
     ExternalActionTrustStore,
     HumanExecutionApproval,
+)
+from saas_preflight.editorial_input import (
+    CategoryExpansionInput,
+    EditorialArticleInput,
+    HumanEditorialNumericField,
 )
 from saas_preflight.goldset import CandidateBatch, GoldSetReport, HumanGoldSet
 from saas_preflight.growth_system import (
@@ -145,6 +151,11 @@ from saas_preflight.measurement_integrity import (
     ProducerAttestation,
     ProducerCoverage,
     SignedMeasurementRunPlan,
+)
+from saas_preflight.mangools_export import (
+    MangoolsDemandSafeSummary,
+    MangoolsExpansionSetSafeSummary,
+    MangoolsSlateDemandSafeSummary,
 )
 from saas_preflight.preview import PreviewPage
 from saas_preflight.repository_acceptance import (
@@ -318,10 +329,14 @@ SCHEMA_MODELS = {
     "preview-page.schema.json": PreviewPage,
     "business-dossier.schema.json": BusinessDossier,
     "affiliate-decisions.schema.json": AffiliateDecisionBatch,
+    "affiliate-partner-ledger.schema.json": AffiliatePartnerLedger,
     "demand-evidence.schema.json": DemandEvidence,
     "cohort-evidence.schema.json": CohortEvidence,
     "operations-evidence.schema.json": OperationsEvidence,
     "demand-summary-batch.schema.json": DemandSummaryBatch,
+    "mangools-demand-safe-summary.schema.json": MangoolsDemandSafeSummary,
+    "mangools-expansion-set-safe-summary.schema.json": MangoolsExpansionSetSafeSummary,
+    "mangools-slate-demand-safe-summary.schema.json": MangoolsSlateDemandSafeSummary,
     "cohort-summary-batch.schema.json": CohortSummaryBatch,
     "operations-summary-batch.schema.json": OperationsSummaryBatch,
     "human-gold-set.schema.json": HumanGoldSet,
@@ -349,6 +364,9 @@ SCHEMA_MODELS = {
     "policy-memo.schema.json": PolicyMemo,
     "human-policy-decision-receipt.schema.json": HumanPolicyDecisionReceipt,
     "content-brief.schema.json": ContentBrief,
+    "editorial-article-input.schema.json": EditorialArticleInput,
+    "human-editorial-numeric-field.schema.json": HumanEditorialNumericField,
+    "category-expansion-input.schema.json": CategoryExpansionInput,
     "claim-evidence-link.schema.json": ClaimEvidenceLink,
     "editorial-draft.schema.json": EditorialDraft,
     "editorial-package.schema.json": EditorialPackage,

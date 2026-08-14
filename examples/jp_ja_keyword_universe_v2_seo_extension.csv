@@ -1,0 +1,61 @@
+universe_version,country,language,cluster_id,intent,vendor,query
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO キーワード分析 サービス
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO コンテンツ分析 ツール
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO コンテンツ最適化 ツール
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 内部対策 ツール
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 技術監査 ツール
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 競合調査 サービス
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 検索順位 管理
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 検索順位 モニタリング
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO キーワード 管理
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 被リンク 分析
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO ドメイン 分析
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO トラフィック 分析
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO SERP 分析
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO サイトヘルス チェック
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO ページ監査
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO コンテンツギャップ 分析
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO キーワードギャップ 分析
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO ボリューム 調査
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 難易度 調査
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 検索意図 分析
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO ローカル順位 計測
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO モバイル順位 計測
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 複数サイト 管理
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO チーム向け ツール
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 一人運用 ツール
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO ブログ運営 ツール
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 記事制作 ツール
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 成果測定 ツール
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO ダッシュボード
+jp-ja-v2,JP,ja,seo-extension-category,category,,SEO 定期レポート
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO キーワード分析 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO コンテンツ分析 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO 内部対策 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO 技術監査 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO 競合調査 サービス 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO 検索順位 管理 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO 検索順位 モニタリング 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO キーワード 管理 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO 被リンク 分析 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO ドメイン 分析 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO トラフィック 分析 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO SERP 分析 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO サイトヘルス ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO ページ監査 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO コンテンツギャップ ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO キーワードギャップ ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,検索ボリューム 調査 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,キーワード難易度 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,検索意図 分析 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,ローカル順位 計測 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,モバイル順位 計測 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,複数サイト SEO 管理 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO チーム向け ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO 一人運用 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,ブログ SEO ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,記事制作 SEO ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO 成果測定 ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO ダッシュボード 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO 定期レポート ツール 比較
+jp-ja-v2,JP,ja,seo-extension-comparison,comparison,,SEO オールインワン 比較

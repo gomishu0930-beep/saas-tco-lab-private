@@ -65,12 +65,20 @@ RepositoryScopeProfile = Literal[
     "p11-p21-local-candidate-v3",
     "p11-p21-growth-local-candidate-v4",
     "p11-p21-owned-learning-local-candidate-v5",
+    "p11-p21-measurement-deploy-ready-local-candidate-v6",
+    "p11-p21-launch-track-local-candidate-v7",
+    "p11-p21-editorial-contracts-local-candidate-v8",
 ]
 LEGACY_SCOPE_PROFILE: RepositoryScopeProfile = "p11-p18-local-candidate-v1"
 P20_SCOPE_PROFILE: RepositoryScopeProfile = "p11-p20-local-candidate-v2"
 P21_SCOPE_PROFILE: RepositoryScopeProfile = "p11-p21-local-candidate-v3"
 GROWTH_SCOPE_PROFILE: RepositoryScopeProfile = "p11-p21-growth-local-candidate-v4"
-SCOPE_PROFILE: RepositoryScopeProfile = "p11-p21-owned-learning-local-candidate-v5"
+OWNED_LEARNING_SCOPE_PROFILE: RepositoryScopeProfile = (
+    "p11-p21-owned-learning-local-candidate-v5"
+)
+SCOPE_PROFILE: RepositoryScopeProfile = (
+    "p11-p21-editorial-contracts-local-candidate-v8"
+)
 PREVIOUS_CANDIDATE_RECORD = "docs/P11_P17_LOCAL_ACCEPTANCE_PENDING.md"
 _SCOPE_PATHS_BY_PROFILE = {
     LEGACY_SCOPE_PROFILE: (
@@ -85,8 +93,17 @@ _SCOPE_PATHS_BY_PROFILE = {
     GROWTH_SCOPE_PROFILE: (
         "1c93f72ca8bb2d9bd2780c04a02b4eef7db7ff1fcdf160909be85e73a0deed15"
     ),
-    SCOPE_PROFILE: (
+    OWNED_LEARNING_SCOPE_PROFILE: (
         "e095b623274f1ce14d4b413bccc760bad1238effc4e63d4077a014e64a0f0bc6"
+    ),
+    "p11-p21-measurement-deploy-ready-local-candidate-v6": (
+        "227fe3fcfc83718e17f5e9fb8667cc4c762b6606a6f000319619ff4aaf473d20"
+    ),
+    "p11-p21-launch-track-local-candidate-v7": (
+        "a078f9b367a21890879f0b24445f84d2e95994d32489f9d939964107f2390175"
+    ),
+    SCOPE_PROFILE: (
+        "a940a77d2c262cb16d38f559918a0c453c0ece0fd49e074c8e4a3aa07444d945"
     ),
 }
 
@@ -96,12 +113,14 @@ _SCOPE_ROOT_FILES = (
     "AGENTS.md",
     "README.md",
     "pyproject.toml",
+    "status-dashboard.html",
     "uv.lock",
 )
 _SCOPE_ROOT_DIRECTORIES = (
     ".github",
     ".workflow/recipes",
     ".workflow/saas-affiliate-production-roadmap",
+    "artifacts/editorial-inputs",
     "artifacts/release-assurance",
     "docs",
     "examples",
@@ -152,6 +171,7 @@ _BASE_TEST_MODULES = frozenset(
         "tests/test_cli.py",
         "tests/test_control_cycle.py",
         "tests/test_economics.py",
+        "tests/test_editorial_input.py",
         "tests/test_end_to_end.py",
         "tests/test_external_actions.py",
         "tests/test_goldset.py",
@@ -160,6 +180,7 @@ _BASE_TEST_MODULES = frozenset(
         "tests/test_keyword_universe.py",
         "tests/test_launch_semantics.py",
         "tests/test_launch_semantics_security.py",
+        "tests/test_mangools_export.py",
         "tests/test_measurement.py",
         "tests/test_measurement_cli.py",
         "tests/test_measurement_integrity.py",
@@ -177,7 +198,9 @@ _BASE_TEST_MODULES = frozenset(
         "tests/test_sbom.py",
         "tests/test_source_access.py",
         "tests/test_storage.py",
+        "tests/test_status_dashboard.py",
         "tests/test_tco.py",
+        "tests/test_tco_golden.py",
         "tests/test_verified_runner.py",
     }
 )

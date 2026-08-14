@@ -940,8 +940,16 @@ def _production_probe_readiness_closure(
     )
 
 
-def _file_sha256(path: str | Path) -> str:
+def _file_sha256(
+    path: str | Path,
+    *,
+    absolute_deadline: float | None = None,
+) -> str:
     selected = Path(os.path.abspath(os.fspath(path)))
+    if absolute_deadline is not None and time.monotonic() >= absolute_deadline:
+        raise ProductionConsumerError(
+            "adapter subprocess execution deadline is exhausted"
+        )
     try:
         descriptor, before = _open_regular_file_no_follow(selected)
     except OSError as exc:
@@ -950,6 +958,13 @@ def _file_sha256(path: str | Path) -> str:
     try:
         while chunk := os.read(descriptor, 1_048_576):
             digest.update(chunk)
+            if (
+                absolute_deadline is not None
+                and time.monotonic() >= absolute_deadline
+            ):
+                raise ProductionConsumerError(
+                    "adapter subprocess execution deadline is exhausted"
+                )
         _require_unchanged_file(descriptor, before, selected.name)
     finally:
         os.close(descriptor)
@@ -1103,8 +1118,16 @@ def _adapter_dependency_label(path: Path) -> str:
 
 def _adapter_dependency_manifest(
     paths: tuple[Path, ...],
+    *,
+    absolute_deadline: float | None = None,
 ) -> dict[str, str]:
-    manifest = {str(path.absolute()): _file_sha256(path) for path in paths}
+    manifest = {
+        str(path.absolute()): _file_sha256(
+            path,
+            absolute_deadline=absolute_deadline,
+        )
+        for path in paths
+    }
     if len(manifest) != len(paths):
         raise ProductionConsumerError("adapter dependency closure is ambiguous")
     return manifest
@@ -4158,7 +4181,12 @@ def _communicate_bounded(
         except subprocess.TimeoutExpired:
             def reap_after_authority_release() -> None:
                 try:
-                    process.wait()
+                    # Keep cleanup off the authority-critical path without an
+                    # unbounded Popen.wait().  poll() performs non-blocking
+                    # waitpid checks and still reaps the killed child once the
+                    # kernel publishes its terminal status.
+                    while process.poll() is None:
+                        time.sleep(0.01)
                 except BaseException:
                     pass
 
@@ -4473,7 +4501,10 @@ class SubprocessProviderAdapter:
                 )
             )
         )
-        dependency_manifest = _adapter_dependency_manifest(self._dependencies)
+        dependency_manifest = _adapter_dependency_manifest(
+            self._dependencies,
+            absolute_deadline=absolute_deadline,
+        )
         if (
             _hash_adapter_dependency_manifest(
                 self._dependencies, dependency_manifest

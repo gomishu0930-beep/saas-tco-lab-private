@@ -107,7 +107,7 @@ export default function LearningPage() {
         <p>目標値であり実績ではありません。observed evidenceが揃うまで収益達成とは表示しません。</p>
       </section>
       <section className="shell page-section">
-        <Link className="button button-secondary" href="/pilot/">12本の合成noindex pilotを見る</Link>
+        <Link className="button button-secondary" href="/pilot">12本の合成noindex pilotを見る</Link>
       </section>
     </main>
   );

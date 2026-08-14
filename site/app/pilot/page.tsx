@@ -1,31 +1,35 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
-import { pilotPages } from "../lib/pilot-pages";
+import { editorialContract } from "../lib/editorial-contracts";
+import { firstReleasePilotIds, launchPriorityPages } from "../lib/pilot-pages";
 
 export const metadata: Metadata = {
-  title: "合成noindex pilot",
-  description: "高意図クエリ向け12本の記事構造を合成データだけで検証する公開前pilot。",
+  title: "公開前の記事template",
+  description: "Human確認済みの数値fieldを受け入れるP01–P12の公開前記事template。",
 };
 
 export default function PilotIndexPage() {
+  const orderedPages = launchPriorityPages();
+  const firstRelease = new Set(firstReleasePilotIds);
   return (
     <main id="main-content" className="page-main">
       <header className="shell page-header">
-        <p className="eyebrow">12 SYNTHETIC PILOT PAGES</p>
-        <h1>高意図記事を、公開せずに12本検証する。</h1>
-        <p>すべて合成fixture、robots noindex、CTA無効です。実在価格やAffiliate評価は含みません。</p>
+        <p className="eyebrow">12 EDITORIAL TEMPLATES / NOINDEX</p>
+        <h1>高意図記事を、公開前に12本組み立てる。</h1>
+        <p>本文下書きは12本完成し、P01–P10・P12の11本はHuman承認後に公開済みです。P11は完全暦月の自データ取得とreviewを継続し、noindex・CTA無効を維持します。</p>
       </header>
       <section className="shell page-section" aria-labelledby="pilot-list-title">
         <div className="section-heading"><p className="eyebrow">PILOT MANIFEST</p><h2 id="pilot-list-title">記事構造一覧</h2></div>
         <div className="policy-cards">
-          {pilotPages.map((page, index) => (
-            <article key={page.slug}>
-              <span>{String(index + 1).padStart(2, "0")}</span>
-              <h2><Link href={`/pilot/${page.slug}/`}>{page.title}</Link></h2>
+          {orderedPages.map((page, index) => {
+            const approvedCandidate = editorialContract(page)?.article_review_status === "approved";
+            return <article key={page.slug}>
+              <span>{page.id} / 優先 {String(index + 1).padStart(2, "0")}{firstRelease.has(page.id as (typeof firstReleasePilotIds)[number]) ? " / 公開第1弾" : ""}{approvedCandidate ? " / 承認済み公開候補" : ""}</span>
+              <h2><Link href={`/pilot/${page.slug}`}>{page.title}</Link></h2>
               <p>{page.question}</p>
-            </article>
-          ))}
+            </article>;
+          })}
         </div>
       </section>
     </main>

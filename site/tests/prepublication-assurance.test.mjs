@@ -2,6 +2,29 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test, { before } from "node:test";
 
+const SERVER_CANDIDATE_ROUTES = [
+  "business-server-pricing",
+  "small-business-server",
+  "ec-server-cost",
+  "server-first-year-total",
+  "server-renewal-cost",
+  "server-migration-cost",
+  "business-rental-server",
+  "ec-server-requirements",
+  "business-mail-server",
+  "managed-server-cost",
+  "business-rental-server-comparison",
+  "small-business-server-comparison",
+  "ec-server-comparison",
+  "business-mail-server-comparison",
+  "managed-server-comparison",
+  "wordpress-server-cost",
+  "server-transfer-cost",
+  "server-backup-cost",
+  "small-corporate-server",
+  "server-cancellation-terms",
+].map((_, index) => `/servers/business-server-pricing?candidate=SVR${String(index + 1).padStart(2, "0")}`);
+
 const ROUTES = [
   "/",
   "/comparison",
@@ -23,8 +46,26 @@ const ROUTES = [
   "/disclosure",
   "/readiness",
   "/operator",
+  "/operator/servers",
+  "/operator/derivatives",
+  ...SERVER_CANDIDATE_ROUTES,
+  "/embed/tco-calculator",
+  "/about",
+  "/operator-information",
+  "/privacy",
+  "/contact",
+  "/advertising-policy",
 ];
-const ROUTE_PATHS = new Set(ROUTES);
+const ARTICLE_ROUTES = ROUTES.filter((path) => path.startsWith("/pilot/"));
+const ROUTE_PATHS = new Set(ROUTES.map(normalizedRoute));
+const SVR01_ROUTE = "/servers/business-server-pricing?candidate=SVR01";
+const ALLOWED_EVIDENCE_HOSTS = new Set([
+  "saastcolab.jp",
+  "mangools.com",
+  "seranking.com",
+  "www.semrush.com",
+  "business.xserver.ne.jp",
+]);
 const pages = new Map();
 
 async function render(path) {
@@ -96,7 +137,7 @@ before(async () => {
   }
 });
 
-test("all twenty routes expose deterministic accessible document metadata", () => {
+test("all public-prelaunch and local routes expose deterministic accessible document metadata", () => {
   const titles = new Set();
   const descriptions = new Set();
   const headings = new Set();
@@ -160,6 +201,77 @@ test("all twenty routes expose deterministic accessible document metadata", () =
   }
 });
 
+test("every P01-P12 article renders PR disclosure before a disabled CTA", () => {
+  assert.equal(ARTICLE_ROUTES.length, 12);
+  for (const path of ARTICLE_ROUTES) {
+    const html = pages.get(path);
+    const disclosurePosition = html.indexOf('id="article-pr-disclosure"');
+    const ctaPosition = html.indexOf('data-affiliate-cta-placeholder="mangools"');
+    assert.ok(disclosurePosition >= 0, `${path}: PR disclosure`);
+    assert.match(html, /記事制作に生成AIを補助的に使用する場合があります/, `${path}: AI assistance disclosure`);
+    assert.ok(ctaPosition > disclosurePosition, `${path}: disclosure before CTA`);
+    assert.doesNotMatch(html, /rel=["'][^"']*sponsored/i, path);
+  }
+});
+
+test("every servers candidate stays noindex, unranked, CTA-disabled, and disclosure-first", () => {
+  assert.equal(SERVER_CANDIDATE_ROUTES.length, 20);
+  for (const path of SERVER_CANDIDATE_ROUTES) {
+    const html = pages.get(path);
+    const disclosurePosition = html.indexOf('id="article-pr-disclosure"');
+    const calculatorPosition = html.indexOf('data-server-template-step="calculator"');
+    const ctaPosition = html.indexOf('data-server-template-step="cta_slot"');
+    assert.ok(disclosurePosition >= 0 && disclosurePosition < calculatorPosition, `${path}: disclosure first`);
+    assert.match(html, /記事制作に生成AIを補助的に使用する場合があります/, `${path}: AI assistance disclosure`);
+    assert.ok(calculatorPosition < ctaPosition, `${path}: calculator before CTA`);
+    if (path === SVR01_ROUTE) {
+      assert.match(html, /確認済み(?:<!-- -->)?4(?:<!-- -->)?項目、未確認(?:<!-- -->)?6(?:<!-- -->)?項目、[\s\S]{0,40}該当なし(?:<!-- -->)?1(?:<!-- -->)?項目/, path);
+      assert.match(html, /data-ranking-eligible="false"[\s\S]{0,400}<strong>未確認<\/strong>/, path);
+      assert.match(html, /data-server-article-review="approved"/, path);
+      assert.match(html, /契約時に確認できた請求額は(?:<!-- -->)?66,660/, path);
+      assert.match(html, /期間限定キャッシュバックを控除する前の金額/, path);
+      assert.match(html, /66,660円/, path);
+      assert.match(html, /24\/36か月総額・順位・推奨は表示しません/, path);
+      assert.match(html, /他社より安いとは断定せず/, path);
+      assert.match(html, /キャッシュバックの確定額と受取条件/, path);
+    } else {
+      assert.match(html, /承認済みのservers価格contractはまだありません/, path);
+    }
+    assert.match(html, /公開条件をすべて通過したpartnerがないためCTAは無効/, path);
+    assert.doesNotMatch(html, /data-server-cta-mode="(?:single|comparison)"|rel=["'][^"']*sponsored/i, path);
+  }
+});
+
+test("structured data includes only Human-approved known prices while every article remains noindex", () => {
+  assert.equal(ARTICLE_ROUTES.length, 12);
+  const approvedOfferCounts = new Map([
+    ["/pilot/pricing-calculator", 1],
+    ["/pilot/plan-comparison", 3],
+    ["/pilot/alternatives", 1],
+  ]);
+  for (const path of ARTICLE_ROUTES) {
+    const html = pages.get(path);
+    const payloads = [...html.matchAll(
+      /<script\b[^>]*type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi,
+    )].map((match) => JSON.parse(match[1]));
+    assert.equal(payloads.length, 1, `${path}: JSON-LD count`);
+    const graph = payloads[0]["@graph"];
+    assert.deepEqual(
+      graph.map((item) => item["@type"]),
+      ["Product", "FAQPage", "BreadcrumbList"],
+      `${path}: required structured-data types`,
+    );
+    const expectedOffers = approvedOfferCounts.get(path) ?? 0;
+    if (expectedOffers > 0) {
+      assert.equal(graph[0].offers.length, expectedOffers, `${path}: approved price count`);
+      assert.ok(graph[0].offers.every((offer) => offer.price && offer.priceCurrency), `${path}: known approved prices only`);
+    } else {
+      assert.equal("offers" in graph[0], false, `${path}: unapproved price excluded`);
+      assert.doesNotMatch(JSON.stringify(payloads[0]), /"price"\s*:/i, `${path}: no price markup`);
+    }
+  }
+});
+
 test("navigation, skip links, and every rendered link stay internal and valid", () => {
   for (const path of ROUTES) {
     const html = pages.get(path);
@@ -184,7 +296,18 @@ test("navigation, skip links, and every rendered link stay internal and valid", 
         assert.match(html, new RegExp(`\\bid=["']${target}["']`, "i"), `${path}: ${href}`);
         continue;
       }
-      assert.equal(href.startsWith("/"), true, `${path}: external link ${href}`);
+      if (/^https:\/\//i.test(href)) {
+        const external = new URL(href);
+        assert.equal(path, SVR01_ROUTE, `${path}: unexpected external evidence link`);
+        assert.equal(ALLOWED_EVIDENCE_HOSTS.has(external.hostname), true, `${path}: external evidence host`);
+        assert.equal(external.search, "", `${path}: evidence link query`);
+        assert.equal(external.hash, "", `${path}: evidence link fragment`);
+        const rel = (attributes(anchor).get("rel") ?? "").split(/\s+/);
+        assert.ok(rel.includes("noopener") && rel.includes("noreferrer"), `${path}: external evidence rel`);
+        assert.equal(rel.includes("sponsored"), false, `${path}: evidence link is not CTA`);
+        continue;
+      }
+      assert.equal(href.startsWith("/"), true, `${path}: non-internal link ${href}`);
       assert.equal(href.startsWith("//"), false, `${path}: protocol-relative link`);
       assert.equal(
         ROUTE_PATHS.has(normalizedRoute(href)),
@@ -243,23 +366,58 @@ test("comparison tables expose captions, scoped headers, adjacent disclosure, an
   }
 });
 
-test("pre-public HTML contains no canonical, JSON-LD, public origin, or active CTA", () => {
+test("pre-public HTML contains no canonical, runtime origin, tracking URL, or active CTA", () => {
   for (const path of ROUTES) {
     const html = pages.get(path);
+    assert.doesNotMatch(
+      html,
+      /google-site-verification|googletagmanager|google-analytics|data-saastco-analytics-consent/i,
+      `${path}: runtime measurement controls must be absent without approved env`,
+    );
     for (const link of openingTags(html, "link").map(attributes)) {
       const rel = (link.get("rel") ?? "").toLowerCase().split(/\s+/);
       assert.equal(rel.includes("canonical"), false, `${path}: canonical`);
     }
-    for (const script of openingTags(html, "script").map(attributes)) {
-      assert.notEqual(
-        script.get("type")?.toLowerCase(),
-        "application/ld+json",
-        `${path}: JSON-LD`,
-      );
+    const htmlWithoutScripts = html.replace(/<script\b[\s\S]*?<\/script>/gi, "");
+    const externalTextUrls = [...htmlWithoutScripts.matchAll(/https:\/\/([^\s<]+)/gi)];
+    for (const match of externalTextUrls) {
+      const host = match[1].replace(/\/$/, "").split("/")[0];
+      assert.equal(ALLOWED_EVIDENCE_HOSTS.has(host), true, `${path}: unapproved external evidence host ${host}`);
     }
-    assert.doesNotMatch(html, /\b(?:https?:)?\/\//i, `${path}: public origin`);
+    assert.doesNotMatch(html, /saas-tco-lab-jp\.shukun0930\.chatgpt\.site/i, `${path}: runtime origin`);
+    assert.doesNotMatch(html, /[?&](?:utm_|ref|aff|partner|clickid|subid)/i, `${path}: tracking URL`);
     assert.doesNotMatch(html, /\brel=["'][^"']*sponsored/i, `${path}: sponsored link`);
     assert.doesNotMatch(html, /公式サイトへ|affiliate[_-]?url/i, `${path}: active CTA`);
+  }
+});
+
+test("every article exposes text-only Open Graph and Twitter metadata", () => {
+  for (const path of ARTICLE_ROUTES) {
+    const html = pages.get(path);
+    assert.match(html, /<meta property="og:title" content="[^"]+"\/>/i, path);
+    assert.match(html, /<meta property="og:description" content="[^"]+"\/>/i, path);
+    assert.match(html, /<meta property="og:url" content="https:\/\/saastcolab\.jp\/pilot\/[^"/]+"\/>/i, path);
+    assert.match(html, /<meta property="og:site_name" content="SaaS TCO Lab"\/>/i, path);
+    assert.match(html, /<meta property="og:type" content="article"\/>/i, path);
+    assert.match(html, /<meta name="twitter:card" content="summary"\/>/i, path);
+    assert.match(html, /<meta name="twitter:title" content="[^"]+"\/>/i, path);
+    assert.match(html, /<meta name="twitter:description" content="[^"]+"\/>/i, path);
+    assert.doesNotMatch(html, /property="og:image"|name="twitter:image"/i, path);
+  }
+});
+
+test("article metadata and internal links use the canonical no-trailing-slash form", () => {
+  for (const path of ARTICLE_ROUTES) {
+    const html = pages.get(path);
+    const ogUrl = html.match(/<meta property="og:url" content="([^"]+)"\/>/i)?.[1];
+    assert.equal(ogUrl, `https://saastcolab.jp${path}`, `${path}: Open Graph URL`);
+
+    for (const anchor of openingTags(html, "a")) {
+      const href = attributes(anchor).get("href");
+      if (!href?.startsWith("/") || href === "/") continue;
+      const pathname = href.split(/[?#]/, 1)[0];
+      assert.equal(pathname.endsWith("/"), false, `${path}: redirecting internal link ${href}`);
+    }
   }
 });
 

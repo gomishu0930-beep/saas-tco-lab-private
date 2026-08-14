@@ -64,7 +64,8 @@ uv run saas-preflight evaluate-readiness examples/business-dossier.current-block
 uv run saas-preflight render-preview examples/preview-page.synthetic.json --output /tmp/saas-preview.html
 uv run saas-preflight evaluate-gold-set \
   --gold-set gold-set.json \
-  --candidates candidate-batch.json
+  --candidates candidate-batch.json \
+  --at 2026-07-21T12:00:00Z
 uv run saas-preflight evaluate-editorial-package editorial-package.json --at 2026-07-23T03:00:00Z
 uv run saas-preflight rank-growth-initiatives initiative-portfolio.json
 uv run saas-preflight build-growth-scorecard feedback.json \

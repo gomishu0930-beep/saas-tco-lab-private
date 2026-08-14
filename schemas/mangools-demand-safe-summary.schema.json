@@ -1,0 +1,247 @@
+{
+  "$defs": {
+    "DemandCapacityDecision": {
+      "enum": [
+        "insufficient_even_at_full_capture",
+        "known_volume_floor_below_required_incomplete",
+        "volume_floor_met_not_proven"
+      ],
+      "title": "DemandCapacityDecision",
+      "type": "string"
+    },
+    "MangoolsRejectedVolumeRow": {
+      "additionalProperties": false,
+      "properties": {
+        "line_number": {
+          "minimum": 2,
+          "title": "Line Number",
+          "type": "integer"
+        },
+        "source_text": {
+          "title": "Source Text",
+          "type": "string"
+        }
+      },
+      "required": [
+        "line_number",
+        "source_text"
+      ],
+      "title": "MangoolsRejectedVolumeRow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "acquisition_method": {
+      "const": "human_ui_export",
+      "default": "human_ui_export",
+      "title": "Acquisition Method",
+      "type": "string"
+    },
+    "assumed_confirmed_epc_jpy": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+          "type": "string"
+        }
+      ],
+      "title": "Assumed Confirmed Epc Jpy"
+    },
+    "assumed_outbound_ctr": {
+      "anyOf": [
+        {
+          "exclusiveMinimum": 0.0,
+          "maximum": 1.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+          "type": "string"
+        }
+      ],
+      "title": "Assumed Outbound Ctr"
+    },
+    "capacity_decision": {
+      "$ref": "#/$defs/DemandCapacityDecision"
+    },
+    "comma_integer_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Comma Integer Volume Count",
+      "type": "integer"
+    },
+    "country": {
+      "const": "JP",
+      "default": "JP",
+      "title": "Country",
+      "type": "string"
+    },
+    "decimal_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Decimal Volume Count",
+      "type": "integer"
+    },
+    "frozen_universe_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Frozen Universe Sha256",
+      "type": "string"
+    },
+    "integer_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Integer Volume Count",
+      "type": "integer"
+    },
+    "keyword_count": {
+      "const": 150,
+      "title": "Keyword Count",
+      "type": "integer"
+    },
+    "known_monthly_search_volume_total": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d*$",
+          "type": "string"
+        }
+      ],
+      "title": "Known Monthly Search Volume Total"
+    },
+    "known_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Known Volume Count",
+      "type": "integer"
+    },
+    "language": {
+      "const": "ja",
+      "default": "ja",
+      "title": "Language",
+      "type": "string"
+    },
+    "monthly_revenue_target_jpy": {
+      "exclusiveMinimum": 0,
+      "title": "Monthly Revenue Target Jpy",
+      "type": "integer"
+    },
+    "next_review_on": {
+      "format": "date",
+      "title": "Next Review On",
+      "type": "string"
+    },
+    "no_data_rate": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+          "type": "string"
+        }
+      ],
+      "title": "No Data Rate"
+    },
+    "no_data_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "No Data Volume Count",
+      "type": "integer"
+    },
+    "observed_on": {
+      "format": "date",
+      "title": "Observed On",
+      "type": "string"
+    },
+    "provider": {
+      "const": "mangools_kwfinder_human_csv",
+      "default": "mangools_kwfinder_human_csv",
+      "title": "Provider",
+      "type": "string"
+    },
+    "query_values_saved": {
+      "const": false,
+      "default": false,
+      "title": "Query Values Saved",
+      "type": "boolean"
+    },
+    "raw_csv_sha256": {
+      "pattern": "^[0-9a-f]{64}$",
+      "title": "Raw Csv Sha256",
+      "type": "string"
+    },
+    "raw_saved": {
+      "const": false,
+      "default": false,
+      "title": "Raw Saved",
+      "type": "boolean"
+    },
+    "rejected_rows": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/MangoolsRejectedVolumeRow"
+      },
+      "title": "Rejected Rows",
+      "type": "array"
+    },
+    "rejected_volume_count": {
+      "maximum": 150,
+      "minimum": 0,
+      "title": "Rejected Volume Count",
+      "type": "integer"
+    },
+    "required_confirmed_outbound_clicks": {
+      "exclusiveMinimum": 0,
+      "title": "Required Confirmed Outbound Clicks",
+      "type": "integer"
+    },
+    "required_sessions_at_assumed_ctr": {
+      "exclusiveMinimum": 0,
+      "title": "Required Sessions At Assumed Ctr",
+      "type": "integer"
+    },
+    "schema_version": {
+      "const": "1.1",
+      "default": "1.1",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "scope_expansion_recommended": {
+      "title": "Scope Expansion Recommended",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "keyword_count",
+    "known_volume_count",
+    "no_data_volume_count",
+    "rejected_volume_count",
+    "integer_volume_count",
+    "comma_integer_volume_count",
+    "decimal_volume_count",
+    "known_monthly_search_volume_total",
+    "no_data_rate",
+    "observed_on",
+    "next_review_on",
+    "raw_csv_sha256",
+    "frozen_universe_sha256",
+    "monthly_revenue_target_jpy",
+    "assumed_confirmed_epc_jpy",
+    "assumed_outbound_ctr",
+    "required_confirmed_outbound_clicks",
+    "required_sessions_at_assumed_ctr",
+    "capacity_decision",
+    "scope_expansion_recommended"
+  ],
+  "title": "MangoolsDemandSafeSummary",
+  "type": "object"
+}

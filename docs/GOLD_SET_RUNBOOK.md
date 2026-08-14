@@ -84,7 +84,10 @@ CLIはlocal JSONをread-only評価し、stdoutへhash-only reportを出す。既
 ```bash
 uv run saas-preflight evaluate-gold-set \
   --gold-set gold-set.json \
-  --candidates candidate-batch.json
+  --candidates candidate-batch.json \
+  --at 2026-07-21T12:00:00Z
 ```
+
+`--at`を指定すると、同じ入力を同じ評価時刻で再現できる。省略時は現在時刻を使う。
 
 実入力を作成するのはGate A/B合格後。それまではtest内のsynthetic fixtureだけを使う。

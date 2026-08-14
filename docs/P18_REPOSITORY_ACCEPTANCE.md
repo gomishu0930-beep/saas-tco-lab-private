@@ -11,9 +11,15 @@ P18は、未commit・全file未追跡のworking treeでも、P11–P21のlocal�
 ## 固定scope
 
 `p11-p18-local-candidate-v1`、`p11-p20-local-candidate-v2`、`p11-p21-local-candidate-v3`、
-`p11-p21-growth-local-candidate-v4`は履歴profileとしてpath-set hashを変更せず保持する。現行
-`p11-p21-owned-learning-local-candidate-v5`はgrowth semantic、AI routing、12本の合成noindex pilot、実装台帳、
-署名付き自データ初期品質gateを含め、rootの`.gitignore`、`.gitleaks.toml`、`AGENTS.md`、`README.md`、
+`p11-p21-growth-local-candidate-v4`、`p11-p21-owned-learning-local-candidate-v5`、
+`p11-p21-measurement-deploy-ready-local-candidate-v6`と`p11-p21-launch-track-local-candidate-v7`は
+履歴profileとしてpath-set hashを変更せず保持する。現行
+`p11-p21-editorial-contracts-local-candidate-v8`は、v7の全対象に加えてP04・P05・P08–P12の
+Human editorial input contractを含む。これは既存P18のpath-set version更新であり、新phase、
+新署名層、新acceptance文書を追加しない。v7は、v6の全対象に加えて、
+servers向けのHuman観測UI、noindex記事候補route、fail-closed testを含むlaunch-track scopeである。v6は、
+growth semantic、AI routing、12本の合成noindex pilot、実装台帳、署名付き自データ初期品質gate、
+GSC/GA4のfail-closed deployment gateを含め、rootの`.gitignore`、`.gitleaks.toml`、`AGENTS.md`、`README.md`、
 `pyproject.toml`、`uv.lock`と、`.github`、workflow recipe/roadmap、release-assurance artifact、`docs`、
 `examples`、`schemas`、`scripts`、`site`、`src`、`tests`を全列挙する。runtime cache、virtualenv、
 Web build/node modulesと`artifacts/local-acceptance`はscope外である。

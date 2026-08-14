@@ -71,10 +71,10 @@ npm run dev
 
 公開へは次をすべて満たした別Human GOが必要。
 
-1. Gate A: 公開予定fieldの権利が3社でcurrent。
-2. Gate B: 対象propertyで実利用可能なAffiliateが3社。
-3. Gate C: JP/ja qualified demandの保守ケースが成立。
-4. Gate D: 30日shadowで重大誤表示0、job 99%以上、例外24以下、人手720分以下、rollback合格。
-5. domain、legal/privacy/disclosure、account、billing、credential、deploy先、rollback ownerの承認。
+1. Automated data pathはGate A1のfield権利、Gate C、Gate Dを満たす。Human editorial pathはfield-level書面許諾、3社×6プランgold set、30日shadowをlaunch入口にしない。
+2. Editorial CTAは掲載対象partnerのAffiliate承認、規約・表示遵守、partner別CTA GOを満たす。実利用可能3社はlaunch条件ではない。
+3. Editorial記事はHuman入力contract、出典URL、観測日、次回確認日、記事別承認を満たす。unknownを使う計算・順位は停止する。
+4. domain、legal/privacy/disclosure、account、billing、credential、deploy先、rollback ownerを対象actionごとに承認する。
+5. indexは`index_go: GO`と記事別承認、CTAはさらにpartner別GOを必要とする。
 
 条件未達の現在判定は`STOP`であり、local実装完了を事業GOへ読み替えない。

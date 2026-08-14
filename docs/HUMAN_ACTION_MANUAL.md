@@ -1,6 +1,6 @@
 # Human Action Manual — あなたが操作する箇所だけ
 
-基準日: 2026-07-23（Asia/Tokyo）
+基準日: 2026-08-12（Asia/Tokyo）
 
 この表は、本人確認、credential、法的同意、税務・受取情報、最終事業判断のように、Human Approver本人でなければ完了できない作業だけを残したものです。価格収集、入力整形、比較計算、検証、実装、集計、監視はCodex側で進めます。
 
@@ -9,7 +9,8 @@
 ## 月末までのカード不要モード
 
 2026-07-31までは、カード登録、有料trial、支払いプロファイル作成、課金開始を行わない。
-Google Workspace、domain購入、OpenAI API、challenger AI、cloud、hosting、有料SEO toolは保留する。
+Google Workspace、domain購入、OpenAI API、challenger AI、有料cloud・有料hosting、有料SEO toolは保留する。
+カード不要Sitesの公開前originだけは、2026-07-26のHuman指示に基づき一般公開済みである。
 無料登録であってもカード画面が出た時点で停止し、代替カードや別Payments profileを繰り返し試さない。
 
 この期間に先行できるのは、許諾文面の確認、対象別GO後の問い合わせ、Mangools無料登録、
@@ -20,31 +21,33 @@ SE Ranking Affiliate窓口への例外問い合わせ、HubSpot申請準備、�
 
 |ID|時期|あなたが行うこと|所要目安|現在地|完了の合図|完了後にCodexが行うこと|
 |---|---|---|---:|---|---|---|
-|H1|今|公開名義と公開予定URLを決める|3分|入力待ち|下の返信テンプレート3項目を返す|5社の許諾メールを同じscopeへ確定する|
-|H2|完了|5社への利用許諾照会を承認する|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を8項目へ分解し、Human最終判定へ回す|
-|H3|今|Google Adsをカード要求前まで進める変更不能設定を承認する|2分|日本／日本時間／日本円の「続行」直前|`google_ads: GO`と返す|無料範囲ならKeyword Plannerへ進み、カード要求時は停止する|
+|H1|完了|公開名義と公開予定URLを決める|0分|brand=`SaaS TCO Lab`、approver=`omishu`、恒久origin確定・外部readback済み|追加操作なし|GSC/GA4と申請先siteを同一originへそろえる|
+|H2|初回分類承認済み・追加回答待ち|5社への利用許諾照会を承認する|0分|Semrush/Serpstatの保守的分類は2026-07-26承認済み。Mangools・HubSpot・SE Rankingへ同日追送済み。Serpstat正式回答と他3社回答待ち|新回答時だけfield判定表へ`approve / revise`|Human承認済みのrights decisionだけを台帳化する|
+|H3|見送り|Google Adsをカード要求前まで進める変更不能設定を承認する|0分|2026-07-26、日本・日本時間をread-back後、支払い方法の一時承認課金画面で未送信停止。同日Human判断でGoogle Ads／Keyword Planner経路をskip|追加操作なし|Google Adsへ再進入せず、承認済みの代替JP/ja需要exportを待つ|
 |H4|完了|MangoolsのcredentialとreCAPTCHAを本人操作する|5–8分|2026-07-26登録済み・Affiliate有効|追加操作なし|回答待ちのrightsと公開準備が整うまで紹介IDを非公開のまま保持する|
 |H5|完了|SE Rankingへwork emailなしの登録方法を問い合わせる|2分|2026-07-23送信済み・回答待ち|追加操作なし|回答を登録可否・必要証拠・条件へ分解する|
-|H6|H4と並行可|HubSpot Impact契約への同意、credential、申請送信を本人操作する|10–15分|契約checkbox直前。契約PDF保存済み|送信後に`hubspot_application: submitted`|2–3営業日の審査を追跡し、承認・条件・期限をhash-only記録へ変換する|
+|H6|完了・却下済み|HubSpot Impact契約への同意、credential、申請送信を本人操作する|0分|2026-08-03にlow reachを理由とする`Declined`を確認済み|追加操作なし|公開・流入実績ができるまで再申請しない|
+|H6-S|完了・Marketplace却下済み|Impact MarketplaceのSaaS TCO Lab profileを完了する|0分|2026-08-09にprofile completion後、Marketplaceが`却下済み`であることをread-back。Semrush個別申請は未成立|追加操作なし|公開記事・流入実績が改善するまでMarketplaceとSemrushを再申請しない|
 |H7|回答到着時|各社回答の権限・scopeについて最終判断する|1社5分|未到着|Codexのfield別判定案に`approve`または`reject`|`SourcePolicy`へfield単位で反映し、許可済みsourceだけadapterを実装する|
 |H8|提携承認後|受取方法・税務情報・本人確認を各サービスで入力する|1社10–20分|提携承認待ち|画面上の完了だけを知らせる。値は共有しない|支払条件と期限だけを非機密の証拠へ反映する|
 |H9|需要合格後|30日shadow runの開始日を承認する|2分|Gate A–C待ち|開始日と`shadow_run: GO`|30日の日次処理、故障試験、例外・人手・成功率の集計を開始する|
-|H10|公開直前|domain、法的表示、privacy、公開を個別承認する|10分|まだ実施禁止|各対象へのexact `GO`|noindex staging、readback、rollback後に別途公開判定へ進む|
+|H10|一部完了|実データ、indexing、Affiliate CTA、独自domain、法的表示を個別承認する|10分|独自domainで11記事を公開済み。P09も外部read-back合格。P11だけが完全暦月の自データ待ちでnoindex・CTA無効|各対象へのexact `GO`|実運用releaseをreadbackし、rollback可能性を確認する|
+|H11|完了|KWFinder正規画面で残り180語を4回に分けてHuman exportする|0分|2026-08-13に40・40・40・60語の完全一致、Japan限定、重複0、rejected 0を確認済み|追加操作なし|safe-summaryをdashboardへ反映し、raw CSVはrepo外に維持する|
+|H12|P09完了・P11暦月待ち|OperatorのP09/P11で作業timerを開始・停止し、秒数を確認して端末内台帳へ追記する|承認だけ|P09は移行1,177秒・教育27秒を確認済みcontractへ反映し記事承認済み。P11は2026年9月の導入前月と10月の導入後月を完全計測する|P11候補完成後に最終承認だけ返す|確認済み合計だけを既存contract validatorへ通し、P11標本を生成する|
 
 ## 今すぐ返信するテンプレート
 
-未公開の場合、`site_url`は`未公開`で構いません。ただしHubSpotなどの審査は、外部から確認できる公開URLがないと不承認または保留になる可能性があります。
+公開URL、名義、Google Ads見送り、Mangools登録、HubSpot申請は確定済みなので再入力しません。
+直前の外部3操作と候補台帳3件は2026-07-26に一括承認され、実行・記録済みです。
+Semrush申請のGOは実行済みですが、既存Impact accountへのsign-in後にHubSpot homeへ戻り、受付receiptは生成されませんでした。2026-08-09の最新read-backでImpact Marketplaceは`却下済み`です。再認証・再申請を繰り返さず、公開記事・流入実績が改善した時点で新しいexact GOを使います。GSC・analytics送信gateは2026-07-26にGO受領・実行済みです。
 
 ```text
-legal_name_or_entity:
-site_url:
-human_approver_name:
-
-google_ads: GO / STOP
-
-mangools_terms: GO / STOP
-hubspot_impact_contract: GO / STOP
+gsc_verification_deploy: GO / STOP
+ga4_tag_deploy: GO / STOP
 ```
+
+上記2件は実行済みです。internal traffic filterをtestからactiveへ移す場合だけ、対象sourceを確認後に
+`ga4_internal_filter_activate: GO`を別途使用します。
 
 利用許諾照会の既定値は、取得頻度を`週1回以下`、履歴保持を`36か月（相手方がより短い期間を指定した場合はその期間）`とします。変更したい場合だけ返信へ追記してください。
 
@@ -59,6 +62,12 @@ hubspot_impact_contract: GO / STOP
 5. カードまたはPayments profileを要求された場合は入力せず、月末まで停止します。
 6. 無料範囲でKeyword Plannerへ入れた場合だけ、地域=`日本`、言語=`日本語`、150語の投入、CSV export、重複除去をCodexが実行します。
 
+2026-07-26の実行では、日本と日本時間を確認した後、既存の支払い方法を使う一時承認課金の
+説明と送信ボタンが表示されたため、カード不要条件に従って未送信で停止した。カード情報、
+支払いprofile識別子、Google Ads識別子は記録していない。同日Human判断でこの経路はskipし、
+月末後も自動再試行しない。JP/ja需要gateには、利用権が承認された別exportまたは公開後の
+Search Console実測を使用する。Google Trendsの相対指数だけでは需要gateを合格扱いにしない。
+
 ### H4 — Mangools
 
 2026-07-26に無料アカウントの作成とAffiliate sectionの有効化を確認しました。紹介IDと
@@ -70,6 +79,75 @@ Silver tier 25%、cookie 30日、PayPal、支払申請条件は承認済み売�
 禁止事項はcoupon site、MangoolsへのPPC直リンク、Mangoolsブランドを使うPPC・domain・subdomain・
 social profile、誤認表示、self-referral、未承諾emailです。これはAffiliate利用状態の確認であり、
 価格データの取得・保存・比較表示・TCO派生・履歴利用の許諾回答ではありません。
+
+### H11 — KWFinder 残り180語のHuman export
+
+2026-08-13完了。CRM 40、forms 40、email marketing 40、SEO追加60の全180語を一括検証し、
+safe-summary envelopeだけをrepositoryへ保存しました。次回確認日は2026-09-12です。再exportは不要です。
+
+2026-08-12の正規Dashboardで`Mangools Basic`が有効、KWFinderが`100 / 100 req.`、
+1回のimport上限が200語であることをread-only確認済みです。追加課金やupgradeは不要です。
+Safariの`Import | KWFinder`タブを使い、次の4ファイルを**混ぜずに1ファイルずつ**処理します。
+
+|順番|入力ファイル|行数|保存時の識別名|
+|---:|---|---:|---|
+|1|`outputs/kwfinder_crm_40.txt`|40|`crm-40`|
+|2|`outputs/kwfinder_forms_40.txt`|40|`forms-40`|
+|3|`outputs/kwfinder_email_marketing_40.txt`|40|`email-marketing-40`|
+|4|`outputs/kwfinder_seo_extension_60.txt`|60|`seo-extension-60`|
+
+各ファイルで同じ操作を繰り返します。
+
+1. ファイルを開いて全行をコピーし、KWFinderのImport欄へ貼り付けます。
+2. 行数表示が表の件数と一致することを確認します。
+3. Locationを`Japan`に固定します。別地域または未指定ならProcessしません。
+4. `Process keywords`をHuman本人が押し、結果表が最後まで表示されるのを待ちます。
+5. `Export`からCSVを保存し、上表の識別名をファイル名へ含めます。
+6. 次のファイルへ進む前に入力欄を空にし、前回の語が残っていないことを確認します。
+
+CSVは`outputs/`またはrepositoryへ置かず、Safariのdownload先に残します。4件の保存後、
+`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension`と返信します。
+Codexがdownloadファイルをlocalで検証し、raw、query別volume、Mangools固有IDを保存せず、
+known / no_data / rejected、known合計、no_data率だけをrepositoryへ反映します。Process、Export、
+API取得、browser自動取得をCodexへ再委任しません。
+
+4件受領後は`validate-mangools-expansion-set`を1回だけ実行します。CRM / forms / email marketing /
+SEO追加の全query集合が各凍結slateと完全一致し、40 / 40 / 40 / 60行がそろった場合だけ、4カテゴリの
+safe-summary envelopeを出力します。1カテゴリでも欠落・混在・重複・Japan以外・header不一致があれば、
+部分summaryを採用せず全体をfail-closedにします。出力は集計、hash、観測日、次回確認日だけで、raw CSVと
+query文字列を含みません。
+
+```bash
+uv run saas-preflight validate-mangools-expansion-set \
+  --crm <crm-40.csv> \
+  --forms <forms-40.csv> \
+  --email-marketing <email-marketing-40.csv> \
+  --seo-tools-v2-extension <seo-extension-60.csv> \
+  --slates-dir examples \
+  --observed-on <YYYY-MM-DD> \
+  --next-review-on <YYYY-MM-DD>
+```
+
+以前の`kwfinder_crm_remaining_10.txt`は使いません。過去のCRM 30行CSVが凍結40語との完全一致に失敗したため、
+CRMは全40語を1回で再exportします。KWFinder結果が40行にならない場合も完了扱いにせず、そのCSVだけを保存して
+`HOLD`として知らせてください。
+
+### H12 — P09 / P11 自データの実測
+
+1. `http://localhost:3000/operator`を開き、記事でP09またはP11を選びます。
+2. P09は`移行作業`または`教育`、P11は`導入前作業`または`導入後作業`を選びます。
+3. 実作業の開始時に`計測開始`、終了時に`計測停止`を押します。停止まではmemoryだけで、保存されません。
+4. 表示された秒数、作業区分、計測対象月、Human確認日を確認し、正しい場合だけ
+   `このN秒をHuman確認して追記`を押します。誤りなら`候補を破棄`します。
+5. 確定sessionはPIIなしでこのbrowserの端末内台帳へ追記され、既存行の上書き・削除は行いません。
+6. P09は移行作業と教育が両方そろった後、P11は導入前後それぞれの完全な暦月が終了した後、
+   `確認済み合計を上の自データ欄へ反映`を押します。
+7. 重複契約月数、時間単価、導入費、月額TCO等のtimerで測れない値はHuman実値だけを入力します。
+8. `実測値を未承認候補へ反映`→一般入力欄の差分確認→`Human確認して証拠contractを確定`の順で進めます。
+9. JSON保存後に`article_input: done P09`または`article_input: done P11`と返信します。
+
+P11は月途中を外挿しません。計測対象月とHuman確認日の暦月が違うsessionも保存しないため、過去月の時間を
+記憶から遡及入力する用途には使えません。実測がない場合はunknownのままです。
 
 ### H5 — SE Ranking
 
@@ -104,15 +182,27 @@ Best regards,
 omishu
 ```
 
-### H6 — HubSpot Impact
+### H6 — HubSpot Impact（2026-07-26申請送信済み）
 
-1. 保存済み`HubSpot-Affiliate-Agreement-2024-09-18.pdf`を読みます。
-2. Impactの`Contract Terms for HubSpot`画面へ戻ります。
-3. 同意する場合だけcheckboxを選び、`Continue`を押します。
-4. credential、2FA、本人・事業情報、公開予定site、集客方法は本人が入力します。
-5. 申請内容を確認し、本人が送信します。
-6. `hubspot_application: submitted`と返信します。入力値やcredentialは共有しません。
-7. カード、有料契約、支払方法を要求された場合は送信せず停止します。
+1. Humanのaction-time承認後、ImpactのPartner Program Agreementへ同意し、申請を送信しました。
+2. siteは`https://saas-tco-lab-jp.shukun0930.chatgpt.site`、表示名は`SaaS TCO Lab`、
+   事業区分は`Search/Comparison`、通貨はJPYで確定しました。
+3. Impact Marketplace規約、税務workflow、公開profile、当時のwebsite認証、Marketplace申請は完了しました。税務値と受取情報は記録していません。
+4. 2026-08-03にHubSpotはlow reachを理由とする`Declined`を確認しました。Affiliate承認・CTA・収益計上へ進めません。
+5. 公開・流入実績が改善するまで再申請せず、将来承認されてもpublic pricingの取得・保存・TCO・履歴権は別回答として確認します。
+
+### H6-S — Semrush Impact
+
+1. 2026-07-26、Humanのaction-time承認後に契約checkboxと`Continue`を完了しました。
+2. macOS credential store解除、Impact credential受付、SMS端末認証、既存Impact accountへのloginは完了しました。
+3. 2026-07-26、Humanのaction-time承認`impact_terms_accept: GO`後にPartner User Agreement（画面上の更新日2024-07-10）とMaster Program Agreement（現行URLを2026-07-26確認）へ同意しました。規約全文は保存していません。
+4. 税務workflowは本人判断後に完了しました。選択値、税番号、受取情報はchat・repo・logへ保存していません。
+5. 公開profileは`Search/Comparison`、SaaS TCO Labの説明・関心tag・中立logoで保存済みです。個人情報、配送先、追加link、media kitは追加していません。
+6. SaaS TCO Lab website media propertyは認証済みです。認証値はSitesのsecret設定へ分離し、repoには保存していません。
+7. Impact公式条件どおり認証metaを最初のmetaとするversion 3を公開し、HTTP 200、noindex header、Impact画面の`Verified`をread-backしました。FANZA・成人向けbrand/domain/contentは登録していません。
+8. Marketplace申請は当時受領され進捗100%となりましたが、2026-08-09の最新read-backで`却下済み`です。承認済みとは数えません。
+9. Humanの`semrush_submit: GO`後に個別申請を再試行しましたが、既存Impact accountへのsign-in後はHubSpot homeへ戻りました。Semrushの受付画面・通知・受付メールがないため、申請送信済みとは記録しません。
+10. 2026-08-09にbusiness profileをpublisher・individual・website・product/service reviewsとして完了しました。追加したwebsite channelのverificationは成立していないため、過去のwebsite認証記録をこのchannelへ読み替えません。同じloginやverificationを繰り返さず、公開記事・流入実績が改善した後に新しいexact GOでMarketplaceとSemrushを再評価します。将来承認されても禁止回答済みの自動取得・継続保存・履歴DB化の許可へ読み替えません。
 
 ### H7 — 利用許諾回答
 
@@ -127,14 +217,16 @@ omishu
 |作業|状態|
 |---|---|
 |5社の公式規約・Affiliate条件の分離調査|完了|
-|5社のfield-level利用許諾メール|2026-07-23送信済み、回答待ち|
+|5社のfield-level利用許諾メール|2026-07-23送信済み。Semrush回答確認済み。Serpstatは2026-07-26 requested due-diligence返信済み。Mangools・HubSpot・SE Rankingは同日追送済み。4社とも正式回答待ち|
 |SE Ranking公式窓口とAffiliate条件|確認済み|
 |SE Ranking通常登録|work email必須で停止。カード不要の公式問い合わせを2026-07-23送信済み、回答待ち|
-|HubSpot Impact申請導線|契約同意直前まで準備済み|
+|HubSpot / Semrush Impact申請導線|HubSpotはlow reachで`Declined`、Impact Marketplaceも2026-08-09に`却下済み`。Semrush個別申請は受付receiptなし|公開記事・流入実績が改善するまで再申請しない|
 |Google Ads / Keyword Planner|変更不能な初期設定の続行直前|
 |Google Trends予備export|汎用5語・ブランド5語の2 CSV取得済み。相対指数なので本番証拠には不採用|
 |JP/ja購買意図キーワード|150語のfreeze・重複/PII/locale検証を実装|
-|公開site・実価格取得・実Affiliate CTA|Gate A–C合格まで技術的にSTOP|
+|公開前site|カード不要Sitesで公開済み。noindex、外部link 0、実価格0、Affiliate CTA 0、内部routeは503|
+|Search Console / GA4|`saastcolab.jp`のGSC domain property所有確認・専用GA4 stream連携済み。GA4は同意前・拒否後0通信、同意後Realtime `page_view`受信済み。公開sitemap 10記事をGSCも2026-08-12に10件検出。index集計は登録済み1・未登録3で処理待ち。internal traffic filterは安全のため`test`を維持|
+|実価格取得・indexing・実Affiliate CTA|Gate A–C合格まで技術的にSTOP|
 
 ## 停止条件
 
@@ -143,4 +235,4 @@ omishu
 - 利用許諾が届くまで、対象会社の価格fieldを自動取得・保存・公開しない。
 - Affiliate申請中を承認済みとして数えない。
 - Google Trends指数を月間検索数へ換算しない。
-- 3社のrights、3社のAffiliate、JP/ja需要が揃うまで公開しない。
+- 3社のrights、3社のAffiliate、JP/ja需要が揃うまで、実価格、実Affiliate CTA、indexingを公開しない。

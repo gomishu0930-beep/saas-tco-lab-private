@@ -3,13 +3,16 @@ import Link from "next/link";
 
 import "./globals.css";
 
+const productionRuntime = process.env.SAAS_RUNTIME_MODE === "production";
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://saastcolab.jp"),
   title: {
-    default: "SaaS TCO Lab | 公開前比較MVP",
+    default: "SaaS TCO Lab",
     template: "%s | SaaS TCO Lab",
   },
   description:
-    "権利と根拠期限を検査し、事前計算済み12か月TCOでSaaSを比較する公開前MVP。",
+    "Human確認済みの価格、契約条件、利用上限を根拠付き12か月TCOで比較するSaaS選定メディア。",
   robots: {
     index: false,
     follow: false,
@@ -42,14 +45,23 @@ export default function RootLayout({
               </span>
             </Link>
             <nav aria-label="主要ナビゲーション">
-              <Link href="/comparison/">比較</Link>
-              <Link href="/methodology/">算定方法</Link>
-              <Link href="/learning/">学習と施策</Link>
-              <Link href="/readiness/">公開準備</Link>
-              <Link href="/operator/">あなたの操作</Link>
-              <Link href="/disclosure/">広告表示</Link>
+              <Link href="/methodology">算定方法</Link>
+              {productionRuntime ? (
+                <>
+                  <Link href="/pilot/pricing-calculator">料金記事</Link>
+                  <Link href="/pilot/evidence-method">根拠方針</Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/comparison">比較</Link>
+                  <Link href="/learning">学習と施策</Link>
+                  <Link href="/readiness">公開準備</Link>
+                  <Link href="/operator">あなたの操作</Link>
+                </>
+              )}
+              <Link href="/disclosure">広告表示</Link>
             </nav>
-            <span className="noindex-badge">NOINDEX</span>
+            <span className="noindex-badge">CONTROLLED</span>
           </div>
         </header>
         {children}
@@ -60,15 +72,29 @@ export default function RootLayout({
               <p>根拠・権利・期限を先にする、データ駆動型SaaS比較。</p>
             </div>
             <div>
-              <p className="footer-label">PRE-PUBLIC CONTROL</p>
-              <p>合成データのみ / 外部送客なし / robots noindex</p>
+              <p className="footer-label">PUBLICATION CONTROL</p>
+              <p>Human review / index gate / CTA gate</p>
             </div>
             <nav aria-label="フッターナビゲーション">
-              <Link href="/methodology/">算定方法</Link>
-              <Link href="/disclosure/">広告表示</Link>
-              <Link href="/readiness/">公開準備</Link>
-              <Link href="/learning/">学習と施策</Link>
-              <Link href="/operator/">あなたの操作</Link>
+              <Link href="/about">About</Link>
+              <Link href="/operator-information">運営者情報</Link>
+              <Link href="/privacy">プライバシー</Link>
+              <Link href="/contact">お問い合わせ</Link>
+              <Link href="/advertising-policy">広告ポリシー</Link>
+              <Link href="/methodology">算定方法</Link>
+              <Link href="/disclosure">広告表示</Link>
+              {productionRuntime ? (
+                <>
+                  <Link href="/pilot/pricing-calculator">料金記事</Link>
+                  <Link href="/pilot/evidence-method">根拠方針</Link>
+                </>
+              ) : (
+                <>
+                  <Link href="/readiness">公開準備</Link>
+                  <Link href="/learning">学習と施策</Link>
+                  <Link href="/operator">あなたの操作</Link>
+                </>
+              )}
             </nav>
           </div>
         </footer>

@@ -1,0 +1,41 @@
+universe_version,country,language,cluster_id,intent,vendor,query
+jp-ja-v2,JP,ja,forms-category,category,,フォーム作成 ツール
+jp-ja-v2,JP,ja,forms-category,category,,問い合わせフォーム 作成
+jp-ja-v2,JP,ja,forms-category,category,,申込フォーム 作成
+jp-ja-v2,JP,ja,forms-category,category,,アンケート フォーム ツール
+jp-ja-v2,JP,ja,forms-category,category,,予約フォーム 作成
+jp-ja-v2,JP,ja,forms-category,category,,決済フォーム 作成
+jp-ja-v2,JP,ja,forms-category,category,,法人向け フォーム
+jp-ja-v2,JP,ja,forms-category,category,,ノーコード フォーム
+jp-ja-v2,JP,ja,forms-category,category,,セキュア フォーム
+jp-ja-v2,JP,ja,forms-category,category,,顧客管理 フォーム
+jp-ja-v2,JP,ja,forms-comparison,comparison,,フォーム作成 ツール 比較
+jp-ja-v2,JP,ja,forms-comparison,comparison,,問い合わせフォーム 作成 比較
+jp-ja-v2,JP,ja,forms-comparison,comparison,,申込フォーム 作成 比較
+jp-ja-v2,JP,ja,forms-comparison,comparison,,アンケート フォーム 比較
+jp-ja-v2,JP,ja,forms-comparison,comparison,,予約フォーム 作成 比較
+jp-ja-v2,JP,ja,forms-comparison,comparison,,決済フォーム 作成 比較
+jp-ja-v2,JP,ja,forms-comparison,comparison,,法人向け フォーム 比較
+jp-ja-v2,JP,ja,forms-comparison,comparison,,ノーコード フォーム 比較
+jp-ja-v2,JP,ja,forms-comparison,comparison,,セキュア フォーム 比較
+jp-ja-v2,JP,ja,forms-comparison,comparison,,顧客管理 フォーム 比較
+jp-ja-v2,JP,ja,forms-pricing,pricing,,フォーム作成 ツール 料金
+jp-ja-v2,JP,ja,forms-pricing,pricing,,問い合わせフォーム 料金
+jp-ja-v2,JP,ja,forms-pricing,pricing,,申込フォーム 月額
+jp-ja-v2,JP,ja,forms-pricing,pricing,,アンケート フォーム 料金
+jp-ja-v2,JP,ja,forms-pricing,pricing,,予約フォーム 料金
+jp-ja-v2,JP,ja,forms-pricing,pricing,,決済フォーム 手数料
+jp-ja-v2,JP,ja,forms-pricing,pricing,,フォーム 回答数 追加料金
+jp-ja-v2,JP,ja,forms-pricing,pricing,,フォーム ストレージ 追加料金
+jp-ja-v2,JP,ja,forms-pricing,pricing,,フォーム 初期費用
+jp-ja-v2,JP,ja,forms-pricing,pricing,,フォーム 12か月 総費用
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム 回答数 上限
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム ストレージ 上限
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム ファイル添付 上限
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム 決済 対応
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム 条件分岐
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム API 制限
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム セキュリティ 比較
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム 小規模 事業
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム 無料プラン 制限
+jp-ja-v2,JP,ja,forms-fit,fit,,フォーム 選び方 法人

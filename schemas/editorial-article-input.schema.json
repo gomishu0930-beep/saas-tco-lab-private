@@ -1,0 +1,536 @@
+{
+  "$defs": {
+    "EditorialBillingPeriod": {
+      "enum": [
+        "monthly",
+        "annual",
+        "one_time",
+        "per_usage",
+        "not_applicable",
+        "unknown"
+      ],
+      "title": "EditorialBillingPeriod",
+      "type": "string"
+    },
+    "EditorialBillingToggleState": {
+      "enum": [
+        "annual_selected",
+        "monthly_selected",
+        "not_present",
+        "unknown"
+      ],
+      "title": "EditorialBillingToggleState",
+      "type": "string"
+    },
+    "EditorialCurrencyStatus": {
+      "enum": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "title": "EditorialCurrencyStatus",
+      "type": "string"
+    },
+    "EditorialObservedPriceBasis": {
+      "enum": [
+        "checkout_billed_total",
+        "displayed_price",
+        "human_scenario",
+        "not_applicable",
+        "unknown"
+      ],
+      "title": "EditorialObservedPriceBasis",
+      "type": "string"
+    },
+    "EditorialReviewStatus": {
+      "enum": [
+        "unreviewed",
+        "approved",
+        "rejected"
+      ],
+      "title": "EditorialReviewStatus",
+      "type": "string"
+    },
+    "EditorialSaleBannerState": {
+      "enum": [
+        "none",
+        "annual_discount_permanent",
+        "time_limited_promo",
+        "unknown"
+      ],
+      "title": "EditorialSaleBannerState",
+      "type": "string"
+    },
+    "EditorialScopeKind": {
+      "enum": [
+        "vendor_plan",
+        "human_scenario"
+      ],
+      "title": "EditorialScopeKind",
+      "type": "string"
+    },
+    "EditorialTaxTreatment": {
+      "enum": [
+        "included",
+        "excluded",
+        "not_applicable",
+        "unknown"
+      ],
+      "title": "EditorialTaxTreatment",
+      "type": "string"
+    },
+    "EditorialValueKind": {
+      "enum": [
+        "price",
+        "quota",
+        "seat_count",
+        "tax_rate",
+        "exchange_rate",
+        "duration",
+        "usage",
+        "percentage",
+        "other"
+      ],
+      "title": "EditorialValueKind",
+      "type": "string"
+    },
+    "EditorialValueStatus": {
+      "enum": [
+        "known",
+        "unknown",
+        "not_applicable"
+      ],
+      "title": "EditorialValueStatus",
+      "type": "string"
+    },
+    "HumanEditorialNumericField": {
+      "additionalProperties": false,
+      "description": "One Human-reviewed field for one vendor-plan or Human scenario.",
+      "properties": {
+        "acquisition_method": {
+          "enum": [
+            "manual_public_page",
+            "manual_checkout_review",
+            "human_scenario_input"
+          ],
+          "title": "Acquisition Method",
+          "type": "string"
+        },
+        "billing_period": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditorialBillingPeriod"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "billing_toggle_state": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditorialBillingToggleState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "currency_display": {
+          "anyOf": [
+            {
+              "maxLength": 20,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency Display"
+        },
+        "currency_status": {
+          "$ref": "#/$defs/EditorialCurrencyStatus",
+          "default": "not_applicable"
+        },
+        "currency_unknown_reason": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency Unknown Reason"
+        },
+        "derivation_method": {
+          "anyOf": [
+            {
+              "const": "annual_checkout_total_divided_by_12",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Derivation Method"
+        },
+        "derived_annual_discount_percent": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,3}|(?=[\\d.]{1,6}0*$)\\d{0,3}\\.\\d{0,2}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Derived Annual Discount Percent"
+        },
+        "derived_monthly_unit": {
+          "anyOf": [
+            {
+              "const": "/ mo",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Derived Monthly Unit"
+        },
+        "derived_monthly_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "title": "Derived Monthly Value"
+        },
+        "discount_derivation_method": {
+          "anyOf": [
+            {
+              "const": "one_minus_annual_total_divided_by_monthly_price_times_12",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Discount Derivation Method"
+        },
+        "entered_by": {
+          "const": "human",
+          "default": "human",
+          "title": "Entered By",
+          "type": "string"
+        },
+        "field": {
+          "maxLength": 160,
+          "minLength": 1,
+          "pattern": "^[a-z][a-z0-9_.-]*$",
+          "title": "Field",
+          "type": "string"
+        },
+        "monthly_reference_unit": {
+          "anyOf": [
+            {
+              "const": "/ mo",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Monthly Reference Unit"
+        },
+        "monthly_reference_value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Monthly Reference Value"
+        },
+        "next_review_on": {
+          "format": "date",
+          "title": "Next Review On",
+          "type": "string"
+        },
+        "observed_on": {
+          "format": "date",
+          "title": "Observed On",
+          "type": "string"
+        },
+        "observed_price_basis": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditorialObservedPriceBasis"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "plan_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Plan Id"
+        },
+        "review_status": {
+          "$ref": "#/$defs/EditorialReviewStatus",
+          "default": "unreviewed"
+        },
+        "rights_path": {
+          "const": "human_editorial",
+          "default": "human_editorial",
+          "title": "Rights Path",
+          "type": "string"
+        },
+        "sale_banner_state": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditorialSaleBannerState"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "scenario_basis": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Scenario Basis"
+        },
+        "schema_version": {
+          "const": "2.3",
+          "default": "2.3",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "scope_kind": {
+          "$ref": "#/$defs/EditorialScopeKind"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "format": "uri",
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Source Url"
+        },
+        "tax_treatment": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/EditorialTaxTreatment"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "unit": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unit"
+        },
+        "unknown_reason": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Unknown Reason"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,22}|(?=[\\d.]{1,31}0*$)\\d{0,22}\\.\\d{0,8}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        },
+        "value_kind": {
+          "$ref": "#/$defs/EditorialValueKind"
+        },
+        "value_status": {
+          "$ref": "#/$defs/EditorialValueStatus",
+          "default": "known"
+        },
+        "vendor_id": {
+          "anyOf": [
+            {
+              "maxLength": 80,
+              "minLength": 1,
+              "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Vendor Id"
+        }
+      },
+      "required": [
+        "scope_kind",
+        "field",
+        "value_kind",
+        "billing_toggle_state",
+        "sale_banner_state",
+        "observed_price_basis",
+        "derived_monthly_value",
+        "derived_monthly_unit",
+        "derivation_method",
+        "observed_on",
+        "next_review_on",
+        "acquisition_method"
+      ],
+      "title": "HumanEditorialNumericField",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Human-reviewable input slate for one P01–P12 article template.",
+  "properties": {
+    "article_id": {
+      "pattern": "^P(?:0[1-9]|1[0-2])$",
+      "title": "Article Id",
+      "type": "string"
+    },
+    "article_review_status": {
+      "$ref": "#/$defs/EditorialReviewStatus",
+      "default": "unreviewed"
+    },
+    "disclosure_version": {
+      "const": "pr-affiliate-v1",
+      "default": "pr-affiliate-v1",
+      "title": "Disclosure Version",
+      "type": "string"
+    },
+    "numeric_fields": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/HumanEditorialNumericField"
+      },
+      "title": "Numeric Fields",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "2.3",
+      "default": "2.3",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "slug": {
+      "maxLength": 80,
+      "minLength": 1,
+      "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+      "title": "Slug",
+      "type": "string"
+    },
+    "title": {
+      "maxLength": 180,
+      "minLength": 1,
+      "title": "Title",
+      "type": "string"
+    }
+  },
+  "required": [
+    "article_id",
+    "slug",
+    "title"
+  ],
+  "title": "EditorialArticleInput",
+  "type": "object"
+}

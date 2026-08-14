@@ -13,7 +13,7 @@ import json
 import sys
 from collections.abc import Sequence
 from dataclasses import asdict
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, timedelta, timezone
 from decimal import Decimal, InvalidOperation
 from enum import Enum
 from pathlib import Path
@@ -61,6 +61,11 @@ from .launch_handoff import (
 )
 from .launch_semantics import LaunchSemanticAuthorityPins
 from .keyword_universe import load_keyword_universe, summarize_keyword_universe
+from .mangools_export import (
+    build_mangools_expansion_set_safe_summary,
+    validate_mangools_human_export,
+    validate_mangools_human_export_batches,
+)
 from .measurement import (
     CohortSummaryBatch,
     DemandSummaryBatch,
@@ -167,6 +172,85 @@ def _parser() -> argparse.ArgumentParser:
     keyword_universe.add_argument("--minimum-keywords", type=int, default=100)
     keyword_universe.add_argument("--maximum-keywords", type=int, default=200)
 
+    kwfinder_upload = commands.add_parser(
+        "prepare-kwfinder-upload",
+        help="Write an exact query-only slice of a frozen slate for Human KWFinder input.",
+    )
+    kwfinder_upload.add_argument("universe", type=Path)
+    kwfinder_upload.add_argument("--output", type=Path, required=True)
+    kwfinder_upload.add_argument("--start-index", type=int, default=0)
+    kwfinder_upload.add_argument("--limit", type=int)
+
+    mangools_export = commands.add_parser(
+        "validate-mangools-export",
+        help="Validate one Human-exported KWFinder CSV and emit a safe aggregate only.",
+    )
+    mangools_export.add_argument("csv", type=Path)
+    mangools_export.add_argument("--universe", type=Path, required=True)
+    mangools_export.add_argument("--observed-on", type=date.fromisoformat, required=True)
+    mangools_export.add_argument("--next-review-on", type=date.fromisoformat, required=True)
+    mangools_export.add_argument("--monthly-revenue-target-jpy", type=int, default=200_000)
+    mangools_export.add_argument("--assumed-confirmed-epc-jpy", type=_decimal_argument, default=Decimal("60"))
+    mangools_export.add_argument("--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15"))
+
+    mangools_slate_export = commands.add_parser(
+        "validate-mangools-slate-export",
+        help="Validate a complete frozen query slate split across Human-exported CSV files.",
+    )
+    mangools_slate_export.add_argument("csv", type=Path, nargs="+")
+    mangools_slate_export.add_argument("--slate-id", required=True)
+    mangools_slate_export.add_argument("--universe", type=Path, required=True)
+    mangools_slate_export.add_argument(
+        "--observed-on", type=date.fromisoformat, required=True
+    )
+    mangools_slate_export.add_argument(
+        "--next-review-on", type=date.fromisoformat, required=True
+    )
+    mangools_slate_export.add_argument(
+        "--monthly-revenue-target-jpy", type=int, default=200_000
+    )
+    mangools_slate_export.add_argument(
+        "--assumed-confirmed-epc-jpy",
+        type=_decimal_argument,
+        default=Decimal("60"),
+    )
+    mangools_slate_export.add_argument(
+        "--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15")
+    )
+
+    mangools_expansion_set = commands.add_parser(
+        "validate-mangools-expansion-set",
+        help="Validate all four remaining Human-exported expansion slates at once.",
+    )
+    mangools_expansion_set.add_argument("--crm", type=Path, required=True)
+    mangools_expansion_set.add_argument("--forms", type=Path, required=True)
+    mangools_expansion_set.add_argument(
+        "--email-marketing", type=Path, required=True
+    )
+    mangools_expansion_set.add_argument(
+        "--seo-tools-v2-extension", type=Path, required=True
+    )
+    mangools_expansion_set.add_argument(
+        "--slates-dir", type=Path, default=Path("examples")
+    )
+    mangools_expansion_set.add_argument(
+        "--observed-on", type=date.fromisoformat, required=True
+    )
+    mangools_expansion_set.add_argument(
+        "--next-review-on", type=date.fromisoformat, required=True
+    )
+    mangools_expansion_set.add_argument(
+        "--monthly-revenue-target-jpy", type=int, default=200_000
+    )
+    mangools_expansion_set.add_argument(
+        "--assumed-confirmed-epc-jpy",
+        type=_decimal_argument,
+        default=Decimal("60"),
+    )
+    mangools_expansion_set.add_argument(
+        "--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15")
+    )
+
     store = commands.add_parser("store-plan", help="Append one validated plan to a local DB.")
     store.add_argument("plan", type=Path)
     store.add_argument("--db", type=Path, required=True)
@@ -214,6 +298,7 @@ def _parser() -> argparse.ArgumentParser:
     assemble.add_argument("--operations-evidence", type=Path, required=True)
     assemble.add_argument("--property-domain", required=True)
     assemble.add_argument("--output", type=Path, required=True)
+    assemble.add_argument("--at", type=_utc_datetime_argument)
 
     signed_assemble = commands.add_parser(
         "assemble-signed-readiness",
@@ -283,6 +368,7 @@ def _parser() -> argparse.ArgumentParser:
     )
     goldset.add_argument("--gold-set", type=Path, required=True)
     goldset.add_argument("--candidates", type=Path, required=True)
+    goldset.add_argument("--at", type=_utc_datetime_argument)
 
     editorial = commands.add_parser(
         "evaluate-editorial-package",
@@ -744,6 +830,109 @@ def run(argv: Sequence[str] | None = None) -> int:
             _emit(summarize_keyword_universe(rows).as_dict())
             return 0
 
+        if args.command == "prepare-kwfinder-upload":
+            rows = load_keyword_universe(
+                args.universe, minimum_keywords=1, maximum_keywords=200
+            )
+            if args.start_index < 0 or args.start_index >= len(rows):
+                raise ValueError("start-index must select a row in the frozen slate")
+            if args.limit is not None and args.limit <= 0:
+                raise ValueError("limit must be positive")
+            selected = rows[
+                args.start_index:
+                None if args.limit is None else args.start_index + args.limit
+            ]
+            if args.limit is not None and len(selected) != args.limit:
+                raise ValueError("requested slice extends beyond the frozen slate")
+            content = "\n".join(row.query for row in selected) + "\n"
+            args.output.parent.mkdir(parents=True, exist_ok=True)
+            args.output.write_text(content, encoding="utf-8")
+            _emit(
+                {
+                    "count": len(selected),
+                    "output": str(args.output.resolve()),
+                    "query_values_emitted_to_stdout": False,
+                    "source_sha256": summarize_keyword_universe(rows).sha256,
+                    "start_index": args.start_index,
+                    "status": "ready_for_human_kwfinder_input",
+                }
+            )
+            return 0
+
+        if args.command == "validate-mangools-export":
+            rows = load_keyword_universe(args.universe, minimum_keywords=150, maximum_keywords=150)
+            universe_summary = summarize_keyword_universe(rows)
+            summary = validate_mangools_human_export(
+                args.csv,
+                universe_rows=rows,
+                universe_sha256=universe_summary.sha256,
+                observed_on=args.observed_on,
+                next_review_on=args.next_review_on,
+                monthly_revenue_target_jpy=args.monthly_revenue_target_jpy,
+                assumed_confirmed_epc_jpy=args.assumed_confirmed_epc_jpy,
+                assumed_outbound_ctr=args.assumed_outbound_ctr,
+            )
+            _emit(summary.model_dump(mode="json"))
+            return 0
+
+        if args.command == "validate-mangools-slate-export":
+            rows = load_keyword_universe(
+                args.universe, minimum_keywords=1, maximum_keywords=200
+            )
+            universe_summary = summarize_keyword_universe(rows)
+            summary = validate_mangools_human_export_batches(
+                tuple(args.csv),
+                slate_id=args.slate_id,
+                universe_rows=rows,
+                universe_sha256=universe_summary.sha256,
+                observed_on=args.observed_on,
+                next_review_on=args.next_review_on,
+                monthly_revenue_target_jpy=args.monthly_revenue_target_jpy,
+                assumed_confirmed_epc_jpy=args.assumed_confirmed_epc_jpy,
+                assumed_outbound_ctr=args.assumed_outbound_ctr,
+            )
+            _emit(summary.model_dump(mode="json"))
+            return 0
+
+        if args.command == "validate-mangools-expansion-set":
+            specifications = (
+                ("crm", args.crm, "jp_ja_keyword_slate_v2_crm.csv"),
+                ("forms", args.forms, "jp_ja_keyword_slate_v2_forms.csv"),
+                (
+                    "email_marketing",
+                    args.email_marketing,
+                    "jp_ja_keyword_slate_v2_email_marketing.csv",
+                ),
+                (
+                    "seo_tools_v2_extension",
+                    args.seo_tools_v2_extension,
+                    "jp_ja_keyword_universe_v2_seo_extension.csv",
+                ),
+            )
+            summaries = []
+            for slate_id, csv_path, universe_name in specifications:
+                rows = load_keyword_universe(
+                    args.slates_dir / universe_name,
+                    minimum_keywords=1,
+                    maximum_keywords=200,
+                )
+                summaries.append(
+                    validate_mangools_human_export_batches(
+                        (csv_path,),
+                        slate_id=slate_id,
+                        universe_rows=rows,
+                        universe_sha256=summarize_keyword_universe(rows).sha256,
+                        observed_on=args.observed_on,
+                        next_review_on=args.next_review_on,
+                        monthly_revenue_target_jpy=args.monthly_revenue_target_jpy,
+                        assumed_confirmed_epc_jpy=args.assumed_confirmed_epc_jpy,
+                        assumed_outbound_ctr=args.assumed_outbound_ctr,
+                    )
+                )
+            summary_set = build_mangools_expansion_set_safe_summary(tuple(summaries))
+            _emit(summary_set.model_dump(mode="json"))
+            return 0
+
         if args.command == "store-plan":
             plan = _load_plan(args.plan)
             deadline = _earliest_history_delete_after(plan)
@@ -841,7 +1030,7 @@ def run(argv: Sequence[str] | None = None) -> int:
                 operations=_load_model(
                     args.operations_evidence, OperationsEvidence
                 ),
-                at=now,
+                at=args.at or now,
             )
             with args.output.open("x", encoding="utf-8") as destination:
                 destination.write(dossier.model_dump_json(indent=2))
@@ -948,7 +1137,7 @@ def run(argv: Sequence[str] | None = None) -> int:
             report = evaluate_goldset(
                 _load_model(args.gold_set, HumanGoldSet),
                 _load_model(args.candidates, CandidateBatch),
-                at=now,
+                at=args.at or now,
             )
             _emit(report.model_dump(mode="json"))
             return 0

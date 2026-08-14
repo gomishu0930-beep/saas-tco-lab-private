@@ -1,0 +1,66 @@
+{
+  "schema_version": "ease-track-2",
+  "domain": "saastcolab.jp",
+  "domain_state": "GO",
+  "index_state": "GO",
+  "deployed_articles": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P12"
+  ],
+  "index_approved_articles": [
+    "P01",
+    "P02",
+    "P03",
+    "P04",
+    "P05",
+    "P06",
+    "P07",
+    "P08",
+    "P09",
+    "P10",
+    "P12"
+  ],
+  "affiliate_cta": {
+    "Mangools": "GO"
+  },
+  "server_articles": {
+    "SVR01": "approved"
+  },
+  "deployed_server_articles": [
+    "SVR01"
+  ],
+  "index_approved_server_articles": [
+    "SVR01"
+  ],
+  "server_affiliate_cta": {
+    "a8net-xserver-business": "GO",
+    "moshimo-conoha-wing": "GO",
+    "moshimo-lolipop-rental-server": "GO",
+    "moshimo-onamae-rental-server": "GO",
+    "moshimo-shin-rental-server": "GO",
+    "valuecommerce-ablenet-shared-server": "GO"
+  },
+  "articles": {
+    "P01": "approved",
+    "P02": "approved",
+    "P03": "approved",
+    "P04": "approved",
+    "P05": "approved",
+    "P06": "approved",
+    "P07": "approved",
+    "P08": "approved",
+    "P09": "approved",
+    "P10": "approved",
+    "P11": "unreviewed",
+    "P12": "approved"
+  }
+}

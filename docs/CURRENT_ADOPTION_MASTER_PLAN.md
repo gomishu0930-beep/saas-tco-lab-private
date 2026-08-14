@@ -53,13 +53,13 @@ flowchart LR
 |ID|項目|状態|Wave|owner|依存|完了条件|
 |---|---|---|---:|---|---|---|
 |F01|初回immutable Git baseline|existing|0|Codex + Human review|なし|2026-07-26にP18の500-file scopeをHuman確認後、初回commit済み|
-|F02|private GitHub remote|existing|1|Human|F01|2026-07-26に`saas-tco-lab-private`をprivate・空で作成しread-back済み。commit、remote追加、pushは別GO|
+|F02|GitHub remote|existing|1|Human|F01|2026-07-28にsecret・著者情報を検査後public化し、匿名HTTP 200を確認済み。未commit変更は未公開|
 |F03|GitHub Actions/Dependabot/Gitleaks実稼働|existing|1|Codex + Human|F02|2026-07-26にremote CIのPython/Web/lock/schema/secret checksを全合格read-back済み|
 |P01|Google Drive plugin/evidence vault|existing|1|Human + Codex|なし|2026-07-26に専用folderと7分類を作成。safe-summaryだけを受け入れる|
 |P02|Gmail rights/Affiliate inbox|existing|1|Human + Codex|なし|専用label/query、送信前Human GO、返信監視|
-|P03|Google Calendar expiry/renewal|existing|1|Human + Codex|P01|2026-07-26に非公開専用calendar作成。event案は別GO待ち|
+|P03|Google Calendar expiry/renewal|existing|1|Human + Codex|P01|2026-07-26に非公開専用calendarとrights 30/90/180日・Affiliate月次の5予定を作成・read-back済み|
 |P04|Notion editorial UI|after_evidence|3|Human|F02|GitHub Issuesで不足と判定した場合だけ導入。二重正本を作らない|
-|D01|Google Ads JP/ja Keyword Planner export|ready_human|1|Human + Codex|H3 approval|日本/日本語/JPY、frozen universe、rawとsafe summary分離|
+|D01|Google Ads以外のJP/ja需要export|ready_human|1|Human + Codex|provider rights + Human export|日本/日本語、frozen universe、rawとsafe summary分離。第一候補はMangools KWFinder CSVだがrights回答まで取込禁止|
 |D02|Search Console read-only intake|ready_human|1|Human + Codex|property ownership|query/page/country/device/date、row limitと欠測を記録|
 |D03|GA4 read-only intake|ready_human|1|Human + Codex|GA4 property|qualified session/comparison/outbound event definitionを固定|
 |D04|Affiliate export adapters|ready_human|1|Human + Codex|3 program approval|partner別click/transaction/status/currency/snapshotをsafe summary化|

@@ -1,0 +1,41 @@
+universe_version,country,language,cluster_id,intent,vendor,query
+jp-ja-v2,JP,ja,servers-category,category,,レンタルサーバー
+jp-ja-v2,JP,ja,servers-category,category,,法人向け レンタルサーバー
+jp-ja-v2,JP,ja,servers-category,category,,中小企業 サーバー
+jp-ja-v2,JP,ja,servers-category,category,,クラウドサーバー
+jp-ja-v2,JP,ja,servers-category,category,,VPS サーバー
+jp-ja-v2,JP,ja,servers-category,category,,WordPress サーバー
+jp-ja-v2,JP,ja,servers-category,category,,ECサイト サーバー
+jp-ja-v2,JP,ja,servers-category,category,,メールサーバー 法人
+jp-ja-v2,JP,ja,servers-category,category,,マネージド サーバー
+jp-ja-v2,JP,ja,servers-category,category,,国内 データセンター サーバー
+jp-ja-v2,JP,ja,servers-comparison,comparison,,レンタルサーバー 比較
+jp-ja-v2,JP,ja,servers-comparison,comparison,,法人向け レンタルサーバー 比較
+jp-ja-v2,JP,ja,servers-comparison,comparison,,中小企業 サーバー 比較
+jp-ja-v2,JP,ja,servers-comparison,comparison,,クラウドサーバー 比較
+jp-ja-v2,JP,ja,servers-comparison,comparison,,VPS サーバー 比較
+jp-ja-v2,JP,ja,servers-comparison,comparison,,WordPress サーバー 比較
+jp-ja-v2,JP,ja,servers-comparison,comparison,,ECサイト サーバー 比較
+jp-ja-v2,JP,ja,servers-comparison,comparison,,メールサーバー 法人 比較
+jp-ja-v2,JP,ja,servers-comparison,comparison,,マネージド サーバー 比較
+jp-ja-v2,JP,ja,servers-comparison,comparison,,国内 サーバー 比較
+jp-ja-v2,JP,ja,servers-pricing,pricing,,レンタルサーバー 料金
+jp-ja-v2,JP,ja,servers-pricing,pricing,,法人向け サーバー 料金
+jp-ja-v2,JP,ja,servers-pricing,pricing,,クラウドサーバー 月額
+jp-ja-v2,JP,ja,servers-pricing,pricing,,VPS サーバー 料金
+jp-ja-v2,JP,ja,servers-pricing,pricing,,WordPress サーバー 費用
+jp-ja-v2,JP,ja,servers-pricing,pricing,,ECサイト サーバー 費用
+jp-ja-v2,JP,ja,servers-pricing,pricing,,サーバー データ転送 料金
+jp-ja-v2,JP,ja,servers-pricing,pricing,,サーバー バックアップ 料金
+jp-ja-v2,JP,ja,servers-pricing,pricing,,サーバー 初期費用
+jp-ja-v2,JP,ja,servers-pricing,pricing,,サーバー 年払い 割引
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー 容量 選び方
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー 転送量 選び方
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー バックアップ 必要
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー 稼働率 比較
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー サポート 比較
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー 法人 小規模
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー 複数サイト
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー 移行 費用
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー 解約 条件
+jp-ja-v2,JP,ja,servers-fit,fit,,サーバー 12か月 総費用

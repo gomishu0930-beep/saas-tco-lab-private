@@ -4,12 +4,15 @@
 
 ## 必須ゲート
 
-- sourceごとに取得・保存・表示・履歴・派生利用の権利が記録され、`approved`になるまで、fetch・保存・計算への採用・公開を行わない。未指定、期限切れ、矛盾は`denied`としてfail-closedにする。
+- rights model v2を適用する。自動取得、価格DB保存、履歴DB化、canonical計算への採用は、sourceごとに取得・保存・履歴・派生利用の権利が記録され`approved`になるまで行わない。未指定、期限切れ、矛盾は`denied`としてfail-closedにする。
+- Human Approverが公開価格を人手確認し、出典URL、観測日、次回確認日、値の入力者を記録した編集記事経路は、field-level書面許諾をlaunch blockerにしない。この例外は自動取得、価格DB、履歴DB、raw保存、無断転載、禁止回答済み行為を許可せず、価格・税・通貨・課金周期の推測も許可しない。
 - raw HTML、PDF、メール等の全文保存は既定禁止。URL、取得時刻、hash、authority、必要最小限の引用を保存する。全文archiveは明示的な権利とHuman Approverの承認がある場合だけ許可する。
 - AI、agent、plugin、MCP、外部LLMからcanonical DB、本番DB、公開release、affiliate URLへ直接writeしない。AI出力は候補値であり、型検証・決定論テスト・承認済みreleaseを経る。
 - credential、token、Cookie、個人メール、PII、非公開報酬をrepo、fixture、log、promptへ入れない。外部送信もしない。
 
 ## 実装規律
+
+- 2026-07-28以降、P0–P18はmaintenance onlyとし、P19以降の新phase、新署名層、新acceptance文書を追加しない。新規実装はlaunch trackの記事、計算機、審査route、domain準備、需要CSV受入、index/CTA gateに限定する。
 
 - Pydantic modelをdata contractの正本、PythonのTCO純粋関数を計算の正本とする。JSON Schemaは生成物であり、手編集しない。
 - 金額、通貨、税、請求周期、commitment、seat、quota、overage、addonを推測・補完しない。曖昧値と未知fieldはvalidation errorへ送る。

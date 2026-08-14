@@ -66,6 +66,28 @@ class TaxTreatment(str, Enum):
     UNKNOWN = "unknown"
 
 
+class ServerUseCase(str, Enum):
+    """Reader-selectable, editorially approved server usage classes."""
+
+    SMALL_SITE = "small_site"
+    CORPORATE_SITE = "corporate_site"
+    ECOMMERCE = "ecommerce"
+
+
+class ServerPlanPriceStatus(str, Enum):
+    """Whether a server plan has enough approved evidence to calculate."""
+
+    KNOWN = "known"
+    UNKNOWN = "unknown"
+
+
+class ServerPlanReviewStatus(str, Enum):
+    """Human review state used by the zero-input projection."""
+
+    UNREVIEWED = "unreviewed"
+    APPROVED = "approved"
+
+
 @runtime_checkable
 class TaxPolicyLike(Protocol):
     treatment: TaxTreatment | str
@@ -173,6 +195,69 @@ class UsageScenario:
 
 
 @dataclass(frozen=True, slots=True)
+class ServerTcoTerms:
+    """Known server-specific charges layered onto a normal pricing quote.
+
+    ``None`` means the Human-confirmed item is not applicable. Unknown values
+    must not be passed to this calculator. Campaign pricing replaces the base
+    monthly price for the stated first months. Domain pricing starts only after
+    the confirmed included-benefit period. Every amount uses the quote currency
+    and tax policy; mixed-currency or mixed-tax components require a separate
+    quote and otherwise remain outside the calculation.
+    """
+
+    initial_fee: Decimal | None = None
+    renewal_fee: Decimal | None = None
+    renewal_due_month: int | None = None
+    campaign_price: Decimal | None = None
+    campaign_period_months: int | None = None
+    domain_price: Decimal | None = None
+    domain_billing_period: BillingPeriod | None = None
+    domain_included_months: int | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ServerZeroInputPlan:
+    """A display projection made only from a Human-reviewed price contract.
+
+    ``quote`` and ``server_terms`` must both be absent for an unknown row.  A
+    known row is still ineligible for calculation until its review status is
+    approved.  ``eligible_use_cases`` is an explicit Human editorial decision;
+    the calculator never infers suitability from price or plan names.
+    """
+
+    vendor_id: str
+    plan_id: str
+    display_name: str
+    price_status: ServerPlanPriceStatus
+    review_status: ServerPlanReviewStatus
+    eligible_use_cases: tuple[ServerUseCase, ...]
+    quote: PricingQuote | None = None
+    server_terms: ServerTcoTerms | None = None
+    unknown_reason: str | None = None
+
+
+@dataclass(frozen=True, slots=True)
+class ServerZeroInputRow:
+    vendor_id: str
+    plan_id: str
+    display_name: str
+    status: str
+    total_minor: int | None
+    currency: str | None
+    minor_unit_digits: int | None
+    rank: int | None
+    reason: str | None
+
+
+@dataclass(frozen=True, slots=True)
+class ServerZeroInputTable:
+    months: int
+    use_case: ServerUseCase
+    rows: tuple[ServerZeroInputRow, ...]
+
+
+@dataclass(frozen=True, slots=True)
 class TcoLineItem:
     name: str
     kind: str
@@ -215,6 +300,152 @@ def calculate_tco(quote: PricingQuoteLike, scenario: UsageScenario) -> TcoResult
     function refuses to invent an annual proration convention.
     """
 
+    return _calculate_tco(quote, scenario, server_terms=None)
+
+
+def calculate_server_tco(
+    quote: PricingQuoteLike,
+    scenario: UsageScenario,
+    server_terms: ServerTcoTerms,
+) -> TcoResult:
+    """Calculate server TCO from explicit, Human-confirmed cost components.
+
+    This function does not infer that a missing initial fee is zero, that a
+    campaign continues, or that a free domain has a monetary value. Callers
+    must keep any unknown component outside the calculator and HOLD the claim.
+    """
+
+    return _calculate_tco(quote, scenario, server_terms=server_terms)
+
+
+def calculate_server_zero_input_table(
+    plans: Sequence[ServerZeroInputPlan],
+    *,
+    months: int,
+    use_case: ServerUseCase,
+    article_review_approved: bool,
+) -> ServerZeroInputTable:
+    """Precompute a server comparison without accepting reader price inputs.
+
+    Only 12/24/36-month horizons are supported. Unknown, unreviewed, or
+    explicitly ineligible rows remain visible but are excluded from ranking.
+    Mixed currencies are calculated but not ranked because conversion is
+    intentionally outside the canonical TCO boundary.
+    """
+
+    if months not in {12, 24, 36}:
+        raise TcoError("server zero-input horizon must be 12, 24, or 36 months")
+    if not isinstance(use_case, ServerUseCase):
+        raise TcoError("server zero-input use case is invalid")
+
+    identities = [(plan.vendor_id, plan.plan_id) for plan in plans]
+    if len(identities) != len(set(identities)):
+        raise TcoError("server zero-input plan identities must be unique")
+
+    pending: list[ServerZeroInputRow] = []
+    calculated: list[tuple[ServerZeroInputPlan, TcoResult]] = []
+    for plan in plans:
+        if not plan.vendor_id.strip() or not plan.plan_id.strip() or not plan.display_name.strip():
+            raise TcoError("server zero-input plan identity cannot be blank")
+        if plan.price_status is ServerPlanPriceStatus.UNKNOWN:
+            if plan.quote is not None or plan.server_terms is not None:
+                raise TcoError("unknown server plan cannot carry calculable price terms")
+            if not plan.unknown_reason or not plan.unknown_reason.strip():
+                raise TcoError("unknown server plan requires a reason")
+            pending.append(
+                ServerZeroInputRow(
+                    vendor_id=plan.vendor_id,
+                    plan_id=plan.plan_id,
+                    display_name=plan.display_name,
+                    status="unconfirmed",
+                    total_minor=None,
+                    currency=None,
+                    minor_unit_digits=None,
+                    rank=None,
+                    reason=plan.unknown_reason.strip(),
+                )
+            )
+            continue
+        if plan.quote is None or plan.server_terms is None:
+            raise TcoError("known server plan requires quote and server terms")
+        if not article_review_approved or plan.review_status is not ServerPlanReviewStatus.APPROVED:
+            pending.append(
+                ServerZeroInputRow(
+                    vendor_id=plan.vendor_id,
+                    plan_id=plan.plan_id,
+                    display_name=plan.display_name,
+                    status="unconfirmed",
+                    total_minor=None,
+                    currency=None,
+                    minor_unit_digits=None,
+                    rank=None,
+                    reason="Human承認前のため計算対象外",
+                )
+            )
+            continue
+        if use_case not in plan.eligible_use_cases:
+            pending.append(
+                ServerZeroInputRow(
+                    vendor_id=plan.vendor_id,
+                    plan_id=plan.plan_id,
+                    display_name=plan.display_name,
+                    status="ineligible",
+                    total_minor=None,
+                    currency=plan.quote.currency,
+                    minor_unit_digits=plan.quote.minor_unit_digits,
+                    rank=None,
+                    reason="選択した用途区分の承認対象外",
+                )
+            )
+            continue
+        scenario = constant_usage_scenario(
+            months=months,
+            seats=1,
+            monthly_usage=Decimal(0),
+            usage_unit=None,
+        )
+        calculated.append((plan, calculate_server_tco(plan.quote, scenario, plan.server_terms)))
+
+    currencies = {result.currency for _, result in calculated}
+    comparable = len(currencies) <= 1
+    rank_by_identity: dict[tuple[str, str], int] = {}
+    if comparable:
+        for rank, (plan, _) in enumerate(
+            sorted(calculated, key=lambda item: (item[1].total_minor, item[0].display_name)),
+            start=1,
+        ):
+            rank_by_identity[(plan.vendor_id, plan.plan_id)] = rank
+
+    calculated_rows = [
+        ServerZeroInputRow(
+            vendor_id=plan.vendor_id,
+            plan_id=plan.plan_id,
+            display_name=plan.display_name,
+            status="ranked" if comparable else "currency_mismatch",
+            total_minor=result.total_minor,
+            currency=result.currency,
+            minor_unit_digits=result.minor_unit_digits,
+            rank=rank_by_identity.get((plan.vendor_id, plan.plan_id)),
+            reason=None if comparable else "通貨換算を行わないため順位なし",
+        )
+        for plan, result in calculated
+    ]
+    rows_by_identity = {
+        (row.vendor_id, row.plan_id): row for row in (*calculated_rows, *pending)
+    }
+    return ServerZeroInputTable(
+        months=months,
+        use_case=use_case,
+        rows=tuple(rows_by_identity[identity] for identity in identities),
+    )
+
+
+def _calculate_tco(
+    quote: PricingQuoteLike,
+    scenario: UsageScenario,
+    *,
+    server_terms: ServerTcoTerms | None,
+) -> TcoResult:
     currency = _normalise_currency(quote.currency, field="quote.currency")
     digits = _validate_minor_unit_digits(quote.minor_unit_digits)
     months = scenario.months
@@ -236,21 +467,92 @@ def calculate_tco(quote: PricingQuoteLike, scenario: UsageScenario) -> TcoResult
 
     treatment, rate = _validate_tax_policy(quote.tax)
     line_items: list[TcoLineItem] = []
+    validated_server_terms = (
+        None
+        if server_terms is None
+        else _validate_server_terms(server_terms, quote=quote)
+    )
+
+    if (
+        validated_server_terms is not None
+        and validated_server_terms.initial_fee is not None
+    ):
+        line_items.append(
+            _price_fixed(
+                name="initial fee",
+                kind="server.initial_fee",
+                amount=validated_server_terms.initial_fee,
+                billed=True,
+                digits=digits,
+                treatment=treatment,
+                tax_rate=rate,
+            )
+        )
 
     base = quote.base
     base_minimum = _validate_minimum_seats(base.minimum_seats, "base.minimum_seats")
-    line_items.append(
-        _price_recurring(
-            charge=base,
-            kind="base",
-            months=months,
-            seats=seats,
-            quote_currency=currency,
-            digits=digits,
-            treatment=treatment,
-            tax_rate=rate,
+    if (
+        validated_server_terms is None
+        or validated_server_terms.campaign_price is None
+    ):
+        line_items.append(
+            _price_recurring(
+                charge=base,
+                kind="base",
+                months=months,
+                seats=seats,
+                quote_currency=currency,
+                digits=digits,
+                treatment=treatment,
+                tax_rate=rate,
+            )
         )
-    )
+    else:
+        assert validated_server_terms.campaign_period_months is not None
+        campaign_months = min(
+            months,
+            validated_server_terms.campaign_period_months,
+        )
+        campaign_charge = RecurringCharge(
+            name=f"{base.name} (campaign)",
+            amount=validated_server_terms.campaign_price,
+            currency=currency,
+            billing_period=BillingPeriod.MONTHLY,
+            price_basis=_coerce_enum(
+                PriceBasis,
+                base.price_basis,
+                "base.price_basis",
+            ),
+            minimum_seats=base.minimum_seats,
+            included_seats=base.included_seats,
+            maximum_seats=base.maximum_seats,
+        )
+        line_items.append(
+            _price_recurring(
+                charge=campaign_charge,
+                kind="base.campaign",
+                months=campaign_months,
+                seats=seats,
+                quote_currency=currency,
+                digits=digits,
+                treatment=treatment,
+                tax_rate=rate,
+            )
+        )
+        regular_months = months - campaign_months
+        if regular_months:
+            line_items.append(
+                _price_recurring(
+                    charge=base,
+                    kind="base.regular",
+                    months=regular_months,
+                    seats=seats,
+                    quote_currency=currency,
+                    digits=digits,
+                    treatment=treatment,
+                    tax_rate=rate,
+                )
+            )
 
     for index, addon in enumerate(tuple(quote.addons)):
         line_items.append(
@@ -287,6 +589,51 @@ def calculate_tco(quote: PricingQuoteLike, scenario: UsageScenario) -> TcoResult
             )
         )
 
+    if (
+        validated_server_terms is not None
+        and validated_server_terms.renewal_fee is not None
+    ):
+        assert validated_server_terms.renewal_due_month is not None
+        line_items.append(
+            _price_fixed(
+                name="renewal fee",
+                kind="server.renewal_fee",
+                amount=validated_server_terms.renewal_fee,
+                billed=validated_server_terms.renewal_due_month <= months,
+                digits=digits,
+                treatment=treatment,
+                tax_rate=rate,
+            )
+        )
+
+    if (
+        validated_server_terms is not None
+        and validated_server_terms.domain_price is not None
+    ):
+        assert validated_server_terms.domain_billing_period is not None
+        assert validated_server_terms.domain_included_months is not None
+        billable_domain_months = max(
+            months - validated_server_terms.domain_included_months,
+            0,
+        )
+        line_items.append(
+            _price_recurring(
+                charge=RecurringCharge(
+                    name="domain after included benefit",
+                    amount=validated_server_terms.domain_price,
+                    currency=currency,
+                    billing_period=validated_server_terms.domain_billing_period,
+                ),
+                kind="server.domain",
+                months=billable_domain_months,
+                seats=1,
+                quote_currency=currency,
+                digits=digits,
+                treatment=treatment,
+                tax_rate=rate,
+            )
+        )
+
     listed_minor = sum(item.listed_minor for item in line_items)
     added_tax_minor = sum(item.added_tax_minor for item in line_items)
     return TcoResult(
@@ -298,6 +645,110 @@ def calculate_tco(quote: PricingQuoteLike, scenario: UsageScenario) -> TcoResult
         added_tax_minor=added_tax_minor,
         total_minor=listed_minor + added_tax_minor,
         line_items=tuple(line_items),
+    )
+
+
+def _validate_server_terms(
+    terms: ServerTcoTerms,
+    *,
+    quote: PricingQuoteLike,
+) -> ServerTcoTerms:
+    initial_fee = (
+        None
+        if terms.initial_fee is None
+        else _non_negative_decimal(terms.initial_fee, "server.initial_fee")
+    )
+
+    renewal_values = (terms.renewal_fee, terms.renewal_due_month)
+    if (renewal_values[0] is None) != (renewal_values[1] is None):
+        raise TcoError("server renewal fee and due month must be supplied together")
+    renewal_fee = (
+        None
+        if terms.renewal_fee is None
+        else _non_negative_decimal(terms.renewal_fee, "server.renewal_fee")
+    )
+    renewal_due_month = (
+        None
+        if terms.renewal_due_month is None
+        else _validate_positive_month(
+            terms.renewal_due_month,
+            "server.renewal_due_month",
+        )
+    )
+
+    campaign_values = (terms.campaign_price, terms.campaign_period_months)
+    if (campaign_values[0] is None) != (campaign_values[1] is None):
+        raise TcoError("server campaign price and period must be supplied together")
+    campaign_price = (
+        None
+        if terms.campaign_price is None
+        else _non_negative_decimal(terms.campaign_price, "server.campaign_price")
+    )
+    campaign_period_months = (
+        None
+        if terms.campaign_period_months is None
+        else _validate_positive_month(
+            terms.campaign_period_months,
+            "server.campaign_period_months",
+        )
+    )
+    if campaign_price is not None:
+        base_period = _coerce_enum(
+            BillingPeriod,
+            quote.base.billing_period,
+            "base.billing_period",
+        )
+        if base_period is not BillingPeriod.MONTHLY:
+            raise UnsupportedProrationError(
+                "server campaign pricing currently requires an observed monthly base price"
+            )
+        base_amount = _non_negative_decimal(quote.base.amount, "base.amount")
+        if campaign_price > base_amount:
+            raise TcoError("server campaign price cannot exceed the observed regular price")
+
+    domain_values = (
+        terms.domain_price,
+        terms.domain_billing_period,
+        terms.domain_included_months,
+    )
+    if any(value is None for value in domain_values) and any(
+        value is not None for value in domain_values
+    ):
+        raise TcoError(
+            "server domain price, billing period, and included months must be supplied together"
+        )
+    domain_price = (
+        None
+        if terms.domain_price is None
+        else _non_negative_decimal(terms.domain_price, "server.domain_price")
+    )
+    domain_billing_period = (
+        None
+        if terms.domain_billing_period is None
+        else _coerce_enum(
+            BillingPeriod,
+            terms.domain_billing_period,
+            "server.domain_billing_period",
+        )
+    )
+    domain_included_months = (
+        None
+        if terms.domain_included_months is None
+        else _validate_non_negative_month(
+            terms.domain_included_months,
+            "server.domain_included_months",
+        )
+    )
+
+    return ServerTcoTerms(
+        initial_fee=initial_fee,
+        renewal_fee=renewal_fee,
+        renewal_due_month=renewal_due_month,
+        campaign_price=campaign_price,
+        campaign_period_months=campaign_period_months,
+        domain_price=domain_price,
+        domain_billing_period=domain_billing_period,
+        domain_included_months=domain_included_months,
     )
 
 
@@ -509,6 +960,28 @@ def _price_recurring(
     )
 
 
+def _price_fixed(
+    *,
+    name: str,
+    kind: str,
+    amount: Decimal,
+    billed: bool,
+    digits: int,
+    treatment: TaxTreatment,
+    tax_rate: Decimal | None,
+) -> TcoLineItem:
+    invoice_minor = _major_to_minor(amount, digits) if billed else 0
+    added_tax = _added_tax_minor(invoice_minor, treatment, tax_rate)
+    return TcoLineItem(
+        name=name,
+        kind=kind,
+        listed_minor=invoice_minor,
+        added_tax_minor=added_tax,
+        total_minor=invoice_minor + added_tax,
+        billed_occurrences=1 if billed else 0,
+    )
+
+
 def _price_usage(
     *,
     usage: UsageChargeLike,
@@ -648,6 +1121,18 @@ def _validate_commitment_months(value: int) -> int:
 def _validate_seats(value: int) -> int:
     if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
         raise TcoError("seats must be a positive integer")
+    return value
+
+
+def _validate_positive_month(value: int, field: str) -> int:
+    if not isinstance(value, int) or isinstance(value, bool) or value <= 0:
+        raise TcoError(f"{field} must be a positive integer")
+    return value
+
+
+def _validate_non_negative_month(value: int, field: str) -> int:
+    if not isinstance(value, int) or isinstance(value, bool) or value < 0:
+        raise TcoError(f"{field} must be a non-negative integer")
     return value
 
 

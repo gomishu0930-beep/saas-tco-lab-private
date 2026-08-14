@@ -1,134 +1,80 @@
 import type { Metadata } from "next";
+import Link from "next/link";
+
+import { OperatorInputForm } from "../components/OperatorInputForm";
 
 export const metadata: Metadata = {
   title: "あなたの操作",
-  description: "本人操作が必要な箇所だけを抜き出した手順表と、完了後の自動作業。",
+  description: "記事実値の入力、GO/HOLD返信、月次確認を一画面へ集約したローカル運用UI。",
 };
 
-const actions = [
+const remainingHumanWork = [
   {
     id: "H1",
-    timing: "今",
-    title: "公開名義とURLを決める",
-    minutes: "3分",
-    status: "入力待ち",
-    why: "外部への名義表示と許諾scopeは、Human Approverだけが確定できます。",
-    steps: [
-      "法的名義または事業者名を決める",
-      "公開予定URLを決める。未公開なら『未公開』とする",
-      "許諾判断を行う承認者名を決める",
-    ],
-    done: "返信テンプレートの3項目を返す",
-    next: "5社の許諾メールへ反映し、同一scopeで送信準備を確定",
+    timing: "完了済み",
+    title: "domain移行状態を維持",
+    minutes: "通常は0分",
+    status: "domain・SSL・GSC・GA4・redirect・Impact完了",
+    why: "通常は操作不要です。domain、SSL、GSC、GA4、redirect、Impactの異常通知が出た場合だけrunbookを開きます。",
+    steps: ["通常は何もしない", "異常通知時だけDOMAIN_MIGRATION_CHECKLISTを開く", "credentialやverification値は共有しない"],
+    done: "domain_day: done saastcolab.jp",
+    next: "月次read-backで維持状態だけ確認",
   },
   {
     id: "H2",
-    timing: "完了",
-    title: "5社への許諾照会を承認",
-    minutes: "2分",
-    status: "送信済み・回答待ち",
-    why: "2026-07-23に5社へ送信済みです。送信済みは利用許諾の承認を意味しません。",
-    steps: [
-      "追加の送信操作は不要",
-      "回答メールはGmail内に残す",
-      "回答が届いた会社名だけを知らせる",
-    ],
-    done: "2026-07-23 送信済み",
-    next: "回答を8項目へ分解し、Human最終判定へ回す",
+    timing: "記事準備時",
+    title: "公式価格を見て、この画面へ入力",
+    minutes: "記事ごと",
+    status: "P01–P10・P12承認・公開済み / P11は完全暦月の自データ待ち / SVR01は11項目確認済み・TCO条件待ち",
+    why: "価格確認checklistの公式URLをHumanが開き、必要箇所を貼り付けて候補抽出できます。P11は作業timerを開始・停止し、秒数をHuman確認したsessionだけを端末内append-only台帳へ追記できます。候補はHuman確認前にcontractへ入りません。",
+    steps: ["記事とvendorを選ぶ。P11は完全暦月の作業を計測し、秒数確認後だけ台帳へ追記する", "料金表またはHuman確認済み台帳合計を候補へ反映する", "出典・観測日・次回確認日と前回差分を確認する", "Human確認後のJSONを保存し、article_input: done <P-ID>を返す"],
+    done: "article_approve: <P-ID,...>",
+    next: "P11の完全暦月データ取得と、SVR01の期間限定表示・更新額の再確認を継続",
   },
   {
     id: "H3",
-    timing: "今",
-    title: "Google Adsを課金画面前まで進める",
-    minutes: "2分",
-    status: "カード要求時は停止",
-    why: "国・時刻・通貨はアカウント作成後に変更できません。",
-    steps: [
-      "国が日本であることを確認",
-      "タイムゾーンがGMT+09:00 日本時間であることを確認",
-      "通貨が日本円（JPY）であることを確認",
-      "問題なければ google_ads: GO と返信",
-      "カード・支払プロファイルを要求されたら確定せず停止",
-    ],
-    done: "google_ads: GO",
-    next: "無料範囲ならKeyword Plannerへ進み、課金要求時は月末まで保留",
+    timing: "判断時だけ",
+    title: "返信カードのGO/HOLDを返す",
+    minutes: "1分以内",
+    status: "既定HOLD",
+    why: "domain、記事承認、index、partner CTA、Impact feed登録を別々のtokenで判断します。一つのGOから別のGOを推論しません。",
+    steps: ["HUMAN_REPLY_CARDを開く", "必要時だけImpact feed checklistを画面で確認する", "対象ID・partner・domainを確認する", "exact tokenだけ返信する"],
+    done: "GO / HOLD token",
+    next: "承認scopeだけをCodexが反映",
   },
   {
     id: "H4",
-    timing: "完了",
-    title: "Mangoolsアカウントを本人作成",
-    minutes: "5–8分",
-    status: "登録済み・Affiliate有効",
-    why: "2026-07-26に無料アカウント、Affiliate section、紹介IDと素材の発行を確認しました。",
-    steps: [
-      "追加の登録操作は不要",
-      "紹介IDは公開・repo保存しない",
-      "rights回答と公開承認が揃うまで紹介リンクを使用しない",
-    ],
-    done: "2026-07-26 登録・Affiliate有効化確認済み",
-    next: "rights回答をfield別に判定し、別途Affiliate decision recordを確定",
+    timing: "月1回",
+    title: "5 KPIを15分で転記",
+    minutes: "15分",
+    status: "手順・CSV導線準備済み",
+    why: "GSC、GA4、Impact、Mangoolsの指定画面だけを見て、dashboard用CSVへ件数と確定報酬を転記します。",
+    steps: ["MONTHLY_15_MIN_ROUTINEを開く", "前月の同じ期間を選ぶ", "CSVを保存し、monthly_kpi_csv: doneを返す"],
+    done: "monthly_kpi_csv: done / pending",
+    next: "dashboardをrepo状態とCSVから再生成",
+  },
+] as const;
+
+const p05FieldScopeCandidates = [
+  {
+    current: "旧field: Basic / 含まれる管理者数",
+    observed: "Agency / 追加seat 5",
+    handling: "総seat数や管理者数へ換算せず、extra seats availableとして扱う。",
   },
   {
-    id: "H5",
-    timing: "完了",
-    title: "SE Rankingへ個人publisher登録方法を照会",
-    minutes: "2分",
-    status: "送信済み・回答待ち",
-    why: "登録画面はwork email必須です。カードや架空情報を使わず公式Affiliate窓口へ確認します。",
-    steps: [
-      "2026-07-23に公式Affiliate窓口へ送信済み",
-      "公式回答が来るまでアカウント作成を再試行しない",
-      "Google Workspaceとカード登録は月末まで保留",
-    ],
-    done: "2026-07-23 送信済み",
-    next: "回答を登録可否、必要証拠、条件へ分解",
+    current: "旧field: Agency Pack料金",
+    observed: "Mangools Agency / 年次checkout総額はP02承認済み証拠あり",
+    handling: "存在を確認できないPackを作らず、同一planの承認済み年次総額だけを再利用候補にする。",
   },
   {
-    id: "H6",
-    timing: "今",
-    title: "HubSpot Impact契約・申請",
-    minutes: "10–15分",
-    status: "契約同意直前",
-    why: "契約checkbox、credential、本人・事業情報、申請送信は本人操作が必要です。",
-    steps: [
-      "保存済み契約PDFを読む",
-      "同意する場合だけImpactのcheckboxとContinueを操作",
-      "credential、2FA、site、集客方法を本人が入力",
-      "申請内容を確認し本人が送信",
-    ],
-    done: "hubspot_application: submitted",
-    next: "2–3営業日の審査を追跡し、結果と条件をhash-only記録へ変換",
+    current: "旧field: 毎月の監査ページ上限",
+    observed: "Site analysis 150 requests / 24h",
+    handling: "月間値や監査ページ数へ換算せず、公式の24時間単位を維持する。",
   },
   {
-    id: "H7",
-    timing: "回答時",
-    title: "許諾回答を最終判定",
-    minutes: "1社5分",
-    status: "回答待ち",
-    why: "回答者の権限、条件、期限を承認記録にする判断はHuman Approver専用です。",
-    steps: [
-      "回答メールはGmail内に残す",
-      "『○○社から回答あり』と知らせる",
-      "Codexの8項目への分解案を確認",
-      "approved / prohibited / unreviewedを最終承認",
-    ],
-    done: "会社別のapproveまたはreject",
-    next: "field-level SourcePolicyを生成し、許可済みsourceだけadapterを実装",
-  },
-  {
-    id: "H8",
-    timing: "承認後",
-    title: "受取・税務・本人確認",
-    minutes: "1社10–20分",
-    status: "後工程",
-    why: "口座、税番号、本人確認情報は秘匿情報です。",
-    steps: [
-      "各サービス内で本人が入力",
-      "値はチャットやrepoへ共有しない",
-      "画面上の完了だけを知らせる",
-    ],
-    done: "対象サービスの設定完了通知",
-    next: "支払方法、threshold、期限だけを非機密Evidenceへ反映",
+    current: "移行支援料金",
+    observed: "料金ページでは確認できず",
+    handling: "記載が見つからないことを0円や対象外の根拠にせず、unknownを維持する。",
   },
 ] as const;
 
@@ -136,52 +82,77 @@ export default function OperatorPage() {
   return (
     <main id="main-content" className="page-main">
       <header className="shell page-header">
-        <p className="eyebrow">HUMAN-ONLY ACTIONS</p>
-        <h1>あなたの操作だけ。<br />ここに残す。</h1>
+        <p className="eyebrow">HUMAN EASE TRACK</p>
+        <h1>見る・入力する・<br />GO/HOLDを返す。</h1>
         <p>
-          credential、CAPTCHA、契約、税務、最終承認以外はCodexが担当します。
-          秘密情報を共有せず、完了の合図だけを返せる形にしています。
+          あなたの残作業は、公式価格の確認と入力、必要時の再認証、token返信、月次確認だけです。
+          JSON編集、値の推測、外部への自動送信はありません。
         </p>
-        <p>
-          現在はカード不要モードです。カード登録、有料trial、課金開始は月末まで停止します。
-        </p>
+        <p>credential、個人情報、tracking ID、非公開報酬は入力しないでください。</p>
       </header>
 
       <section className="shell operator-summary" aria-labelledby="operator-summary-title">
         <div>
           <p className="eyebrow">CURRENT HANDOFF</p>
-          <h2 id="operator-summary-title">カード不要の作業だけ先行</h2>
+          <h2 id="operator-summary-title">Human作業を4種類へ集約</h2>
         </div>
         <dl>
-          <div><dt>許諾メール</dt><dd>5件送信済み・回答待ち</dd></div>
-          <div><dt>Google Ads</dt><dd>カード要求時は停止</dd></div>
-          <div><dt>Affiliate</dt><dd>無料登録・照会だけ</dd></div>
+          <div><dt>本番公開</dt><dd>P01–P10・P12（11/12）</dd></div>
+          <div><dt>この入力画面</dt><dd>NOINDEX</dd></div>
+          <div><dt>CTA</dt><dd>本番Mangoolsのみ / ローカル候補DISABLED</dd></div>
         </dl>
       </section>
+
+      <section
+        className="shell page-section"
+        aria-labelledby="p05-field-scope-title"
+        data-p05-candidate-authority="human_approved"
+        data-p05-field-scope="approved"
+      >
+        <div className="operator-section-heading">
+          <div>
+            <p className="eyebrow">P05 FIELD CORRECTION</p>
+            <h2 id="p05-field-scope-title">公式表記に合わせて修正済み</h2>
+          </div>
+          <p>
+            2026-08-09の公式料金画面と承認済みP02 checkout証拠に基づき、P05 contractと本文へ反映しました。
+            2026-08-11に限定releaseし、index・既存Mangools CTA対象へ追加済みです。
+          </p>
+        </div>
+        <div className="route-grid" data-p05-field-candidate-count={p05FieldScopeCandidates.length}>
+          {p05FieldScopeCandidates.map((candidate) => (
+            <article className="route-card" key={candidate.current}>
+              <small>現在: {candidate.current}</small>
+              <h3>{candidate.observed}</h3>
+              <p>{candidate.handling}</p>
+            </article>
+          ))}
+        </div>
+        <p><strong>確認済み:</strong> <code>p05_field_scope: approve mangools_agency_actual_fields</code></p>
+        <p><small>出典表示: mangools.com/plans-and-pricing（外部link・Affiliate識別子なし）</small></p>
+      </section>
+
+      <div className="shell operator-input-wrap">
+        <OperatorInputForm />
+        <p className="operator-derivative-link"><Link className="text-link" href="/operator/servers/">servers価格観測を開く</Link></p>
+        <p className="operator-derivative-link"><Link className="text-link" href="/servers/business-server-pricing/">servers第1記事のnoindex標本を確認</Link></p>
+        <p className="operator-derivative-link"><Link className="text-link" href="/operator/derivatives/">note・X再配信templateを確認</Link></p>
+      </div>
 
       <section className="shell operator-table-card" aria-labelledby="operator-table-title">
         <div className="operator-section-heading">
           <div>
-            <p className="eyebrow">ACTION TABLE</p>
-            <h2 id="operator-table-title">操作一覧</h2>
+            <p className="eyebrow">ONLY FOUR TASKS</p>
+            <h2 id="operator-table-title">残る本人作業</h2>
           </div>
-          <p>申請中は承認済みに数えず、規約同意とcredentialは本人操作のまま残します。</p>
+          <p>価格dataの自動取得、公開、CTA、課金は、この画面の入力だけでは実行されません。</p>
         </div>
-        <div className="table-scroll" tabIndex={0} aria-label="人間操作一覧を横スクロール">
+        <div className="table-scroll" tabIndex={0} aria-label="残る本人作業を横スクロール">
           <table className="operator-table">
-            <caption>Human Approver本人が行う操作、完了条件、完了後の自動作業</caption>
-            <thead>
-              <tr>
-                <th scope="col">ID</th>
-                <th scope="col">時期 / 操作</th>
-                <th scope="col">現在地</th>
-                <th scope="col">所要</th>
-                <th scope="col">完了の合図</th>
-                <th scope="col">次の自動作業</th>
-              </tr>
-            </thead>
+            <caption>本人が見る画面、返すtoken、Codexが続ける作業</caption>
+            <thead><tr><th scope="col">ID</th><th scope="col">時期 / 作業</th><th scope="col">現在地</th><th scope="col">本人所要</th><th scope="col">返信</th><th scope="col">次の自動作業</th></tr></thead>
             <tbody>
-              {actions.map((action) => (
+              {remainingHumanWork.map((action) => (
                 <tr key={action.id}>
                   <th scope="row"><span className="action-id">{action.id}</span></th>
                   <td><strong>{action.title}</strong><small>{action.timing}</small></td>
@@ -198,24 +169,17 @@ export default function OperatorPage() {
 
       <section className="shell operator-manual" aria-labelledby="operator-manual-title">
         <div className="operator-section-heading">
-          <div>
-            <p className="eyebrow">STEP-BY-STEP</p>
-            <h2 id="operator-manual-title">画面別マニュアル</h2>
-          </div>
-          <p>各項目を開くと、操作順と停止理由を確認できます。</p>
+          <div><p className="eyebrow">WHAT TO DO</p><h2 id="operator-manual-title">迷った時だけ開く</h2></div>
+          <p>不明値は埋めず、そのfieldを止めます。HOLDは失敗ではなく既定の安全動作です。</p>
         </div>
         <div className="manual-list">
-          {actions.map((action) => (
-            <details key={action.id} open={action.id === "H1" || action.id === "H3"}>
-              <summary>
-                <span>{action.id}</span>
-                <strong>{action.title}</strong>
-                <small>{action.status}</small>
-              </summary>
+          {remainingHumanWork.map((action) => (
+            <details key={action.id} open={action.id === "H2"}>
+              <summary><span>{action.id}</span><strong>{action.title}</strong><small>{action.status}</small></summary>
               <div className="manual-body">
                 <p>{action.why}</p>
                 <ol>{action.steps.map((step) => <li key={step}>{step}</li>)}</ol>
-                <p><b>完了後:</b> {action.next}</p>
+                <p><b>次:</b> {action.next}</p>
               </div>
             </details>
           ))}
@@ -224,18 +188,24 @@ export default function OperatorPage() {
 
       <section className="shell operator-reply" aria-labelledby="reply-title">
         <div>
-          <p className="eyebrow">COPY &amp; REPLY</p>
-          <h2 id="reply-title">最初に返す内容</h2>
-          <p>未公開ならsite URLは「未公開」で構いません。パスワードや2FAは書かないでください。</p>
+          <p className="eyebrow">REPLY CARD</p>
+          <h2 id="reply-title">承認は記事単位</h2>
+          <p>複数記事はカンマ区切りで返せます。indexとCTAは記事承認から自動では有効になりません。</p>
         </div>
-        <pre>{`legal_name_or_entity:
-site_url:
-human_approver_name:
+        <pre>{`記事承認:
+article_approve: P01,P02,P03
 
-google_ads: GO / STOP
+domain:
+domain: GO <domain> / HOLD
 
-mangools_terms: GO / STOP
-hubspot_impact_contract: GO / STOP`}</pre>
+index:
+index_go: GO / HOLD
+
+partner CTA:
+affiliate_cta: GO Mangools / HOLD Mangools
+
+Impact feed:
+impact_feed_a1: GO <partner> / HOLD <partner>`}</pre>
       </section>
     </main>
   );

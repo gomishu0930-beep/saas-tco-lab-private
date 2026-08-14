@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "広告表示",
-  description: "アフィリエイト、編集判断、CTA制御に関する公開前方針。",
+  description: "SaaS TCO Labのアフィリエイト表示、編集判断、CTA制御に関する方針。",
 };
 
 export default function DisclosurePage() {
@@ -12,8 +12,8 @@ export default function DisclosurePage() {
         <p className="eyebrow">AFFILIATE DISCLOSURE</p>
         <h1>広告収益と、比較判断を混ぜない。</h1>
         <p>
-          本MVPは公開前であり、実アフィリエイトリンクを含みません。将来の運用でも、
-          提携の有無を比較条件やTCO計算へ混入させません。
+          承認済み記事にはMangoolsのアフィリエイトリンクを含む場合があります。
+          提携の有無は比較条件やTCO計算へ混入させません。
         </p>
       </header>
       <section className="shell policy-cards" aria-label="広告方針">
@@ -23,7 +23,7 @@ export default function DisclosurePage() {
         </article>
         <article>
           <span>02</span><h2>リンク属性</h2>
-          <p>有効な広告リンクには sponsored・nofollow・noopener・noreferrer を付与します。</p>
+          <p>有効な広告リンクには sponsored・noopener・noreferrer を付与します。</p>
         </article>
         <article>
           <span>03</span><h2>期限連動</h2>
@@ -36,9 +36,10 @@ export default function DisclosurePage() {
       </section>
       <section className="shell disclosure-statement" aria-labelledby="current-state">
         <p className="eyebrow">CURRENT STATE</p>
-        <h2 id="current-state">現在の広告状態: 無効</h2>
+        <h2 id="current-state">現在の広告状態: Mangoolsのみ有効</h2>
         <p>
-          実提携0件、実CTA 0件、外部送客0件です。Humanの提携承認と公開承認を得るまで変更しません。
+          Human承認済みの11記事に限り、記事冒頭のPR表示より後でMangools CTAを有効にしています。
+          他partnerは提携・掲載先・広告表示・個別CTA承認の全条件が一致するまで無効です。
         </p>
       </section>
     </main>
