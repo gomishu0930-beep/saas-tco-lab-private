@@ -269,6 +269,17 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       "/pilot/annual-vs-monthly",
       "/pilot/usage-overage",
     ]);
+    const followableNonArticlePaths = new Set([
+      "/",
+      "/methodology",
+      "/disclosure",
+      "/about",
+      "/operator-information",
+      "/privacy",
+      "/contact",
+      "/advertising-policy",
+      "/embed/tco-calculator",
+    ]);
     if (approvedArticlePaths.has(path)) {
       assert.equal(response.headers.get("x-robots-tag"), "index, follow", path);
       assert.match(body, /<meta name="robots" content="index, follow">/i, path);
@@ -301,6 +312,29 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
         /<span\b[^>]*data-affiliate-cta-placeholder|>CTA DISABLED</i,
         path,
       );
+    } else if (followableNonArticlePaths.has(path)) {
+      assert.equal(
+        response.headers.get("x-robots-tag"),
+        "noindex, follow, noarchive, nosnippet",
+        path,
+      );
+      assert.match(
+        body,
+        /<meta name="robots" content="noindex, follow, noarchive, nosnippet">/i,
+        path,
+      );
+      assert.doesNotMatch(body, /<link\s+rel=["']canonical["']/i, path);
+      assert.doesNotMatch(documentHtml, /rel=["'][^"']*sponsored|data-affiliate-cta-partner/i, path);
+      assert.doesNotMatch(documentHtml, /data-saastco-affiliate-cta/i, path);
+      if (path === "/") {
+        for (const approvedPath of [
+          "/pilot/pricing-calculator",
+          "/pilot/plan-comparison",
+          "/pilot/evidence-method",
+        ]) {
+          assert.match(body, new RegExp(`href=["']${approvedPath}["']`, "i"), approvedPath);
+        }
+      }
     } else {
       assert.equal(
         response.headers.get("x-robots-tag"),
