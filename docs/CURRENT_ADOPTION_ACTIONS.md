@@ -374,6 +374,13 @@ zero-input計算機には価格を投入せず「未確認」行として順位�
 unknownのままであり、TCO・順位・推奨・article approval・index・CTAはHOLDを維持する。過渡的に作成した
 66,660円をmaterial claimとする3稿はrelease evidenceへ採用せず、価格分類確定後に再生成する。
 
+同日、上記candidate-only contractの証拠表をSites version 25へ限定公開した。SVR01 routeはHTTP 200だが
+HTTP headerとmetaの両方で`noindex, nofollow, noarchive, nosnippet`を維持し、canonical、sitemap、robots
+allowlistへ追加していない。外部read-backでは年次表示50,160 JPYと初期費用16,500 JPYを個別に表示し、
+66,660円の合算は非表示、zero-input表は`未確認`かつ順位対象外、server CTAとsponsored linkは0件だった。
+公式出典linkは`business.xserver.ne.jp`のquery・fragmentなしURLだけで、`noopener noreferrer`かつ
+非sponsoredに限定した。既存P01–P10・P12の11記事index境界、P11のnoindex、Mangools CTAは変更していない。
+
 同日、拡張需要のHuman export用として、CRM残り10、forms 40、email marketing 40、SEO追加60を
 凍結slateからquery-only textへ生成する`prepare-kwfinder-upload`を追加した。出力は固定P18 scope外の
 `outputs/`へ置き、元slateとの完全一致、重複0、範囲外slice拒否を回帰testで固定した。需要値の取得、

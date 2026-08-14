@@ -103,7 +103,10 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     }
     assert len(data["work"]) == 12
     assert all(item["done"] for item in data["work"])
-    assert any(item["label"] == "SVR01–SVR20 noindex候補view" for item in data["work"])
+    assert any(
+        item["label"] == "SVR01証拠付き・SVR02–SVR20 noindex候補view"
+        for item in data["work"]
+    )
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
     assert [item["priority"] for item in data["externalActions"]] == [1, 2]
     assert any(

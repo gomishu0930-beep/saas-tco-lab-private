@@ -227,7 +227,7 @@ def _work_queue(root: Path) -> list[dict[str, Any]]:
         ("Q8 90日判定閾値固定", root / "docs/PRODUCTION_ROADMAP.md"),
         ("Q9 dashboard Launch Quarter更新", root / "scripts/update_status_dashboard.py"),
         ("SVR01 servers価格観測Operator", root / "site/app/operator/servers/page.tsx"),
-        ("SVR01–SVR20 noindex候補view", root / "site/app/servers/business-server-pricing/page.tsx"),
+        ("SVR01証拠付き・SVR02–SVR20 noindex候補view", root / "site/app/servers/business-server-pricing/page.tsx"),
         ("servers 20記事候補一覧", root / "site/app/operator/servers/page.tsx"),
     )
     return [{"done": path.is_file(), "label": label} for label, path in requirements]
@@ -743,7 +743,7 @@ def _regenerate(
         dynamic_risks.append({
             "riskId": "server-candidate-only",
             "level": "warn",
-            "label": "SVR01は年次表示50,160円・初期費用16,500円を個別確認済み。期間限定分類のため合算・TCO・記事承認・index・CTAは未実行",
+            "label": "SVR01は個別証拠をnoindex公開済み。期間限定分類のため合算・TCO・記事承認・index・CTAは未実行",
         })
     if server_partner_policy["warning"]:
         dynamic_risks.append({

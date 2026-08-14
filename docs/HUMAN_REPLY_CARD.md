@@ -10,8 +10,8 @@ domain GOからindex GOやCTA GOを推論しない。
 P11だけが2026年9月・10月の完全暦月データ待ちです。
 Search Console domain propertyと専用GA4 streamも連携済みです。serversはSVR01
 candidate-only contractをlocal保存済みで、XServerビジネス、ロリポップ、ABLENET共用サーバーは各ASP管理画面の提携済み表示をread-back済みである。
-SVR01のlocal標本では確認済み11 fieldを証拠表として表示します。年次表示50,160円と初期費用16,500円は
-個別の確認値ですが、両fieldが`time_limited_promo`分類のため合算値を確定せず、TCO・順位・servers記事公開も未完了です。Xは`@saastcolab`でP01初回スレッド8件を公開済みです。
+SVR01のnoindex公開標本では確認済み11 fieldを証拠表として表示します。年次表示50,160円と初期費用16,500円は
+個別の確認値ですが、両fieldが`time_limited_promo`分類のため合算値を確定せず、TCO・順位・index・server CTAは未完了です。Xは`@saastcolab`でP01初回スレッド8件を公開済みです。
 X API connectorは2026-08-13のread-only照合でSaaS専用accountではないbindingを返したため使用停止中で、
 Safari上のSaaS専用運用と混ぜません。
 

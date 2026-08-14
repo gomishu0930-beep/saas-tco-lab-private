@@ -136,6 +136,9 @@ analytics scope拡張をこの承認へ含めない。
   noindex・canonicalなし・CTAなし、P01は開示先行・Mangools CTA・`rel=sponsored noopener noreferrer`を維持した。
   Search Consoleでは旧HTTP homeのrobots警告について修正検証を開始し、開始日2026-08-14をread-backした。
   検証完了や記事index完了とは扱わない。
+- 同日、SVR01のHuman確認済み個別証拠だけをSites version 25へ反映した。server routeはHTTP header/metaとも
+  `noindex, nofollow, noarchive, nosnippet`、canonicalなし、CTAなし、sponsored linkなしで、sitemap 11 URLと
+  robots allowlistにも追加していない。したがってSearch Consoleのindex対象、既存11記事、P11の境界に変更はない。
 
 ## GO後の実行と合格条件
 
