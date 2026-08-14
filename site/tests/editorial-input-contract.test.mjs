@@ -32,7 +32,7 @@ const approvedSourceContracts = ["P01", "P02", "P03", "P06", "P07"].map((article
 )));
 
 const approvedServerCandidate = JSON.parse(readFileSync(
-  new URL("../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v2-2026-08-08.json", import.meta.url),
+  new URL("../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v3-2026-08-14.json", import.meta.url),
   "utf8",
 ));
 
@@ -730,20 +730,20 @@ test("reviewed servers evidence is display-only, unranked, and host constrained"
   assert.equal(evidence.calculatorContract.plans[0].serverTerms, null);
   assert.ok(evidence.tcoBlockers.length > 0);
   assert.ok(evidence.suitabilityBlockers.length > 0);
-  assert.equal(evidence.initialPayment, null);
-
-  const permanentDisplay = structuredClone(approvedServerCandidate.numeric_fields);
-  permanentDisplay.find((field) => field.field === "pricing.initial_fee").sale_banner_state = "none";
-  permanentDisplay.find((field) => field.field === "pricing.base_price").sale_banner_state = "annual_discount_permanent";
-  assert.deepEqual(serverInitialPaymentProjection(permanentDisplay), {
+  assert.deepEqual(evidence.initialPayment, {
     amount: "66660",
     annualCheckoutTotal: "50160",
     initialFee: "16500",
     currency: "JPY",
     taxTreatment: "included",
-    observedOn: "2026-08-08",
-    nextReviewOn: "2026-09-06",
+    observedOn: "2026-08-14",
+    nextReviewOn: "2026-09-13",
   });
+
+  const campaign = evidence.fields.find((field) => field.field === "servers.campaign_price");
+  assert.equal(campaign.value_status, "unknown");
+  assert.equal(campaign.sale_banner_state, "time_limited_promo");
+  assert.equal(evidence.calculatorContract.plans[0].priceStatus, "unknown");
 
   const basePrice = evidence.fields.find((field) => field.field === "pricing.base_price");
   const renewal = evidence.fields.find((field) => field.field === "pricing.renewal_fee");

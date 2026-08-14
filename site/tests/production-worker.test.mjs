@@ -851,7 +851,7 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   assert.doesNotMatch(body, /data-affiliate-cta-partner="mangools"/);
 });
 
-test("SVR01 public preview exposes only individual evidence while index and CTA stay held", async () => {
+test("SVR01 approved source exposes gross contract charge while index and CTA stay runtime-held", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("server-public-preview", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -874,10 +874,15 @@ test("SVR01 public preview exposes only individual evidence while index and CTA 
   assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i);
   const body = await response.text();
   const disclosurePosition = body.indexOf('id="article-pr-disclosure"');
-  const evidencePosition = body.indexOf("年次請求50,160 JPYと初期費用16,500 JPY");
+  const evidencePosition = body.indexOf("新規12か月契約で確認できた契約時請求額は66,660円");
   assert.ok(disclosurePosition >= 0 && disclosurePosition < evidencePosition);
-  assert.match(body, /合算値を本文・計算機・構造化データへ出しません/);
-  assert.doesNotMatch(body, /66,?660/);
+  assert.match(body, /data-server-article-review="approved"/);
+  assert.match(body, /期間限定キャッシュバックを控除する前の金額/);
+  assert.match(body, /66,660円/);
+  assert.match(body, /"@type":"Product"/);
+  assert.match(body, /"@type":"FAQPage"/);
+  assert.match(body, /"@type":"BreadcrumbList"/);
+  assert.match(body, /"price":"66660","priceCurrency":"JPY"/);
   assert.match(body, /data-ranking-eligible="false"[\s\S]{0,400}<strong>未確認<\/strong>/);
   assert.match(body, /data-server-affiliate-cta-state="disabled"/);
   assert.doesNotMatch(body, /rel="sponsored noopener noreferrer"/);

@@ -227,12 +227,13 @@ test("every servers candidate stays noindex, unranked, CTA-disabled, and disclos
     if (path === SVR01_ROUTE) {
       assert.match(html, /確認済み(?:<!-- -->)?4(?:<!-- -->)?項目、未確認(?:<!-- -->)?6(?:<!-- -->)?項目、[\s\S]{0,40}該当なし(?:<!-- -->)?1(?:<!-- -->)?項目/, path);
       assert.match(html, /data-ranking-eligible="false"[\s\S]{0,400}<strong>未確認<\/strong>/, path);
-      assert.match(html, /年次請求50,160 JPYと初期費用16,500 JPYは個別の確認値/, path);
-      assert.match(html, /合算値を本文・計算機・構造化データへ出しません/, path);
-      assert.doesNotMatch(html, /66,?660/, path);
-      assert.match(html, /合算総額・TCO・順位・推奨は表示しません/, path);
+      assert.match(html, /data-server-article-review="approved"/, path);
+      assert.match(html, /契約時に確認できた請求額は(?:<!-- -->)?66,660/, path);
+      assert.match(html, /期間限定キャッシュバックを控除する前の金額/, path);
+      assert.match(html, /66,660円/, path);
+      assert.match(html, /24\/36か月総額・順位・推奨は表示しません/, path);
       assert.match(html, /他社より安いとは断定せず/, path);
-      assert.match(html, /価格本体とキャンペーンの関係をHumanが再確認/, path);
+      assert.match(html, /キャッシュバックの確定額と受取条件/, path);
     } else {
       assert.match(html, /承認済みのservers価格contractはまだありません/, path);
     }

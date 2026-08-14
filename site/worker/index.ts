@@ -117,6 +117,10 @@ const SERVER_ARTICLE_PATH_TO_ID = new Map([
   ["/servers/business-server-pricing", "SVR01"],
 ]);
 
+// Source-level Human editorial approval. Runtime INDEX_GO alone must never
+// promote an unreviewed server candidate into the public index.
+const SOURCE_APPROVED_SERVER_ARTICLE_IDS = new Set(["SVR01"]);
+
 function approvedIndexPaths(env: ProductionEnv): ReadonlySet<string> {
   if (env.INDEX_GO?.trim() !== "GO") return new Set();
   const values = (env.INDEX_APPROVED_ARTICLES ?? "").split(",").map((item) => item.trim()).filter(Boolean);
@@ -135,7 +139,7 @@ function approvedIndexPaths(env: ProductionEnv): ReadonlySet<string> {
   ) return paths;
   const approvedServers = new Set(serverValues);
   for (const [path, id] of SERVER_ARTICLE_PATH_TO_ID) {
-    if (approvedServers.has(id)) paths.add(path);
+    if (approvedServers.has(id) && SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(id)) paths.add(path);
   }
   return paths;
 }

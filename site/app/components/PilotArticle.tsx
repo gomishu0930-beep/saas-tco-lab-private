@@ -363,20 +363,27 @@ export function PilotArticle({
 /** Candidate-only servers layout. It contains no destination or active CTA. */
 export function ServerArticleTemplate({
   article,
+  articleReviewStatus,
   calculatorContract,
   evidence,
   ctaPolicy,
 }: {
   article: ServerArticleSlateEntry;
+  articleReviewStatus: "approved" | "unreviewed";
   calculatorContract: ServerZeroInputContract;
   evidence: ReactNode;
   ctaPolicy: ServerCtaPresentationPolicy;
 }) {
   return (
-    <main id="main-content" className="page-main" data-server-article-state={article.state}>
+    <main
+      id="main-content"
+      className="page-main"
+      data-server-article-state={article.state}
+      data-server-article-review={articleReviewStatus}
+    >
       <AdvertisingDisclosure />
       <header className="shell page-header">
-        <p className="eyebrow">SERVERS / PRICE REVIEW IN PROGRESS</p>
+        <p className="eyebrow">SERVERS / {articleReviewStatus === "approved" ? "HUMAN REVIEWED" : "PRICE REVIEW IN PROGRESS"}</p>
         <h1>{article.titleTemplate}</h1>
         <p>{article.readerQuestion}</p>
       </header>

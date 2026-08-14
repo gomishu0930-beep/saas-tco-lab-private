@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
-import savedSvr01Candidate from "../../../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v2-2026-08-08.json";
+import savedSvr01Candidate from "../../../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v3-2026-08-14.json";
 
 import { ServerArticleTemplate } from "../../components/PilotArticle";
 import {
@@ -17,6 +17,15 @@ const svr01Evidence = reviewedServerCandidateEvidence(
   "XServerビジネス 共有スタンダード（12か月）",
   "business.xserver.ne.jp",
 );
+
+const svr01ArticleApproved = svr01Evidence?.initialPayment !== null;
+const approvedSvr01Title = "XServerビジネス料金（2026年8月確認）：契約時請求66,660円と未確認費用";
+
+function displayAmount(value: string): string {
+  const match = /^(\d+)(?:\.(\d+))?$/.exec(value);
+  if (!match) return value;
+  return `${BigInt(match[1]).toLocaleString("ja-JP")}${match[2] ? `.${match[2]}` : ""}`;
+}
 
 type ServerCandidatePageProps = {
   searchParams: Promise<{ candidate?: string | string[] }>;
@@ -33,13 +42,19 @@ async function requestedArticle(searchParams: ServerCandidatePageProps["searchPa
 
 export async function generateMetadata({ searchParams }: ServerCandidatePageProps): Promise<Metadata> {
   const article = await requestedArticle(searchParams);
-  const description = `${article.readerQuestion} Human確認済み価格だけで検証する公開前候補です。未確認値は順位と計算から除外します。`;
+  const isApprovedSvr01 = article.id === "SVR01" && svr01ArticleApproved;
+  const title = isApprovedSvr01
+    ? approvedSvr01Title
+    : article.titleTemplate;
+  const description = isApprovedSvr01
+    ? "XServerビジネス共有スタンダードの12か月一括前払額と初期費用を公式画面で確認。キャッシュバック控除前の契約時請求額と、未確認の更新・特典条件を分けて説明します。"
+    : `${article.readerQuestion} Human確認済み価格だけで検証する公開前候補です。未確認値は順位と計算から除外します。`;
   return {
-    title: article.titleTemplate,
+    title,
     description,
     robots: { index: false, follow: false, noarchive: true, nosnippet: true },
-    openGraph: { title: article.titleTemplate, description, type: "article", siteName: "SaaS TCO Lab" },
-    twitter: { card: "summary", title: article.titleTemplate, description },
+    openGraph: { title, description, type: "article", siteName: "SaaS TCO Lab" },
+    twitter: { card: "summary", title, description },
   };
 }
 
@@ -47,15 +62,57 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
   const article = await requestedArticle(searchParams);
   const evidence = article.id === "SVR01" ? svr01Evidence : null;
   const initialPayment = evidence?.initialPayment;
+  const displayArticle = initialPayment ? {
+    ...article,
+    titleTemplate: approvedSvr01Title,
+    readerQuestion: "新規12か月契約で最初に請求される金額と、まだ確定できない更新・特典条件は何か",
+  } : article;
+  const serverStructuredData = initialPayment ? {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Product",
+        name: approvedSvr01Title,
+        description: "XServerビジネス共有スタンダードの新規12か月契約について、公式画面で確認した契約時請求額と未確認条件を分けた料金記録。",
+        category: "法人向けレンタルサーバー",
+        offers: {
+          "@type": "Offer",
+          name: "XServerビジネス 共有スタンダード（新規12か月・キャッシュバック控除前）",
+          price: initialPayment.amount,
+          priceCurrency: initialPayment.currency,
+          priceValidUntil: initialPayment.nextReviewOn,
+        },
+      },
+      {
+        "@type": "FAQPage",
+        mainEntity: [{
+          "@type": "Question",
+          name: displayArticle.readerQuestion,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: `公式画面で確認できた契約時請求額は${displayAmount(initialPayment.amount)}円（税込）です。期間限定キャッシュバックは控除せず、更新額や特典価値は未確認として分離しています。`,
+          },
+        }],
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "SaaS TCO Lab" },
+          { "@type": "ListItem", position: 2, name: "サーバー料金" },
+          { "@type": "ListItem", position: 3, name: approvedSvr01Title },
+        ],
+      },
+    ],
+  } : null;
   const evidenceValue = (fieldName: string) => {
     const field = evidence?.fields.find((item) => item.field === fieldName);
     return field ? serverEvidenceValue(field) : "未確認";
   };
   const readerSections = initialPayment ? [
-    { title: "結論", body: `新規12か月契約で確認できた契約時請求額は${initialPayment.amount} ${initialPayment.currency}（${initialPayment.taxTreatment === "included" ? "税込" : "税別"}）です。期間限定キャッシュバックを控除する前の金額で、更新後の総額や他社との順位ではありません。` },
+    { title: "結論", body: `新規12か月契約で確認できた契約時請求額は${displayAmount(initialPayment.amount)}円（${initialPayment.taxTreatment === "included" ? "税込" : "税別"}）です。期間限定キャッシュバックを控除する前の金額で、更新後の総額や他社との順位ではありません。` },
     { title: "比較前提", body: "対象はXServerビジネスの共有スタンダード、12か月契約です。新規契約時の表示だけを扱い、契約更新、別プラン、専用サーバーの価格へは流用しません。" },
-    { title: "料金と上限", body: `12か月の一括前払額は${initialPayment.annualCheckoutTotal} ${initialPayment.currency}、初期費用は${initialPayment.initialFee} ${initialPayment.currency}です。確認済みの仕様はストレージ${evidenceValue("servers.storage_gb")}、データ転送量${evidenceValue("servers.data_transfer_gb")}、バックアップ料金${evidenceValue("servers.backup_price")}です。` },
-    { title: "12か月TCO", body: `確認済みの契約料金だけを足すと${initialPayment.amount} ${initialPayment.currency}です。年額と初期費用を二重計上せず、未確定のキャッシュバックやドメイン特典を値引きとして差し引いていません。` },
+    { title: "料金と上限", body: `12か月の一括前払額は${displayAmount(initialPayment.annualCheckoutTotal)}円、初期費用は${displayAmount(initialPayment.initialFee)}円です。確認済みの仕様はストレージ${evidenceValue("servers.storage_gb")}、データ転送量${evidenceValue("servers.data_transfer_gb")}、バックアップ料金${evidenceValue("servers.backup_price")}です。` },
+    { title: "12か月TCO", body: `確認済みの契約料金だけを足すと${displayAmount(initialPayment.amount)}円です。年額と初期費用を二重計上せず、未確定のキャッシュバックやドメイン特典を値引きとして差し引いていません。` },
     { title: "反証", body: "更新時請求額、キャッシュバックの確定額と受取条件、ドメイン特典の金銭価値・適用期間、計算資源の時間上限は未確認です。このため24か月・36か月の総額や費用対効果は確定できません。" },
     { title: "選び方", body: "この記録は1社1プランの契約時負担を確認する材料です。他社より安いとは断定せず、必要な運用条件と更新額を同じ基準で確認できた候補がそろってから比較します。" },
   ] : evidence ? [
@@ -71,18 +128,23 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
   }));
   return (
     <ServerArticleTemplate
-      article={article}
+      article={displayArticle}
+      articleReviewStatus={article.id === "SVR01" && initialPayment ? "approved" : "unreviewed"}
       calculatorContract={evidence?.calculatorContract ?? { articleReviewStatus: "unreviewed", plans: [] }}
       ctaPolicy={serverCtaPresentationPolicy([])}
       evidence={(
         <div className="editorial-sections">
+          {serverStructuredData ? <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(serverStructuredData).replaceAll("<", "\\u003c") }}
+          /> : null}
           {evidence ? <article className="server-observation-summary">
             <span>00</span>
             <h2>現在の確認状態</h2>
             {initialPayment ? <>
-              <p><strong>{evidence.displayName}の新規12か月契約で、契約時に確認できた請求額は{initialPayment.amount} {initialPayment.currency}（{initialPayment.taxTreatment === "included" ? "税込" : "税別"}）です。</strong></p>
+              <p><strong>{evidence.displayName}の新規12か月契約で、契約時に確認できた請求額は{displayAmount(initialPayment.amount)}円（{initialPayment.taxTreatment === "included" ? "税込" : "税別"}）です。</strong></p>
               <p>証拠11項目の内訳は、確認済み{evidence.knownCount}項目、未確認{evidence.unknownCount}項目、該当なし{evidence.notApplicableCount}項目です。</p>
-              <p>年次請求総額{initialPayment.annualCheckoutTotal}円と初期費用{initialPayment.initialFee}円の合計です。期間限定キャッシュバックは控除せず、更新額・特典価値・用途適合が未確認のため、24/36か月総額・順位・推奨は表示しません。</p>
+              <p>年次請求総額{displayAmount(initialPayment.annualCheckoutTotal)}円と初期費用{displayAmount(initialPayment.initialFee)}円の合計です。期間限定キャッシュバックは控除せず、更新額・特典価値・用途適合が未確認のため、24/36か月総額・順位・推奨は表示しません。</p>
             </> : <>
               <p>{evidence.displayName}は、確認済み{evidence.knownCount}項目、未確認{evidence.unknownCount}項目、該当なし{evidence.notApplicableCount}項目です。</p>
               <p><strong>年次請求50,160 JPYと初期費用16,500 JPYは個別の確認値として表示しますが、期間限定表示と更新額未確認が残るため、合算総額・TCO・順位・推奨は表示しません。</strong></p>

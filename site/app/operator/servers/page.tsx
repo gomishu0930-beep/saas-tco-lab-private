@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import { ServerObservationForm } from "../../components/ServerObservationForm";
 import { serverArticleSlate } from "../../lib/pilot-pages";
-import savedSvr01Candidate from "../../../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v2-2026-08-08.json";
+import savedSvr01Candidate from "../../../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v3-2026-08-14.json";
 
 const svr01BrowserCandidates = {
   observedOn: "2026-08-09",
