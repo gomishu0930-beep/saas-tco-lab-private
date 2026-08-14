@@ -405,7 +405,7 @@ maintenance中のautomated data path controlであり、editorial laneへ入口�
 ### Local P10公開前Release Assurance（完了・独立再監査合格）
 
 - 24件のmaterial threatを、予防・検知・停止・復旧・残余リスク・owner・Human gateまで分解した。local実装済みcontrolとproduction未実装controlを分離し、launch blocker L1–L11を固定した。
-- `uv.lock`と`site/package-lock.json`だけから、networkなしでCycloneDX 1.6 SBOMを決定論生成する。451 components・451 graph nodes、lock hash、purl、利用可能な配布物hash、npm licenseを保持し、credential URL・絶対path・timestampを拒否する。
+- `uv.lock`と`site/package-lock.json`だけから、networkなしでCycloneDX 1.6 SBOMを決定論生成する。448 components・448 graph nodes、lock hash、purl、利用可能な配布物hash、npm licenseを保持し、credential URL・絶対path・timestampを拒否する。
 - synthetic-local 5 routeで、document metadata、landmark、skip link、internal link、table semantics、広告説明、無効CTA、900/620px reflow、keyboard focus、reduced motion、canonical/JSON-LD/public origin不在を検査する。
 - 13の必須checkごとにfacts種別、tool/version、command/subject hashをpolicyへ固定し、controller-role runnerが型付きfactsへ署名する。件数、coverage、exit code、determinism、finding、future、expiry、最大TTLをcheck別に再計算し、全件合格だけを`local ready`とする。
 - automated data pathの`public GO`には、local reportへ結合したTCO/QA署名、exact BusinessDossierとmanifest全snapshot完全listへ結合したHuman署名、事業`GO`、manifestとのrights/Affiliate/demand/cohort/operations binding、current CTA/expiryを全て要求する。local readyをpublic GOへ読み替えない。この条件はeditorial laneのL1–L4へ適用しない。
