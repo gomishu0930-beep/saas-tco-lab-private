@@ -392,12 +392,7 @@ const DATA = {
     {
       "riskId": "server-launch",
       "level": "warn",
-      "label": "SVR01は承認・index対象として公開済み。servers CTA 1件稼働・残る5partnerはHOLD"
-    },
-    {
-      "riskId": "server-partner-dependency",
-      "level": "warn",
-      "label": "serversの稼働CTAは1partnerのみで運用上100%依存。第2partner GOまでは単独CTAを維持"
+      "label": "SVR01は承認・index対象として公開済み。servers CTA 6件稼働・残る0partnerはHOLD"
     }
   ],
   "launchQuarter": {
@@ -503,12 +498,6 @@ const DATA = {
   "externalActions": [
     {
       "priority": 1,
-      "label": "destination設定済みservers 5案件のpartner別CTA GO",
-      "status": "server_partner_cta_go_required",
-      "token": "server_cta_go: GO <partner IDs comma-separated> / HOLD"
-    },
-    {
-      "priority": 2,
       "label": "P11のHuman確認済み実測（Operator timer準備済み）",
       "status": "owned_data_waiting",
       "token": "article_evidence: pending P11"
@@ -537,8 +526,8 @@ const DATA = {
     "approvedArticles": 1,
     "deployedArticles": 1,
     "indexApprovedArticles": 1,
-    "ctaEnabledPartners": 1,
-    "ctaHeldPartners": 5
+    "ctaEnabledPartners": 6,
+    "ctaHeldPartners": 0
   }
 };
 // DASHBOARD_DATA_END

@@ -43,11 +43,11 @@
   ],
   "server_affiliate_cta": {
     "a8net-xserver-business": "GO",
-    "moshimo-conoha-wing": "HOLD",
-    "moshimo-lolipop-rental-server": "HOLD",
-    "moshimo-onamae-rental-server": "HOLD",
-    "moshimo-shin-rental-server": "HOLD",
-    "valuecommerce-ablenet-shared-server": "HOLD"
+    "moshimo-conoha-wing": "GO",
+    "moshimo-lolipop-rental-server": "GO",
+    "moshimo-onamae-rental-server": "GO",
+    "moshimo-shin-rental-server": "GO",
+    "valuecommerce-ablenet-shared-server": "GO"
   },
   "articles": {
     "P01": "approved",

@@ -159,16 +159,16 @@ Affiliate partner状態の非機密な正本として`docs/AFFILIATE_PARTNER_LED
 read-backし、Affiliate提携を承認済みへ更新した。同日、バリューコマースのABLENET共用サーバーも
 個別条件を確認して提携申請し、正規画面の「提携済み」をread-backした。ログイン後だけ表示される報酬額・確定率は
 `restricted_dashboard_only`として値をrepositoryへ保存しない。
-XServerビジネスは開示先行、runtime destination設定、partner別`cta_go`が
-すべて揃い、2026-08-14からSVR01の単独CTA対象である。他5件はpartner別GOまでfail-closedを維持する。台帳はruntime secretの参照名だけを持ち、tracking ID、広告link URL、
+servers 6件は開示先行、runtime destination設定、partner別`cta_go`が
+すべて揃い、2026-08-14からSVR01の比較CTA対象である。台帳はruntime secretの参照名だけを持ち、tracking ID、広告link URL、
 本人情報、secret値を保存しない。
 
 |会社|Affiliate現在地|rights回答|統合gateへの算入|次の本人操作|
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答。2026-07-26追送済み|0|rights回答を待つ。紹介IDは共有しない|
 |A8.net|Account登録済み、XServerビジネス提携承認済み、広告リンク作成可、destination設定済み、SVR01 CTA稼働|条件要約を台帳v1.1へ記録。報酬値は非保存|1|送客と確定報酬をaggregate監視|
-|もしもアフィリエイト|Account・saastcolab.jpメディア登録済み、servers候補4件すべて提携承認済み、広告素材あり、destination設定済み|ロリポップ、シンレンタルサーバー、ConoHa WING、お名前.comの承認状態を台帳へ記録。報酬値は非保存|4|partner別CTA GOを判断|
-|バリューコマース|Account本登録済み、ABLENET共用サーバー提携承認済み、広告作成可、destination設定済み|個別条件を台帳v1.1へ要約。報酬値は非保存|1|partner別CTA GOを判断|
+|もしもアフィリエイト|Account・saastcolab.jpメディア登録済み、servers候補4件すべて提携承認済み、広告素材あり、destination設定済み、SVR01 CTA稼働|ロリポップ、シンレンタルサーバー、ConoHa WING、お名前.comの承認状態を台帳へ記録。報酬値は非保存|4|送客と確定報酬をaggregate監視|
+|バリューコマース|Account本登録済み、ABLENET共用サーバー提携承認済み、広告作成可、destination設定済み、SVR01 CTA稼働|個別条件を台帳v1.1へ要約。報酬値は非保存|1|送客と確定報酬をaggregate監視|
 |HubSpot|2026-08-03 Impact画面でDeclined（low reach）を確認|未回答。2026-07-26追送済み|0|公開・流入実績を作るまで再申請しない。拒否を承認済みと数えない|
 |Semrush|Impact Marketplaceは2026-08-09に却下済み。個別申請は未成立|回答あり|0|公開記事・流入実績を蓄積し、再申請条件を満たした後に新しいexact GOで再評価する|
 |SE Ranking|work email例外回答待ち|未回答。ticket 112501へ2026-07-26追送済み|0|回答まで再登録しない|
@@ -410,6 +410,12 @@ runtime destination設定とCTA有効化は分離したままであり、全6par
 XServerビジネスCTAが1件だけ表示され、開示先行、A8.netの許可host/path、query存在、
 `rel=sponsored noopener noreferrer`、self-canonical、`index, follow`を確認した。広告URL全文と識別子は
 表示・保存していない。残る5partnerはCTA無効のままである。
+
+同日、Humanから全本番稼働の承認を受領した。既に提携承認、destination、開示先行、正規host/path検証を
+満たす残り5partnerも`SERVER_CTA_GO`へ追加し、環境revision 15を適用した。外部read-backでSVR01の比較CTA
+6件、許可host/path、query存在、開示先行、`rel=sponsored noopener noreferrer`、placeholder 0件を確認した。
+広告URL全文と識別子は表示・保存していない。P11は9月・10月の完全暦月実測が未取得で、値の推測禁止gateを
+満たさないため、この承認対象へ含めずnoindex・CTA無効を維持する。
 
 同日、拡張需要のHuman export用として、CRM残り10、forms 40、email marketing 40、SEO追加60を
 凍結slateからquery-only textへ生成する`prepare-kwfinder-upload`を追加した。出力は固定P18 scope外の

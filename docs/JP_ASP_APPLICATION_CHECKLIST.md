@@ -28,7 +28,7 @@ Account登録だけではCTAを許可しない。対象programの提携承認、
 ### 承認済みservers programのruntime参照
 
 値はすべてproduction環境のsecretとして設定し、repository、返信、logへ貼らない。下表は参照名だけを正本台帳から
-転記する。2026-08-14に6件すべてをruntime secretへ設定し、XServerビジネスだけpartner別CTA GOを受領した。
+転記する。2026-08-14に6件すべてをruntime secretへ設定し、全6件のpartner別CTA GOを受領した。
 
 |partner ID|提携状態|承認状態参照|destination参照|
 |---|---|---|---|
@@ -105,9 +105,9 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 
 |対象|現在地|次の解除条件|
 |---|---|---|
-|A8.net|`ACCOUNT REGISTERED / XSERVER APPROVED / DESTINATION CONFIGURED / CTA ACTIVE`|2026-08-14に正規destinationをruntime secretへ設定し、XServerビジネスだけpartner別CTA GOを反映。開示先行・送客host/path・rel属性を外部read-back済み|
-|もしもアフィリエイト|`ACCOUNT + MEDIA REGISTERED / 4 SERVER PROGRAMS APPROVED / DESTINATIONS CONFIGURED`|2026-08-14に4programの提携中表示と広告素材画面をread-backし、正規destinationをruntime secretへ設定済み。tracking情報は保存していない|
-|バリューコマース|`ACCOUNT REGISTERED / ABLENET APPROVED / DESTINATION CONFIGURED`|2026-08-14に「提携済み」、広告素材9件、広告作成画面をread-backし、正規destinationをruntime secretへ設定済み。partner別CTA GOまではCTA不可|
+|A8.net|`ACCOUNT REGISTERED / XSERVER APPROVED / DESTINATION CONFIGURED / CTA ACTIVE`|2026-08-14に正規destinationとpartner別CTA GOを反映。開示先行・送客host/path・rel属性を外部read-back済み|
+|もしもアフィリエイト|`ACCOUNT + MEDIA REGISTERED / 4 SERVER PROGRAMS APPROVED / DESTINATIONS CONFIGURED / CTA ACTIVE`|2026-08-14に4programの正規destinationとpartner別CTA GOを反映。開示先行・送客host/path・rel属性を外部read-back済み。tracking情報は保存しない|
+|バリューコマース|`ACCOUNT REGISTERED / ABLENET APPROVED / DESTINATION CONFIGURED / CTA ACTIVE`|2026-08-14に正規destinationとpartner別CTA GOを反映。開示先行・送客host/path・rel属性を外部read-back済み|
 
 公開originのread-only確認結果:
 
@@ -116,8 +116,8 @@ accountingは40/40実測でknown下限が必要sessionを下回ったため拡�
 - 申請URL、公開origin、canonical originは`https://saastcolab.jp`で一致する。
 
 したがって、Account登録はA8.net、もしも、バリューコマースの三社で完了し、serversの個別programは6件が
-`approved`である。SVR01の記事承認・index・6件のruntime destination設定は完了し、XServerビジネスだけ
-partner別CTA GOで単独表示する。残る5件はそれぞれのpartner別CTA GOまで無効を維持する。
+`approved`である。SVR01の記事承認・index・6件のruntime destination設定・partner別CTA GOが完了し、
+開示先行とruntime検証を通った6件だけを比較表示する。
 
 2026-08-06の画面確認では、A8.netのXServerビジネス詳細画面で選択中のappeal siteがSaaS TCO Labではなく
 既存の別mediaだった。その後、A8の登録site `SaaS TCO Lab`を主サイトへ変更して画面read-back済みである。

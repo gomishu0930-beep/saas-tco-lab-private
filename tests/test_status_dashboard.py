@@ -108,7 +108,7 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         for item in data["work"]
     )
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
-    assert [item["priority"] for item in data["externalActions"]] == [1, 2]
+    assert [item["priority"] for item in data["externalActions"]] == [1]
     assert all(
         item["status"] != "human_official_price_observation_required"
         for item in data["externalActions"]
@@ -139,29 +139,23 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         "approvedArticles": 1,
         "deployedArticles": 1,
         "indexApprovedArticles": 1,
-        "ctaEnabledPartners": 1,
-        "ctaHeldPartners": 5,
+        "ctaEnabledPartners": 6,
+        "ctaHeldPartners": 0,
     }
-    server_cta_action = next(
-        item for item in data["externalActions"]
-        if item["status"] == "server_partner_cta_go_required"
-    )
-    assert server_cta_action["label"] == "destination設定済みservers 5案件のpartner別CTA GO"
-    assert server_cta_action["token"] == (
-        "server_cta_go: GO <partner IDs comma-separated> / HOLD"
+    assert not any(
+        item["status"] == "server_partner_cta_go_required"
+        for item in data["externalActions"]
     )
     server_launch_risk = next(
         item for item in data["risks"] if item.get("riskId") == "server-launch"
     )
     assert server_launch_risk["label"] == (
-        "SVR01は承認・index対象として公開済み。servers CTA 1件稼働・"
-        "残る5partnerはHOLD"
+        "SVR01は承認・index対象として公開済み。servers CTA 6件稼働・"
+        "残る0partnerはHOLD"
     )
-    dependency_risk = next(
-        item for item in data["risks"] if item.get("riskId") == "server-partner-dependency"
-    )
-    assert dependency_risk["label"] == (
-        "serversの稼働CTAは1partnerのみで運用上100%依存。第2partner GOまでは単独CTAを維持"
+    assert not any(
+        item.get("riskId") == "server-partner-dependency"
+        for item in data["risks"]
     )
     assert data["launchQuarter"]["humanBudgetMinutesPerMonth"] == 2000
     assert data["launchQuarter"]["decisionDate"] == "2026-10-31"
