@@ -413,12 +413,20 @@ def _external_action_queue(
         for partner_id, status in state["server_affiliate_cta"].items()
         if status == "HOLD"
     )
+    server_destinations_configured = "production runtime secret 6件を設定済み" in adoption
     if server_article_approved and held_server_cta:
-        actions.append({
-            "label": f"承認済みservers {len(held_server_cta)}案件のruntime destination設定",
-            "status": "asp_os_authentication_or_destination_required",
-            "token": "asp_reauth: done <A8.net|もしも|バリューコマース>",
-        })
+        if server_destinations_configured:
+            actions.append({
+                "label": f"destination設定済みservers {len(held_server_cta)}案件のpartner別CTA GO",
+                "status": "server_partner_cta_go_required",
+                "token": "server_cta_go: GO <partner IDs comma-separated> / HOLD",
+            })
+        else:
+            actions.append({
+                "label": f"承認済みservers {len(held_server_cta)}案件のruntime destination設定",
+                "status": "asp_os_authentication_or_destination_required",
+                "token": "asp_reauth: done <A8.net|もしも|バリューコマース>",
+            })
     unreviewed_contracts = [
         article_id
         for article_id in PILOT_IDS
@@ -656,6 +664,17 @@ def _regenerate(
     }
     deployed_server_articles = set(state["deployed_server_articles"])
     index_approved_server_articles = set(state["index_approved_server_articles"])
+    index_target_count = len(index_approved) + len(index_approved_server_articles)
+    enabled_server_cta = sorted(
+        partner_id
+        for partner_id, status in state["server_affiliate_cta"].items()
+        if status in {"GO", "DONE"}
+    )
+    held_server_cta = sorted(
+        partner_id
+        for partner_id, status in state["server_affiliate_cta"].items()
+        if status == "HOLD"
+    )
     published_server_count = len(approved_server_articles & deployed_server_articles)
     total_published_count = published_count + published_server_count
     server_contract_ready = any(
@@ -712,12 +731,8 @@ def _regenerate(
         "approvedArticles": len(approved_server_articles),
         "deployedArticles": published_server_count,
         "indexApprovedArticles": len(index_approved_server_articles),
-        "ctaEnabledPartners": sum(
-            status in {"GO", "DONE"} for status in state["server_affiliate_cta"].values()
-        ),
-        "ctaHeldPartners": sum(
-            status == "HOLD" for status in state["server_affiliate_cta"].values()
-        ),
+        "ctaEnabledPartners": len(enabled_server_cta),
+        "ctaHeldPartners": len(held_server_cta),
     }
     data["partners"] = [
         {
@@ -777,6 +792,7 @@ def _regenerate(
         "独自domain未取得(L1で解消)",
     }
     generated_risk_ids = {
+        "server-candidate-only",
         "editorial-coverage",
         "gsc-processing",
         "server-launch",
@@ -797,15 +813,33 @@ def _regenerate(
         dynamic_risks.append({
             "riskId": "gsc-processing",
             "level": "warn",
-            "label": "GSCはsitemap 10/11検出・P01登録要求一時エラー。通常クロール待ち",
+            "label": (
+                f"GSCはsitemap 10/{index_target_count}検出・"
+                "P01登録要求一時エラー。通常クロール待ち"
+            ),
         })
     if published_server_count:
+        server_destinations_configured = "production runtime secret 6件を設定済み" in adoption
         dynamic_risks.append({
             "riskId": "server-launch",
             "level": "warn",
-            "label": "SVR01は承認・index対象として公開済み。runtime destination未設定のためservers CTAは0件",
+            "label": (
+                f"SVR01は承認・index対象として公開済み。servers CTA {len(enabled_server_cta)}件稼働・"
+                f"残る{len(held_server_cta)}partnerはHOLD"
+                if enabled_server_cta
+                else "SVR01は承認・index対象として公開済み。destination設定済み・"
+                "partner別CTA GO未受領のためservers CTAは0件"
+                if server_destinations_configured
+                else "SVR01は承認・index対象として公開済み。runtime destination未設定のためservers CTAは0件"
+            ),
         })
-    if server_partner_policy["warning"]:
+    if len(enabled_server_cta) == 1:
+        dynamic_risks.append({
+            "riskId": "server-partner-dependency",
+            "level": "warn",
+            "label": "serversの稼働CTAは1partnerのみで運用上100%依存。第2partner GOまでは単独CTAを維持",
+        })
+    elif server_partner_policy["warning"]:
         dynamic_risks.append({
             "riskId": "server-partner-dependency",
             "level": "warn",

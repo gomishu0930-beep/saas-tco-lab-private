@@ -130,16 +130,38 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert any(item.get("riskId") == "editorial-coverage" for item in data["risks"])
     assert any(item.get("riskId") == "gsc-processing" for item in data["risks"])
     assert any(item.get("riskId") == "server-launch" for item in data["risks"])
+    assert not any(item.get("riskId") == "server-candidate-only" for item in data["risks"])
+    gsc_risk = next(item for item in data["risks"] if item.get("riskId") == "gsc-processing")
+    assert gsc_risk["label"] == (
+        "GSCはsitemap 10/12検出・P01登録要求一時エラー。通常クロール待ち"
+    )
     assert data["serverLaunch"] == {
         "approvedArticles": 1,
         "deployedArticles": 1,
         "indexApprovedArticles": 1,
-        "ctaEnabledPartners": 0,
-        "ctaHeldPartners": 6,
+        "ctaEnabledPartners": 1,
+        "ctaHeldPartners": 5,
     }
-    assert any(
-        item["status"] == "asp_os_authentication_or_destination_required"
-        for item in data["externalActions"]
+    server_cta_action = next(
+        item for item in data["externalActions"]
+        if item["status"] == "server_partner_cta_go_required"
+    )
+    assert server_cta_action["label"] == "destination設定済みservers 5案件のpartner別CTA GO"
+    assert server_cta_action["token"] == (
+        "server_cta_go: GO <partner IDs comma-separated> / HOLD"
+    )
+    server_launch_risk = next(
+        item for item in data["risks"] if item.get("riskId") == "server-launch"
+    )
+    assert server_launch_risk["label"] == (
+        "SVR01は承認・index対象として公開済み。servers CTA 1件稼働・"
+        "残る5partnerはHOLD"
+    )
+    dependency_risk = next(
+        item for item in data["risks"] if item.get("riskId") == "server-partner-dependency"
+    )
+    assert dependency_risk["label"] == (
+        "serversの稼働CTAは1partnerのみで運用上100%依存。第2partner GOまでは単独CTAを維持"
     )
     assert data["launchQuarter"]["humanBudgetMinutesPerMonth"] == 2000
     assert data["launchQuarter"]["decisionDate"] == "2026-10-31"

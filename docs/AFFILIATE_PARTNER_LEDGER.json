@@ -214,7 +214,7 @@
       },
       "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、リスティング広告禁止を含むA8.netとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-08",
+      "checked_on": "2026-08-14",
       "affiliate_approval_runtime_secret": "A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION"
     },
@@ -260,7 +260,7 @@
       },
       "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-12",
+      "checked_on": "2026-08-14",
       "affiliate_approval_runtime_secret": "MOSHIMO_CONOHA_WING_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "MOSHIMO_CONOHA_WING_AFFILIATE_DESTINATION"
     },
@@ -283,7 +283,7 @@
       },
       "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-09",
+      "checked_on": "2026-08-14",
       "affiliate_approval_runtime_secret": "MOSHIMO_LOLIPOP_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "MOSHIMO_LOLIPOP_AFFILIATE_DESTINATION"
     },
@@ -306,7 +306,7 @@
       },
       "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-12",
+      "checked_on": "2026-08-14",
       "affiliate_approval_runtime_secret": "MOSHIMO_ONAMAE_SERVER_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "MOSHIMO_ONAMAE_SERVER_AFFILIATE_DESTINATION"
     },
@@ -329,7 +329,7 @@
       },
       "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、もしもアフィリエイトとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-12",
+      "checked_on": "2026-08-14",
       "affiliate_approval_runtime_secret": "MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "MOSHIMO_SHIN_RENTAL_SERVER_AFFILIATE_DESTINATION"
     },
@@ -352,7 +352,7 @@
       },
       "partnership_status": "approved",
       "disclosure_requirement": "PR表示を閲覧可能な位置へCTAより先に置き、バリューコマースとprogram固有条件を遵守する。",
-      "checked_on": "2026-08-08",
+      "checked_on": "2026-08-14",
       "affiliate_approval_runtime_secret": "VALUECOMMERCE_ABLENET_AFFILIATE_APPROVAL_CURRENT",
       "destination_runtime_secret": "VALUECOMMERCE_ABLENET_AFFILIATE_DESTINATION"
     }

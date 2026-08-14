@@ -159,16 +159,16 @@ Affiliate partner状態の非機密な正本として`docs/AFFILIATE_PARTNER_LED
 read-backし、Affiliate提携を承認済みへ更新した。同日、バリューコマースのABLENET共用サーバーも
 個別条件を確認して提携申請し、正規画面の「提携済み」をread-backした。ログイン後だけ表示される報酬額・確定率は
 `restricted_dashboard_only`として値をrepositoryへ保存しない。
-XServerビジネスも開示先行、runtime destination設定、partner別`cta_go`が
-すべて揃うまでCTA対象外としてfail-closedを維持する。台帳はruntime secretの参照名だけを持ち、tracking ID、広告link URL、
+XServerビジネスは開示先行、runtime destination設定、partner別`cta_go`が
+すべて揃い、2026-08-14からSVR01の単独CTA対象である。他5件はpartner別GOまでfail-closedを維持する。台帳はruntime secretの参照名だけを持ち、tracking ID、広告link URL、
 本人情報、secret値を保存しない。
 
 |会社|Affiliate現在地|rights回答|統合gateへの算入|次の本人操作|
 |---|---|---|---:|---|
 |Mangools|affiliate access有効、紹介素材発行済み|未回答。2026-07-26追送済み|0|rights回答を待つ。紹介IDは共有しない|
-|A8.net|Account登録済み、XServerビジネス提携承認済み|条件要約を台帳v1.1へ記録。報酬値は非保存|1|正規広告linkをruntime destinationへ設定し、partner別CTA gateを検証|
-|もしもアフィリエイト|Account・saastcolab.jpメディア登録済み、servers候補4件すべて提携承認済み|ロリポップ、シンレンタルサーバー、ConoHa WING、お名前.comの承認状態を台帳へ記録。報酬値は非保存|4|端末認証後、正規広告linkをruntime destinationへ設定してpartner別CTA gateを検証|
-|バリューコマース|Account本登録済み、ABLENET共用サーバー提携承認済み|個別条件を台帳v1.1へ要約。報酬値は非保存|1|正規広告linkをruntime destinationへ設定し、partner別CTA gateを検証|
+|A8.net|Account登録済み、XServerビジネス提携承認済み、広告リンク作成可、destination設定済み、SVR01 CTA稼働|条件要約を台帳v1.1へ記録。報酬値は非保存|1|送客と確定報酬をaggregate監視|
+|もしもアフィリエイト|Account・saastcolab.jpメディア登録済み、servers候補4件すべて提携承認済み、広告素材あり、destination設定済み|ロリポップ、シンレンタルサーバー、ConoHa WING、お名前.comの承認状態を台帳へ記録。報酬値は非保存|4|partner別CTA GOを判断|
+|バリューコマース|Account本登録済み、ABLENET共用サーバー提携承認済み、広告作成可、destination設定済み|個別条件を台帳v1.1へ要約。報酬値は非保存|1|partner別CTA GOを判断|
 |HubSpot|2026-08-03 Impact画面でDeclined（low reach）を確認|未回答。2026-07-26追送済み|0|公開・流入実績を作るまで再申請しない。拒否を承認済みと数えない|
 |Semrush|Impact Marketplaceは2026-08-09に却下済み。個別申請は未成立|回答あり|0|公開記事・流入実績を蓄積し、再申請条件を満たした後に新しいexact GOで再評価する|
 |SE Ranking|work email例外回答待ち|未回答。ticket 112501へ2026-07-26追送済み|0|回答まで再登録しない|
@@ -388,13 +388,28 @@ allowlistへ追加していない。外部read-backでは年次表示50,160 JPY�
 `CHECK-ALL: PASS`後のcommit `c0b0dfc`をpushし、Sites version 26でSVR01だけをserver記事の承認・index対象へ
 追加した。外部read-backではHTTP 200、`index, follow`、self-canonical、66,660円、Product/Offer・FAQ・
 Breadcrumb JSON-LD、sitemap/robots allowlistへの1 URL追加を確認した。公開sitemapはP記事11本とSVR01の計12 URL。
-P11はnoindex・CTA無効を維持する。承認済みservers partnerは6件あるがruntime destinationは未設定のため、
-SVR01のserver CTAとsponsored linkは0件のままである。
+P11はnoindex・CTA無効を維持する。公開時点では承認済みservers partner 6件のruntime destinationが未設定だったため、
+SVR01のserver CTAとsponsored linkは0件だった。2026-08-14の設定・GO記録は後段に追記する。
 
-2026-08-14、Safariのもしも正規管理画面で`saaslab`メディアとお名前.comレンタルサーバーの`提携中`を
-read-only再確認した。広告リンク画面へ移動した時点でsessionが失効し、macOSのcredential自動入力に端末認証が
-要求されたため、秘密値を取得・表示・保存せず停止した。runtime destinationとserver CTAはfail-closedでHOLDを
-維持する。
+2026-08-14、Humanの端末認証後にSafariの正規管理画面をread-only確認した。もしもの4program
+（シンレンタルサーバー、ConoHa WING、お名前.com レンタルサーバー、ロリポップ！）、A8.netの
+XServerビジネス、バリューコマースのABLENET共用サーバーは、いずれも提携中で広告素材または広告リンク作成画面が
+利用可能だった。広告link、tracking ID、認証情報、非公開報酬値は取得結果として表示・保存していない。
+runtime destinationへの転記はproduction secretへの外部writeに当たるため別GO待ちとし、server CTAは
+fail-closedでHOLDを維持する。
+
+同日、Human token `server_destination_setup: GO all_6 -> saastcolab.jp production runtime secrets`を
+受領した。ASP正規画面の6リンクをbrowser内メモリからSitesへ直接渡し、A8.net、もしも4program、
+バリューコマースのhost・path・必須parameterを検証した後、production runtime secret 6件を設定済みである。
+値、tracking ID、広告IDは会話・repository・報告へ保存していない。環境revision 13を既存version 26へ適用し、
+公開SVR01はHTTP 200、index境界・開示先行を維持し、`SERVER_CTA_GO`未設定のためserver CTA 0件を外部read-backした。
+runtime destination設定とCTA有効化は分離したままであり、全6partnerはpartner別CTA GO受領までHOLDである。
+
+続いてHuman token `server_cta_go: GO a8net-xserver-business`を受領し、productionの
+`SERVER_CTA_GO`を同partnerだけへ限定して環境revision 14を適用した。外部read-backではSVR01に
+XServerビジネスCTAが1件だけ表示され、開示先行、A8.netの許可host/path、query存在、
+`rel=sponsored noopener noreferrer`、self-canonical、`index, follow`を確認した。広告URL全文と識別子は
+表示・保存していない。残る5partnerはCTA無効のままである。
 
 同日、拡張需要のHuman export用として、CRM残り10、forms 40、email marketing 40、SEO追加60を
 凍結slateからquery-only textへ生成する`prepare-kwfinder-upload`を追加した。出力は固定P18 scope外の

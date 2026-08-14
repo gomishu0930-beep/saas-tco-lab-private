@@ -380,11 +380,6 @@ const DATA = {
       "label": "X API connectorはSaaS専用accountではないため使用停止。SafariのSaaS運用と分離"
     },
     {
-      "riskId": "server-candidate-only",
-      "level": "warn",
-      "label": "SVR01は個別証拠をnoindex公開済み。期間限定分類のため合算・TCO・記事承認・index・CTAは未実行"
-    },
-    {
       "riskId": "editorial-coverage",
       "level": "warn",
       "label": "編集記事は11/12承認。未承認記事はnoindex・CTA無効を維持"
@@ -392,12 +387,17 @@ const DATA = {
     {
       "riskId": "gsc-processing",
       "level": "warn",
-      "label": "GSCはsitemap 10/11検出・P01登録要求一時エラー。通常クロール待ち"
+      "label": "GSCはsitemap 10/12検出・P01登録要求一時エラー。通常クロール待ち"
     },
     {
       "riskId": "server-launch",
       "level": "warn",
-      "label": "SVR01は承認・index対象として公開済み。runtime destination未設定のためservers CTAは0件"
+      "label": "SVR01は承認・index対象として公開済み。servers CTA 1件稼働・残る5partnerはHOLD"
+    },
+    {
+      "riskId": "server-partner-dependency",
+      "level": "warn",
+      "label": "serversの稼働CTAは1partnerのみで運用上100%依存。第2partner GOまでは単独CTAを維持"
     }
   ],
   "launchQuarter": {
@@ -503,9 +503,9 @@ const DATA = {
   "externalActions": [
     {
       "priority": 1,
-      "label": "承認済みservers 6案件のruntime destination設定",
-      "status": "asp_os_authentication_or_destination_required",
-      "token": "asp_reauth: done <A8.net|もしも|バリューコマース>"
+      "label": "destination設定済みservers 5案件のpartner別CTA GO",
+      "status": "server_partner_cta_go_required",
+      "token": "server_cta_go: GO <partner IDs comma-separated> / HOLD"
     },
     {
       "priority": 2,
@@ -537,8 +537,8 @@ const DATA = {
     "approvedArticles": 1,
     "deployedArticles": 1,
     "indexApprovedArticles": 1,
-    "ctaEnabledPartners": 0,
-    "ctaHeldPartners": 6
+    "ctaEnabledPartners": 1,
+    "ctaHeldPartners": 5
   }
 };
 // DASHBOARD_DATA_END
