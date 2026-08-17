@@ -27,6 +27,7 @@ from contextlib import ExitStack, contextmanager
 from datetime import datetime, timedelta, timezone
 from decimal import Decimal
 from enum import Enum
+from functools import cache
 from importlib import metadata
 from pathlib import Path
 from queue import Empty, Queue
@@ -1088,9 +1089,11 @@ def production_adapter_dependency_paths() -> tuple[Path, ...]:
     return tuple(sorted(selected, key=_adapter_dependency_label))
 
 
-def _adapter_dependency_label(path: Path) -> str:
-    selected = path.absolute()
-    roots = (
+@cache
+def _adapter_dependency_roots() -> tuple[tuple[str, Path], ...]:
+    """Return immutable interpreter roots without recomputing sysconfig per file."""
+
+    return (
         ("source", Path(__file__).resolve().parents[1]),
         ("purelib", Path(sysconfig.get_path("purelib")).absolute()),
         ("platlib", Path(sysconfig.get_path("platlib")).absolute()),
@@ -1107,6 +1110,11 @@ def _adapter_dependency_label(path: Path) -> str:
             ).resolve(),
         ),
     )
+
+
+def _adapter_dependency_label(path: Path) -> str:
+    selected = path.absolute()
+    roots = _adapter_dependency_roots()
     for prefix, root in roots:
         try:
             relative = selected.relative_to(root)

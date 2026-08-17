@@ -20,6 +20,13 @@ const svr01Evidence = reviewedServerCandidateEvidence(
 
 const svr01ArticleApproved = svr01Evidence?.initialPayment !== null;
 const approvedSvr01Title = "XServerビジネス料金（2026年8月確認）：契約時請求66,660円と未確認費用";
+const unconfirmedServerComparators = [
+  ["conoha-wing", "ConoHa WING / プラン未確認"],
+  ["lolipop", "ロリポップ！ / プラン未確認"],
+  ["onamae-rental-server", "お名前.com レンタルサーバー / プラン未確認"],
+  ["shin-rental-server", "シンレンタルサーバー / プラン未確認"],
+  ["ablenet-shared-server", "ABLENET / プラン未確認"],
+] as const;
 
 function displayAmount(value: string): string {
   const match = /^(\d+)(?:\.(\d+))?$/.exec(value);
@@ -62,6 +69,27 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
   const article = await requestedArticle(searchParams);
   const evidence = article.id === "SVR01" ? svr01Evidence : null;
   const initialPayment = evidence?.initialPayment;
+  const evidenceObservedDates = [...new Set(evidence?.fields.map((field) => field.observed_on) ?? [])];
+  const evidenceNextReviewDates = [...new Set(evidence?.fields.map((field) => field.next_review_on) ?? [])];
+  const calculatorContract = evidence ? {
+    ...evidence.calculatorContract,
+    plans: [
+      ...evidence.calculatorContract.plans,
+      ...unconfirmedServerComparators.map(([vendorId, displayName]) => ({
+        vendorId,
+        planId: "unconfirmed",
+        displayName,
+        priceStatus: "unknown" as const,
+        reviewStatus: "unreviewed" as const,
+        eligibleUseCases: [] as const,
+        quote: null,
+        serverTerms: null,
+        unknownReason: "公式価格と同条件の請求総額が未確認のため順位対象外",
+        observedOn: null,
+        nextReviewOn: null,
+      })),
+    ],
+  } : { articleReviewStatus: "unreviewed" as const, plans: [] };
   const displayArticle = initialPayment ? {
     ...article,
     titleTemplate: approvedSvr01Title,
@@ -130,7 +158,7 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
     <ServerArticleTemplate
       article={displayArticle}
       articleReviewStatus={article.id === "SVR01" && initialPayment ? "approved" : "unreviewed"}
-      calculatorContract={evidence?.calculatorContract ?? { articleReviewStatus: "unreviewed", plans: [] }}
+      calculatorContract={calculatorContract}
       ctaPolicy={serverCtaPresentationPolicy([])}
       evidence={(
         <div className="editorial-sections">
@@ -160,18 +188,22 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
           {evidence ? <article className="server-evidence-table">
             <span>07</span>
             <h2>公式画面の確認記録</h2>
-            <div className="table-scroll" tabIndex={0} aria-label="XServerビジネスの確認記録を横スクロール">
-              <table>
-                <thead><tr><th>確認項目</th><th>値</th><th>出典</th><th>観測日</th><th>次回確認日</th></tr></thead>
-                <tbody>{evidence.fields.map((field) => <tr key={field.field}>
-                  <th>{serverEvidenceLabels[field.field] ?? field.field}</th>
-                  <td>{serverEvidenceValue(field)}</td>
-                  <td>{field.source_url ? <a href={field.source_url} rel="noopener noreferrer">公式ページ</a> : "—"}</td>
-                  <td>{field.observed_on}</td>
-                  <td>{field.next_review_on}</td>
-                </tr>)}</tbody>
-              </table>
-            </div>
+            <p>確認済み実額は契約時請求66,660円です。観測日 {evidenceObservedDates.join(", ")}／次回確認日 {evidenceNextReviewDates.join(", ")}。</p>
+            <details className="evidence-details">
+              <summary>出典・観測日・未確認理由を詳しく見る</summary>
+              <div className="table-scroll" tabIndex={0} aria-label="XServerビジネスの確認記録を横スクロール">
+                <table>
+                  <thead><tr><th>確認項目</th><th>値</th><th>出典</th><th>観測日</th><th>次回確認日</th></tr></thead>
+                  <tbody>{evidence.fields.map((field) => <tr key={field.field}>
+                    <th>{serverEvidenceLabels[field.field] ?? field.field}</th>
+                    <td>{serverEvidenceValue(field)}</td>
+                    <td>{field.source_url ? <a href={field.source_url} rel="noopener noreferrer">公式ページ</a> : "—"}</td>
+                    <td>{field.observed_on}</td>
+                    <td>{field.next_review_on}</td>
+                  </tr>)}</tbody>
+                </table>
+              </div>
+            </details>
           </article> : null}
           <article>
             <span>{evidence ? "08" : "07"}</span>

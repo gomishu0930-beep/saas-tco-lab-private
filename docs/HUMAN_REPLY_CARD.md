@@ -13,8 +13,9 @@ Search Console domain propertyと専用GA4 streamも連携済みです。SVR01�
 v3 contractに基づき、年次一括前払50,160円+初期費用16,500円=契約時請求66,660円を承認・index対象として
 公開済みです。24/36か月TCO、更新時料金、順位、推奨はunknownのままです。servers案件は6件提携承認済みですが、
 runtime destination未設定のためserver CTAは0件です。Xは`@saastcolab`でP01初回スレッド8件を公開済みです。
-X API connectorは2026-08-13のread-only照合でSaaS専用accountではないbindingを返したため使用停止中で、
-Safari上のSaaS専用運用と混ぜません。
+X API connectorは2026-08-17に`@saastcolab`へ再認証し、`getUsersMe` read-backも一致しましたが、
+OAuth application credentialがFANZA環境3件と共有されているため使用停止を維持します。
+SaaS専用developer applicationへ切り替わるまで分析値を算入せず、API writeも停止します。
 
 ## 今使うtoken
 

@@ -38,7 +38,7 @@ export function editorialMetadata(page: PilotPage): Metadata {
     },
     robots: {
       index: decision.indexable,
-      follow: decision.indexable,
+      follow: process.env.SAAS_RUNTIME_MODE === "production",
       noarchive: !decision.indexable,
       nosnippet: !decision.indexable,
     },

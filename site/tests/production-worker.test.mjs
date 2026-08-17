@@ -208,6 +208,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     "/",
     "/methodology",
     "/disclosure",
+    "/pilot",
     "/pilot/annual-vs-monthly",
     "/pilot/migration-cost",
     "/pilot/evidence-method",
@@ -271,6 +272,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     ]);
     const followableNonArticlePaths = new Set([
       "/",
+      "/pilot",
       "/methodology",
       "/disclosure",
       "/about",
@@ -279,6 +281,15 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       "/contact",
       "/advertising-policy",
       "/embed/tco-calculator",
+    ]);
+    const heldArticlePaths = new Set([
+      "/pilot/small-team-fit",
+      "/pilot/enterprise-fit",
+      "/pilot/addon-cost",
+      "/pilot/migration-cost",
+      "/pilot/japan-tax",
+      "/pilot/break-even",
+      "/pilot/evidence-method",
     ]);
     if (approvedArticlePaths.has(path)) {
       assert.equal(response.headers.get("x-robots-tag"), "index, follow", path);
@@ -312,7 +323,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
         /<span\b[^>]*data-affiliate-cta-placeholder|>CTA DISABLED</i,
         path,
       );
-    } else if (followableNonArticlePaths.has(path)) {
+    } else if (followableNonArticlePaths.has(path) || heldArticlePaths.has(path)) {
       assert.equal(
         response.headers.get("x-robots-tag"),
         "noindex, follow, noarchive, nosnippet",
@@ -330,9 +341,23 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
         for (const approvedPath of [
           "/pilot/pricing-calculator",
           "/pilot/plan-comparison",
+          "/pilot/alternatives",
+          "/pilot/annual-vs-monthly",
+          "/pilot/usage-overage",
+        ]) {
+          assert.match(documentHtml, new RegExp(`href=["']${approvedPath}["']`, "i"), approvedPath);
+        }
+        for (const heldPath of [
+          "/servers/business-server-pricing",
+          "/pilot/small-team-fit",
+          "/pilot/enterprise-fit",
+          "/pilot/addon-cost",
+          "/pilot/migration-cost",
+          "/pilot/japan-tax",
+          "/pilot/break-even",
           "/pilot/evidence-method",
         ]) {
-          assert.match(body, new RegExp(`href=["']${approvedPath}["']`, "i"), approvedPath);
+          assert.doesNotMatch(documentHtml, new RegExp(`href=["']${heldPath}["']`, "i"), heldPath);
         }
       }
     } else {
@@ -383,7 +408,6 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
   for (const path of [
     "/comparison",
     "/learning",
-    "/pilot",
     "/readiness",
     "/operator",
     "/missing",
@@ -398,21 +422,23 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
   }
 });
 
-test("public trust pages describe the live twelve-article affiliate state", async () => {
-  const home = await (await fetch(`${baseUrl}/`)).text();
+test("public trust pages derive their article and CTA state from runtime gates", async () => {
+  const homeResponse = await (await fetch(`${baseUrl}/`)).text();
+  const home = homeResponse.slice(0, homeResponse.lastIndexOf("</html>") + "</html>".length);
   assert.match(home, /PUBLIC EDITORIAL/);
-  assert.match(home, /公開記事[\s\S]{0,80}12[\s\S]{0,20}本/);
-  assert.match(home, /対象カテゴリ[\s\S]{0,80}2カテゴリ/);
-  assert.match(home, /href="\/servers\/business-server-pricing"/);
+  assert.match(home, /公開記事[\s\S]{0,80}5[\s\S]{0,20}本/);
+  assert.match(home, /対象カテゴリ[\s\S]{0,80}1カテゴリ/);
+  assert.match(home, /紹介導線[\s\S]{0,80}1カテゴリ稼働/);
+  assert.doesNotMatch(home, /href="\/servers\/business-server-pricing"/);
   assert.match(home, /href="\/pilot\/pricing-calculator"/);
   assert.match(home, /href="\/pilot\/plan-comparison"/);
-  assert.match(home, /href="\/pilot\/evidence-method"/);
-  assert.match(home, /href="\/pilot\/migration-cost"/);
+  assert.doesNotMatch(home, /href="\/pilot\/evidence-method"/);
+  assert.doesNotMatch(home, /href="\/pilot\/migration-cost"/);
   assert.match(home, /href="\/pilot\/alternatives"/);
-  assert.match(home, /href="\/pilot\/small-team-fit"/);
-  assert.match(home, /href="\/pilot\/enterprise-fit"/);
-  assert.match(home, /href="\/pilot\/addon-cost"/);
-  assert.match(home, /href="\/pilot\/japan-tax"/);
+  assert.doesNotMatch(home, /href="\/pilot\/small-team-fit"/);
+  assert.doesNotMatch(home, /href="\/pilot\/enterprise-fit"/);
+  assert.doesNotMatch(home, /href="\/pilot\/addon-cost"/);
+  assert.doesNotMatch(home, /href="\/pilot\/japan-tax"/);
   assert.doesNotMatch(home, /PUBLIC PRELAUNCH|広告リンク[\s\S]{0,50}0件|実在サービスの価格・評価・送客リンクは表示していません/);
 
   const disclosure = await (await fetch(`${baseUrl}/disclosure/`)).text();
@@ -431,6 +457,54 @@ test("public trust pages describe the live twelve-article affiliate state", asyn
   const privacy = await (await fetch(`${baseUrl}/privacy/`)).text();
   assert.match(privacy, /有効な広告リンクの遷移先事業者/);
   assert.doesNotMatch(privacy, /将来、有効な広告リンクを利用する場合/);
+});
+
+test("current release home links every approved article and reports two live CTA categories", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("home-current-release", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P12",
+    INDEX_APPROVED_SERVER_ARTICLES: "SVR01",
+    CTA_GO: "GO",
+    CTA_APPROVED_PARTNER: "mangools",
+    MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "true",
+    MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/#a1234567890bcdef123456789",
+    SERVER_CTA_GO: "a8net-xserver-business",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
+  };
+  const response = await worker.fetch(
+    new Request("https://saastcolab.jp/"),
+    env,
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+  const raw = await response.text();
+  const home = raw.slice(0, raw.lastIndexOf("</html>") + "</html>".length);
+  assert.match(home, /公開記事[\s\S]{0,80}12本/);
+  assert.match(home, /対象カテゴリ[\s\S]{0,80}2カテゴリ/);
+  assert.match(home, /紹介導線[\s\S]{0,80}2カテゴリ稼働/);
+  const expectedPaths = [
+    "/servers/business-server-pricing",
+    "/pilot/pricing-calculator",
+    "/pilot/plan-comparison",
+    "/pilot/alternatives",
+    "/pilot/small-team-fit",
+    "/pilot/enterprise-fit",
+    "/pilot/annual-vs-monthly",
+    "/pilot/usage-overage",
+    "/pilot/addon-cost",
+    "/pilot/migration-cost",
+    "/pilot/japan-tax",
+    "/pilot/evidence-method",
+  ];
+  for (const path of expectedPaths) {
+    assert.match(home, new RegExp(`data-public-article-path=["']${path}["']`), path);
+    assert.match(home, new RegExp(`href=["']${path}["']`), path);
+  }
+  assert.doesNotMatch(home, /href=["']\/pilot\/break-even["']/);
 });
 
 test("production exposes a deterministic tracking-free calculator loader", async () => {
@@ -604,7 +678,7 @@ test("the approved nine-article release candidate stays scoped and disclosure-fi
   for (const path of held) {
     const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
     assert.equal(response.status, 200, path);
-    assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i, path);
+    assert.equal(response.headers.get("x-robots-tag"), "noindex, follow, noarchive, nosnippet", path);
     const body = await response.text();
     assert.doesNotMatch(body, /<link\s+rel=["']canonical["']/i, path);
     assert.doesNotMatch(body, /data-affiliate-cta-partner|rel=["'][^"']*sponsored/i, path);
@@ -686,7 +760,7 @@ test("approved P05 is ready for an exact ten-article release without widening P0
 
   for (const path of ["/pilot/migration-cost", "/pilot/break-even"]) {
     const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
-    assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i, path);
+    assert.equal(response.headers.get("x-robots-tag"), "noindex, follow, noarchive, nosnippet", path);
     const body = await response.text();
     assert.doesNotMatch(body, /<link\s+rel=["']canonical["']/i, path);
     assert.doesNotMatch(body, /data-affiliate-cta-partner|rel=["'][^"']*sponsored/i, path);
@@ -742,7 +816,7 @@ test("approved P09 widens the release to exactly eleven articles while P11 stays
 
   const p11Path = "/pilot/break-even";
   const p11 = await worker.fetch(new Request(`https://saastcolab.jp${p11Path}`), env, ctx);
-  assert.match(p11.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i);
+  assert.equal(p11.headers.get("x-robots-tag"), "noindex, follow, noarchive, nosnippet");
   const p11Body = await p11.text();
   assert.doesNotMatch(p11Body, /<link\s+rel=["']canonical["']/i);
   assert.doesNotMatch(p11Body, /data-affiliate-cta-partner|rel=["'][^"']*sponsored/i);
@@ -928,7 +1002,7 @@ test("SVR01 approved source exposes gross contract charge while index and CTA st
     },
   );
   assert.equal(response.status, 200);
-  assert.match(response.headers.get("x-robots-tag") ?? "", /noindex, nofollow/i);
+  assert.equal(response.headers.get("x-robots-tag"), "noindex, follow, noarchive, nosnippet");
   const body = await response.text();
   const disclosurePosition = body.indexOf('id="article-pr-disclosure"');
   const evidencePosition = body.indexOf("新規12か月契約で確認できた契約時請求額は66,660円");

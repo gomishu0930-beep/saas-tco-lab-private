@@ -150,7 +150,7 @@
 <script>
 // DASHBOARD_DATA_START
 const DATA = {
-  "asOf": "2026-08-14",
+  "asOf": "2026-08-17",
   "reportingPeriod": "2026-07",
   "phase": "公開後成長運転—12記事公開・P記事1本証拠/承認待ち",
   "kpis": [
@@ -325,6 +325,10 @@ const DATA = {
     {
       "done": true,
       "label": "servers 20記事候補一覧"
+    },
+    {
+      "done": true,
+      "label": "servers次8記事の取引意図優先queue"
     }
   ],
   "deadlines": [
@@ -386,8 +390,13 @@ const DATA = {
     },
     {
       "riskId": "gsc-processing",
-      "level": "warn",
-      "label": "GSCはsitemap 10/12検出・P01登録要求一時エラー。通常クロール待ち"
+      "level": "monitor",
+      "label": "GSC sitemapは12/12検出済み。index登録7・未登録6の再処理を監視"
+    },
+    {
+      "riskId": "index-discovery-path",
+      "level": "monitor",
+      "label": "旧トップのnofollowをI1でnoindex,followへ修正。承認記事のindex,followと未承認記事のnoindexを維持して再処理監視"
     },
     {
       "riskId": "server-launch",
@@ -528,7 +537,19 @@ const DATA = {
     "indexApprovedArticles": 1,
     "ctaEnabledPartners": 6,
     "ctaHeldPartners": 0
-  }
+  },
+  "categoryPublication": [
+    {
+      "category": "servers",
+      "publishedArticles": 1,
+      "targetArticles": 9
+    },
+    {
+      "category": "seo_tools",
+      "publishedArticles": 11,
+      "targetArticles": 11
+    }
+  ]
 };
 // DASHBOARD_DATA_END
 

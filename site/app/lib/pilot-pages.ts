@@ -306,6 +306,27 @@ export const serverBigWordHubs: readonly ServerBigWordHub[] = [
   "国内 サーバー 比較",
 ].map((sourceQuery) => ({ sourceQuery, state: "deferred_internal_link_hub" as const }));
 
+/** Eight server articles that take the site from 12 to the fixed 20-article line. */
+export const serverLaunchPriorityIds = [
+  "SVR05", // renewal / second-year charge
+  "SVR04", // initial-fee-inclusive total
+  "SVR06", // migration and overlap
+  "SVR07", // corporate contract total
+  "SVR02", // small-business minimum configuration
+  "SVR03", // EC cost
+  "SVR09", // corporate mail cost
+  "SVR08", // EC recovery requirements
+] as const satisfies readonly ServerArticleSlateEntry["id"][];
+
+export function serverLaunchPriorityArticles(): readonly ServerArticleSlateEntry[] {
+  const byId = new Map(serverArticleSlate.map((article) => [article.id, article]));
+  return serverLaunchPriorityIds.map((id) => {
+    const article = byId.get(id);
+    if (!article) throw new Error(`server launch priority article is missing: ${id}`);
+    return article;
+  });
+}
+
 /**
  * Launch-quarter drafting order. Transaction-intent pages are completed first,
  * while the first public review batch remains P01-P03.

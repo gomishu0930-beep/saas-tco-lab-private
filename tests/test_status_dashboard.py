@@ -101,13 +101,14 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         "Outbound clicks(月)": 4,
         "確定報酬(月)": 500,
     }
-    assert len(data["work"]) == 12
+    assert len(data["work"]) == 13
     assert all(item["done"] for item in data["work"])
     assert any(
         item["label"] == "SVR01証拠付き・SVR02–SVR20 noindex候補view"
         for item in data["work"]
     )
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
+    assert any(item["label"] == "servers次8記事の取引意図優先queue" for item in data["work"])
     assert [item["priority"] for item in data["externalActions"]] == [1]
     assert all(
         item["status"] != "human_official_price_observation_required"
@@ -130,11 +131,14 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert any(item.get("riskId") == "editorial-coverage" for item in data["risks"])
     assert any(item.get("riskId") == "gsc-processing" for item in data["risks"])
     assert any(item.get("riskId") == "server-launch" for item in data["risks"])
+    assert any(item.get("riskId") == "index-discovery-path" for item in data["risks"])
     assert not any(item.get("riskId") == "server-candidate-only" for item in data["risks"])
     gsc_risk = next(item for item in data["risks"] if item.get("riskId") == "gsc-processing")
-    assert gsc_risk["label"] == (
-        "GSCはsitemap 10/12検出・P01登録要求一時エラー。通常クロール待ち"
-    )
+    assert gsc_risk["label"] == "GSC sitemapは12/12検出済み。index登録7・未登録6の再処理を監視"
+    assert data["categoryPublication"] == [
+        {"category": "servers", "publishedArticles": 1, "targetArticles": 9},
+        {"category": "seo_tools", "publishedArticles": 0, "targetArticles": 11},
+    ]
     assert data["serverLaunch"] == {
         "approvedArticles": 1,
         "deployedArticles": 1,

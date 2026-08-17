@@ -17,7 +17,9 @@ const ready = {
 
 test("indexing requires both global GO and exact article approval", () => {
   assert.equal(evaluatePublicationGate(ready).indexable, true);
-  assert.equal(evaluatePublicationGate({ ...ready, indexGo: false }).indexable, false);
+  const held = evaluatePublicationGate({ ...ready, indexGo: false });
+  assert.equal(held.indexable, false);
+  assert.equal(held.robots, "noindex, follow, noarchive, nosnippet");
   assert.equal(evaluatePublicationGate({ ...ready, articleApproved: false }).indexable, false);
   assert.equal(evaluatePublicationGate({ ...ready, articleReviewCurrent: false }).indexable, false);
 });

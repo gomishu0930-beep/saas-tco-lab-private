@@ -527,7 +527,13 @@ ASP広告link、非公開報酬、tracking IDは含めていない。公開後�
 2026-08-13、X API connectorをread-onlyで照合したところ、SaaS専用accountではないbindingを返した。
 FANZA運用とのbrand・credential・analytics分離を優先し、このconnector経由の投稿・分析を即時停止した。
 Safari上の`@saastcolab`公開状態は変更せず、connectorをSaaS専用accountへ再認証してbindingをread-backするまで
-X API値をSaaS TCO Labの実績へ算入しない。
+X API値をSaaS TCO Labの実績へ算入しない。2026-08-17、Human token
+`x_api_reauth: GO @saastcolab`を受領し、既存X applicationのOAuth1 OOB経路で再認証した。
+credential・tokenをrepository、log、報告へ保存せずlocal secretだけを置換し、connector再起動後の
+`getUsersMe` read-backが`@saastcolab`／`SaaS TCO Lab`と一致した。ただしOAuth同意画面のapplication名は
+旧FANZA系で、consumer credentialの値非表示照合でも3件のFANZA `.env`と一致した。repository規律の
+brand・credential分離に合格しないためX APIの運用停止は解除しない。SaaS専用developer applicationへ
+切り替えるまで分析値を算入せず、API write、投稿、profile変更、DM操作もfail-closedとする。
 
 2026-08-09、公開後もhomepage、広告表示、About、運営者情報、privacyに残っていた「公開前・CTA 0件」の
 旧表示を現在の9記事・Mangools CTA稼働状態へ更新した。homepageから未承認P09へのlinkを削除し、承認済み
@@ -715,6 +721,22 @@ ga4_tag_deploy: GO / STOP
 Affiliate承認、拒否は0件で、受付確認・survey・既存審査中threadはGate A/Bへ算入しない。
 今後30回の日次確認は`docs/GSC_GA4_DEPLOYMENT_GATE.md`の公開前監視手順に従い、
 変化またはHuman判断が必要な時だけ通知する。
+
+## 2026-08-17 インデックス経路とservers再配分（I1–I8）
+
+- 非記事の公開routeと未承認記事は`noindex, follow, noarchive, nosnippet`へ統一する。承認済み12記事の
+  `index, follow`、P11のnoindex、CTA fail-closed、query付きservers候補のnofollowは維持する。
+- homepageの記事数・カテゴリ数・紹介導線数は、Human承認contractとruntime index/CTA allowlistから生成する。
+  runtime未承認の記事linkは応答時に除去し、承認済み全記事へhomepageから1クリックで到達可能にする。
+- 証拠表は既定で閉じる一方、確認済み実額・観測日・次回確認日は閉じた状態でも表示する。P03とserversの
+  同カテゴリ未確認vendorは「未確認・順位対象外」として表に残し、0円や推測値で補わない。
+- titleは記事固有suffixとsite共通suffixの二重付与を解消済み。確認月と実額は前方に維持する。
+- 20本到達までの次8本はserversへ限定し、`SVR05 → SVR04 → SVR06 → SVR07 → SVR02 → SVR03 →
+  SVR09 → SVR08`の順とする。2026-08-17の`server_price_input: done SVR02,...,SVR09`は受領したが、
+  local candidate JSON未保存のためcanonical値・記事・indexへはまだ昇格しない。
+- 2026-08-17のGSC read-only確認ではsitemapは成功・12ページ検出、index登録7・未登録6、表示6・clicks 0。
+  「sitemap未検出2本」は解消済みである。トップの旧nofollowはインデックス停滞の原因候補としてriskへ残し、
+  I1公開後の再処理を監視する。URL検査登録要求とsitemap再送信はHuman手順とし、自動実行しない。
 
 ## 公開前originの現在地
 

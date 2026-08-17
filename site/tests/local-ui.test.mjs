@@ -157,6 +157,7 @@ test("P01 renders reader copy and approved evidence without an input calculator"
   assert.match(html, /class="shell article-decision-summary"/);
   assert.match(html, /公式サイトの案内を見る/);
   assert.match(html, /class="evidence-details"/);
+  assert.doesNotMatch(html, /<details[^>]*class="evidence-details"[^>]*\bopen\b/i);
   assert.match(html, /出典・観測日・未確認理由を詳しく見る/);
   assert.match(html, /購入画面の最終請求額/);
   assert.match(html, /更新・解約・返金条件/);
@@ -194,6 +195,8 @@ test("P02 and P03 keep vendor-plan identities and explicit unknown reasons", asy
   assert.match(p03, /Semrush \/ SEO[\s\S]{0,500}checkout請求総額が未観測/);
   assert.match(p03, /Mangools Basicの12か月総額だけを確認/);
   assert.match(p03, /横断価格順位を付けません/);
+  assert.match(p03, /data-ranking-eligible="false"[\s\S]{0,300}SE Ranking \/ Core[\s\S]{0,300}<strong>未確認<\/strong>/);
+  assert.match(p03, /data-ranking-eligible="false"[\s\S]{0,300}Semrush \/ SEO[\s\S]{0,300}<strong>未確認<\/strong>/);
   assert.match(p03, /年次請求/);
   assert.match(p03, /unknown（税込・税別未確認）/);
   assert.match(p03, /画面の支払周期[\s\S]{0,80}年払い選択/);
@@ -320,6 +323,11 @@ test("servers operator and all twenty article routes remain candidate-only and f
     if (path.endsWith("candidate=SVR01")) {
       assert.match(article, /確認済み(?:<!-- -->)?4(?:<!-- -->)?項目、未確認(?:<!-- -->)?6(?:<!-- -->)?項目、[\s\S]{0,40}該当なし(?:<!-- -->)?1(?:<!-- -->)?項目/, path);
       assert.match(article, /data-ranking-eligible="false"[\s\S]{0,400}<strong>未確認<\/strong>/, path);
+      assert.match(article, /ConoHa WING \/ プラン未確認/, path);
+      assert.match(article, /ロリポップ！ \/ プラン未確認/, path);
+      assert.match(article, /ABLENET \/ プラン未確認/, path);
+      assert.match(article, /class="evidence-details"/, path);
+      assert.doesNotMatch(article, /<details[^>]*class="evidence-details"[^>]*\bopen\b/i, path);
       assert.match(article, /JPY 50160 \/ yr/, path);
       assert.match(article, /data-server-article-review="approved"/, path);
       assert.match(article, /契約時に確認できた請求額は(?:<!-- -->)?66,660/, path);

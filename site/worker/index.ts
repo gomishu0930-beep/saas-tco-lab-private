@@ -79,6 +79,7 @@ const PUBLIC_ROUTES = new Set([
   "/",
   "/methodology",
   "/disclosure",
+  "/pilot",
   "/pilot/annual-vs-monthly",
   "/pilot/migration-cost",
   "/pilot/evidence-method",
@@ -415,6 +416,95 @@ function serverAffiliateCtaControls(
   };
 }
 
+function publicCtaCategoryCount(
+  env: ProductionEnv,
+  indexPaths: ReadonlySet<string>,
+): number {
+  const seoPath = [...ARTICLE_PATH_TO_ID.keys()].find((path) => indexPaths.has(path));
+  const serverPath = [...SERVER_ARTICLE_PATH_TO_ID.keys()].find((path) => indexPaths.has(path));
+  return Number(Boolean(seoPath && affiliateCtaControls(env, indexPaths, seoPath).enabled))
+    + Number(Boolean(serverPath && serverAffiliateCtaControls(env, indexPaths, serverPath).enabled));
+}
+
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+async function withPublicHomeState(
+  response: Response,
+  env: ProductionEnv,
+  indexPaths: ReadonlySet<string>,
+): Promise<Response> {
+  const contentType = response.headers.get("content-type")?.toLowerCase() ?? "";
+  if (response.status !== 200 || !contentType.includes("text/html")) return response;
+
+  const originalBody = await response.text();
+  const documentEnd = originalBody.lastIndexOf("</html>") + "</html>".length;
+  let body = documentEnd >= "</html>".length
+    ? originalBody.slice(0, documentEnd)
+    : originalBody;
+  const hydrationPayload = documentEnd >= "</html>".length
+    ? originalBody.slice(documentEnd)
+    : "";
+  const knownArticlePaths = [
+    ...ARTICLE_PATH_TO_ID.keys(),
+    ...SERVER_ARTICLE_PATH_TO_ID.keys(),
+  ];
+  for (const path of knownArticlePaths) {
+    if (indexPaths.has(path)) continue;
+    const escapedPath = escapeRegExp(path);
+    body = body.replace(
+      new RegExp(
+        `<(article|li)\\b(?=[^>]*data-public-article-path=["']${escapedPath}["'])[^>]*>[\\s\\S]*?<\\/\\1>`,
+        "gi",
+      ),
+      "",
+    );
+    body = body.replace(
+      new RegExp(
+        `<a\\b(?=[^>]*data-public-article-link=["']${escapedPath}["'])[^>]*>[\\s\\S]*?<\\/a>`,
+        "gi",
+      ),
+      "",
+    );
+  }
+  const categories = new Set(
+    [...indexPaths].map((path) => path.startsWith("/servers/") ? "servers" : "seo_tools"),
+  );
+  body = body
+    .replace(
+      /(<dd\b[^>]*data-public-article-count[^>]*>)[\s\S]*?(<\/dd>)/i,
+      `$1${indexPaths.size}本$2`,
+    )
+    .replace(
+      /(<dd\b[^>]*data-public-category-count[^>]*>)[\s\S]*?(<\/dd>)/i,
+      `$1${categories.size}カテゴリ$2`,
+    )
+    .replace(
+      /(<dd\b[^>]*data-public-cta-category-count[^>]*>)[\s\S]*?(<\/dd>)/i,
+      `$1${publicCtaCategoryCount(env, indexPaths)}カテゴリ稼働$2`,
+    );
+  const openingHead = body.match(/<head(?:\s[^>]*)?>/i);
+  if (openingHead?.index !== undefined) {
+    const insertionPoint = openingHead.index + openingHead[0].length;
+    const approvedPaths = JSON.stringify([...indexPaths].sort()).replaceAll("<", "\\u003c");
+    const counts = JSON.stringify({
+      articles: indexPaths.size,
+      categories: categories.size,
+      ctaCategories: publicCtaCategoryCount(env, indexPaths),
+    });
+    const bootstrap = `<script data-public-home-index-gate>(()=>{const a=new Set(${approvedPaths}),c=${counts};let q=false;const r=()=>{q=false;document.querySelectorAll('[data-public-article-path]').forEach(e=>{if(!a.has(e.getAttribute('data-public-article-path')||''))e.remove()});document.querySelectorAll('[data-public-article-link]').forEach(e=>{if(!a.has(e.getAttribute('data-public-article-link')||''))e.remove()});const u=(s,v)=>{const e=document.querySelector(s);if(e&&e.textContent!==v)e.textContent=v};u('[data-public-article-count]',c.articles+'本');u('[data-public-category-count]',c.categories+'カテゴリ');u('[data-public-cta-category-count]',c.ctaCategories+'カテゴリ稼働')},t=()=>{if(q)return;q=true;queueMicrotask(r)};new MutationObserver(t).observe(document.documentElement,{subtree:true,childList:true});addEventListener('DOMContentLoaded',r,{once:true});r()})();</script>`;
+    body = `${body.slice(0, insertionPoint)}${bootstrap}${body.slice(insertionPoint)}`;
+  }
+  const headers = new Headers(response.headers);
+  headers.delete("content-length");
+  return new Response(body + hydrationPayload, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 function escapeHtmlAttribute(value: string): string {
   return value
     .replaceAll("&", "&amp;")
@@ -703,8 +793,7 @@ const worker = {
     const indexable = url.search === "" && indexPaths.has(normalizedPath);
     const followableNoindex = url.search === ""
       && PUBLIC_ROUTES.has(normalizedPath)
-      && !ARTICLE_PATH_TO_ID.has(normalizedPath)
-      && !SERVER_ARTICLE_PATH_TO_ID.has(normalizedPath);
+      && !indexable;
     const gatedPath = indexable ? normalizedPath : "";
     const ctaControls = affiliateCtaControls(env, indexPaths, gatedPath);
     const serverCtaControls = serverAffiliateCtaControls(env, indexPaths, gatedPath);
@@ -782,8 +871,11 @@ const worker = {
       return withSecurityHeaders(response);
     }
     if (PUBLIC_ROUTES.has(normalizedPath)) {
-      const response = await handler.fetch(request, env, ctx);
+      let response = await handler.fetch(request, env, ctx);
       const embeddable = normalizedPath === "/embed/tco-calculator";
+      if (normalizedPath === "/") {
+        response = await withPublicHomeState(response, env, indexPaths);
+      }
       return withSecurityHeaders(
         await withServerAffiliateCta(
           await withAffiliateCta(

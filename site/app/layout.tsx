@@ -15,7 +15,7 @@ export const metadata: Metadata = {
     "Human確認済みの価格、契約条件、利用上限を根拠付き12か月TCOで比較するSaaS選定メディア。",
   robots: {
     index: false,
-    follow: false,
+    follow: productionRuntime,
     noarchive: true,
     nosnippet: true,
   },
@@ -47,8 +47,8 @@ export default function RootLayout({
             <nav aria-label="主要ナビゲーション">
               {productionRuntime ? (
                 <>
-                  <Link href="/servers/business-server-pricing">サーバー料金</Link>
-                  <Link href="/pilot/pricing-calculator">SEOツール料金</Link>
+                  <Link data-public-article-link="/servers/business-server-pricing" href="/servers/business-server-pricing">サーバー料金</Link>
+                  <Link data-public-article-link="/pilot/pricing-calculator" href="/pilot/pricing-calculator">SEOツール料金</Link>
                   <Link href="/methodology">算定方法</Link>
                 </>
               ) : (
@@ -86,9 +86,9 @@ export default function RootLayout({
               <Link href="/disclosure">広告表示</Link>
               {productionRuntime ? (
                 <>
-                  <Link href="/servers/business-server-pricing">サーバー料金</Link>
-                  <Link href="/pilot/pricing-calculator">SEOツール料金</Link>
-                  <Link href="/pilot/evidence-method">根拠方針</Link>
+                  <Link data-public-article-link="/servers/business-server-pricing" href="/servers/business-server-pricing">サーバー料金</Link>
+                  <Link data-public-article-link="/pilot/pricing-calculator" href="/pilot/pricing-calculator">SEOツール料金</Link>
+                  <Link data-public-article-link="/pilot/evidence-method" href="/pilot/evidence-method">根拠方針</Link>
                 </>
               ) : (
                 <>

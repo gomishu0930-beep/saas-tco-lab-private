@@ -1,64 +1,68 @@
 import Link from "next/link";
 
+import savedSvr01Candidate from "../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v3-2026-08-14.json";
+
 import { ComparisonTable } from "./components/ComparisonTable";
 import { StatusStrip } from "./components/StatusStrip";
+import { reviewedServerCandidateEvidence } from "./lib/editorial-input-contract";
+import { editorialContract } from "./lib/editorial-contracts";
+import { pilotPages, type PilotPage } from "./lib/pilot-pages";
 import { syntheticComparison } from "./lib/synthetic-data";
 
 const productionRuntime = process.env.SAAS_RUNTIME_MODE === "production";
 
+const publicSeoSummary: Readonly<Record<PilotPage["id"], string>> = {
+  P01: "人が公式画面で確認した年次請求総額から、12か月の支払額と未確認条件を分けて示します。",
+  P02: "Basic・Premium・Agencyの年次請求総額を、同じ通貨・税表示の範囲で比較します。",
+  P03: "他社の未確認価格を推測せず、同じ条件で確認できた範囲だけを比較します。",
+  P04: "利用人数と運用条件を分け、小規模チームの費用を確認します。",
+  P05: "Agencyプランの年次料金、追加利用者、利用上限を確認します。",
+  P06: "年払いの請求総額と月払いを同じ期間へそろえ、途中解約の未確認条件も分離します。",
+  P07: "検索回数などの利用上限と、上限到達後の扱いを購入前に確認できます。",
+  P08: "基本料金に含まれない追加機能の費用を分けます。",
+  P09: "実作業時間から算定した人手費用と、公式の移行支援費で未確認の部分を分けます。",
+  P10: "通貨と税の表示を、換算や推測をせず公式画面のまま確認します。",
+  P11: "導入前後の完全暦月を比較し、回収期間を確認します。",
+  P12: "出典、観測日、次回確認日をたどれる料金だけを判断に使います。",
+};
+
+const featuredPublicSeoIds = new Set<PilotPage["id"]>(["P01", "P02", "P06", "P07", "P09"]);
+
+function sourceApprovedPublicArticles() {
+  const serverEvidence = reviewedServerCandidateEvidence(
+    savedSvr01Candidate,
+    "XServerビジネス 共有スタンダード（12か月）",
+    "business.xserver.ne.jp",
+  );
+  const server = serverEvidence?.initialPayment ? [{
+    id: "SVR01",
+    path: "/servers/business-server-pricing",
+    title: "法人向けサーバーの契約時総額",
+    summary: "初期費用と12か月分の請求額を分け、更新料や特典の未確認条件も同じ画面で確認できます。",
+    category: "servers",
+    categoryLabel: "サーバー",
+    featured: true,
+  }] : [];
+  const seo = pilotPages.flatMap((page) => {
+    if (editorialContract(page)?.article_review_status !== "approved") return [];
+    return [{
+      id: page.id,
+      path: `/pilot/${page.slug}`,
+      title: page.title,
+      summary: publicSeoSummary[page.id],
+      category: "seo_tools",
+      categoryLabel: "SEOツール",
+      featured: featuredPublicSeoIds.has(page.id),
+    }];
+  });
+  return [...server, ...seo];
+}
+
 function PublicEditorialHome() {
-  const samples = [
-    {
-      href: "/servers/business-server-pricing",
-      number: "01",
-      title: "法人向けサーバーの契約時総額",
-      body: "初期費用と12か月分の請求額を分け、更新料や特典の未確認条件も同じ画面で確認できます。",
-      category: "サーバー",
-    },
-    {
-      href: "/pilot/pricing-calculator",
-      number: "02",
-      title: "Mangoolsの12か月TCO",
-      body: "人が公式画面で確認した年次請求総額から、12か月の支払額と未確認条件を分けて示します。",
-      category: "SEOツール",
-    },
-    {
-      href: "/pilot/plan-comparison",
-      number: "03",
-      title: "Mangoolsのプラン比較",
-      body: "Basic・Premium・Agencyの年次請求総額を、同じ通貨・税表示の範囲で比較します。",
-      category: "SEOツール",
-    },
-    {
-      href: "/pilot/annual-vs-monthly",
-      number: "04",
-      title: "年払いと月払い",
-      body: "年払いの請求総額と月払いを同じ期間へそろえ、途中解約の未確認条件も分離します。",
-      category: "SEOツール",
-    },
-    {
-      href: "/pilot/usage-overage",
-      number: "05",
-      title: "利用上限と超過",
-      body: "検索回数などの利用上限と、上限到達後の扱いを購入前に確認できます。",
-      category: "SEOツール",
-    },
-    {
-      href: "/pilot/migration-cost",
-      number: "06",
-      title: "移行にかかる人手費用",
-      body: "実作業時間から算定した人手費用と、公式の移行支援費で未確認の部分を分けます。",
-      category: "SEOツール",
-    },
-  ] as const;
-  const moreTopics = [
-    { href: "/pilot/alternatives", title: "他社SEOツールとの比較", note: "未確認の他社価格を混ぜずに比較" },
-    { href: "/pilot/small-team-fit", title: "小規模チームの費用", note: "人数と運用条件を分けて確認" },
-    { href: "/pilot/enterprise-fit", title: "Agencyプランの料金と上限", note: "追加利用者と利用上限を確認" },
-    { href: "/pilot/addon-cost", title: "追加機能の費用", note: "基本料金に含まれない費用を分離" },
-    { href: "/pilot/japan-tax", title: "通貨と税の表示", note: "換算せず公式画面の表示を確認" },
-    { href: "/pilot/evidence-method", title: "料金根拠の確認方法", note: "出典・観測日・再確認日を検証" },
-  ] as const;
+  const publicArticles = sourceApprovedPublicArticles();
+  const samples = publicArticles.filter((article) => article.featured);
+  const moreTopics = publicArticles.filter((article) => !article.featured);
+  const categoryCount = new Set(publicArticles.map((article) => article.category)).size;
 
   return (
     <main id="main-content">
@@ -74,10 +78,10 @@ function PublicEditorialHome() {
             12か月TCOと未確認条件を、公式サイトへ進む前に整理する独立メディアです。
           </p>
           <div className="hero-actions">
-            <Link className="button button-primary" href="/servers/business-server-pricing">
+            <Link data-public-article-link="/servers/business-server-pricing" className="button button-primary" href="/servers/business-server-pricing">
               サーバー契約時総額を見る <span aria-hidden="true">→</span>
             </Link>
-            <Link className="button button-secondary" href="/pilot/pricing-calculator">
+            <Link data-public-article-link="/pilot/pricing-calculator" className="button button-secondary" href="/pilot/pricing-calculator">
               SEOツール料金を見る
             </Link>
           </div>
@@ -91,8 +95,9 @@ function PublicEditorialHome() {
           <dl className="proof-grid">
             <div><dt>対象</dt><dd>JP / ja</dd></div>
             <div><dt>算定</dt><dd>12か月TCO</dd></div>
-            <div><dt>公開記事</dt><dd>{samples.length + moreTopics.length}本</dd></div>
-            <div><dt>対象カテゴリ</dt><dd>2カテゴリ</dd></div>
+            <div><dt>公開記事</dt><dd data-public-article-count>{publicArticles.length}本</dd></div>
+            <div><dt>対象カテゴリ</dt><dd data-public-category-count>{categoryCount}カテゴリ</dd></div>
+            <div><dt>紹介導線</dt><dd data-public-cta-category-count>runtime確認中</dd></div>
           </dl>
           <p className="proof-note">
             公式画面を人が確認した数値だけを公開します。未確認項目は推測せず、紹介リンクより先に広告利用を表示します。
@@ -113,13 +118,13 @@ function PublicEditorialHome() {
             <p className="eyebrow">サーバー</p>
             <h3>初期費用を含む契約時総額</h3>
             <p>12・24・36か月の期間を切り替え、確認できない更新料や特典は順位から外します。</p>
-            <Link className="button button-primary" href="/servers/business-server-pricing">確認済み総額を見る <span aria-hidden="true">→</span></Link>
+            <Link data-public-article-link="/servers/business-server-pricing" className="button button-primary" href="/servers/business-server-pricing">確認済み総額を見る <span aria-hidden="true">→</span></Link>
           </article>
           <article>
             <p className="eyebrow">SEOツール</p>
             <h3>年払い・月払い・利用上限</h3>
             <p>確認済みの年次請求総額を起点に、プラン差、超過、税、移行費用を確認します。</p>
-            <Link className="button button-secondary" href="/pilot/pricing-calculator">12か月TCOを見る <span aria-hidden="true">→</span></Link>
+            <Link data-public-article-link="/pilot/pricing-calculator" className="button button-secondary" href="/pilot/pricing-calculator">12か月TCOを見る <span aria-hidden="true">→</span></Link>
           </article>
         </div>
         <ul className="trust-points" aria-label="掲載情報の確認方針">
@@ -156,11 +161,11 @@ function PublicEditorialHome() {
           <p>確認済み実額、出典、観測日、次回確認日をそろえた記事だけをご案内します。</p>
         </div>
         <div className="policy-cards">
-          {samples.map((sample) => (
-            <article key={sample.href}>
-              <span>{sample.number} / {sample.category}</span>
-              <h2><Link href={sample.href}>{sample.title}</Link></h2>
-              <p>{sample.body}</p>
+          {samples.map((sample, index) => (
+            <article data-public-article-path={sample.path} key={sample.path}>
+              <span>{String(index + 1).padStart(2, "0")} / {sample.categoryLabel}</span>
+              <h2><Link href={sample.path}>{sample.title}</Link></h2>
+              <p>{sample.summary}</p>
             </article>
           ))}
         </div>
@@ -168,9 +173,9 @@ function PublicEditorialHome() {
           <h3 id="more-topics-title">ほかの判断テーマ</h3>
           <ul>
             {moreTopics.map((topic) => (
-              <li key={topic.href}>
-                <Link href={topic.href}>{topic.title}</Link>
-                <span>{topic.note}</span>
+              <li data-public-article-path={topic.path} key={topic.path}>
+                <Link href={topic.path}>{topic.title}</Link>
+                <span>{topic.summary}</span>
               </li>
             ))}
           </ul>

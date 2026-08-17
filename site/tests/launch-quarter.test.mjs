@@ -14,6 +14,8 @@ import {
   serverArticleSlate,
   serverBigWordHubs,
   serverCtaPresentationPolicy,
+  serverLaunchPriorityArticles,
+  serverLaunchPriorityIds,
 } from "../app/lib/pilot-pages.ts";
 import { articleStructuredData } from "../app/lib/structured-data.ts";
 import { hasUnknownFact } from "../app/lib/editorial-input-contract.ts";
@@ -195,6 +197,14 @@ test("servers launch slate fixes twenty long-tail candidates and defers big-word
   for (const article of serverArticleSlate) {
     assert.match(frozenSlate, new RegExp(`,${article.sourceQuery.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`, "m"));
   }
+  assert.deepEqual(
+    [...serverLaunchPriorityIds],
+    ["SVR05", "SVR04", "SVR06", "SVR07", "SVR02", "SVR03", "SVR09", "SVR08"],
+  );
+  assert.deepEqual(
+    serverLaunchPriorityArticles().map((article) => article.id),
+    [...serverLaunchPriorityIds],
+  );
 });
 
 test("servers CTA policy is disabled, single, or comparison and warns above 80 percent", () => {

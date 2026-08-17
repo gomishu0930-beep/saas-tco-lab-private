@@ -13,7 +13,7 @@ export type PublicationGateInput = {
 export type PublicationGateDecision = {
   indexable: boolean;
   ctaEnabled: boolean;
-  robots: "index, follow" | "noindex, nofollow, noarchive, nosnippet";
+  robots: "index, follow" | "noindex, follow, noarchive, nosnippet";
   stopReasons: readonly string[];
 };
 
@@ -45,7 +45,7 @@ export function evaluatePublicationGate(input: PublicationGateInput): Publicatio
   return {
     indexable,
     ctaEnabled,
-    robots: indexable ? "index, follow" : "noindex, nofollow, noarchive, nosnippet",
+    robots: indexable ? "index, follow" : "noindex, follow, noarchive, nosnippet",
     stopReasons,
   };
 }

@@ -146,7 +146,18 @@ function AnnualTcoEvidence({ page, contract }: { page: PilotPage; contract: Edit
             <td>{field.monthly_reference_value !== null ? `${field.currency} ${field.monthly_reference_value} ${field.monthly_reference_unit}` : "比較値なし"}</td>
             <td>{field.derived_annual_discount_percent !== null ? `月払い比で約${field.derived_annual_discount_percent}%割安` : "算出なし"}</td>
             <td>{field.observed_on}<small>次回 {field.next_review_on}</small></td>
-          </tr>)}</tbody>
+          </tr>)}
+          {page.id === "P03" ? unresolvedAnnualPrices.map((field) => <tr
+            data-ranking-eligible="false"
+            key={`unconfirmed-${field.vendor_id}-${field.plan_id}-${field.field}`}
+          >
+            <th>{evidenceIdentity(field)}</th>
+            <td><strong>未確認</strong><small>{field.unknown_reason ?? "同条件の請求総額を確認できていません"}</small></td>
+            <td>未確認</td>
+            <td>未確認</td>
+            <td>順位対象外</td>
+            <td>{field.observed_on}<small>次回 {field.next_review_on}</small></td>
+          </tr>) : null}</tbody>
         </table>
       </div>
       <p className="annual-tco-note">
@@ -313,7 +324,7 @@ export function PilotArticle({
               : "公式ページ、確認日、次回確認日がそろうまで金額を表示しません。"}
           </p>
         </div>
-        <details className="evidence-details" open={unknownFields > 0}>
+        <details className="evidence-details">
           <summary>出典・観測日・未確認理由を詳しく見る</summary>
           <div className="field-input-grid">
           {contract ? contract.numeric_fields.map((field, index) => {

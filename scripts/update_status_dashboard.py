@@ -253,6 +253,7 @@ def _work_queue(root: Path) -> list[dict[str, Any]]:
         ("SVR01 servers価格観測Operator", root / "site/app/operator/servers/page.tsx"),
         ("SVR01証拠付き・SVR02–SVR20 noindex候補view", root / "site/app/servers/business-server-pricing/page.tsx"),
         ("servers 20記事候補一覧", root / "site/app/operator/servers/page.tsx"),
+        ("servers次8記事の取引意図優先queue", root / "docs/CATEGORY_EXPANSION_SLATE.md"),
     )
     return [{"done": path.is_file(), "label": label} for label, path in requirements]
 
@@ -701,6 +702,10 @@ def _regenerate(
         {"label": "Outbound clicks(月)", "value": external["outbound_clicks"], "target": 3334, "sub": "目標 3,334 / 月"},
         {"label": "確定報酬(月)", "value": external["confirmed_commissions_yen"], "target": 200000, "sub": "confirmed commissions(円)", "yen": True},
     ]
+    data["categoryPublication"] = [
+        {"category": "servers", "publishedArticles": published_server_count, "targetArticles": 9},
+        {"category": "seo_tools", "publishedArticles": published_count, "targetArticles": 11},
+    ]
     outbound = external["outbound_clicks"]
     confirmed = external["confirmed_commissions_yen"]
     data["revenue"] = {
@@ -797,6 +802,7 @@ def _regenerate(
         "gsc-processing",
         "server-launch",
         "server-partner-dependency",
+        "index-discovery-path",
     }
     dynamic_risks = [
         item for item in data.get("risks", [])
@@ -809,7 +815,13 @@ def _regenerate(
             "level": "warn",
             "label": f"編集記事は{approved_count}/12承認。未承認記事はnoindex・CTA無効を維持",
         })
-    if "sitemap成功・最終読込2026-08-13・検出10" in adoption:
+    if "sitemapは成功・12ページ検出" in adoption:
+        dynamic_risks.append({
+            "riskId": "gsc-processing",
+            "level": "monitor",
+            "label": "GSC sitemapは12/12検出済み。index登録7・未登録6の再処理を監視",
+        })
+    elif "sitemap成功・最終読込2026-08-13・検出10" in adoption:
         dynamic_risks.append({
             "riskId": "gsc-processing",
             "level": "warn",
@@ -817,6 +829,12 @@ def _regenerate(
                 f"GSCはsitemap 10/{index_target_count}検出・"
                 "P01登録要求一時エラー。通常クロール待ち"
             ),
+        })
+    if "トップの旧nofollowはインデックス停滞の原因候補" in adoption:
+        dynamic_risks.append({
+            "riskId": "index-discovery-path",
+            "level": "monitor",
+            "label": "旧トップのnofollowをI1でnoindex,followへ修正。承認記事のindex,followと未承認記事のnoindexを維持して再処理監視",
         })
     if published_server_count:
         server_destinations_configured = "production runtime secret 6件を設定済み" in adoption
