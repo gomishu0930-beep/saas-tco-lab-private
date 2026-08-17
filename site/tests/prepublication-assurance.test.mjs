@@ -237,7 +237,7 @@ test("every servers candidate stays noindex, unranked, CTA-disabled, and disclos
     } else {
       assert.match(html, /承認済みのservers価格contractはまだありません/, path);
     }
-    assert.match(html, /公開条件をすべて通過したpartnerがないためCTAは無効/, path);
+    assert.match(html, /各紹介リンクの有効状態は下に表示/, path);
     assert.doesNotMatch(html, /data-server-cta-mode="(?:single|comparison)"|rel=["'][^"']*sponsored/i, path);
   }
 });
@@ -429,6 +429,8 @@ test("static CSS preserves mobile reflow, keyboard focus, and reduced motion", a
   assert.ok(at900 >= 0 && at620 > at900 && atReduced > at620, "ordered media guards");
 
   const desktopToTablet = css.slice(at900, at620);
+  assert.match(desktopToTablet, /\.site-header nav\s*\{[^}]*display:\s*flex[^}]*overflow-x:\s*auto/s);
+  assert.match(desktopToTablet, /\.site-header nav a\s*\{[^}]*min-height:\s*44px/s);
   assert.match(desktopToTablet, /\.hero\s*\{[^}]*grid-template-columns:\s*1fr/s);
   assert.match(desktopToTablet, /\.methodology-layout\s*\{[^}]*grid-template-columns:\s*1fr/s);
   assert.match(desktopToTablet, /\.readiness-board li\s*\{[^}]*grid-template-columns:/s);
@@ -440,6 +442,8 @@ test("static CSS preserves mobile reflow, keyboard focus, and reduced motion", a
   assert.match(mobile, /\.conditions-grid\s*\{[^}]*grid-template-columns:\s*1fr/s);
   assert.match(mobile, /\.policy-cards\s*\{[^}]*grid-template-columns:\s*1fr/s);
   assert.match(mobile, /\.target-band dl\s*\{[^}]*grid-template-columns:\s*1fr/s);
+  assert.match(mobile, /\.page-header h1\s*\{[^}]*font-size:\s*clamp\(2rem, 9\.5vw, 3rem\)/s);
+  assert.match(mobile, /\.more-topics ul\s*\{[^}]*grid-template-columns:\s*1fr/s);
 
   const minWidthRules = [...css.matchAll(/([^{}]+)\{([^{}]*\bmin-width\s*:[^{}]*)\}/g)].map(
     (match) => match[1].trim(),

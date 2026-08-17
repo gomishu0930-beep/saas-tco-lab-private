@@ -12,7 +12,7 @@ export default function DisclosurePage() {
         <p className="eyebrow">AFFILIATE DISCLOSURE</p>
         <h1>広告収益と、比較判断を混ぜない。</h1>
         <p>
-          承認済み記事にはMangoolsのアフィリエイトリンクを含む場合があります。
+          承認済み記事にはSEOツールまたはレンタルサーバーのアフィリエイトリンクを含む場合があります。
           提携の有無は比較条件やTCO計算へ混入させません。
         </p>
       </header>
@@ -36,10 +36,10 @@ export default function DisclosurePage() {
       </section>
       <section className="shell disclosure-statement" aria-labelledby="current-state">
         <p className="eyebrow">CURRENT STATE</p>
-        <h2 id="current-state">現在の広告状態: Mangoolsのみ有効</h2>
+        <h2 id="current-state">広告状態は記事ごとに表示</h2>
         <p>
-          Human承認済みの11記事に限り、記事冒頭のPR表示より後でMangools CTAを有効にしています。
-          他partnerは提携・掲載先・広告表示・個別CTA承認の全条件が一致するまで無効です。
+          Human承認、提携、掲載先、広告表示、個別CTA承認の全条件が一致した記事だけで紹介リンクを有効にします。
+          現在の有効・無効状態は各記事のPR表示とリンク欄に示し、条件が欠けた場合は自動的に無効へ戻します。
         </p>
       </section>
     </main>

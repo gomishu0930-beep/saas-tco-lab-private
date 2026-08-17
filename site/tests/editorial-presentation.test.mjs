@@ -99,7 +99,7 @@ function approvedContract() {
 
 test("reader presentation derives title, description, and first sentence from approved evidence", () => {
   const presentation = editorialPresentation(pilotPages[0], approvedContract());
-  assert.equal(presentation.title, "Mangools料金(2026年8月確認): USD 452.40と12か月TCO｜料金計算");
+  assert.equal(presentation.title, "Mangools料金(2026年8月確認): USD 452.40と12か月TCO");
   assert.match(presentation.description, /Mangools BasicのUSD 452\.40を公式画面で確認/);
   assert.match(presentation.lead, /^Mangools Basicの確認済み実額はUSD 452\.40（年次請求）で、/);
   assert.doesNotMatch(`${presentation.description}\n${presentation.lead}`, /contract|vendor|billing toggle|Human scenario/i);
@@ -107,7 +107,7 @@ test("reader presentation derives title, description, and first sentence from ap
 
 test("articles without an approved price use an honest no-amount fallback", () => {
   const presentation = editorialPresentation(pilotPages[3], null);
-  assert.equal(presentation.title, "SaaS料金: 確認済み実額なし・12か月TCOは確認中｜小規模チーム適合");
+  assert.equal(presentation.title, "SaaS料金: 確認済み実額なし・小規模チーム費用は確認中");
   assert.match(presentation.lead, /^確認済みの実額はまだなく、/);
   assert.doesNotMatch(presentation.title, /[¥$€£]|\b(?:JPY|USD|EUR)\s+\d/);
 });
@@ -116,7 +116,7 @@ test("P09 derives the Human migration labor cost while keeping official support 
   const page = pilotPages.find((candidate) => candidate.id === "P09");
   assert.ok(page);
   const presentation = editorialPresentation(page, p09Contract);
-  assert.equal(presentation.title, "移行作業費用(2026年8月確認): JPY 2,006.67・公式支援費は未確認｜移行コスト");
+  assert.equal(presentation.title, "移行作業費用(2026年8月確認): JPY 2,006.67・公式支援費は未確認");
   assert.match(presentation.description, /Human作業費JPY 2,006\.67/);
   assert.match(presentation.lead, /^確認済み実測に基づくHuman作業費はJPY 2,006\.67/);
   assert.match(presentation.lead, /移行費用全体の確定額ではありません/);

@@ -45,14 +45,15 @@ export default function RootLayout({
               </span>
             </Link>
             <nav aria-label="主要ナビゲーション">
-              <Link href="/methodology">算定方法</Link>
               {productionRuntime ? (
                 <>
-                  <Link href="/pilot/pricing-calculator">料金記事</Link>
-                  <Link href="/pilot/evidence-method">根拠方針</Link>
+                  <Link href="/servers/business-server-pricing">サーバー料金</Link>
+                  <Link href="/pilot/pricing-calculator">SEOツール料金</Link>
+                  <Link href="/methodology">算定方法</Link>
                 </>
               ) : (
                 <>
+                  <Link href="/methodology">算定方法</Link>
                   <Link href="/comparison">比較</Link>
                   <Link href="/learning">学習と施策</Link>
                   <Link href="/readiness">公開準備</Link>
@@ -61,7 +62,7 @@ export default function RootLayout({
               )}
               <Link href="/disclosure">広告表示</Link>
             </nav>
-            <span className="noindex-badge">CONTROLLED</span>
+            <span className="noindex-badge">{productionRuntime ? "検証方針公開" : "CONTROLLED"}</span>
           </div>
         </header>
         {children}
@@ -85,7 +86,8 @@ export default function RootLayout({
               <Link href="/disclosure">広告表示</Link>
               {productionRuntime ? (
                 <>
-                  <Link href="/pilot/pricing-calculator">料金記事</Link>
+                  <Link href="/servers/business-server-pricing">サーバー料金</Link>
+                  <Link href="/pilot/pricing-calculator">SEOツール料金</Link>
                   <Link href="/pilot/evidence-method">根拠方針</Link>
                 </>
               ) : (

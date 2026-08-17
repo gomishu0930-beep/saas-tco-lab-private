@@ -373,7 +373,7 @@ test("structured data emits an Offer only for Human-approved price fields", () =
   }]);
   assert.equal(
     approved["@graph"][0].name,
-    "vendor料金(2026年7月確認): JPY 100と12か月TCO｜料金計算",
+    "vendor料金(2026年7月確認): JPY 100と12か月TCO",
   );
 
   const fieldHeld = articleStructuredData(page, contract("approved", "unreviewed"));

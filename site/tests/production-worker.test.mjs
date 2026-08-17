@@ -398,20 +398,26 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
   }
 });
 
-test("public trust pages describe the live eleven-article affiliate state", async () => {
+test("public trust pages describe the live twelve-article affiliate state", async () => {
   const home = await (await fetch(`${baseUrl}/`)).text();
   assert.match(home, /PUBLIC EDITORIAL/);
-  assert.match(home, /公開記事[\s\S]{0,80}11本/);
-  assert.match(home, /広告導線[\s\S]{0,80}Mangools/);
+  assert.match(home, /公開記事[\s\S]{0,80}12[\s\S]{0,20}本/);
+  assert.match(home, /対象カテゴリ[\s\S]{0,80}2カテゴリ/);
+  assert.match(home, /href="\/servers\/business-server-pricing"/);
   assert.match(home, /href="\/pilot\/pricing-calculator"/);
   assert.match(home, /href="\/pilot\/plan-comparison"/);
   assert.match(home, /href="\/pilot\/evidence-method"/);
-  assert.doesNotMatch(home, /href="\/pilot\/migration-cost\//);
+  assert.match(home, /href="\/pilot\/migration-cost"/);
+  assert.match(home, /href="\/pilot\/alternatives"/);
+  assert.match(home, /href="\/pilot\/small-team-fit"/);
+  assert.match(home, /href="\/pilot\/enterprise-fit"/);
+  assert.match(home, /href="\/pilot\/addon-cost"/);
+  assert.match(home, /href="\/pilot\/japan-tax"/);
   assert.doesNotMatch(home, /PUBLIC PRELAUNCH|広告リンク[\s\S]{0,50}0件|実在サービスの価格・評価・送客リンクは表示していません/);
 
   const disclosure = await (await fetch(`${baseUrl}/disclosure/`)).text();
-  assert.match(disclosure, /現在の広告状態: Mangoolsのみ有効/);
-  assert.match(disclosure, /Human承認済みの11記事/);
+  assert.match(disclosure, /広告状態は記事ごとに表示/);
+  assert.match(disclosure, /全条件が一致した記事だけで紹介リンクを有効/);
   assert.doesNotMatch(disclosure, /実アフィリエイトリンクを含みません|公開承認済みAffiliate CTA 0件/);
 
   const about = await (await fetch(`${baseUrl}/about/`)).text();
@@ -875,6 +881,11 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   assert.ok(shinPosition > disclosurePosition);
   assert.ok(ablenetPosition > disclosurePosition);
   assert.match(body, /data-server-cta-mode="comparison"/);
+  assert.match(body, /class="server-cta-primary"/);
+  assert.match(body, /class="server-cta-secondary"/);
+  assert.match(body, /この記事では料金未比較/);
+  assert.match(body, /紹介リンクは各サービスの公開条件が有効な場合だけ表示/);
+  assert.ok(xserverPosition < conohaPosition, "料金確認済みXServerを未比較候補より先に表示する");
   assert.match(body, /href="https:\/\/px\.a8\.net\/svt\/ejp\?a8mat=synthetic"/);
   assert.match(body, /a_id=synthetic-conoha/);
   assert.match(body, /href="https:\/\/af\.moshimo\.com\/af\/c\/click\?a_id=synthetic&amp;p_id=synthetic&amp;pc_id=synthetic&amp;pl_id=synthetic"/);
@@ -883,6 +894,18 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   assert.match(body, /href="https:\/\/ck\.jp\.ap\.valuecommerce\.com\/servlet\/referral\?sid=synthetic&amp;pid=synthetic"/);
   assert.equal((body.match(/rel="sponsored noopener noreferrer"/g) ?? []).length, 6);
   assert.doesNotMatch(body, /data-affiliate-cta-partner="mangools"/);
+
+  const singleResponse = await worker.fetch(
+    new Request("https://saastcolab.jp/servers/business-server-pricing"),
+    { ...env, SERVER_CTA_GO: "a8net-xserver-business" },
+    ctx,
+  );
+  const singleBody = await singleResponse.text();
+  assert.match(singleBody, /data-server-cta-mode="single"/);
+  assert.match(singleBody, /各紹介リンクの有効状態は下に表示/);
+  assert.equal((singleBody.match(/rel="sponsored noopener noreferrer"/g) ?? []).length, 1);
+  assert.match(singleBody, /data-server-affiliate-cta-partner="a8net-xserver-business"/);
+  assert.doesNotMatch(singleBody, /紹介できる公式サイトが確認できていない/);
 });
 
 test("SVR01 approved source exposes gross contract charge while index and CTA stay runtime-held", async () => {

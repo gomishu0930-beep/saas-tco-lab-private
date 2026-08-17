@@ -160,6 +160,60 @@ function AnnualTcoEvidence({ page, contract }: { page: PilotPage; contract: Edit
   );
 }
 
+function ArticleActionBand({
+  page,
+  contract,
+  articleApproved,
+  unknownFields,
+}: {
+  page: PilotPage;
+  contract: EditorialContract | null;
+  articleApproved: boolean;
+  unknownFields: number;
+}) {
+  return (
+    <section
+      className="shell target-band article-action-band"
+      id={`${page.id}-action`}
+      aria-labelledby={`${page.id}-action-title`}
+    >
+      <div>
+        <p className="eyebrow">次の行動</p>
+        <h2 id={`${page.id}-action-title`}>
+          {articleApproved ? "確認済み条件を見て、公式サイトで最終確認" : "記事確認の完了後に、公式サイトをご案内"}
+        </h2>
+      </div>
+      <dl>
+        <div><dt>記事の確認</dt><dd>{articleApproved ? "確認済み" : "確認待ち"}</dd></div>
+        <div><dt>未確認項目</dt><dd>{contract ? `${unknownFields}件` : "確認前"}</dd></div>
+        <div><dt>紹介リンク</dt><dd><span data-affiliate-cta-state="disabled">無効</span></dd></div>
+      </dl>
+      <p>
+        {contract && unknownFields > 0
+          ? `確認できていない項目が${unknownFields}件あります。表示中の確認値だけを判断材料とし、契約前に公式サイトで最終料金と条件を確認してください。`
+          : articleApproved
+            ? "表示中の数値と条件は確認済みです。契約前に公式サイトで、現在の料金と対象プランをもう一度確認してください。"
+            : "記事確認が終わるまで紹介リンクを有効にしません。"}
+      </p>
+      <ul className="purchase-checklist" aria-label="契約前の最終確認項目">
+        <li>購入画面の最終請求額</li>
+        <li>更新・解約・返金条件</li>
+        <li>税・割引・上限超過の適用条件</li>
+      </ul>
+      <div className="article-action-links">
+        <span
+          className="cta-disabled"
+          aria-describedby="article-pr-disclosure"
+          data-affiliate-cta-placeholder="mangools"
+        >
+          紹介リンクは無効です
+        </span>
+        <a className="text-link" href={`#${page.id}-field-inputs`}>詳しい数値根拠を確認</a>
+      </div>
+    </section>
+  );
+}
+
 export function PilotArticle({
   page,
   children,
@@ -194,15 +248,34 @@ export function PilotArticle({
         <p>{presentation.description}</p>
       </header>
 
+      <section className="shell article-decision-summary" aria-labelledby={`${page.id}-decision-summary`}>
+        <div>
+          <p className="eyebrow">先に結論</p>
+          <h2 id={`${page.id}-decision-summary`}>{page.question}</h2>
+          <p>{presentation.lead}</p>
+        </div>
+        <dl>
+          <div><dt>確認状態</dt><dd>{articleApproved ? "人が確認済み" : "確認待ち"}</dd></div>
+          <div><dt>観測日</dt><dd>{observedDates.join(", ") || "未確認"}</dd></div>
+          <div><dt>次回確認日</dt><dd>{nextReviewDates.join(", ") || "未確認"}</dd></div>
+          <div><dt>未確認項目</dt><dd>{contract ? `${unknownFields}件` : "確認前"}</dd></div>
+        </dl>
+        <div className="article-decision-actions">
+          <a className="button button-primary" href={`#${page.id}-action`}>
+            {articleApproved ? "公式サイトの案内を見る" : "確認状況を見る"}
+          </a>
+          <a className="text-link" href={`#${page.id}-field-inputs`}>根拠欄へ移動</a>
+        </div>
+      </section>
+
       <section className="shell page-section" aria-labelledby={`${page.id}-article-structure`}>
         <div className="section-heading split-heading">
           <div>
             <p className="eyebrow">料金と判断材料</p>
-            <h2 id={`${page.id}-article-structure`}>{page.question}</h2>
+            <h2 id={`${page.id}-article-structure`}>確認値から判断する6つのポイント</h2>
           </div>
-          <p>確認できた事実と、まだ確認できない費用を分けて説明します。</p>
+          <p>料金・条件・未確認費用を、購入前に確認しやすい順で説明します。</p>
         </div>
-        <p className="article-lead">{presentation.lead}</p>
         <p className="article-methodology-link">
           数値の確認方法と任意条件の試算は<Link href="/methodology#detailed-calculator">詳細計算モード</Link>にまとめています。
         </p>
@@ -219,6 +292,13 @@ export function PilotArticle({
 
       <AnnualTcoEvidence page={page} contract={contract} />
 
+      <ArticleActionBand
+        page={page}
+        contract={contract}
+        articleApproved={articleApproved}
+        unknownFields={unknownFields}
+      />
+
       <section className="shell page-section" aria-labelledby={`${page.id}-field-inputs`}>
         <div className="section-heading split-heading">
           <div>
@@ -233,7 +313,9 @@ export function PilotArticle({
               : "公式ページ、確認日、次回確認日がそろうまで金額を表示しません。"}
           </p>
         </div>
-        <div className="field-input-grid">
+        <details className="evidence-details" open={unknownFields > 0}>
+          <summary>出典・観測日・未確認理由を詳しく見る</summary>
+          <div className="field-input-grid">
           {contract ? contract.numeric_fields.map((field, index) => {
             const definition = page.numericFields.find((candidate) => candidate.key === field.field);
             const isPrice = field.value_kind === "price";
@@ -277,49 +359,32 @@ export function PilotArticle({
                 <small>確認記録: {field.key} / 未入力</small>
               </article>
             ))}
-        </div>
-        {contract ? (
-          <aside className="article-evidence-summary" aria-label="記事単位の出典・更新状態">
-            <h2>記事単位の出典・更新状態</h2>
-            <dl>
-              <div>
-                <dt>出典URL</dt>
-                <dd className="article-evidence-sources">
-                  {sourceUrls.length > 0 ? sourceUrls.map((url) => <span key={url}>{url}</span>) : "なし"}
-                </dd>
-              </div>
-              <div><dt>観測日</dt><dd>{observedDates.join(", ")}</dd></div>
-              <div><dt>次回確認日</dt><dd>{nextReviewDates.join(", ")}</dd></div>
-              <div><dt>記事状態</dt><dd>{contract.article_review_status}</dd></div>
-            </dl>
-          </aside>
-        ) : null}
+          </div>
+          {contract ? (
+            <aside className="article-evidence-summary" aria-label="記事単位の出典・更新状態">
+              <h2>記事単位の出典・更新状態</h2>
+              <dl>
+                <div>
+                  <dt>出典URL</dt>
+                  <dd className="article-evidence-sources">
+                    {sourceUrls.length > 0 ? sourceUrls.map((url) => <span key={url}>{url}</span>) : "なし"}
+                  </dd>
+                </div>
+                <div><dt>観測日</dt><dd>{observedDates.join(", ")}</dd></div>
+                <div><dt>次回確認日</dt><dd>{nextReviewDates.join(", ")}</dd></div>
+                <div><dt>記事状態</dt><dd>{contract.article_review_status}</dd></div>
+              </dl>
+            </aside>
+          ) : null}
+        </details>
+        <p className="evidence-return-action">
+          <a className="button button-secondary" href={`#${page.id}-action`}>
+            確認済み条件と紹介リンク欄へ戻る
+          </a>
+        </p>
       </section>
 
       {children}
-
-      <section className="shell target-band" aria-labelledby="pilot-refresh-title">
-        <div><p className="eyebrow">掲載情報の状態</p><h2 id="pilot-refresh-title">再確認と紹介リンク</h2></div>
-        <dl>
-          <div><dt>数値の確認記録</dt><dd>{contract ? "反映済み" : "未入力"}</dd></div>
-          <div><dt>記事確認</dt><dd>{articleApproved ? "確認済み" : "レビュー待ち"}</dd></div>
-          <div><dt>紹介リンク</dt><dd><span data-affiliate-cta-state="disabled">無効</span></dd></div>
-        </dl>
-        <p>
-          {contract && unknownFields > 0
-            ? `未確認の項目が${unknownFields}件あります。その項目を必要とする総額と価格順位は、確認できるまで表示しません。`
-            : articleApproved
-              ? "本文と12か月TCOは確認済みです。検索掲載、紹介リンク、価格の再確認日はそれぞれ別に管理します。"
-              : "記事レビューが終わるまで検索掲載と紹介リンクを有効にしません。"}
-        </p>
-        <span
-          className="cta-disabled"
-          aria-describedby="article-pr-disclosure"
-          data-affiliate-cta-placeholder="mangools"
-        >
-          紹介リンクは無効です
-        </span>
-      </section>
 
       {nextPages.length > 0 ? (
         <section className="shell page-section next-reading" aria-labelledby={`${page.id}-next-reading`}>
@@ -398,19 +463,13 @@ export function ServerArticleTemplate({
         data-server-cta-mode={ctaPolicy.mode}
         aria-label="サーバー紹介リンク枠"
       >
-        {ctaPolicy.mode === "comparison" ? (
-          <p>承認済みpartnerを同じ比較条件で確認する枠です。各リンクは個別CTA gateを通過するまで無効です。</p>
-        ) : ctaPolicy.mode === "single" ? (
-          <p>承認済みpartnerは1社です。単独CTAだけを扱い、比較表示にはしません。</p>
-        ) : (
-          <p>公開条件をすべて通過したpartnerがないためCTAは無効です。</p>
-        )}
+        <p>記事で確認した料金と、公式サイトの現在の料金・契約条件を照合してください。各紹介リンクの有効状態は下に表示します。</p>
         <p>
           <span data-server-affiliate-cta-state="disabled">
             サーバー紹介リンクは無効です
           </span>
         </p>
-        <div className="server-cta-options" aria-label="承認済みサーバー候補">
+        <div className="server-cta-primary" aria-label="記事で料金を確認したサーバー">
           <span
             className="cta-disabled"
             aria-describedby="article-pr-disclosure"
@@ -418,42 +477,18 @@ export function ServerArticleTemplate({
           >
             XServerビジネス紹介リンクは無効です
           </span>
-          <span
-            className="cta-disabled"
-            aria-describedby="article-pr-disclosure"
-            data-server-affiliate-cta-placeholder="moshimo-conoha-wing"
-          >
-            ConoHa WING紹介リンクは無効です
-          </span>
-          <span
-            className="cta-disabled"
-            aria-describedby="article-pr-disclosure"
-            data-server-affiliate-cta-placeholder="moshimo-lolipop-rental-server"
-          >
-            ロリポップ！紹介リンクは無効です
-          </span>
-          <span
-            className="cta-disabled"
-            aria-describedby="article-pr-disclosure"
-            data-server-affiliate-cta-placeholder="moshimo-onamae-rental-server"
-          >
-            お名前.com レンタルサーバー紹介リンクは無効です
-          </span>
-          <span
-            className="cta-disabled"
-            aria-describedby="article-pr-disclosure"
-            data-server-affiliate-cta-placeholder="moshimo-shin-rental-server"
-          >
-            シンレンタルサーバー紹介リンクは無効です
-          </span>
-          <span
-            className="cta-disabled"
-            aria-describedby="article-pr-disclosure"
-            data-server-affiliate-cta-placeholder="valuecommerce-ablenet-shared-server"
-          >
-            ABLENET紹介リンクは無効です
-          </span>
         </div>
+        <details className="server-cta-secondary">
+          <summary>他のサーバー公式サイトも確認する（この記事では料金未比較）</summary>
+          <p>次のサービスはこの記事の料金表では同じ条件で比較していません。紹介リンクは各サービスの公開条件が有効な場合だけ表示されます。</p>
+          <div className="server-cta-options" aria-label="料金未比較のサーバー候補">
+            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="moshimo-conoha-wing">ConoHa WING紹介リンクは無効です</span>
+            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="moshimo-lolipop-rental-server">ロリポップ！紹介リンクは無効です</span>
+            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="moshimo-onamae-rental-server">お名前.com レンタルサーバー紹介リンクは無効です</span>
+            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="moshimo-shin-rental-server">シンレンタルサーバー紹介リンクは無効です</span>
+            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="valuecommerce-ablenet-shared-server">ABLENET紹介リンクは無効です</span>
+          </div>
+        </details>
       </section>
       <section className="shell page-section" data-server-template-step="evidence" aria-label="価格の根拠表">{evidence}</section>
     </main>

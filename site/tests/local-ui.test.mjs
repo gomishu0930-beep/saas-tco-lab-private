@@ -123,9 +123,9 @@ test("P01 renders reader copy and approved evidence without an input calculator"
   const html = await response.text();
 
   assert.match(html, /P01[\s\S]{0,80}確認済み/);
-  assert.match(html, /Mangools料金\(2026年8月確認\): USD 452\.40と12か月TCO｜料金計算/);
+  assert.match(html, /Mangools料金\(2026年8月確認\): USD 452\.40と12か月TCO/);
   assert.doesNotMatch(html, /\{\{contract:/);
-  assert.match(html, /class="article-lead">Mangools Basicの確認済み実額はUSD 452\.40（年次請求）で、/);
+  assert.match(html, /class="shell article-decision-summary"[\s\S]*Mangools Basicの確認済み実額はUSD 452\.40（年次請求）で、/);
   const readerBody = html.match(/<section[^>]*aria-labelledby="P01-article-structure"[\s\S]*?<\/section>/)?.[0] ?? "";
   assert.doesNotMatch(readerBody, /vendor|billing toggle|価格表示分類|Human scenario|contract/i);
   assert.match(readerBody, /href="\/methodology#detailed-calculator"/);
@@ -154,6 +154,22 @@ test("P01 renders reader copy and approved evidence without an input calculator"
   assert.match(html, /記事制作に生成AIを補助的に使用する場合があります/);
   assert.match(html, /data-affiliate-cta-placeholder="mangools"/);
   assert.ok(html.indexOf("article-pr-disclosure") < html.indexOf('data-affiliate-cta-placeholder="mangools"'));
+  assert.match(html, /class="shell article-decision-summary"/);
+  assert.match(html, /公式サイトの案内を見る/);
+  assert.match(html, /class="evidence-details"/);
+  assert.match(html, /出典・観測日・未確認理由を詳しく見る/);
+  assert.match(html, /購入画面の最終請求額/);
+  assert.match(html, /更新・解約・返金条件/);
+  assert.match(html, /税・割引・上限超過の適用条件/);
+  assert.match(html, /確認済み条件と紹介リンク欄へ戻る/);
+  assert.ok(
+    html.indexOf('data-affiliate-cta-placeholder="mangools"') < html.indexOf('class="evidence-details"'),
+    "紹介リンク枠を詳細な証拠表より先に表示する",
+  );
+  assert.ok(
+    html.indexOf('class="evidence-details"') < html.indexOf("確認済み条件と紹介リンク欄へ戻る"),
+    "詳細根拠を確認した読者に行動枠への戻り導線を表示する",
+  );
   assert.doesNotMatch(html, /rel="sponsored|公式サイトへ/i);
 });
 
@@ -317,7 +333,7 @@ test("servers operator and all twenty article routes remain candidate-only and f
       assert.match(article, /承認済みのservers価格contractはまだありません/, path);
       assert.doesNotMatch(article, /https:\/\/business\.xserver\.ne\.jp\//, path);
     }
-    assert.match(article, /公開条件をすべて通過したpartnerがないためCTAは無効/, path);
+    assert.match(article, /各紹介リンクの有効状態は下に表示/, path);
     assert.ok(article.indexOf("article-pr-disclosure") < article.indexOf("data-server-template-step=\"calculator\""), path);
     assert.ok(article.indexOf("data-server-template-step=\"calculator\"") < article.indexOf("data-server-template-step=\"cta_slot\""), path);
     assert.match(article, /href="\/operator\/servers\//, path);

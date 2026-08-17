@@ -32,6 +32,21 @@ const pageConclusions: Readonly<Record<PilotPage["id"], string>> = {
   P12: "出典と確認期限を追えない数値は、比較や計算に使いません。",
 };
 
+const pageTitleFocus: Readonly<Record<PilotPage["id"], string>> = {
+  P01: "12か月TCO",
+  P02: "3プラン年額比較",
+  P03: "他社比較",
+  P04: "小規模チーム費用",
+  P05: "Agency料金・上限",
+  P06: "年払い・月払い比較",
+  P07: "利用上限・超過",
+  P08: "追加機能費用",
+  P09: "移行費用",
+  P10: "通貨・税表示",
+  P11: "損益分岐",
+  P12: "料金根拠の確認",
+};
+
 export function vendorDisplayName(vendorId: string | null): string {
   if (!vendorId) return "SaaS";
   return vendorDisplayNames[vendorId] ?? vendorId;
@@ -129,7 +144,7 @@ export function editorialPresentation(
     const month = observedMonth(migrationCost.observedOn);
     const amount = `${migrationCost.currency} ${Number(migrationCost.amount).toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     return {
-      title: `移行作業費用(${month}確認): ${amount}・公式支援費は未確認｜${page.title}`,
+      title: `移行作業費用(${month}確認): ${amount}・公式支援費は未確認`,
       description: `実移行の作業時間と教育時間からHuman作業費${amount}を算定。重複契約は0か月、公式移行支援費は未確認として分けて説明します。`,
       lead: `確認済み実測に基づくHuman作業費は${amount}で、重複契約は0か月です。公式移行支援費は未確認のため、移行費用全体の確定額ではありません。`,
       observedMonth: month,
@@ -138,7 +153,7 @@ export function editorialPresentation(
   }
 
   if (!price) {
-    const title = `${vendorName}料金: 確認済み実額なし・12か月TCOは確認中｜${page.title}`;
+    const title = `${vendorName}料金: 確認済み実額なし・${pageTitleFocus[page.id]}は確認中`;
     return {
       title,
       description: `${page.question}について、確認できた値と未確認項目を分けて説明します。実額が確認できるまで総額は確定しません。`,
@@ -152,7 +167,7 @@ export function editorialPresentation(
   const amount = confirmedAmount(price);
   const planName = planDisplayName(price.vendor_id, price.plan_id);
   return {
-    title: `${vendorName}料金(${month}確認): ${amount}と12か月TCO｜${page.title}`,
+    title: `${vendorName}料金(${month}確認): ${amount}と${pageTitleFocus[page.id]}`,
     description: `${vendorName} ${planName}の${amount}を公式画面で確認。${page.question}を、出典・確認日・次回確認日付きで説明します。`,
     lead: `${vendorName} ${planName}の確認済み実額は${amount}（${billingPeriodLabel(price.billing_period)}）で、${conclusion}`,
     observedMonth: month,
