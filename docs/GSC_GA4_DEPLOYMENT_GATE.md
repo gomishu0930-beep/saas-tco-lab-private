@@ -148,6 +148,62 @@ analytics scope拡張をこの承認へ含めない。
 - 同日のGSC sitemap再確認でも、既存submissionは`成功しました`、最終読み込み2026-08-13、検出10ページ、
   検出動画0だった。公開sitemap 12 URLとの差2件を失敗理由へ補完せず、再送信・URL登録要求・設定変更は行わない。
 
+## 2026-08-17 クロール経路・旧HTML診断
+
+- GSCのページ集計は登録済み7、未登録6で、未登録理由は`検出 - インデックス未登録`5件と
+  `noindex タグによって除外されました`1件だった。別の改善項目として
+  `robots.txt によりブロックされましたが、インデックスに登録しました`が2件ある。
+- SVR01は参照元ページと前回crawlが検出されず、GSCライブテストは取得成功・crawl許可ありにもかかわらず、
+  旧candidate版HTMLの`noindex, nofollow`を検出した。同時刻の通常UA、Googlebot相当UA、Inspection Tool相当UAと
+  DNS両Aレコードの個別read-backは、HTTP 200、header/metaとも`index, follow`、self-canonical、現在の本文を返した。
+- 旧HTMLの原因は確定していない。エッジキャッシュ残存または旧deployment versionの同時稼働を仮説として扱う。
+  `Cache-Control: no-store`は新しい保存を抑止するが、すでに存在するcache objectを削除しない。
+- 2026-08-17に既存`/sitemap.xml`を1回だけ再送信し、成功・12 URL検出を確認した。再送信を繰り返さない。
+- robots.txtはcrawl、HTML/headerのrobots指定はindexを制御する。非記事の公開routeはcrawl許可と
+  `noindex, follow, noarchive, nosnippet`を併用し、承認済み記事だけを`index, follow`とする。
+
+## Deploy後のcache purge・同時刻read-back
+
+この手順はindex対象を増やす承認ではない。承認済みreleaseをdeployした後にだけ実施する。
+
+1. Hostingのdeployment/version一覧を開き、active versionが1件であることを確認する。記録するのはversion ID、
+   active/retired状態、確認時刻だけとし、環境変数値やcredentialを記録しない。旧versionがactiveならpurge前に停止する。
+2. Cloudflare zoneを直接管理できる場合は`Caching` → `Configuration` → `Purge Cache`を開く。
+   まず`Custom Purge`で`/`、`/robots.txt`、`/sitemap.xml`、`/methodology`、承認済み記事12 URLを対象にする。
+   旧deployment本文が残る場合だけ`Purge Everything`をHuman判断で実行する。管理型hostingでzone権限がない場合は、
+   hosting側のcache invalidation結果を確認し、Cloudflare purge済みとは補完しない。
+3. purge直後と5分後に、通常UA・Googlebot相当UA・Inspection Tool相当UAで同じURLを確認する。
+   status、robots meta、X-Robots-Tag、canonicalに加え、`cf-cache-status`、`age`、`cf-ray`の有無だけを記録する。
+   `cf-ray`は比較用の一時識別子として扱い、Affiliate URLやcookieと結合しない。
+4. GSCの`テスト済みのページを表示` → `HTML`から本文をcopyし、保存せず
+   `pbpaste | shasum -a 256`でSHA-256だけを得る。同じ時刻に次を実行し、公開read-backのSHA-256だけを記録する。
+
+   ```bash
+   curl -fsS -H 'User-Agent: Google-InspectionTool/1.0' \
+     https://saastcolab.jp/servers/business-server-pricing | shasum -a 256
+   ```
+
+   hash不一致は旧HTMLの原因確定ではなく、配信差の証拠とする。GSC HTML、公開HTML、verification値、Affiliate URL全文は
+   repositoryへ保存しない。
+5. deploy・purge・read-back合格から24時間以上あけ、SVR01のライブテストを1回だけ実施する。
+   `index, follow`とself-canonicalを確認できた場合だけ登録を1回要求する。sitemap再送信は行わない。
+
+## Human診断チェックリスト（状態だけを記録）
+
+|確認対象|Human操作|安全な記録|
+|---|---|---|
+|現在のrobots.txt|`https://saastcolab.jp/robots.txt`を開き、全文をread-backする|公開本文、確認時刻|
+|GSC robots判定|robots.txtレポート／テスターで`/`と`/methodology`を検査する|`許可` / `ブロック`、確認時刻|
+|Cache Rules|Cloudflare `Caching` → `Cache Rules`を開く|rule有無、`Cache Everything`相当の有効/無効|
+|Page Rules|Cloudflare `Rules` → `Page Rules`を開く|rule有無、cache levelの状態|
+|deployment/version|Hostingのdeployment一覧を開く|version ID、active/retired、確認時刻|
+|sitemap/robots差分|sitemapの12 URLとrobotsの承認記事Allowを照合する|一致数、余剰path数、欠落path数|
+
+期待状態は、`/`、`/methodology`、`/about`、`/operator-information`、`/privacy`、`/contact`、
+`/advertising-policy`、`/disclosure`、`/pilot`、`/embed/tco-calculator`、承認済み記事、`/sitemap.xml`、
+`/assets/`、`/favicon.svg`がcrawl可能であること。P11など未承認記事、`/operator`等の管理route、query付きURLは
+引き続きcrawl不可とする。crawl可能な非記事routeはindex可能という意味ではなく、responseはnoindexを維持する。
+
 ## GO後の実行と合格条件
 
 ### GSC

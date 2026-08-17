@@ -737,6 +737,10 @@ Affiliate承認、拒否は0件で、受付確認・survey・既存審査中thre
 - 2026-08-17のGSC read-only確認ではsitemapは成功・12ページ検出、index登録7・未登録6、表示6・clicks 0。
   「sitemap未検出2本」は解消済みである。トップの旧nofollowはインデックス停滞の原因候補としてriskへ残し、
   I1公開後の再処理を監視する。URL検査登録要求とsitemap再送信はHuman手順とし、自動実行しない。
+- 同日の追加診断で、robots.txtの承認記事だけのAllowと`Disallow: /`により、home・methodology・about等から
+  承認記事へ向かうcrawl経路が遮断されるrobots.txt over-blockを確認した。J1では非記事公開routeをcrawl許可しつつ
+  responseの`noindex, follow`を維持する。P11等の未承認記事、管理route、query付きURLは引き続きcrawl不可とする。
+  修正はlocal実装・release blocker test・runbookまで行い、production deployとcache purgeは別の明示GOを待つ。
 
 ## 公開前originの現在地
 

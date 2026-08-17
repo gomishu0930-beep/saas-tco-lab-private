@@ -101,6 +101,22 @@ const PUBLIC_ROUTES = new Set([
   "/servers/business-server-pricing",
 ]);
 
+// Crawling and indexing are separate controls. These public navigation and
+// policy routes may be crawled so Googlebot can follow links to approved
+// articles, while their response metadata remains noindex, follow.
+const CRAWLABLE_NON_ARTICLE_ROUTES = new Set([
+  "/",
+  "/about",
+  "/advertising-policy",
+  "/contact",
+  "/disclosure",
+  "/embed/tco-calculator",
+  "/methodology",
+  "/operator-information",
+  "/pilot",
+  "/privacy",
+]);
+
 const ARTICLE_PATH_TO_ID = new Map([
   ["/pilot/pricing-calculator", "P01"],
   ["/pilot/plan-comparison", "P02"],
@@ -124,27 +140,61 @@ const SERVER_ARTICLE_PATH_TO_ID = new Map([
 // promote an unreviewed server candidate into the public index.
 const SOURCE_APPROVED_SERVER_ARTICLE_IDS = new Set(["SVR01"]);
 
-function approvedIndexPaths(env: ProductionEnv): ReadonlySet<string> {
-  if (env.INDEX_GO?.trim() !== "GO") return new Set();
+interface IndexApprovalState {
+  approvedArticlesValid: boolean;
+  approvedServerArticlesValid: boolean;
+  indexGateActive: boolean;
+  paths: ReadonlySet<string>;
+}
+
+function indexApprovalState(env: ProductionEnv): IndexApprovalState {
   const values = (env.INDEX_APPROVED_ARTICLES ?? "").split(",").map((item) => item.trim()).filter(Boolean);
-  if (values.some((item) => !/^P(?:0[1-9]|1[0-2])$/.test(item)) || new Set(values).size !== values.length) {
-    return new Set();
-  }
-  const approved = new Set(values);
-  const paths = new Set([...ARTICLE_PATH_TO_ID].filter(([, id]) => approved.has(id)).map(([path]) => path));
   const serverValues = (env.INDEX_APPROVED_SERVER_ARTICLES ?? "")
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
-  if (
-    serverValues.some((item) => !/^SVR(?:0[1-9]|1[0-9]|20)$/.test(item))
-    || new Set(serverValues).size !== serverValues.length
-  ) return paths;
+  const approvedArticlesValid =
+    values.every((item) => /^P(?:0[1-9]|1[0-2])$/.test(item))
+    && new Set(values).size === values.length;
+  const approvedServerArticlesValid =
+    serverValues.every((item) => /^SVR(?:0[1-9]|1[0-9]|20)$/.test(item))
+    && new Set(serverValues).size === serverValues.length;
+  const indexGateActive = env.INDEX_GO?.trim() === "GO";
+  if (!indexGateActive || !approvedArticlesValid) {
+    return {
+      approvedArticlesValid,
+      approvedServerArticlesValid,
+      indexGateActive,
+      paths: new Set(),
+    };
+  }
+  const approved = new Set(values);
+  const paths = new Set([...ARTICLE_PATH_TO_ID].filter(([, id]) => approved.has(id)).map(([path]) => path));
+  if (!approvedServerArticlesValid) {
+    return { approvedArticlesValid, approvedServerArticlesValid, indexGateActive, paths };
+  }
   const approvedServers = new Set(serverValues);
   for (const [path, id] of SERVER_ARTICLE_PATH_TO_ID) {
     if (approvedServers.has(id) && SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(id)) paths.add(path);
   }
-  return paths;
+  return { approvedArticlesValid, approvedServerArticlesValid, indexGateActive, paths };
+}
+
+function robotsTxt(indexPaths: ReadonlySet<string>): string {
+  const exactPaths = [...new Set([...CRAWLABLE_NON_ARTICLE_ROUTES, ...indexPaths])]
+    .filter((path) => path !== "/")
+    .sort();
+  return [
+    "User-agent: *",
+    "Allow: /$",
+    "Allow: /assets/",
+    "Allow: /favicon.svg$",
+    "Allow: /sitemap.xml$",
+    ...exactPaths.map((path) => `Allow: ${path}$`),
+    "Disallow: /",
+    `Sitemap: ${CANONICAL_PUBLIC_ORIGIN}/sitemap.xml`,
+    "",
+  ].join("\n");
 }
 
 function normalizePath(pathname: string): string {
@@ -789,7 +839,8 @@ const worker = {
     const url = new URL(request.url);
     const runtimeControls = runtimeHeadControls(env);
     const normalizedPath = normalizePath(url.pathname);
-    const indexPaths = approvedIndexPaths(env);
+    const indexApproval = indexApprovalState(env);
+    const indexPaths = indexApproval.paths;
     const indexable = url.search === "" && indexPaths.has(normalizedPath);
     const followableNoindex = url.search === ""
       && PUBLIC_ROUTES.has(normalizedPath)
@@ -814,15 +865,17 @@ const worker = {
     if (url.pathname === "/healthz") {
       return new Response("ok\n", {
         status: 200,
-        headers: { ...securityHeaders(), "Content-Type": "text/plain; charset=utf-8" },
+        headers: {
+          ...securityHeaders(),
+          "Content-Type": "text/plain; charset=utf-8",
+          "X-Index-Approval-Active": String(indexApproval.indexGateActive),
+          "X-Index-Articles-Config-Valid": String(indexApproval.approvedArticlesValid),
+          "X-Index-Server-Articles-Config-Valid": String(indexApproval.approvedServerArticlesValid),
+        },
       });
     }
     if (url.pathname === "/robots.txt") {
-      const allowed = [...indexPaths].sort().map((path) => `Allow: ${path}$`).join("\n");
-      const body = allowed
-        ? `User-agent: *\nAllow: /$\nAllow: /assets/\nAllow: /favicon.svg$\nAllow: /sitemap.xml$\n${allowed}\nDisallow: /\nSitemap: ${CANONICAL_PUBLIC_ORIGIN}/sitemap.xml\n`
-        : "User-agent: *\nDisallow: /\n";
-      return new Response(body, {
+      return new Response(robotsTxt(indexPaths), {
         status: 200,
         headers: { ...securityHeaders(), "Content-Type": "text/plain; charset=utf-8" },
       });

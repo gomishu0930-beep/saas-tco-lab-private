@@ -162,7 +162,7 @@ const DATA = {
     },
     {
       "label": "インデックス数",
-      "value": 0,
+      "value": 7,
       "target": 12,
       "sub": "index_go: GO"
     },
@@ -395,8 +395,8 @@ const DATA = {
     },
     {
       "riskId": "index-discovery-path",
-      "level": "monitor",
-      "label": "旧トップのnofollowをI1でnoindex,followへ修正。承認記事のindex,followと未承認記事のnoindexを維持して再処理監視"
+      "level": "warn",
+      "label": "robots.txt over-blockによりクロール経路が欠落（J1で対処）。deploy・cache purge後の再処理を監視"
     },
     {
       "riskId": "server-launch",

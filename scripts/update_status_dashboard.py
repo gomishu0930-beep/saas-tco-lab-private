@@ -830,11 +830,11 @@ def _regenerate(
                 "P01登録要求一時エラー。通常クロール待ち"
             ),
         })
-    if "トップの旧nofollowはインデックス停滞の原因候補" in adoption:
+    if "robots.txt over-block" in adoption:
         dynamic_risks.append({
             "riskId": "index-discovery-path",
-            "level": "monitor",
-            "label": "旧トップのnofollowをI1でnoindex,followへ修正。承認記事のindex,followと未承認記事のnoindexを維持して再処理監視",
+            "level": "warn",
+            "label": "robots.txt over-blockによりクロール経路が欠落（J1で対処）。deploy・cache purge後の再処理を監視",
         })
     if published_server_count:
         server_destinations_configured = "production runtime secret 6件を設定済み" in adoption

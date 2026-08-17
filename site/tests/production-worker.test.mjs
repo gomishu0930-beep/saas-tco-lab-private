@@ -40,6 +40,25 @@ const SERVER_CANDIDATE_PATHS = [
   "server-cancellation-terms",
 ].map((_, index) => `/servers/business-server-pricing?candidate=SVR${String(index + 1).padStart(2, "0")}`);
 
+function robotsAllows(robotsText, targetPath) {
+  const rules = robotsText
+    .split("\n")
+    .map((line) => line.match(/^(Allow|Disallow):\s*(\S*)$/i))
+    .filter(Boolean)
+    .map((match) => ({ kind: match[1].toLowerCase(), pattern: match[2] }));
+  const matches = rules.filter(({ pattern }) => {
+    const anchored = pattern.endsWith("$");
+    const source = anchored ? pattern.slice(0, -1) : pattern;
+    return anchored ? targetPath === source : targetPath.startsWith(source);
+  });
+  matches.sort((left, right) => {
+    const specificity = right.pattern.length - left.pattern.length;
+    if (specificity !== 0) return specificity;
+    return left.kind === "allow" ? -1 : 1;
+  });
+  return matches[0]?.kind === "allow";
+}
+
 function signalServerGroup(signal) {
   if (!serverProcess?.pid) return;
   try {
@@ -549,6 +568,9 @@ test("actual production health exposes only a fixed non-sensitive response", asy
   const response = await fetch(`${baseUrl}/healthz`);
   assert.equal(response.status, 200);
   assert.equal(await response.text(), "ok\n");
+  assert.equal(response.headers.get("x-index-approval-active"), "true");
+  assert.equal(response.headers.get("x-index-articles-config-valid"), "true");
+  assert.equal(response.headers.get("x-index-server-articles-config-valid"), "true");
   assert.equal(
     response.headers.get("x-robots-tag"),
     "noindex, nofollow, noarchive, nosnippet",
@@ -592,11 +614,20 @@ test("production robots and sitemap expose only the five approved articles", asy
       "Allow: /assets/\n" +
       "Allow: /favicon.svg$\n" +
       "Allow: /sitemap.xml$\n" +
+      "Allow: /about$\n" +
+      "Allow: /advertising-policy$\n" +
+      "Allow: /contact$\n" +
+      "Allow: /disclosure$\n" +
+      "Allow: /embed/tco-calculator$\n" +
+      "Allow: /methodology$\n" +
+      "Allow: /operator-information$\n" +
+      "Allow: /pilot$\n" +
       "Allow: /pilot/alternatives$\n" +
       "Allow: /pilot/annual-vs-monthly$\n" +
       "Allow: /pilot/plan-comparison$\n" +
       "Allow: /pilot/pricing-calculator$\n" +
       "Allow: /pilot/usage-overage$\n" +
+      "Allow: /privacy$\n" +
       "Disallow: /\n" +
       "Sitemap: https://saastcolab.jp/sitemap.xml\n",
   );
@@ -614,6 +645,65 @@ test("production robots and sitemap expose only the five approved articles", asy
     "https://saastcolab.jp/pilot/usage-overage",
   ]);
   assert.doesNotMatch(xml, /embed|small-team-fit|enterprise-fit|addon-cost|migration-cost|japan-tax|break-even|evidence-method|about|privacy|operator/i);
+});
+
+test("crawl permission and index permission remain separate release blockers", async () => {
+  const robotsResponse = await fetch(`${baseUrl}/robots.txt`);
+  const robotsText = await robotsResponse.text();
+  const crawlableNoindexRoutes = [
+    "/",
+    "/about",
+    "/advertising-policy",
+    "/contact",
+    "/disclosure",
+    "/embed/tco-calculator",
+    "/methodology",
+    "/operator-information",
+    "/pilot",
+    "/privacy",
+  ];
+  for (const path of crawlableNoindexRoutes) {
+    assert.equal(robotsAllows(robotsText, path), true, `${path}: crawl allowed`);
+    const response = await fetch(`${baseUrl}${path}`);
+    assert.equal(response.status, 200, path);
+    assert.equal(
+      response.headers.get("x-robots-tag"),
+      "noindex, follow, noarchive, nosnippet",
+      `${path}: remains noindex follow`,
+    );
+    assert.match(
+      await response.text(),
+      /<meta name="robots" content="noindex, follow, noarchive, nosnippet">/i,
+      path,
+    );
+  }
+
+  const approvedPath = "/pilot/pricing-calculator";
+  assert.equal(robotsAllows(robotsText, approvedPath), true, "approved article crawl allowed");
+  const approved = await fetch(`${baseUrl}${approvedPath}`);
+  assert.equal(approved.headers.get("x-robots-tag"), "index, follow");
+  assert.match(await approved.text(), /<meta name="robots" content="index, follow">/i);
+
+  const heldPath = "/pilot/break-even";
+  assert.equal(robotsAllows(robotsText, heldPath), false, "unapproved article crawl blocked");
+  const held = await fetch(`${baseUrl}${heldPath}`);
+  assert.equal(held.headers.get("x-robots-tag"), "noindex, follow, noarchive, nosnippet");
+  assert.match(
+    await held.text(),
+    /<meta name="robots" content="noindex, follow, noarchive, nosnippet">/i,
+  );
+
+  const queryPath = `${approvedPath}?candidate=unapproved`;
+  assert.equal(robotsAllows(robotsText, queryPath), false, "query variant crawl blocked");
+  const queryVariant = await fetch(`${baseUrl}${queryPath}`);
+  assert.equal(
+    queryVariant.headers.get("x-robots-tag"),
+    "noindex, nofollow, noarchive, nosnippet",
+  );
+  assert.match(
+    await queryVariant.text(),
+    /<meta name="robots" content="noindex,[^"]*"\s*\/?>/i,
+  );
 });
 
 test("the approved nine-article release candidate stays scoped and disclosure-first", async () => {
@@ -834,7 +924,7 @@ test("approved P09 widens the release to exactly eleven articles while P11 stays
   assert.ok(!locations.includes("https://saastcolab.jp/pilot/break-even"));
 });
 
-test("missing or invalid index approval stays fail-closed", async () => {
+test("missing or invalid index approval stays fail-closed while public navigation remains crawlable", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("fail-closed-index", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -849,11 +939,39 @@ test("missing or invalid index approval stays fail-closed", async () => {
   };
 
   const robots = await worker.fetch(new Request("https://saastcolab.jp/robots.txt"), env, ctx);
-  assert.equal(await robots.text(), "User-agent: *\nDisallow: /\n");
+  const robotsText = await robots.text();
+  assert.equal(robotsAllows(robotsText, "/"), true);
+  assert.equal(robotsAllows(robotsText, "/methodology"), true);
+  assert.equal(robotsAllows(robotsText, "/pilot/pricing-calculator"), false);
+
+  const article = await worker.fetch(
+    new Request("https://saastcolab.jp/pilot/pricing-calculator"),
+    env,
+    ctx,
+  );
+  assert.equal(article.headers.get("x-robots-tag"), "noindex, follow, noarchive, nosnippet");
 
   const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
   assert.equal(sitemap.status, 503);
   assert.match(sitemap.headers.get("x-robots-tag"), /\bnoindex\b/i);
+
+  const invalidEnv = {
+    ...env,
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P01",
+    INDEX_APPROVED_SERVER_ARTICLES: "SVR01,SVR01",
+  };
+  const health = await worker.fetch(new Request("https://saastcolab.jp/healthz"), invalidEnv, ctx);
+  assert.equal(await health.text(), "ok\n");
+  assert.equal(health.headers.get("x-index-approval-active"), "true");
+  assert.equal(health.headers.get("x-index-articles-config-valid"), "false");
+  assert.equal(health.headers.get("x-index-server-articles-config-valid"), "false");
+  const invalidRobots = await worker.fetch(
+    new Request("https://saastcolab.jp/robots.txt"),
+    invalidEnv,
+    ctx,
+  );
+  assert.equal(robotsAllows(await invalidRobots.text(), "/pilot/pricing-calculator"), false);
 });
 
 test("missing, expired, or malformed Mangools approval stays CTA fail-closed", async () => {

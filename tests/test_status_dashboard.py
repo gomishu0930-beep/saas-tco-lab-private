@@ -135,6 +135,14 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert not any(item.get("riskId") == "server-candidate-only" for item in data["risks"])
     gsc_risk = next(item for item in data["risks"] if item.get("riskId") == "gsc-processing")
     assert gsc_risk["label"] == "GSC sitemapは12/12検出済み。index登録7・未登録6の再処理を監視"
+    discovery_risk = next(
+        item for item in data["risks"] if item.get("riskId") == "index-discovery-path"
+    )
+    assert discovery_risk == {
+        "riskId": "index-discovery-path",
+        "level": "warn",
+        "label": "robots.txt over-blockによりクロール経路が欠落（J1で対処）。deploy・cache purge後の再処理を監視",
+    }
     assert data["categoryPublication"] == [
         {"category": "servers", "publishedArticles": 1, "targetArticles": 9},
         {"category": "seo_tools", "publishedArticles": 0, "targetArticles": 11},
