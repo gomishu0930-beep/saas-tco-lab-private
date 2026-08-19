@@ -55,6 +55,17 @@
     "SVR08"
   ],
   "index_approved_server_articles": [
+    "SVR01",
+    "SVR05",
+    "SVR04",
+    "SVR06",
+    "SVR07",
+    "SVR02",
+    "SVR03",
+    "SVR09",
+    "SVR08"
+  ],
+  "server_cta_approved_articles": [
     "SVR01"
   ],
   "server_affiliate_cta": {

@@ -355,7 +355,7 @@ test("released note and X derivatives contain verified copy while held pages fai
   }
 });
 
-test("server article production release is recorded without widening index or CTA scope", async () => {
+test("server article index release records all approved articles without widening CTA scope", async () => {
   const launchState = JSON.parse(await readFile(
     new URL("../../docs/EDITORIAL_LAUNCH_STATE.json", import.meta.url),
     "utf8",
@@ -367,7 +367,10 @@ test("server article production release is recorded without widening index or CT
   assert.deepEqual(launchState.deployed_server_articles, [
     "SVR01", "SVR05", "SVR04", "SVR06", "SVR07", "SVR02", "SVR03", "SVR09", "SVR08",
   ]);
-  assert.deepEqual(launchState.index_approved_server_articles, ["SVR01"]);
+  assert.deepEqual(launchState.index_approved_server_articles, [
+    "SVR01", "SVR05", "SVR04", "SVR06", "SVR07", "SVR02", "SVR03", "SVR09", "SVR08",
+  ]);
+  assert.deepEqual(launchState.server_cta_approved_articles, ["SVR01"]);
 });
 
 function contract(reviewStatus, fieldReviewStatus) {

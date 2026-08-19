@@ -55,7 +55,7 @@ SaaS専用developer applicationへ切り替わるまで分析値を算入せず�
 |SVR01公式画面候補の確認|`svr01_candidates: confirm_all` または `svr01_candidates: corrections <field>: <value>`|`svr01_candidates: confirm_all`|`/operator/servers/`の「公式画面の確認候補」9件をHuman本人が読み、すべて正しければ一括確認、相違があればfield単位で訂正する。確認前はcontract・TCO・順位・記事・CTAへ採用しない|
 |servers記事承認|`article_approve: <SVR-ID>`|`article_approve: SVR01`|当該本文が扱うmaterial claimとHuman確認がREADYの場合だけ承認。SVR01は2026-08-14に承認・公開済み。index・CTAには自動では効かない|
 |servers 8本一括承認（完了）|`article_approve: SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08`|同左|2026-08-19にHuman承認済み。unknownを残した80点公開scope。index・CTA・deployには自動では効かない。再返信不要|
-|servers 8本production release（実行中）|`deploy_update: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08`|同左|2026-08-19に受領。8 routeだけをproductionへ反映し、index・CTA・GitHub pushは変更しない。外部read-back完了後にdoneへ更新|
+|servers 8本production release（完了）|`deploy_update: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08`|同左|2026-08-19にSites version 32へ反映済み。8 routeはHTTP 200・noindex・CTA無効。index・CTA・GitHub pushは変更していない。再返信不要|
 |XServer小規模用途の不足1点（完了）|`server_use_case_plan: GO xserver-business/shared-standard-12m small_site free_ssl_confirmed`|同左|2026-08-19にHuman確認済み。既存の容量・転送量・backup確認と合わせて、12か月差額表の3社目へ算入。corporate_site・ecommerceや24/36か月へは拡張しない。再返信不要|
 |servers destination設定完了|`server_destination_configured: done <partner-id,...>`|`server_destination_configured: done a8net-xserver-business`|ASP正規画面で取得した広告linkをruntime secretへ設定した事実だけを通知。URL・tracking ID・secret値は返信・repo保存しない|
 |servers記事index|`index_go: GO <SVR-ID> / HOLD <SVR-ID>`|`index_go: GO SVR01`|Human承認済みの列挙記事だけをindex対象へ加える。CTAには効かない|
@@ -138,6 +138,12 @@ API/FTP credential、定期取得、raw保存、公開、CTA変更を許可し�
 ## 完了済み・再利用しないtoken
 
 次は履歴確認用であり、新しい指示として再送しない。
+
+2026-08-19受領済み（M4 servers 8記事、CTAはSVR01だけを維持）:
+
+```text
+index_go: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08
+```
 
 ```text
 gsc_verification_deploy: GO

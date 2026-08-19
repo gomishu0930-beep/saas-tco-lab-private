@@ -237,7 +237,8 @@ def _load_launch_state(path: Path) -> dict[str, Any]:
     expected = {
         "schema_version", "domain", "domain_state", "index_state", "affiliate_cta",
         "articles", "deployed_articles", "index_approved_articles", "server_articles",
-        "deployed_server_articles", "index_approved_server_articles", "server_affiliate_cta",
+        "deployed_server_articles", "index_approved_server_articles",
+        "server_cta_approved_articles", "server_affiliate_cta",
     }
     if not isinstance(state, dict) or set(state) != expected:
         raise DashboardInputError("editorial launch state fields do not match ease-track-2")
@@ -276,7 +277,9 @@ def _load_launch_state(path: Path) -> dict[str, Any]:
         or any(value not in ALLOWED_ARTICLE_STATES for value in server_articles.values())
     ):
         raise DashboardInputError("server article state must use unique SVR01-SVR20 keys and valid states")
-    for field in ("deployed_server_articles", "index_approved_server_articles"):
+    for field in (
+        "deployed_server_articles", "index_approved_server_articles", "server_cta_approved_articles"
+    ):
         values = state[field]
         if (
             not isinstance(values, list)
@@ -291,6 +294,10 @@ def _load_launch_state(path: Path) -> dict[str, Any]:
         or any(value not in ALLOWED_LANE_STATES for value in server_cta.values())
     ):
         raise DashboardInputError("server affiliate CTA states must be HOLD, GO, or DONE")
+    if not set(state["server_cta_approved_articles"]).issubset(
+        set(state["index_approved_server_articles"])
+    ):
+        raise DashboardInputError("server CTA article approvals must be a subset of indexed server articles")
     return state
 
 
@@ -898,6 +905,7 @@ def _regenerate(
     }
     deployed_server_articles = set(state["deployed_server_articles"])
     index_approved_server_articles = set(state["index_approved_server_articles"])
+    server_cta_approved_articles = set(state["server_cta_approved_articles"])
     index_target_count = len(index_approved) + len(index_approved_server_articles)
     enabled_server_cta = sorted(
         partner_id
@@ -963,13 +971,14 @@ def _regenerate(
     data["lane"] = [
         {"id": "L1", "name": "独自domain取得", "status": domain_state, "note": "domain day runbookとread-back"},
         {"id": "L2", "name": "記事実値入力・承認", "status": f"{input_count}/12入力・{approved_count}/12承認", "note": "有効contractとHuman記事承認だけを算入"},
-        {"id": "L3", "name": "noindex解除", "status": index_state, "note": f"index承認 {len(index_approved)}本・記事承認だけでは追加しない"},
+        {"id": "L3", "name": "noindex解除", "status": index_state, "note": f"index承認 {index_target_count}本・記事承認だけでは追加しない"},
         {"id": "L4", "name": "CTA有効化", "status": "HOLD" if cta_count == 0 else f"{cta_count} partner GO", "note": "Affiliate承認・規約遵守・開示先行"},
     ]
     data["serverLaunch"] = {
         "approvedArticles": len(approved_server_articles),
         "deployedArticles": published_server_count,
         "indexApprovedArticles": len(index_approved_server_articles),
+        "ctaApprovedArticles": len(server_cta_approved_articles),
         "ctaEnabledPartners": len(enabled_server_cta),
         "ctaHeldPartners": len(held_server_cta),
     }

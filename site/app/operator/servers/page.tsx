@@ -158,6 +158,9 @@ const serverLaunchApproved = serverLaunchQueue.every(
 const serverLaunchDeployed = serverLaunchQueue.every(
   (article) => editorialLaunchState.deployed_server_articles.includes(article.id),
 );
+const serverLaunchIndexed = serverLaunchQueue.every(
+  (article) => editorialLaunchState.index_approved_server_articles.includes(article.id),
+);
 const serverLaunchDeployToken = `deploy_update: GO ${serverLaunchQueue.map((article) => article.id).join(",")} / HOLD`;
 const serverLaunchIndexToken = `index_go: GO ${serverLaunchQueue.map((article) => article.id).join(",")} / HOLD`;
 
@@ -285,7 +288,7 @@ export default function ServerOperatorPage() {
                 <strong><Link href={`/servers/${article.slug}/`}>{article.topic}</Link></strong>
               </div>
               <p>{article.readerQuestion}</p>
-              <small>共通価格候補取込済み / 記事固有unknownあり / {serverLaunchApproved ? "article approval済み" : "article approval待ち"} / {serverLaunchDeployed ? "production反映済み" : "deploy待ち"} / noindex / CTA無効</small>
+              <small>共通価格候補取込済み / 記事固有unknownあり / {serverLaunchApproved ? "article approval済み" : "article approval待ち"} / {serverLaunchDeployed ? "production反映済み" : "deploy待ち"} / {serverLaunchIndexed ? "index承認済み" : "noindex"} / CTA無効</small>
             </li>
           ))}
         </ol>
@@ -293,18 +296,21 @@ export default function ServerOperatorPage() {
           className="review-summary"
           data-server-launch-approval-state={serverLaunchApproved ? "approved" : "pending"}
           data-server-launch-deploy-state={serverLaunchDeployed ? "deployed" : "pending"}
+          data-server-launch-index-state={serverLaunchIndexed ? "indexed" : "pending"}
           data-server-launch-approval-token={serverLaunchApprovalToken}
         >
-          <h3>{serverLaunchDeployed ? "8記事をproductionへ反映済み" : serverLaunchApproved ? "8記事のHuman承認を記録済み" : "8記事を標本確認した後の返信"}</h3>
+          <h3>{serverLaunchIndexed ? "8記事をindex対象へ反映済み" : serverLaunchDeployed ? "8記事をproductionへ反映済み" : serverLaunchApproved ? "8記事のHuman承認を記録済み" : "8記事を標本確認した後の返信"}</h3>
           <p>
             公式価格から確定できない更新額、移行作業、mail・EC固有条件はunknownのままです。
-            {serverLaunchDeployed
+            {serverLaunchIndexed
+              ? "検索対象へ追加済みです。CTAはSVR01だけに限定し、この8記事では無効のままです。"
+              : serverLaunchDeployed
               ? "productionには反映済みですが、検索登録とCTAは無効です。次は8記事を列挙したindex releaseの別GOです。"
               : serverLaunchApproved
               ? "80点公開scopeの承認は記録済みです。index・CTA・deployはまだ変更していません。次はproduction releaseの別GOです。"
               : "それを明示した80点公開でよい場合だけ、次のtokenを返してください。記事承認だけではindex・CTA・deployは変わりません。"}
           </p>
-          <code>{serverLaunchDeployed ? serverLaunchIndexToken : serverLaunchApproved ? serverLaunchDeployToken : serverLaunchApprovalToken}</code>
+          {!serverLaunchIndexed && <code>{serverLaunchDeployed ? serverLaunchIndexToken : serverLaunchApproved ? serverLaunchDeployToken : serverLaunchApprovalToken}</code>}
         </aside>
       </section>
       <section className="shell page-section" aria-labelledby="server-launch-input-matrix-title">

@@ -488,6 +488,7 @@ test("current release home links every approved article and reports two live CTA
     CTA_APPROVED_PARTNER: "mangools",
     MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "true",
     MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/#a1234567890bcdef123456789",
+    SERVER_CTA_APPROVED_SERVER_ARTICLES: "SVR01",
     SERVER_CTA_GO: "a8net-xserver-business",
     A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
     A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
@@ -1042,6 +1043,7 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
     INDEX_APPROVED_ARTICLES: "P01",
     INDEX_APPROVED_SERVER_ARTICLES: "SVR01",
     CTA_GO: "GO",
+    SERVER_CTA_APPROVED_SERVER_ARTICLES: "SVR01",
     SERVER_CTA_GO: "a8net-xserver-business,moshimo-conoha-wing,moshimo-lolipop-rental-server,moshimo-onamae-rental-server,moshimo-shin-rental-server,valuecommerce-ablenet-shared-server",
     A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
     A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
@@ -1111,6 +1113,64 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   assert.doesNotMatch(singleBody, /紹介できる公式サイトが確認できていない/);
 });
 
+test("server index release cannot widen CTA beyond the exact article allowlist", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("server-index-without-cta-widening", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const serverIds = ["SVR01", "SVR05", "SVR04", "SVR06", "SVR07", "SVR02", "SVR03", "SVR09", "SVR08"];
+  const serverPaths = [
+    "/servers/business-server-pricing",
+    "/servers/server-renewal-cost",
+    "/servers/server-first-year-total",
+    "/servers/server-migration-cost",
+    "/servers/business-rental-server",
+    "/servers/small-business-server",
+    "/servers/ec-server-cost",
+    "/servers/business-mail-server",
+    "/servers/ec-server-requirements",
+  ];
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P12",
+    INDEX_APPROVED_SERVER_ARTICLES: serverIds.join(","),
+    CTA_GO: "GO",
+    SERVER_CTA_APPROVED_SERVER_ARTICLES: "SVR01",
+    SERVER_CTA_GO: "a8net-xserver-business",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+
+  for (const [index, path] of serverPaths.entries()) {
+    const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
+    assert.equal(response.headers.get("x-robots-tag"), "index, follow", serverIds[index]);
+    const body = await response.text();
+    if (serverIds[index] === "SVR01") {
+      assert.match(body, /data-server-affiliate-cta-partner="a8net-xserver-business"/);
+      assert.match(body, /rel="sponsored noopener noreferrer"/);
+    } else {
+      assert.match(body, /data-server-affiliate-cta-state="disabled"/, serverIds[index]);
+      assert.doesNotMatch(body, /rel="sponsored noopener noreferrer"/, serverIds[index]);
+    }
+  }
+
+  const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
+  const locations = [...((await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g))];
+  assert.equal(locations.length, 20);
+
+  for (const invalidArticleScope of [undefined, "", "SVR01,SVR01", "SVR02"]) {
+    const response = await worker.fetch(
+      new Request("https://saastcolab.jp/servers/business-server-pricing"),
+      { ...env, SERVER_CTA_APPROVED_SERVER_ARTICLES: invalidArticleScope },
+      ctx,
+    );
+    const body = await response.text();
+    assert.match(body, /data-server-affiliate-cta-state="disabled"/);
+    assert.doesNotMatch(body, /rel="sponsored noopener noreferrer"/);
+  }
+});
+
 test("SVR01 approved source exposes gross contract charge while index and CTA stay runtime-held", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("server-public-preview", `${process.pid}-${Date.now()}`);
@@ -1159,6 +1219,7 @@ test("server query variants and incomplete partner gates remain fail-closed", as
     INDEX_GO: "GO",
     INDEX_APPROVED_SERVER_ARTICLES: "SVR01",
     CTA_GO: "GO",
+    SERVER_CTA_APPROVED_SERVER_ARTICLES: "SVR01",
     SERVER_CTA_GO: "a8net-xserver-business,moshimo-conoha-wing,moshimo-lolipop-rental-server,moshimo-onamae-rental-server,moshimo-shin-rental-server,valuecommerce-ablenet-shared-server",
     A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
     A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",

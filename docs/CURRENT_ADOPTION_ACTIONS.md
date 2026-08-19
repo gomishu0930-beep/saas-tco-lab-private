@@ -807,13 +807,20 @@ Affiliate承認、拒否は0件で、受付確認・survey・既存審査中thre
   noindex・CTA無効・production未算入のままとする。
 - 同日、直前の8記事を対象とする`deploy_update: GO`を受領した。source-levelのproduction release対象へ
   `SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08`を追加する。今回のscopeにindex、CTA、GitHub pushは
-  含めず、`index_approved_server_articles`はSVR01だけを維持する。Sites公開と外部read-backが完了するまでは
-  release完了とは扱わない。
+  含めず、`index_approved_server_articles`はSVR01だけを維持する。Sites version 32へ反映し、8 routeすべて
+  HTTP 200、`noindex, follow, noarchive, nosnippet`、canonicalなし、sponsored CTAなしを外部read-backした。
+  既存SVR01は`index, follow`・self-canonical・server CTA稼働を維持し、sitemapは既存12 URL、追加8 routeの
+  robots Allowは0件である。これによりproduction反映済み記事は20本、index対象は12本のままとなった。
+- 2026-08-19、直前に列挙した8記事を対象とする`index_go: GO`を受領した。
+  `SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08`だけをsource-levelとruntimeの
+  index allowlistへ追加し、sitemap・robotsの対象を既存12記事から20記事へ拡張する。index GOから
+  Affiliate CTAを継承しないよう、server CTAにも記事単位の二重allowlistを追加し、SVR01だけを維持する。
+  このscopeは新8記事のCTA、GSC登録要求、GitHub pushを含まない。
 - M5 dashboardは8月末4条件を別枠で機械集計する。比較READYは承認済み数値fieldに加えて、対応する
   `server_conditions`が承認済みで3条件すべて`known`または理由付き`not_applicable`の場合だけ数える。
   現在はcrawl経路READY、確認済み初回価格3vendor（XServer・さくら・KAGOYA）、
   small_siteの12か月計算対象3vendor、全条件を満たすstrict比較READY 0/3、
-  公開12/20、差額・直後CTA実装READY、用途条件READY、12か月の実データ差額READYである。candidate JSONはsource値を
+  production反映20/20、index承認20/20、差額・直後CTA実装READY、用途条件READY、12か月の実データ差額READYである。candidate JSONはsource値を
   dashboardへ転記せず、完全な11 field identityと比較計算の準備数だけを集計する。
   2026-08-18のread-only再確認で、GSCはsitemap成功・12ページ検出、index登録7・未登録6、clicks 0、
   GA4直近7日は`page_view` 7・`qualified_session` 2・`outbound_click` 0だった。dashboardのindex 7は

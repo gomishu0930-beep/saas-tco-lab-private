@@ -189,7 +189,7 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert any(item["label"] == "M3 複数vendor candidate統合command" for item in data["work"])
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
     assert any(item["label"] == "servers次8記事の取引意図優先queue" for item in data["work"])
-    assert [item["priority"] for item in data["externalActions"]] == [1, 2]
+    assert [item["priority"] for item in data["externalActions"]] == [1]
     assert any(
         item["status"] == "contract_input_required"
         for item in data["externalActions"]
@@ -202,17 +202,10 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         item["status"] != "human_field_attestation_required"
         for item in data["externalActions"]
     )
-    server_release = next(
-        item
+    assert all(
+        item["status"] != "server_index_go_required"
         for item in data["externalActions"]
-        if item["status"] == "server_index_go_required"
     )
-    assert server_release == {
-        "priority": 2,
-        "label": "M4 production反映済みservers記事8本のindex release",
-        "status": "server_index_go_required",
-        "token": "index_go: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08 / HOLD",
-    }
     assert all("独自domain未取得" not in item["label"] for item in data["risks"])
     assert all("JP/ja需要規模が未検証" not in item["label"] for item in data["risks"])
     assert any(item.get("riskId") == "editorial-coverage" for item in data["risks"])
@@ -237,7 +230,8 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert data["serverLaunch"] == {
         "approvedArticles": 9,
         "deployedArticles": 9,
-        "indexApprovedArticles": 1,
+        "indexApprovedArticles": 9,
+        "ctaApprovedArticles": 1,
         "ctaEnabledPartners": 6,
         "ctaHeldPartners": 0,
     }

@@ -373,9 +373,10 @@ test("servers operator and twenty article routes preserve approval, ranking, and
   );
   assert.match(operator, /data-server-launch-approval-state="approved"/);
   assert.match(operator, /data-server-launch-deploy-state="deployed"/);
-  assert.match(operator, /8記事をproductionへ反映済み/);
-  assert.match(operator, /index_go: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08 \/ HOLD/);
-  assert.match(operator, /検索登録とCTAは無効です/);
+  assert.match(operator, /data-server-launch-index-state="indexed"/);
+  assert.match(operator, /8記事をindex対象へ反映済み/);
+  assert.doesNotMatch(operator, /index_go: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08 \/ HOLD/);
+  assert.match(operator, /CTAはSVR01だけに限定/);
   assert.match(operator, /共通のvendor価格は一度だけ入力/);
   assert.match(operator, /旧契約の月額と重複月数/);
   assert.match(operator, /mail account数と1accountあたり容量/);

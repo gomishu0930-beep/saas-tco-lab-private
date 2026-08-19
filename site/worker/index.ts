@@ -17,6 +17,7 @@ interface ProductionEnv {
   INDEX_GO?: string;
   INDEX_APPROVED_ARTICLES?: string;
   INDEX_APPROVED_SERVER_ARTICLES?: string;
+  SERVER_CTA_APPROVED_SERVER_ARTICLES?: string;
   CTA_GO?: string;
   CTA_APPROVED_PARTNER?: string;
   MANGOOLS_AFFILIATE_APPROVAL_CURRENT?: string;
@@ -161,6 +162,14 @@ const SOURCE_APPROVED_SERVER_ARTICLE_IDS = new Set(
     .filter(([, state]) => state === "approved")
     .map(([articleId]) => articleId)
     .filter((articleId) => /^SVR(?:0[1-9]|1[0-9]|20)$/.test(articleId)),
+);
+
+// Article-level CTA approval is deliberately narrower than article indexing.
+// An index release must never inherit the global partner GO automatically.
+const SOURCE_CTA_APPROVED_SERVER_ARTICLE_IDS = new Set(
+  (editorialLaunchState.server_cta_approved_articles ?? [])
+    .filter((articleId) => /^SVR(?:0[1-9]|1[0-9]|20)$/.test(articleId))
+    .filter((articleId) => SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(articleId)),
 );
 
 interface IndexApprovalState {
@@ -413,6 +422,24 @@ function serverAffiliateCtaControls(
   path: string,
 ): ServerAffiliateCtaControls {
   if (!indexPaths.has(path) || env.CTA_GO?.trim() !== "GO") {
+    return { enabled: false, mode: "disabled", partners: [] };
+  }
+  const articleId = SERVER_ARTICLE_PATH_TO_ID.get(path);
+  const approvedArticleValues = (env.SERVER_CTA_APPROVED_SERVER_ARTICLES ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const approvedArticleValuesValid =
+    approvedArticleValues.length > 0
+    && approvedArticleValues.every((item) => /^SVR(?:0[1-9]|1[0-9]|20)$/.test(item))
+    && new Set(approvedArticleValues).size === approvedArticleValues.length;
+  const runtimeApprovedArticles = new Set(approvedArticleValues);
+  if (
+    !articleId
+    || !approvedArticleValuesValid
+    || !runtimeApprovedArticles.has(articleId)
+    || !SOURCE_CTA_APPROVED_SERVER_ARTICLE_IDS.has(articleId)
+  ) {
     return { enabled: false, mode: "disabled", partners: [] };
   }
   const requested = (env.SERVER_CTA_GO ?? "")

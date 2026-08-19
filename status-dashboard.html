@@ -234,7 +234,7 @@ const DATA = {
       "id": "L3",
       "name": "noindex解除",
       "status": "GO",
-      "note": "index承認 11本・記事承認だけでは追加しない"
+      "note": "index承認 20本・記事承認だけでは追加しない"
     },
     {
       "id": "L4",
@@ -539,14 +539,7 @@ const DATA = {
     "warning": false,
     "individualCtaGateRequired": true
   },
-  "externalActions": [
-    {
-      "priority": 1,
-      "label": "M4 production反映済みservers記事8本のindex release",
-      "status": "server_index_go_required",
-      "token": "index_go: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08 / HOLD"
-    }
-  ],
+  "externalActions": [],
   "articleReviews": [
     {
       "articleId": "P11",
@@ -569,7 +562,8 @@ const DATA = {
   "serverLaunch": {
     "approvedArticles": 9,
     "deployedArticles": 9,
-    "indexApprovedArticles": 1,
+    "indexApprovedArticles": 9,
+    "ctaApprovedArticles": 1,
     "ctaEnabledPartners": 6,
     "ctaHeldPartners": 0
   },
