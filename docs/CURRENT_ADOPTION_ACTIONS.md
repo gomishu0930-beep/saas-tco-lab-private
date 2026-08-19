@@ -724,8 +724,9 @@ Affiliate承認、拒否は0件で、受付確認・survey・既存審査中thre
 
 ## 2026-08-17 インデックス経路とservers再配分（I1–I8）
 
-- 非記事の公開routeと未承認記事は`noindex, follow, noarchive, nosnippet`へ統一する。承認済み12記事の
-  `index, follow`、P11のnoindex、CTA fail-closed、query付きservers候補のnofollowは維持する。
+- 非記事の公開routeと既存P記事の未承認routeは`noindex, follow, noarchive, nosnippet`へ統一する。承認済み12記事の
+  `index, follow`、P11のnoindex、CTA fail-closedは維持する。新設した未承認servers候補とquery付きURLは
+  `noindex, nofollow`かつrobots不許可のままにし、source-level承認前のcrawl・index昇格を防ぐ。
 - homepageの記事数・カテゴリ数・紹介導線数は、Human承認contractとruntime index/CTA allowlistから生成する。
   runtime未承認の記事linkは応答時に除去し、承認済み全記事へhomepageから1クリックで到達可能にする。
 - 証拠表は既定で閉じる一方、確認済み実額・観測日・次回確認日は閉じた状態でも表示する。P03とserversの
@@ -740,7 +741,84 @@ Affiliate承認、拒否は0件で、受付確認・survey・既存審査中thre
 - 同日の追加診断で、robots.txtの承認記事だけのAllowと`Disallow: /`により、home・methodology・about等から
   承認記事へ向かうcrawl経路が遮断されるrobots.txt over-blockを確認した。J1では非記事公開routeをcrawl許可しつつ
   responseの`noindex, follow`を維持する。P11等の未承認記事、管理route、query付きURLは引き続きcrawl不可とする。
-  修正はlocal実装・release blocker test・runbookまで行い、production deployとcache purgeは別の明示GOを待つ。
+  2026-08-17にSites version 31へdeployし、通常UA・Googlebot相当・DNS両edgeで新robots、homeの
+  `noindex, follow`、承認記事の`index, follow`、未承認・管理routeのfail-closedを外部read-back済みである。
+- M2のzero-input計算正本は、同一通貨・Human承認済み価格が3vendor以上ある時だけ順位と`1位との差`を
+  contract値から派生する。2vendor以下は金額を残した`確認済み一覧`、unknown・用途対象外・通貨不一致は
+  順位と差額の対象外とする。表示は4列へ整理し、確認状態・観測日・次回確認日は行内detailsへ保持した。
+  CTA枠は総額表の直後へ置くが、既存のpartner承認・開示先行・destination・個別GO gateは変更しない。
+  用途区分の必要条件はHuman確認済み文字列だけを表示し、条件が空の区分は全planを順位対象外にする。
+  plan名や一般知識からSSL、SLA、請求書払い等を補完しない。
+- M3のConoHa WING、さくらのレンタルサーバ、KAGOYAは、`docs/PRICE_CHECK_CHECKLIST.md`と
+  `/operator/servers`へ1vendor・1画面の手順を追加した。初期費用、更新時請求額、campaign終了日、domain特典、
+  最低契約期間を必須確認とし、candidate JSONがない完了tokenだけでは価格・記事・indexへ昇格させない。
+  Operatorは複数vendor・planを1 candidateへ保持・再読込できる。2026-08-17に非数値条件を
+  `server_conditions`として構造化し、campaign終了日・最低契約期間・domain特典条件を各identityへ必須化した。
+  既存SVR01はlegacy候補として読めるが、条件recordをHuman確認するまで比較READYにはしない。
+  各identityの11 field完全性、条件record、source URLを
+  独立検証し、欠落・重複・未設定が1件でもあればbatch全体をfail-closedにする。取込後も`unreviewed`を維持する。
+  2026-08-18の`server_price_candidates: GO`では、Humanが公式画面を確認した3vendor・33 fieldを
+  `M3-servers-3vendor-candidate-2026-08-18.json`へ追記した。2026-08-18のfollow-up Human確認後の
+  内訳はknown 13、unknown 13、not applicable 7で、条件recordは3件である。ConoHaは期間限定価格のため
+  通常TCOから除外し、さくらとKAGOYAは初回12か月checkout総額だけを確認済み価格として保持する。
+  更新額未確認のため24/36か月へは延長せず、用途条件が揃わない行へ順位・差額・推奨を付けない。SVR02–SVR20の
+  noindex候補routeには値・未確認理由・観測日・次回確認日だけを反映し、記事review、index、CTAはHOLDを維持する。
+  同日のfollow-upでは、ConoHa通常料金が4.4円/時・月額上限2,640円（税込）の別料金タイプであり、
+  WINGパック12か月の将来更新総額へ流用できないことを公式画面と更新supportで確認した。exact更新額は
+  active契約画面でのみ観測可能なため理由付きunknownを維持する。さくらBusinessは12か月一括29,040円（税込）を
+  申込カートで候補確認した。3社のstorage・transfer・backup等と用途適合候補は`/operator/servers`へ
+  Human確認前表示として追加した。
+  2026-08-18、Human Approver `omishu`から`m3_followup_candidates: confirm_all`と3区分の
+  `server_use_case_requirements: GO`を受領した。候補内容を訂正なしで確認済みとし、用途条件を
+  `small_site=storage 100GB以上・転送量無制限・backup利用可・無料SSL`、
+  `corporate_site=small_site条件+複数人管理またはmanaged運用`、
+  `ecommerce=small_site条件+EC用途またはECアプリ対応`へ固定した。plan適合はConoHa=`small_site`、
+  さくら・KAGOYA Light=`small_site, corporate_site`だけを採用し、根拠のないEC適合は除外する。
+  これはcandidate内容と用途条件の確認記録であり、さくら29,040円とKAGOYA 17,820円の初回checkout総額はknown、
+  未確認の更新額はunknown、artifactは
+  `candidate_only`、記事review・index・CTA・deploy・pushはHOLDのままである。
+- M4の次8本は既存順序`SVR05 → SVR04 → SVR06 → SVR07 → SVR02 → SVR03 → SVR09 → SVR08`で
+  Operator待ち行列へ固定し、各記事に独立したcandidate routeを用意した。値なし、unreviewed、noindex、CTA無効を
+  既定とし、公式価格取込・記事承認・index GOが揃うまで公開記事数へ算入しない。
+  さらに8記事ごとに、共通のserver価格観測から意味を変えず再利用できるfield、記事固有でHuman確認する条件、
+  承認前の判断質問を1対1で固定した。共通価格はvendorごとに一度だけ入力し、移行時の旧契約、法人要件、ECの
+  復旧条件、mail account等を価格fieldから推測しない。dashboardはこの入力matrixを8/8準備済みとして数える。
+  2026-08-18、上記8 routeの6章本文を読者向け文体へ展開した。共通の3社観測から記事ごとに意味が一致するfieldだけを
+  表示し、更新額、移行重複、法人固有条件、EC復旧条件、mail固有上限等は理由付き未確認として残す。記事reviewが
+  `unreviewed`の間は計算結果、index、CTAをfail-closedにし、`EDITORIAL_LAUNCH_STATE.json`のHuman承認記録と
+  runtimeのexact index/CTA設定が両方揃うまで公開境界へ入れない。8 routeはlocalhostでHTTP 200を確認済みである。
+  workerのsource-level server承認は同decision recordから生成し、runtime環境変数だけで未承認SVR記事をindexへ
+  昇格できないことをproduction testへ固定した。各routeにはProduct / FAQ / BreadcrumbのJSON-LDを追加し、記事承認前は
+  Offerを出さない。記事の問いが確認済み初年度価格で直接答えられるSVR02/SVR04/SVR07だけ、記事承認後に該当用途の
+  Human確認済み価格をOfferへ出す。移行、更新、mail、EC等の部分価格を総額Offerへ読み替えない。Human承認済みserver
+  記事はproduction homeの「ほかの判断テーマ」へ自動で候補表示し、runtime index allowlistにない記事はworkerが削除するため、
+  source承認とruntime index GOの両方が揃った記事だけトップから1クリックで辿れる。
+- 2026-08-19、Human Approver `omishu`から
+  `server_use_case_plan: GO xserver-business/shared-standard-12m small_site free_ssl_confirmed`を受領した。
+  対象は`xserver-business/shared-standard-12m`の`small_site`適合だけであり、無料SSLをHuman確認済みとして、
+  既存のstorage・transfer・backup確認と合わせて12か月差額表へ算入する。corporate_site・ecommerce適合、
+  24/36か月更新額、キャンペーン控除は推測せずHOLDを維持する。これによりsmall_siteの12か月計算対象は
+  XServer 66,660円・さくら29,040円・KAGOYA 17,820円の3vendorとなり、同一JPYの確認済み初回請求総額から
+  KAGOYA比の差額を決定論的に表示できる。
+- 同日、`article_approve: SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08`を受領した。
+  8記事の本文・確認済みfield・理由付きunknownを80点公開scopeでHuman承認済みとし、
+  `EDITORIAL_LAUNCH_STATE.json`のsource-level記事状態へ記録した。これはindex・deploy・CTA・pushの承認ではない。
+  `deployed_server_articles`と`index_approved_server_articles`はSVR01だけを維持し、8記事はruntime exact GOまで
+  noindex・CTA無効・production未算入のままとする。
+- 同日、直前の8記事を対象とする`deploy_update: GO`を受領した。source-levelのproduction release対象へ
+  `SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08`を追加する。今回のscopeにindex、CTA、GitHub pushは
+  含めず、`index_approved_server_articles`はSVR01だけを維持する。Sites公開と外部read-backが完了するまでは
+  release完了とは扱わない。
+- M5 dashboardは8月末4条件を別枠で機械集計する。比較READYは承認済み数値fieldに加えて、対応する
+  `server_conditions`が承認済みで3条件すべて`known`または理由付き`not_applicable`の場合だけ数える。
+  現在はcrawl経路READY、確認済み初回価格3vendor（XServer・さくら・KAGOYA）、
+  small_siteの12か月計算対象3vendor、全条件を満たすstrict比較READY 0/3、
+  公開12/20、差額・直後CTA実装READY、用途条件READY、12か月の実データ差額READYである。candidate JSONはsource値を
+  dashboardへ転記せず、完全な11 field identityと比較計算の準備数だけを集計する。
+  2026-08-18のread-only再確認で、GSCはsitemap成功・12ページ検出、index登録7・未登録6、clicks 0、
+  GA4直近7日は`page_view` 7・`qualified_session` 2・`outbound_click` 0だった。dashboardのindex 7は
+  このGSC実測と一致する。GA4は内部訪問を分離できないため収益証拠へ昇格せず、8月月次KPIは8月31日の
+  完全月read-backまで確定しない。
 
 ## 公開前originの現在地
 

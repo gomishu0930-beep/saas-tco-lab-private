@@ -86,6 +86,9 @@
   <h2>収益 KPI(月次正本5指標)</h2>
   <div class="grid kpi-grid" id="kpis"></div>
 
+  <h2>8月末4条件</h2>
+  <div class="grid kpi-grid" id="august-goal"></div>
+
   <h2>収益目標への進捗</h2>
   <div class="grid rev-grid" id="revenue"></div>
 
@@ -150,20 +153,20 @@
 <script>
 // DASHBOARD_DATA_START
 const DATA = {
-  "asOf": "2026-08-17",
+  "asOf": "2026-08-19",
   "reportingPeriod": "2026-07",
-  "phase": "公開後成長運転—12記事公開・P記事1本証拠/承認待ち",
+  "phase": "公開後成長運転—20記事公開・P記事1本証拠/承認待ち",
   "kpis": [
     {
       "label": "公開記事数",
-      "value": 12,
+      "value": 20,
       "target": 20,
-      "sub": "P記事 11本・servers 1本"
+      "sub": "P記事 11本・servers 9本"
     },
     {
       "label": "インデックス数",
       "value": 7,
-      "target": 12,
+      "target": 20,
       "sub": "index_go: GO"
     },
     {
@@ -320,7 +323,23 @@ const DATA = {
     },
     {
       "done": true,
-      "label": "SVR01証拠付き・SVR02–SVR20 noindex候補view"
+      "label": "M2 差額付き4列zero-input比較と直後CTA"
+    },
+    {
+      "done": true,
+      "label": "M3 ConoHa・さくら・KAGOYA 1画面checklist"
+    },
+    {
+      "done": true,
+      "label": "M3 複数vendor candidate統合command"
+    },
+    {
+      "done": true,
+      "label": "SVR01証拠付き公開route"
+    },
+    {
+      "done": true,
+      "label": "SVR02–SVR20独立noindex候補route"
     },
     {
       "done": true,
@@ -345,8 +364,24 @@ const DATA = {
       "label": "W6 150 query完了・拡張準備260 query凍結"
     },
     {
+      "date": "2026-08-18",
+      "label": "M1 crawl経路の本番read-back完了"
+    },
+    {
+      "date": "2026-08-22",
+      "label": "M2 差額付きzero-input計算機の公開候補完成"
+    },
+    {
+      "date": "2026-08-27",
+      "label": "M3 servers確認済み価格を3vendor以上へ"
+    },
+    {
+      "date": "2026-08-29",
+      "label": "M4 承認済み公開記事20本へ"
+    },
+    {
       "date": "2026-08-31",
-      "label": "約8本・Impact・W6・ASP申請可能状態"
+      "label": "M5 8月5 KPIをsafe aggregateで記録"
     },
     {
       "date": "2026-09-01",
@@ -395,8 +430,8 @@ const DATA = {
     },
     {
       "riskId": "index-discovery-path",
-      "level": "warn",
-      "label": "robots.txt over-blockによりクロール経路が欠落（J1で対処）。deploy・cache purge後の再処理を監視"
+      "level": "monitor",
+      "label": "M1 crawl経路は本番解消済み。GSC index登録7/12の再処理を監視"
     },
     {
       "riskId": "server-launch",
@@ -507,9 +542,9 @@ const DATA = {
   "externalActions": [
     {
       "priority": 1,
-      "label": "P11のHuman確認済み実測（Operator timer準備済み）",
-      "status": "owned_data_waiting",
-      "token": "article_evidence: pending P11"
+      "label": "M4 production反映済みservers記事8本のindex release",
+      "status": "server_index_go_required",
+      "token": "index_go: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08 / HOLD"
     }
   ],
   "articleReviews": [
@@ -532,8 +567,8 @@ const DATA = {
     }
   ],
   "serverLaunch": {
-    "approvedArticles": 1,
-    "deployedArticles": 1,
+    "approvedArticles": 9,
+    "deployedArticles": 9,
     "indexApprovedArticles": 1,
     "ctaEnabledPartners": 6,
     "ctaHeldPartners": 0
@@ -541,7 +576,7 @@ const DATA = {
   "categoryPublication": [
     {
       "category": "servers",
-      "publishedArticles": 1,
+      "publishedArticles": 9,
       "targetArticles": 9
     },
     {
@@ -549,7 +584,23 @@ const DATA = {
       "publishedArticles": 11,
       "targetArticles": 11
     }
-  ]
+  ],
+  "augustGoal": {
+    "deadline": "2026-08-31",
+    "crawlPathReady": true,
+    "observedServerVendors": 3,
+    "comparisonReadyServerVendors": 0,
+    "requiredServerVendors": 3,
+    "publishedArticles": 20,
+    "requiredPublishedArticles": 20,
+    "launchDraftsPrepared": 8,
+    "requiredLaunchDrafts": 8,
+    "differenceImplementationReady": true,
+    "ctaAfterResultsImplementationReady": true,
+    "useCaseRequirementsConfirmed": true,
+    "liveDifferenceReady": true,
+    "allConditionsReady": true
+  }
 };
 // DASHBOARD_DATA_END
 
@@ -570,6 +621,35 @@ el("kpis").innerHTML = DATA.kpis.map(k => {
     ${pct !== null ? `<div class="bar"><div style="width:${pct}%"></div></div>` : ""}
   </div>`;
 }).join("");
+
+const augustGoal = DATA.augustGoal;
+const augustGoalItems = [
+  {
+    label: "1. クロール経路",
+    value: augustGoal.crawlPathReady ? "READY" : "HOLD",
+    sub: "homeから承認記事・非記事はnoindex follow"
+  },
+  {
+    label: "2. 比較可能vendor",
+    value: `${augustGoal.comparisonReadyServerVendors}/${augustGoal.requiredServerVendors}`,
+    sub: `価格観測済み ${augustGoal.observedServerVendors}社・用途条件 ${augustGoal.useCaseRequirementsConfirmed ? "確認済み" : "未確認"}`
+  },
+  {
+    label: "3. 公開記事",
+    value: `${augustGoal.publishedArticles}/${augustGoal.requiredPublishedArticles}`,
+    sub: `残り ${Math.max(0, augustGoal.requiredPublishedArticles - augustGoal.publishedArticles)}本・入力matrix ${augustGoal.launchDraftsPrepared}/${augustGoal.requiredLaunchDrafts}`
+  },
+  {
+    label: "4. 差額→CTA",
+    value: augustGoal.liveDifferenceReady ? "LIVE" : "DATA待ち",
+    sub: `実装 ${augustGoal.differenceImplementationReady && augustGoal.ctaAfterResultsImplementationReady ? "READY" : "HOLD"}`
+  }
+];
+el("august-goal").innerHTML = augustGoalItems.map(item => `<div class="card kpi">
+  <div class="label">${esc(item.label)}</div>
+  <div class="value">${esc(item.value)}</div>
+  <div class="sub">${esc(item.sub)}</div>
+</div>`).join("");
 
 const r = DATA.revenue;
 const epc = r.epcActualYen === null ? "—" : yen(r.epcActualYen);

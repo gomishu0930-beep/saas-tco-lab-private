@@ -9,6 +9,7 @@ current field-level derivation-rights check.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from collections.abc import Sequence
@@ -28,6 +29,11 @@ from .ai_routing import (
     evaluate_model_route,
 )
 from .goldset import CandidateBatch, HumanGoldSet, evaluate_goldset
+from .editorial_input import (
+    CategoryExpansionInput,
+    ExpansionCategory,
+    merge_category_expansion_inputs,
+)
 from .growth_system import (
     ActivationDecision,
     ConditionalActivationInput,
@@ -250,6 +256,16 @@ def _parser() -> argparse.ArgumentParser:
     mangools_expansion_set.add_argument(
         "--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15")
     )
+
+    merge_servers = commands.add_parser(
+        "merge-server-candidates",
+        help=(
+            "Merge separately saved server candidate JSON files into one "
+            "candidate-only contract."
+        ),
+    )
+    merge_servers.add_argument("candidate", type=Path, nargs="+")
+    merge_servers.add_argument("--output", type=Path, required=True)
 
     store = commands.add_parser("store-plan", help="Append one validated plan to a local DB.")
     store.add_argument("plan", type=Path)
@@ -931,6 +947,37 @@ def run(argv: Sequence[str] | None = None) -> int:
                 )
             summary_set = build_mangools_expansion_set_safe_summary(tuple(summaries))
             _emit(summary_set.model_dump(mode="json"))
+            return 0
+
+        if args.command == "merge-server-candidates":
+            candidates = tuple(
+                _load_model(path, CategoryExpansionInput)
+                for path in args.candidate
+            )
+            if any(
+                candidate.category_id is not ExpansionCategory.SERVERS
+                for candidate in candidates
+            ):
+                raise ValueError("merge-server-candidates accepts servers inputs only")
+            merged = merge_category_expansion_inputs(candidates)
+            _write_new_model(args.output, merged)
+            output_bytes = args.output.read_bytes()
+            identities = {
+                (field.vendor_id, field.plan_id)
+                for field in merged.numeric_fields
+            }
+            _emit(
+                {
+                    "authority": "none",
+                    "category_id": merged.category_id.value,
+                    "condition_record_count": len(merged.server_conditions),
+                    "field_count": len(merged.numeric_fields),
+                    "output_sha256": hashlib.sha256(output_bytes).hexdigest(),
+                    "status": "candidate_only_merged",
+                    "values_emitted_to_stdout": False,
+                    "vendor_plan_count": len(identities),
+                }
+            )
             return 0
 
         if args.command == "store-plan":

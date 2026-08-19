@@ -161,6 +161,10 @@ analytics scope拡張をこの承認へ含めない。
 - 2026-08-17に既存`/sitemap.xml`を1回だけ再送信し、成功・12 URL検出を確認した。再送信を繰り返さない。
 - robots.txtはcrawl、HTML/headerのrobots指定はindexを制御する。非記事の公開routeはcrawl許可と
   `noindex, follow, noarchive, nosnippet`を併用し、承認済み記事だけを`index, follow`とする。
+- 2026-08-18のread-only再確認では、sitemapは`成功しました`・最終読み込み2026-08-17・検出12、
+  ページ集計は登録済み7・未登録6、ウェブ検索clicksは0だった。GA4の直近7日集計は`page_view` 7、
+  `qualified_session` 2、`outbound_click` 0である。内部訪問を分離できないため、これらを実訪問・送客・
+  収益証拠とは断定しない。query文字列、Affiliate識別子、PIIは取得・保存していない。
 
 ## Deploy後のcache purge・同時刻read-back
 

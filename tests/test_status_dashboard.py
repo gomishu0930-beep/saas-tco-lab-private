@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import importlib.util
 import json
 import subprocess
 import sys
@@ -19,10 +20,13 @@ from saas_preflight.editorial_input import (
     EditorialValueStatus,
     HumanEditorialNumericField,
 )
-
-
 ROOT = Path(__file__).resolve().parents[1]
 SCRIPT = ROOT / "scripts" / "update_status_dashboard.py"
+_DASHBOARD_SPEC = importlib.util.spec_from_file_location("update_status_dashboard", SCRIPT)
+assert _DASHBOARD_SPEC is not None and _DASHBOARD_SPEC.loader is not None
+_DASHBOARD_MODULE = importlib.util.module_from_spec(_DASHBOARD_SPEC)
+_DASHBOARD_SPEC.loader.exec_module(_DASHBOARD_MODULE)
+_server_price_progress = _DASHBOARD_MODULE._server_price_progress
 START = "// DASHBOARD_DATA_START\nconst DATA = "
 END = ";\n// DASHBOARD_DATA_END"
 CSV_FIELDS = (
@@ -36,6 +40,16 @@ CSV_FIELDS = (
     "confirmed_conversions",
     "pending_commissions_yen",
 )
+SERVER_TCO_FIELDS_FOR_TEST = {
+    "pricing.initial_fee",
+    "pricing.base_price",
+    "pricing.renewal_fee",
+    "servers.campaign_price",
+    "servers.campaign_period_months",
+    "servers.domain_benefit_amount",
+    "servers.domain_benefit_period_months",
+    "servers.backup_price",
+}
 
 
 def _dashboard_data(path: Path) -> dict:
@@ -64,6 +78,69 @@ def _run(dashboard: Path, state: Path, contracts: Path, *extra: str) -> subproce
         capture_output=True,
         text=True,
     )
+
+
+def test_server_price_progress_counts_complete_safe_identities_and_fails_duplicates_closed(
+    tmp_path: Path,
+) -> None:
+    directory = tmp_path / "artifacts" / "category-expansion-inputs"
+    directory.mkdir(parents=True)
+    source = json.loads((
+        ROOT
+        / "artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v3-2026-08-14.json"
+    ).read_text(encoding="utf-8"))
+    (directory / "one.json").write_text(json.dumps(source), encoding="utf-8")
+    assert _server_price_progress(tmp_path) == {
+        "observedVendorCount": 1,
+        "comparisonReadyVendorCount": 0,
+    }
+
+    ready = json.loads(json.dumps(source))
+    for field in ready["numeric_fields"]:
+        if field["field"] in SERVER_TCO_FIELDS_FOR_TEST and field["value_status"] == "unknown":
+            field["value_status"] = "not_applicable"
+            field["unknown_reason"] = "公式画面で当該料金の適用なしをHuman確認"
+            field["sale_banner_state"] = "none"
+            if field["value_kind"] == "price":
+                field["currency_status"] = "not_applicable"
+                field["currency"] = None
+                field["currency_display"] = None
+                field["currency_unknown_reason"] = None
+                field["billing_period"] = "not_applicable"
+                field["tax_treatment"] = "not_applicable"
+                field["observed_price_basis"] = "not_applicable"
+    base = ready["numeric_fields"][0]
+    ready["server_conditions"] = [{
+        "schema_version": "1.0",
+        "vendor_id": base["vendor_id"],
+        "plan_id": base["plan_id"],
+        "campaign_ends_on_status": "not_applicable",
+        "campaign_ends_on": None,
+        "campaign_ends_on_unknown_reason": "終了日のある施策なしをHuman確認",
+        "minimum_commitment_months_status": "known",
+        "minimum_commitment_months": 12,
+        "minimum_commitment_unknown_reason": None,
+        "domain_benefit_terms_status": "not_applicable",
+        "domain_benefit_terms": None,
+        "domain_benefit_terms_unknown_reason": "無償ドメイン特典なしをHuman確認",
+        "source_url": "https://example.com/pricing",
+        "observed_on": "2026-08-17",
+        "next_review_on": "2026-09-17",
+        "entered_by": "human",
+        "acquisition_method": "manual_public_page",
+        "rights_path": "human_editorial",
+        "review_status": "approved",
+    }]
+    (directory / "one.json").write_text(json.dumps(ready), encoding="utf-8")
+    assert _server_price_progress(tmp_path)["comparisonReadyVendorCount"] == 1
+
+    duplicate = json.loads(json.dumps(ready))
+    duplicate["numeric_fields"].append(duplicate["numeric_fields"][0])
+    (directory / "one.json").write_text(json.dumps(duplicate), encoding="utf-8")
+    assert _server_price_progress(tmp_path) == {
+        "observedVendorCount": 0,
+        "comparisonReadyVendorCount": 0,
+    }
 
 
 def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> None:
@@ -95,37 +172,47 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     data = _dashboard_data(dashboard)
     assert data["reportingPeriod"] == "2026-07"
     assert {item["label"]: item["value"] for item in data["kpis"]} == {
-        "公開記事数": 1,
+        "公開記事数": 9,
         "インデックス数": 2,
         "GSC clicks(月)": 3,
         "Outbound clicks(月)": 4,
         "確定報酬(月)": 500,
     }
-    assert len(data["work"]) == 13
+    assert len(data["work"]) == 17
     assert all(item["done"] for item in data["work"])
     assert any(
-        item["label"] == "SVR01証拠付き・SVR02–SVR20 noindex候補view"
+        item["label"] == "SVR02–SVR20独立noindex候補route"
         for item in data["work"]
     )
+    assert any(item["label"] == "M2 差額付き4列zero-input比較と直後CTA" for item in data["work"])
+    assert any(item["label"] == "M3 ConoHa・さくら・KAGOYA 1画面checklist" for item in data["work"])
+    assert any(item["label"] == "M3 複数vendor candidate統合command" for item in data["work"])
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
     assert any(item["label"] == "servers次8記事の取引意図優先queue" for item in data["work"])
-    assert [item["priority"] for item in data["externalActions"]] == [1]
-    assert all(
-        item["status"] != "human_official_price_observation_required"
-        for item in data["externalActions"]
-    )
+    assert [item["priority"] for item in data["externalActions"]] == [1, 2]
     assert any(
         item["status"] == "contract_input_required"
+        for item in data["externalActions"]
+    )
+    assert all(
+        item["status"] != "human_use_case_attestation_required"
         for item in data["externalActions"]
     )
     assert all(
         item["status"] != "human_field_attestation_required"
         for item in data["externalActions"]
     )
-    assert all(
-        not item["token"].startswith("article_approve:")
+    server_release = next(
+        item
         for item in data["externalActions"]
+        if item["status"] == "server_index_go_required"
     )
+    assert server_release == {
+        "priority": 2,
+        "label": "M4 production反映済みservers記事8本のindex release",
+        "status": "server_index_go_required",
+        "token": "index_go: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08 / HOLD",
+    }
     assert all("独自domain未取得" not in item["label"] for item in data["risks"])
     assert all("JP/ja需要規模が未検証" not in item["label"] for item in data["risks"])
     assert any(item.get("riskId") == "editorial-coverage" for item in data["risks"])
@@ -140,19 +227,35 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     )
     assert discovery_risk == {
         "riskId": "index-discovery-path",
-        "level": "warn",
-        "label": "robots.txt over-blockによりクロール経路が欠落（J1で対処）。deploy・cache purge後の再処理を監視",
+        "level": "monitor",
+        "label": "M1 crawl経路は本番解消済み。GSC index登録7/12の再処理を監視",
     }
     assert data["categoryPublication"] == [
-        {"category": "servers", "publishedArticles": 1, "targetArticles": 9},
+        {"category": "servers", "publishedArticles": 9, "targetArticles": 9},
         {"category": "seo_tools", "publishedArticles": 0, "targetArticles": 11},
     ]
     assert data["serverLaunch"] == {
-        "approvedArticles": 1,
-        "deployedArticles": 1,
+        "approvedArticles": 9,
+        "deployedArticles": 9,
         "indexApprovedArticles": 1,
         "ctaEnabledPartners": 6,
         "ctaHeldPartners": 0,
+    }
+    assert data["augustGoal"] == {
+        "deadline": "2026-08-31",
+        "crawlPathReady": True,
+        "observedServerVendors": 3,
+        "comparisonReadyServerVendors": 0,
+        "requiredServerVendors": 3,
+        "publishedArticles": 9,
+        "requiredPublishedArticles": 20,
+        "launchDraftsPrepared": 8,
+        "requiredLaunchDrafts": 8,
+        "differenceImplementationReady": True,
+        "ctaAfterResultsImplementationReady": True,
+        "useCaseRequirementsConfirmed": True,
+        "liveDifferenceReady": True,
+        "allConditionsReady": False,
     }
     assert not any(
         item["status"] == "server_partner_cta_go_required"
@@ -261,7 +364,7 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     result = _run(dashboard, state, contracts, "--no-prompt")
     assert result.returncode == 0, result.stderr
     data = _dashboard_data(dashboard)
-    assert data["kpis"][0]["value"] == 1
+    assert data["kpis"][0]["value"] == 9
     assert data["lane"][1]["status"] == "1/12入力・0/12承認"
 
     approved_contract = contract.model_copy(
@@ -273,7 +376,7 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     result = _run(dashboard, state, contracts, "--no-prompt")
     assert result.returncode == 0, result.stderr
     data = _dashboard_data(dashboard)
-    assert data["kpis"][0]["value"] == 1
+    assert data["kpis"][0]["value"] == 9
     assert data["lane"][1]["status"] == "1/12入力・1/12承認"
 
     raw_state["deployed_articles"].append("P12")
@@ -282,8 +385,8 @@ def test_only_valid_contract_and_matching_approval_count_as_publishable(tmp_path
     result = _run(dashboard, state, contracts, "--no-prompt")
     assert result.returncode == 0, result.stderr
     data = _dashboard_data(dashboard)
-    assert data["kpis"][0]["value"] == 2
-    assert data["phase"] == "公開後成長運転—2記事公開・P記事11本証拠/承認待ち"
+    assert data["kpis"][0]["value"] == 10
+    assert data["phase"] == "公開後成長運転—10記事公開・P記事11本証拠/承認待ち"
 
 
 def test_pending_p06_p07_review_cards_are_contract_driven(tmp_path: Path) -> None:
@@ -342,6 +445,42 @@ def test_approved_p05_contract_is_not_returned_to_the_human_review_queue(tmp_pat
         action["status"] != "human_field_scope_review_required"
         for action in data["externalActions"]
     )
+
+
+def test_p11_complete_month_measurement_is_not_a_human_action_before_september(
+    tmp_path: Path,
+) -> None:
+    dashboard = tmp_path / "dashboard.html"
+    dashboard.write_bytes((ROOT / "status-dashboard.html").read_bytes())
+    state = tmp_path / "state.json"
+    state.write_bytes((ROOT / "docs/EDITORIAL_LAUNCH_STATE.json").read_bytes())
+    contracts = tmp_path / "contracts"
+    contracts.mkdir()
+    source = ROOT / "artifacts" / "editorial-inputs" / "P11-editorial-input.json"
+    (contracts / source.name).write_bytes(source.read_bytes())
+
+    result = _run(dashboard, state, contracts, "--no-prompt")
+    assert result.returncode == 0, result.stderr
+    assert all(
+        "P11" not in action["token"]
+        for action in _dashboard_data(dashboard)["externalActions"]
+    )
+
+    result = _run(
+        dashboard,
+        state,
+        contracts,
+        "--as-of",
+        "2026-09-01",
+        "--no-prompt",
+    )
+    assert result.returncode == 0, result.stderr
+    p11_action = next(
+        action
+        for action in _dashboard_data(dashboard)["externalActions"]
+        if action["token"] == "article_evidence: pending P11"
+    )
+    assert p11_action["status"] == "owned_data_waiting"
 
 
 def test_explicit_not_applicable_policy_is_ready_for_human_article_review(tmp_path: Path) -> None:
@@ -403,6 +542,7 @@ def test_approved_undeployed_contract_requires_exact_production_go(tmp_path: Pat
         action
         for action in _dashboard_data(dashboard)["externalActions"]
         if action["status"] == "production_go_required"
+        and action["label"].startswith("P04")
     )
     assert release["label"] == "P04のproduction release"
     assert release["token"] == "deploy_update: GO P04 / HOLD"

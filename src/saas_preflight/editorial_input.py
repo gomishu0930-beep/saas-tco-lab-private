@@ -9,6 +9,7 @@ history, calculation eligibility, or publication authority.
 from __future__ import annotations
 
 import math
+from collections.abc import Sequence
 from datetime import date, timedelta
 from decimal import ROUND_HALF_UP, Decimal
 from enum import Enum
@@ -553,6 +554,115 @@ def expansion_field_kinds(category: ExpansionCategory) -> dict[str, EditorialVal
     return dict(_EXPANSION_FIELD_KINDS[category])
 
 
+class ServerObservationConditions(StrictModel):
+    """Human-observed non-price conditions required by the servers launch lane."""
+
+    schema_version: Literal["1.0"] = "1.0"
+    vendor_id: Slug
+    plan_id: Slug
+    campaign_ends_on_status: EditorialValueStatus
+    campaign_ends_on: date | None = None
+    campaign_ends_on_unknown_reason: str | None = Field(
+        default=None, min_length=1, max_length=300
+    )
+    minimum_commitment_months_status: EditorialValueStatus
+    minimum_commitment_months: int | None = Field(default=None, ge=1, le=120)
+    minimum_commitment_unknown_reason: str | None = Field(
+        default=None, min_length=1, max_length=300
+    )
+    domain_benefit_terms_status: EditorialValueStatus
+    domain_benefit_terms: str | None = Field(default=None, min_length=1, max_length=500)
+    domain_benefit_terms_unknown_reason: str | None = Field(
+        default=None, min_length=1, max_length=300
+    )
+    source_url: AnyHttpUrl
+    observed_on: date
+    next_review_on: date
+    entered_by: Literal["human"] = "human"
+    acquisition_method: Literal["manual_public_page", "manual_checkout_review"]
+    rights_path: Literal["human_editorial"] = "human_editorial"
+    review_status: EditorialReviewStatus = EditorialReviewStatus.UNREVIEWED
+
+    @field_validator(
+        "campaign_ends_on_unknown_reason",
+        "minimum_commitment_unknown_reason",
+        "domain_benefit_terms",
+        "domain_benefit_terms_unknown_reason",
+    )
+    @classmethod
+    def normalize_condition_text(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        normalized = " ".join(value.strip().split())
+        if not normalized:
+            raise ValueError("server condition text cannot be blank")
+        return normalized
+
+    @field_validator("source_url")
+    @classmethod
+    def require_safe_server_condition_source(cls, value: AnyHttpUrl) -> AnyHttpUrl:
+        if value.scheme != "https":
+            raise ValueError("server condition source URL must use HTTPS")
+        if value.username or value.password or value.fragment:
+            raise ValueError("server condition source URL cannot contain credentials or fragments")
+        host = (value.host or "").lower()
+        if host in {"localhost", "127.0.0.1", "::1"} or host.endswith(".local"):
+            raise ValueError("server condition source URL must be public")
+        for key, raw_value in parse_qsl(value.query or "", keep_blank_values=True):
+            normalized_key = key.lower()
+            if normalized_key not in _SAFE_QUERY_KEYS or any(
+                marker in normalized_key for marker in _TRACKING_QUERY_MARKERS
+            ):
+                raise ValueError("server condition source URL contains an unapproved query parameter")
+            if not raw_value or len(raw_value) > 80:
+                raise ValueError("server condition source URL query value is invalid")
+        return value
+
+    @model_validator(mode="after")
+    def validate_server_conditions(self) -> Self:
+        if self.next_review_on <= self.observed_on:
+            raise ValueError("next_review_on must be later than observed_on")
+        if self.next_review_on > self.observed_on + timedelta(days=180):
+            raise ValueError("server condition review interval cannot exceed 180 days")
+
+        def require_status_value(
+            status: EditorialValueStatus,
+            value: object | None,
+            reason: str | None,
+            label: str,
+        ) -> None:
+            if status is EditorialValueStatus.KNOWN:
+                if value is None or reason is not None:
+                    raise ValueError(f"known {label} requires a value and no unknown reason")
+            elif value is not None or reason is None:
+                raise ValueError(f"unknown or not_applicable {label} requires a reason and no value")
+
+        require_status_value(
+            self.campaign_ends_on_status,
+            self.campaign_ends_on,
+            self.campaign_ends_on_unknown_reason,
+            "campaign end date",
+        )
+        require_status_value(
+            self.minimum_commitment_months_status,
+            self.minimum_commitment_months,
+            self.minimum_commitment_unknown_reason,
+            "minimum commitment",
+        )
+        require_status_value(
+            self.domain_benefit_terms_status,
+            self.domain_benefit_terms,
+            self.domain_benefit_terms_unknown_reason,
+            "domain benefit terms",
+        )
+        if self.campaign_ends_on is not None:
+            if self.campaign_ends_on < self.observed_on:
+                raise ValueError("known campaign end date cannot precede observation")
+            if self.next_review_on > self.campaign_ends_on:
+                raise ValueError("campaign next review must not be later than the campaign end")
+        return self
+
+
 class CategoryExpansionInput(StrictModel):
     """Candidate-only editorial input for a future scope expansion.
 
@@ -575,13 +685,30 @@ class CategoryExpansionInput(StrictModel):
             }
         },
     )
+    server_conditions: tuple[ServerObservationConditions, ...] = ()
 
     @model_validator(mode="after")
     def validate_category_fields(self) -> Self:
+        if self.server_conditions and self.category_id is not ExpansionCategory.SERVERS:
+            raise ValueError("server_conditions are valid only for the servers category")
+        condition_identities = [
+            (item.vendor_id, item.plan_id) for item in self.server_conditions
+        ]
+        if len(condition_identities) != len(set(condition_identities)):
+            raise ValueError("server condition identities must be unique")
         if not self.numeric_fields:
+            if self.server_conditions:
+                raise ValueError("server conditions require matching numeric vendor-plan rows")
             return self
         if any(item.scope_kind is not EditorialScopeKind.VENDOR_PLAN for item in self.numeric_fields):
             raise ValueError("category expansion input currently accepts vendor_plan fields only")
+
+        field_identities = [
+            (item.scope_kind, item.vendor_id, item.plan_id, item.field)
+            for item in self.numeric_fields
+        ]
+        if len(field_identities) != len(set(field_identities)):
+            raise ValueError("category expansion numeric field identities must be unique")
 
         expected = expansion_field_kinds(self.category_id)
         grouped: dict[tuple[Slug, Slug], list[HumanEditorialNumericField]] = {}
@@ -595,4 +722,34 @@ class CategoryExpansionInput(StrictModel):
                     f"category expansion fields do not match {self.category_id.value} catalog for "
                     f"{identity[0]}/{identity[1]}"
                 )
+        if self.server_conditions and set(condition_identities) != set(grouped):
+            raise ValueError("server conditions must match every numeric vendor-plan identity")
         return self
+
+
+def merge_category_expansion_inputs(
+    inputs: Sequence[CategoryExpansionInput],
+) -> CategoryExpansionInput:
+    """Merge separately entered candidate contracts without changing authority.
+
+    Inputs must belong to one category.  The reconstructed contract re-runs the
+    complete catalog and uniqueness validators, so a duplicate vendor/plan/field
+    or a partial vendor row fails closed.
+    """
+
+    if not inputs:
+        raise ValueError("at least one category expansion input is required")
+    category_id = inputs[0].category_id
+    if any(item.category_id is not category_id for item in inputs):
+        raise ValueError("category expansion inputs must share one category")
+    return CategoryExpansionInput(
+        category_id=category_id,
+        numeric_fields=tuple(
+            field for candidate in inputs for field in candidate.numeric_fields
+        ),
+        server_conditions=tuple(
+            condition
+            for candidate in inputs
+            for condition in candidate.server_conditions
+        ),
+    )

@@ -489,6 +489,177 @@
       ],
       "title": "HumanEditorialNumericField",
       "type": "object"
+    },
+    "ServerObservationConditions": {
+      "additionalProperties": false,
+      "description": "Human-observed non-price conditions required by the servers launch lane.",
+      "properties": {
+        "acquisition_method": {
+          "enum": [
+            "manual_public_page",
+            "manual_checkout_review"
+          ],
+          "title": "Acquisition Method",
+          "type": "string"
+        },
+        "campaign_ends_on": {
+          "anyOf": [
+            {
+              "format": "date",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Campaign Ends On"
+        },
+        "campaign_ends_on_status": {
+          "$ref": "#/$defs/EditorialValueStatus"
+        },
+        "campaign_ends_on_unknown_reason": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Campaign Ends On Unknown Reason"
+        },
+        "domain_benefit_terms": {
+          "anyOf": [
+            {
+              "maxLength": 500,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Domain Benefit Terms"
+        },
+        "domain_benefit_terms_status": {
+          "$ref": "#/$defs/EditorialValueStatus"
+        },
+        "domain_benefit_terms_unknown_reason": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Domain Benefit Terms Unknown Reason"
+        },
+        "entered_by": {
+          "const": "human",
+          "default": "human",
+          "title": "Entered By",
+          "type": "string"
+        },
+        "minimum_commitment_months": {
+          "anyOf": [
+            {
+              "maximum": 120,
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum Commitment Months"
+        },
+        "minimum_commitment_months_status": {
+          "$ref": "#/$defs/EditorialValueStatus"
+        },
+        "minimum_commitment_unknown_reason": {
+          "anyOf": [
+            {
+              "maxLength": 300,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Minimum Commitment Unknown Reason"
+        },
+        "next_review_on": {
+          "format": "date",
+          "title": "Next Review On",
+          "type": "string"
+        },
+        "observed_on": {
+          "format": "date",
+          "title": "Observed On",
+          "type": "string"
+        },
+        "plan_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Plan Id",
+          "type": "string"
+        },
+        "review_status": {
+          "$ref": "#/$defs/EditorialReviewStatus",
+          "default": "unreviewed"
+        },
+        "rights_path": {
+          "const": "human_editorial",
+          "default": "human_editorial",
+          "title": "Rights Path",
+          "type": "string"
+        },
+        "schema_version": {
+          "const": "1.0",
+          "default": "1.0",
+          "title": "Schema Version",
+          "type": "string"
+        },
+        "source_url": {
+          "format": "uri",
+          "minLength": 1,
+          "title": "Source Url",
+          "type": "string"
+        },
+        "vendor_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Vendor Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "vendor_id",
+        "plan_id",
+        "campaign_ends_on_status",
+        "minimum_commitment_months_status",
+        "domain_benefit_terms_status",
+        "source_url",
+        "observed_on",
+        "next_review_on",
+        "acquisition_method"
+      ],
+      "title": "ServerObservationConditions",
+      "type": "object"
     }
   },
   "additionalProperties": false,
@@ -549,6 +720,14 @@
       "default": "1.0",
       "title": "Schema Version",
       "type": "string"
+    },
+    "server_conditions": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/ServerObservationConditions"
+      },
+      "title": "Server Conditions",
+      "type": "array"
     },
     "state": {
       "const": "candidate_only",

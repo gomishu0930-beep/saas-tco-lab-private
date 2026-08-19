@@ -6,6 +6,7 @@ import {
   DEFAULT_IMAGE_SIZES,
 } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import editorialLaunchState from "../../docs/EDITORIAL_LAUNCH_STATE.json";
 
 interface ProductionEnv {
   ASSETS: Fetcher;
@@ -99,6 +100,14 @@ const PUBLIC_ROUTES = new Set([
   "/advertising-policy",
   "/embed/tco-calculator",
   "/servers/business-server-pricing",
+  "/servers/server-renewal-cost",
+  "/servers/server-first-year-total",
+  "/servers/server-migration-cost",
+  "/servers/business-rental-server",
+  "/servers/small-business-server",
+  "/servers/ec-server-cost",
+  "/servers/business-mail-server",
+  "/servers/ec-server-requirements",
 ]);
 
 // Crawling and indexing are separate controls. These public navigation and
@@ -134,11 +143,25 @@ const ARTICLE_PATH_TO_ID = new Map([
 
 const SERVER_ARTICLE_PATH_TO_ID = new Map([
   ["/servers/business-server-pricing", "SVR01"],
+  ["/servers/small-business-server", "SVR02"],
+  ["/servers/ec-server-cost", "SVR03"],
+  ["/servers/server-first-year-total", "SVR04"],
+  ["/servers/server-renewal-cost", "SVR05"],
+  ["/servers/server-migration-cost", "SVR06"],
+  ["/servers/business-rental-server", "SVR07"],
+  ["/servers/ec-server-requirements", "SVR08"],
+  ["/servers/business-mail-server", "SVR09"],
 ]);
 
 // Source-level Human editorial approval. Runtime INDEX_GO alone must never
-// promote an unreviewed server candidate into the public index.
-const SOURCE_APPROVED_SERVER_ARTICLE_IDS = new Set(["SVR01"]);
+// promote an unreviewed server candidate into the public index. The local
+// decision record is the sole source; invalid values fail closed.
+const SOURCE_APPROVED_SERVER_ARTICLE_IDS = new Set(
+  Object.entries(editorialLaunchState.server_articles ?? {})
+    .filter(([, state]) => state === "approved")
+    .map(([articleId]) => articleId)
+    .filter((articleId) => /^SVR(?:0[1-9]|1[0-9]|20)$/.test(articleId)),
+);
 
 interface IndexApprovalState {
   approvedArticlesValid: boolean;
@@ -842,9 +865,14 @@ const worker = {
     const indexApproval = indexApprovalState(env);
     const indexPaths = indexApproval.paths;
     const indexable = url.search === "" && indexPaths.has(normalizedPath);
+    const serverArticleId = SERVER_ARTICLE_PATH_TO_ID.get(normalizedPath);
     const followableNoindex = url.search === ""
       && PUBLIC_ROUTES.has(normalizedPath)
-      && !indexable;
+      && !indexable
+      && (
+        serverArticleId === undefined
+        || SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(serverArticleId)
+      );
     const gatedPath = indexable ? normalizedPath : "";
     const ctaControls = affiliateCtaControls(env, indexPaths, gatedPath);
     const serverCtaControls = serverAffiliateCtaControls(env, indexPaths, gatedPath);

@@ -33,10 +33,26 @@
     "Mangools": "GO"
   },
   "server_articles": {
-    "SVR01": "approved"
+    "SVR01": "approved",
+    "SVR02": "approved",
+    "SVR03": "approved",
+    "SVR04": "approved",
+    "SVR05": "approved",
+    "SVR06": "approved",
+    "SVR07": "approved",
+    "SVR08": "approved",
+    "SVR09": "approved"
   },
   "deployed_server_articles": [
-    "SVR01"
+    "SVR01",
+    "SVR05",
+    "SVR04",
+    "SVR06",
+    "SVR07",
+    "SVR02",
+    "SVR03",
+    "SVR09",
+    "SVR08"
   ],
   "index_approved_server_articles": [
     "SVR01"

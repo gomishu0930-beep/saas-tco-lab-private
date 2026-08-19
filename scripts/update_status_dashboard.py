@@ -15,12 +15,24 @@ from saas_preflight.affiliate_partner_ledger import (
     AffiliatePartnershipStatus,
     load_affiliate_partner_ledger,
 )
-from saas_preflight.editorial_input import EditorialArticleInput
+from pydantic import ValidationError
+
+from saas_preflight.editorial_input import CategoryExpansionInput, EditorialArticleInput
 
 
 ROOT = Path(__file__).resolve().parents[1]
 PILOT_IDS = tuple(f"P{number:02d}" for number in range(1, 13))
 SERVER_ID_PATTERN = re.compile(r"SVR(?:0[1-9]|1[0-9]|20)")
+SERVER_LAUNCH_APPROVAL_IDS = (
+    "SVR05",
+    "SVR04",
+    "SVR06",
+    "SVR07",
+    "SVR02",
+    "SVR03",
+    "SVR09",
+    "SVR08",
+)
 DATA_START = "// DASHBOARD_DATA_START\nconst DATA = "
 DATA_END = ";\n// DASHBOARD_DATA_END"
 ALLOWED_LANE_STATES = frozenset({"HOLD", "GO", "DONE"})
@@ -70,10 +82,137 @@ KPI_FIELDS = (
     "pending_commissions_yen",
 )
 CSV_FIELDS = ("period", *KPI_FIELDS)
+SERVER_TCO_FIELDS = frozenset({
+    "pricing.initial_fee",
+    "pricing.base_price",
+    "pricing.renewal_fee",
+    "servers.campaign_price",
+    "servers.campaign_period_months",
+    "servers.domain_benefit_amount",
+    "servers.domain_benefit_period_months",
+    "servers.backup_price",
+})
 
 
 class DashboardInputError(ValueError):
     """A local state or monthly drop cannot safely update the dashboard."""
+
+
+def _server_price_progress(root: Path) -> dict[str, Any]:
+    """Count safe candidate identities without exposing source URLs or values."""
+
+    observed: set[tuple[str, str]] = set()
+    comparison_ready: set[tuple[str, str]] = set()
+    directory = root / "artifacts" / "category-expansion-inputs"
+    for path in sorted(directory.glob("*.json")):
+        try:
+            candidate = json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            continue
+        if not isinstance(candidate, dict) or (
+            candidate.get("schema_version") != "1.0"
+            or candidate.get("category_id") != "servers"
+            or candidate.get("template_kind") != "pricing_tco"
+            or candidate.get("state") != "candidate_only"
+            or not isinstance(candidate.get("numeric_fields"), list)
+        ):
+            continue
+        try:
+            candidate = CategoryExpansionInput.model_validate_json(
+                json.dumps(candidate)
+            ).model_dump(mode="json")
+        except ValidationError:
+            continue
+        conditions_by_identity = {
+            (item["vendor_id"], item["plan_id"]): item
+            for item in candidate["server_conditions"]
+        }
+        groups: dict[tuple[str, str], list[dict[str, Any]]] = {}
+        for field in candidate["numeric_fields"]:
+            if not isinstance(field, dict):
+                groups.clear()
+                break
+            vendor_id = field.get("vendor_id")
+            plan_id = field.get("plan_id")
+            if (
+                not isinstance(vendor_id, str)
+                or not isinstance(plan_id, str)
+                or not re.fullmatch(r"[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?", vendor_id)
+                or not re.fullmatch(r"[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?", plan_id)
+            ):
+                groups.clear()
+                break
+            groups.setdefault((vendor_id, plan_id), []).append(field)
+        for identity, fields in groups.items():
+            by_name = {field.get("field"): field for field in fields}
+            base = by_name.get("pricing.base_price")
+            if (
+                len(fields) != 11
+                or len(by_name) != 11
+                or not isinstance(base, dict)
+                or base.get("value_status") != "known"
+                or base.get("review_status") != "approved"
+            ):
+                continue
+            observed.add(identity)
+            if not SERVER_TCO_FIELDS.issubset(by_name):
+                continue
+            condition = conditions_by_identity.get(identity)
+            if not condition or condition.get("review_status") != "approved":
+                continue
+            condition_fields = (
+                ("campaign_ends_on_status", "campaign_ends_on", "campaign_ends_on_unknown_reason"),
+                (
+                    "minimum_commitment_months_status",
+                    "minimum_commitment_months",
+                    "minimum_commitment_unknown_reason",
+                ),
+                (
+                    "domain_benefit_terms_status",
+                    "domain_benefit_terms",
+                    "domain_benefit_terms_unknown_reason",
+                ),
+            )
+            if any(
+                condition[status_key] == "unknown"
+                or (
+                    condition[status_key] == "known"
+                    and condition[value_key] is None
+                )
+                or (
+                    condition[status_key] == "not_applicable"
+                    and not condition[reason_key]
+                )
+                for status_key, value_key, reason_key in condition_fields
+            ):
+                continue
+            ready = True
+            for field_name in SERVER_TCO_FIELDS:
+                field = by_name[field_name]
+                if field.get("review_status") != "approved" or field.get("value_status") == "unknown":
+                    ready = False
+                    break
+                if field.get("value_status") == "not_applicable":
+                    continue
+                if field.get("billing_toggle_state") == "unknown" or field.get("sale_banner_state") in {
+                    "unknown", "time_limited_promo",
+                }:
+                    ready = False
+                    break
+                if field.get("value_kind") == "price" and field.get("value_status") == "known" and (
+                    field.get("currency_status") != "known"
+                    or field.get("billing_period") in {None, "unknown"}
+                    or field.get("tax_treatment") in {None, "unknown"}
+                    or field.get("observed_price_basis") in {None, "unknown"}
+                ):
+                    ready = False
+                    break
+            if ready:
+                comparison_ready.add(identity)
+    return {
+        "observedVendorCount": len({vendor for vendor, _ in observed}),
+        "comparisonReadyVendorCount": len({vendor for vendor, _ in comparison_ready}),
+    }
 
 
 def _split_dashboard(source: str) -> tuple[str, dict[str, Any], str]:
@@ -251,7 +390,11 @@ def _work_queue(root: Path) -> list[dict[str, Any]]:
         ("Q8 90日判定閾値固定", root / "docs/PRODUCTION_ROADMAP.md"),
         ("Q9 dashboard Launch Quarter更新", root / "scripts/update_status_dashboard.py"),
         ("SVR01 servers価格観測Operator", root / "site/app/operator/servers/page.tsx"),
-        ("SVR01証拠付き・SVR02–SVR20 noindex候補view", root / "site/app/servers/business-server-pricing/page.tsx"),
+        ("M2 差額付き4列zero-input比較と直後CTA", root / "site/app/components/TcoCalculator.tsx"),
+        ("M3 ConoHa・さくら・KAGOYA 1画面checklist", root / "docs/PRICE_CHECK_CHECKLIST.md"),
+        ("M3 複数vendor candidate統合command", root / "src/saas_preflight/cli.py"),
+        ("SVR01証拠付き公開route", root / "site/app/servers/business-server-pricing/page.tsx"),
+        ("SVR02–SVR20独立noindex候補route", root / "site/app/servers/[slug]/page.tsx"),
         ("servers 20記事候補一覧", root / "site/app/operator/servers/page.tsx"),
         ("servers次8記事の取引意図優先queue", root / "docs/CATEGORY_EXPANSION_SLATE.md"),
     )
@@ -262,6 +405,8 @@ def _external_action_queue(
     root: Path,
     state: dict[str, Any],
     contracts: dict[str, EditorialArticleInput],
+    *,
+    as_of: str,
 ) -> list[dict[str, Any]]:
     """Return non-secret Human/external gates without treating them as repo work."""
 
@@ -273,6 +418,7 @@ def _external_action_queue(
         path.name.startswith("SVR01")
         for path in (root / "artifacts" / "category-expansion-inputs").glob("*.json")
     )
+    server_price_progress = _server_price_progress(root)
     server_article_approved = state["server_articles"].get("SVR01") == "approved"
     server_contract_confirmed = "candidate contractの構造確定" in adoption
     x_ready = "handleは`@saastcolab`" in adoption and "投稿0件" in adoption
@@ -385,6 +531,89 @@ def _external_action_queue(
             "status": "Human確認待ち",
             "token": "server_price_input: done SVR01",
         })
+    first_year_small_site_ready = (
+        server_price_progress["observedVendorCount"] >= 3
+        and "small_siteの12か月計算対象3vendor" in adoption
+        and "server_use_case_plan: GO xserver-business/shared-standard-12m small_site free_ssl_confirmed" in adoption
+    )
+    if server_price_progress["comparisonReadyVendorCount"] < 3 and not first_year_small_site_ready:
+        use_case_waiting = (
+            server_price_progress["observedVendorCount"] >= 3
+            and "small_siteの12か月計算対象2vendor" in adoption
+            and "server_use_case_requirements: GO" in adoption
+        )
+        actions.append({
+            "label": (
+                "M3 small_site差額表の3社目にXServerを追加（無料SSLのplan確認待ち）"
+                if use_case_waiting
+                else (
+                    "M3 servers比較用価格を3vendor分完成"
+                    f"（観測済み{server_price_progress['observedVendorCount']}・比較READY"
+                    f"{server_price_progress['comparisonReadyVendorCount']}/3）"
+                )
+            ),
+            "status": (
+                "human_use_case_attestation_required"
+                if use_case_waiting
+                else "human_official_price_observation_required"
+            ),
+            "token": (
+                "server_use_case_plan: GO xserver-business/shared-standard-12m small_site free_ssl_confirmed"
+                if use_case_waiting
+                else "server_price_input: done <vendor_id>/<plan_id>[,...]（candidate JSON必須）"
+            ),
+        })
+    server_article_source = (
+        root / "site" / "app" / "lib" / "pilot-pages.ts"
+    ).read_text(encoding="utf-8")
+    prepared_server_articles = [
+        article_id
+        for article_id in SERVER_LAUNCH_APPROVAL_IDS
+        if f'articleId: "{article_id}"' in server_article_source
+    ]
+    pending_server_article_approvals = [
+        article_id
+        for article_id in prepared_server_articles
+        if state["server_articles"].get(article_id) != "approved"
+    ]
+    if pending_server_article_approvals:
+        joined = ",".join(pending_server_article_approvals)
+        actions.append({
+            "label": f"M4 servers記事{len(pending_server_article_approvals)}本のHuman標本承認",
+            "status": "human_article_approval_required",
+            "token": f"article_approve: {joined}",
+        })
+    approved_server_release_ready = [
+        article_id
+        for article_id in SERVER_LAUNCH_APPROVAL_IDS
+        if (
+            state["server_articles"].get(article_id) == "approved"
+            and article_id not in state["deployed_server_articles"]
+        )
+    ]
+    if approved_server_release_ready:
+        joined = ",".join(approved_server_release_ready)
+        actions.append({
+            "label": f"M4 承認済みservers記事{len(approved_server_release_ready)}本のproduction release",
+            "status": "production_go_required",
+            "token": f"deploy_update: GO {joined} / HOLD",
+        })
+    approved_server_index_ready = [
+        article_id
+        for article_id in SERVER_LAUNCH_APPROVAL_IDS
+        if (
+            state["server_articles"].get(article_id) == "approved"
+            and article_id in state["deployed_server_articles"]
+            and article_id not in state["index_approved_server_articles"]
+        )
+    ]
+    if approved_server_index_ready:
+        joined = ",".join(approved_server_index_ready)
+        actions.append({
+            "label": f"M4 production反映済みservers記事{len(approved_server_index_ready)}本のindex release",
+            "status": "server_index_go_required",
+            "token": f"index_go: GO {joined} / HOLD",
+        })
     if (
         not server_article_approved
         and
@@ -445,6 +674,10 @@ def _external_action_queue(
     evidence_required = [
         article_id for article_id in unreviewed_contracts if article_id not in review_ready
     ]
+    if date.fromisoformat(as_of) < date(2026, 9, 1):
+        evidence_required = [
+            article_id for article_id in evidence_required if article_id != "P11"
+        ]
     if review_ready:
         joined = ",".join(review_ready)
         actions.append({
@@ -682,6 +915,7 @@ def _regenerate(
         path.name.startswith("SVR01")
         for path in (root / "artifacts" / "category-expansion-inputs").glob("*.json")
     )
+    server_price_progress = _server_price_progress(root)
     cta_count = sum(value in {"GO", "DONE"} for value in state["affiliate_cta"].values())
     domain_state = state["domain_state"]
     index_state = state["index_state"]
@@ -697,7 +931,7 @@ def _regenerate(
     )
     data["kpis"] = [
         {"label": "公開記事数", "value": total_published_count, "target": 20, "sub": f"P記事 {published_count}本・servers {published_server_count}本"},
-        {"label": "インデックス数", "value": external["indexed_articles"], "target": 12, "sub": f"index_go: {index_state}"},
+        {"label": "インデックス数", "value": external["indexed_articles"], "target": 20, "sub": f"index_go: {index_state}"},
         {"label": "GSC clicks(月)", "value": external["gsc_clicks"], "target": None, "sub": f"対象月 {external['period']}"},
         {"label": "Outbound clicks(月)", "value": external["outbound_clicks"], "target": 3334, "sub": "目標 3,334 / 月"},
         {"label": "確定報酬(月)", "value": external["confirmed_commissions_yen"], "target": 200000, "sub": "confirmed commissions(円)", "yen": True},
@@ -739,6 +973,55 @@ def _regenerate(
         "ctaEnabledPartners": len(enabled_server_cta),
         "ctaHeldPartners": len(held_server_cta),
     }
+    crawl_path_ready = (
+        "Sites version 31へdeploy" in adoption
+        and "未承認・管理routeのfail-closedを外部read-back済み" in adoption
+    )
+    use_case_requirements_confirmed = "server_use_case_requirements: GO" in adoption
+    difference_implementation_ready = all(
+        marker in (root / "site" / "app" / "lib" / "tco.ts").read_text(encoding="utf-8")
+        for marker in ("differenceFromLowestMinor", "confirmedVendorCount >= 3", "useCaseRequirements")
+    )
+    cta_after_results_ready = "afterResults" in (
+        root / "site" / "app" / "components" / "TcoCalculator.tsx"
+    ).read_text(encoding="utf-8")
+    server_article_source = (
+        root / "site" / "app" / "lib" / "pilot-pages.ts"
+    ).read_text(encoding="utf-8")
+    launch_draft_ids = SERVER_LAUNCH_APPROVAL_IDS
+    launch_drafts_prepared = sum(
+        f'articleId: "{article_id}"' in server_article_source
+        for article_id in launch_draft_ids
+    )
+    live_difference_ready = (
+        server_price_progress["observedVendorCount"] >= 3
+        and use_case_requirements_confirmed
+        and "small_siteの12か月計算対象3vendor" in adoption
+        and "server_use_case_plan: GO xserver-business/shared-standard-12m small_site free_ssl_confirmed" in adoption
+    )
+    data["augustGoal"] = {
+        "deadline": "2026-08-31",
+        "crawlPathReady": crawl_path_ready,
+        "observedServerVendors": server_price_progress["observedVendorCount"],
+        "comparisonReadyServerVendors": server_price_progress["comparisonReadyVendorCount"],
+        "requiredServerVendors": 3,
+        "publishedArticles": total_published_count,
+        "requiredPublishedArticles": 20,
+        "launchDraftsPrepared": launch_drafts_prepared,
+        "requiredLaunchDrafts": len(launch_draft_ids),
+        "differenceImplementationReady": difference_implementation_ready,
+        "ctaAfterResultsImplementationReady": cta_after_results_ready,
+        "useCaseRequirementsConfirmed": use_case_requirements_confirmed,
+        "liveDifferenceReady": live_difference_ready,
+        "allConditionsReady": (
+            crawl_path_ready
+            and live_difference_ready
+            and total_published_count >= 20
+            and difference_implementation_ready
+            and cta_after_results_ready
+            and live_difference_ready
+        ),
+    }
     data["partners"] = [
         {
             "name": "Mangools",
@@ -777,14 +1060,23 @@ def _regenerate(
         },
     ]
     data["work"] = _work_queue(root)
-    data["externalActions"] = _external_action_queue(root, state, contracts)
+    data["externalActions"] = _external_action_queue(
+        root,
+        state,
+        contracts,
+        as_of=as_of,
+    )
     data["articleReviews"] = _article_review_queue(contracts)
     data["launchQuarter"] = _launch_quarter()
     data["deadlines"] = [
         {"date": "2026-08-01", "label": "exact domain選択・domain day開始"},
         {"date": "2026-08 第1週", "label": "P01–P03 Human記事承認"},
         {"date": "2026-08-05", "label": "W6 150 query完了・拡張準備260 query凍結"},
-        {"date": "2026-08-31", "label": "約8本・Impact・W6・ASP申請可能状態"},
+        {"date": "2026-08-18", "label": "M1 crawl経路の本番read-back完了"},
+        {"date": "2026-08-22", "label": "M2 差額付きzero-input計算機の公開候補完成"},
+        {"date": "2026-08-27", "label": "M3 servers確認済み価格を3vendor以上へ"},
+        {"date": "2026-08-29", "label": "M4 承認済み公開記事20本へ"},
+        {"date": "2026-08-31", "label": "M5 8月5 KPIをsafe aggregateで記録"},
         {"date": "2026-09-01", "label": "P11導入前月の完全暦月計測開始"},
         {"date": "2026-10-01", "label": "P11導入後月の完全暦月計測開始"},
         {"date": "2026-10-31", "label": "現ニッチ90日固定判定・カテゴリ別判断"},
@@ -830,7 +1122,13 @@ def _regenerate(
                 "P01登録要求一時エラー。通常クロール待ち"
             ),
         })
-    if "robots.txt over-block" in adoption:
+    if "Sites version 31へdeploy" in adoption and "未承認・管理routeのfail-closedを外部read-back済み" in adoption:
+        dynamic_risks.append({
+            "riskId": "index-discovery-path",
+            "level": "monitor",
+            "label": "M1 crawl経路は本番解消済み。GSC index登録7/12の再処理を監視",
+        })
+    elif "robots.txt over-block" in adoption:
         dynamic_risks.append({
             "riskId": "index-discovery-path",
             "level": "warn",

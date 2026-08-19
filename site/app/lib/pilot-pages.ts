@@ -25,6 +25,30 @@ export type PilotPage = {
   numericFields: readonly PilotNumericField[];
 };
 
+/** Shared catalog for Human-confirmed servers observations and batch restore. */
+export const serverObservationPage = {
+  id: "P01",
+  slug: "server-observation-candidate",
+  title: "servers価格観測候補",
+  intent: "price_check",
+  pageType: "pricing",
+  question: "初期費用・通常料金・更新料・特典を分けて記録できるか",
+  readerOutcome: "確認済みfieldだけをservers計算機候補へ渡せる",
+  numericFields: [
+    { key: "pricing.initial_fee", label: "初期費用", valueKind: "price" },
+    { key: "pricing.base_price", label: "基本料金", valueKind: "price" },
+    { key: "pricing.renewal_fee", label: "更新時請求額", valueKind: "price" },
+    { key: "servers.campaign_price", label: "キャンペーン価格", valueKind: "price" },
+    { key: "servers.campaign_period_months", label: "キャンペーン適用月数", valueKind: "duration" },
+    { key: "servers.domain_benefit_amount", label: "ドメイン特典の確認額", valueKind: "price" },
+    { key: "servers.domain_benefit_period_months", label: "ドメイン特典の適用月数", valueKind: "duration" },
+    { key: "servers.compute_hours", label: "計算資源の時間上限", valueKind: "usage" },
+    { key: "servers.storage_gb", label: "ストレージ容量", valueKind: "quota" },
+    { key: "servers.data_transfer_gb", label: "データ転送量", valueKind: "quota" },
+    { key: "servers.backup_price", label: "バックアップ料金", valueKind: "price" },
+  ],
+} as const satisfies PilotPage;
+
 export type ServerArticleSlateEntry = {
   id: `SVR${string}`;
   slug: string;
@@ -51,6 +75,17 @@ export type ServerArticleSlateEntry = {
 export type ServerBigWordHub = {
   sourceQuery: string;
   state: "deferred_internal_link_hub";
+};
+
+type ServerObservationFieldKey = (typeof serverObservationPage.numericFields)[number]["key"];
+
+export type ServerLaunchArticleBrief = {
+  articleId: ServerArticleSlateEntry["id"];
+  decisionRule: string;
+  readerSections: ServerArticleSlateEntry["sections"];
+  reusableObservationFields: readonly ServerObservationFieldKey[];
+  additionalHumanChecks: readonly string[];
+  approvalQuestion: string;
 };
 
 export type ServerPartnerCtaState = {
@@ -317,6 +352,159 @@ export const serverLaunchPriorityIds = [
   "SVR09", // corporate mail cost
   "SVR08", // EC recovery requirements
 ] as const satisfies readonly ServerArticleSlateEntry["id"][];
+
+/**
+ * Article-specific evidence routing for the eight August launch drafts.
+ * It reuses only exact fields from the common server observation and keeps
+ * non-numeric or scenario-specific facts as explicit Human checks.
+ */
+export const serverLaunchArticleBriefs: readonly ServerLaunchArticleBrief[] = [
+  {
+    articleId: "SVR05",
+    decisionRule: "初回の支払額と更新時の支払額を分け、同じ契約期間で2年目までの負担を判断する。",
+    readerSections: [
+      { title: "結論", focus: "更新時請求額を確認できたサービスだけで2年目の負担を示し、未確認のサービスには順位を付けません" },
+      { title: "比較前提", focus: "初回価格、更新時請求額、契約期間、自動更新の時期を別々に確認します" },
+      { title: "料金と上限", focus: "初期費用、初回12か月の請求総額、更新時請求額、ドメイン特典を分けて示します" },
+      { title: "12か月TCO", focus: "初年度は確認済みの請求総額を使い、更新額が未確認なら2年目へ延長しません" },
+      { title: "反証", focus: "初回限定の割引を更新時にも続くものとして扱わず、解約期限も未確認のまま明示します" },
+      { title: "選び方", focus: "初年度の安さだけでなく、確認できた更新額と契約終了条件を見て判断します" },
+    ],
+    reusableObservationFields: [
+      "pricing.base_price", "pricing.renewal_fee", "servers.campaign_price",
+      "servers.campaign_period_months", "servers.domain_benefit_amount",
+      "servers.domain_benefit_period_months",
+    ],
+    additionalHumanChecks: ["自動更新日と解約期限", "初回限定条件と更新後の適用条件"],
+    approvalQuestion: "初回特典を更新時料金へ流用せず、2年目に実際に支払う範囲を説明できているか。",
+  },
+  {
+    articleId: "SVR04",
+    decisionRule: "初期費用と契約期間中の請求を重複させず、初年度の資金負担を判断する。",
+    readerSections: [
+      { title: "結論", focus: "初期費用と12か月の請求総額を同じ基準でそろえ、契約時に必要な金額を示します" },
+      { title: "比較前提", focus: "12か月契約、円表示、税区分が確認できた行だけを同じ表で扱います" },
+      { title: "料金と上限", focus: "初期費用、年次請求総額、容量、転送量、バックアップ料金を分けて確認します" },
+      { title: "12か月TCO", focus: "年次請求総額に初期費用が含まれるかを確認し、同じ費用を二重に足しません" },
+      { title: "反証", focus: "無料期間、返金条件、期間限定価格は通常の初年度総額へ推測で混ぜません" },
+      { title: "選び方", focus: "最小の表示額ではなく、用途条件を満たしたうえで契約時の資金負担を比べます" },
+    ],
+    reusableObservationFields: [
+      "pricing.initial_fee", "pricing.base_price", "pricing.renewal_fee",
+      "servers.campaign_price", "servers.campaign_period_months",
+    ],
+    additionalHumanChecks: ["初回請求日と請求対象期間", "無料期間・返金条件・税込／税別表示"],
+    approvalQuestion: "初回請求と継続請求を二重計上せず、契約時に必要な金額を説明できているか。",
+  },
+  {
+    articleId: "SVR06",
+    decisionRule: "新旧契約の重複期間、公式移行支援、Human作業を分離して乗り換え費用を判断する。",
+    readerSections: [
+      { title: "結論", focus: "新しい契約の料金と、旧契約の重複期間、移行支援、作業時間を別項目として示します" },
+      { title: "比較前提", focus: "移行対象、停止できる時間、旧契約を残す月数を決めてから総額を計算します" },
+      { title: "料金と上限", focus: "新サーバーの確認済み料金だけを先に示し、移行支援の対象外作業は別に残します" },
+      { title: "12か月TCO", focus: "旧契約額や重複月数が未確認なら、その部分を0円にせず合計を停止します" },
+      { title: "反証", focus: "WebサイトだけでなくDNS、メール、データベース、切り戻し作業が残る可能性を確認します" },
+      { title: "選び方", focus: "料金差よりも停止リスクと移行範囲を優先し、必要な確認が少ない候補へ絞ります" },
+    ],
+    reusableObservationFields: ["pricing.base_price", "pricing.renewal_fee"],
+    additionalHumanChecks: ["旧契約の月額と重複月数", "公式移行支援の料金・対象・対象外", "DNS・mail・databaseの作業時間"],
+    approvalQuestion: "公式料金とHuman作業を混ぜず、二重支払いが発生する条件を説明できているか。",
+  },
+  {
+    articleId: "SVR07",
+    decisionRule: "法人契約に必要な条件を満たす候補だけで、契約時と更新時の負担を判断する。",
+    readerSections: [
+      { title: "結論", focus: "小規模サイトの条件に加え、複数人管理または運用代行を確認できた候補だけを法人向けとして扱います" },
+      { title: "比較前提", focus: "容量、転送量、バックアップ、無料SSL、管理方法を同じ必要条件にそろえます" },
+      { title: "料金と上限", focus: "確認済みの初年度料金と、未確認の更新額・請求方法を分けて示します" },
+      { title: "12か月TCO", focus: "初年度の請求総額は比較し、更新額が未確認の候補は24か月以降へ延長しません" },
+      { title: "反証", focus: "法人向けという名称だけで請求書払い、SLA、権限管理が使えるとは判断しません" },
+      { title: "選び方", focus: "管理体制の必要条件を先に満たし、その後で初年度の資金負担を比べます" },
+    ],
+    reusableObservationFields: [
+      "pricing.initial_fee", "pricing.base_price", "pricing.renewal_fee",
+      "servers.domain_benefit_amount", "servers.domain_benefit_period_months",
+    ],
+    additionalHumanChecks: ["最低契約期間", "請求書払い・SLA・法人名義の対応", "解約期限と返金条件"],
+    approvalQuestion: "価格だけで法人向けと断定せず、必要条件と未確認条件を分けているか。",
+  },
+  {
+    articleId: "SVR02",
+    decisionRule: "小規模運用の必要条件を満たす最小構成と、上位プランへ移る境界を判断する。",
+    readerSections: [
+      { title: "結論", focus: "100GB以上、転送量無制限、バックアップ利用可、無料SSLを確認できた候補だけを残します" },
+      { title: "比較前提", focus: "小規模という言葉から利用量を推測せず、確認済みの4条件を最低ラインにします" },
+      { title: "料金と上限", focus: "初年度料金、容量、転送量、バックアップ料金を同じ行で確認します" },
+      { title: "12か月TCO", focus: "確認済みの年次請求総額だけを表示し、期間限定価格は通常価格の順位へ入れません" },
+      { title: "反証", focus: "サイト数、管理者数、サポート範囲が未確認なら上位プランが不要とは断定しません" },
+      { title: "選び方", focus: "最低条件を満たす候補から、将来必要になる管理機能を追加確認して選びます" },
+    ],
+    reusableObservationFields: [
+      "pricing.initial_fee", "pricing.base_price", "pricing.renewal_fee",
+      "servers.storage_gb", "servers.data_transfer_gb", "servers.backup_price",
+    ],
+    additionalHumanChecks: ["最低契約期間", "サイト数・管理者数・サポート範囲", "上位プランへの変更条件"],
+    approvalQuestion: "小規模という語から必要量を推測せず、Human確認した用途条件だけで候補を絞っているか。",
+  },
+  {
+    articleId: "SVR03",
+    decisionRule: "EC用途の容量・転送・backup条件を満たす候補だけで、12か月の負担を判断する。",
+    readerSections: [
+      { title: "結論", focus: "小規模サイトの4条件に加えてEC用途またはECアプリ対応を確認できた候補だけを比較対象にします" },
+      { title: "比較前提", focus: "共有サーバー、VPS、運用代行付きサービスを同じ性能として混ぜません" },
+      { title: "料金と上限", focus: "初年度料金、容量、転送量、バックアップ料金とEC対応状況を分けて確認します" },
+      { title: "12か月TCO", focus: "EC適合が未確認の行は、価格が確認済みでも順位と差額から除外します" },
+      { title: "反証", focus: "復元料金、保存世代、復旧時間、SLAが未確認なら安全性を断定しません" },
+      { title: "選び方", focus: "価格より先にEC対応と復旧条件を確認し、条件を満たす候補だけで総額を比べます" },
+    ],
+    reusableObservationFields: [
+      "pricing.initial_fee", "pricing.base_price", "pricing.renewal_fee",
+      "servers.storage_gb", "servers.data_transfer_gb", "servers.backup_price",
+    ],
+    additionalHumanChecks: ["復元料金・保存世代・復旧時間", "SLA・サポート時間・停止時の責任範囲", "EC機能の対応条件"],
+    approvalQuestion: "共有・VPS・managedを混同せず、EC用途の必須条件を確認済み事実だけで示しているか。",
+  },
+  {
+    articleId: "SVR09",
+    decisionRule: "必要なmail account数、保存・backup・移行条件を分けて法人メールの負担を判断する。",
+    readerSections: [
+      { title: "結論", focus: "Web容量をメール容量へ読み替えず、アカウント数、保存容量、保全、移行条件を確認して判断します" },
+      { title: "比較前提", focus: "必要なメールアカウント数と1アカウント当たり容量を決め、Web用途の条件と分離します" },
+      { title: "料金と上限", focus: "サーバー料金は確認済み値を使い、メール固有の追加料金と上限は未確認のまま示します" },
+      { title: "12か月TCO", focus: "メール固有の費用が未確認なら、サーバー料金だけを法人メールの総額とは呼びません" },
+      { title: "反証", focus: "迷惑メール対策、アーカイブ、移行停止時間がプランに含まれるとは推測しません" },
+      { title: "選び方", focus: "アカウント数と保全要件を満たした候補だけを残し、その後で初年度料金を比較します" },
+    ],
+    reusableObservationFields: ["pricing.initial_fee", "pricing.base_price", "pricing.renewal_fee", "servers.backup_price"],
+    additionalHumanChecks: ["mail account数と1accountあたり容量", "迷惑mail・保全・archive条件", "mail移行の対象・費用・停止時間"],
+    approvalQuestion: "web hostingの容量をmail容量へ流用せず、mail固有の上限と移行条件を確認しているか。",
+  },
+  {
+    articleId: "SVR08",
+    decisionRule: "ECサイトの継続運用に必要な性能・backup・復旧条件を満たす候補を判断する。",
+    readerSections: [
+      { title: "結論", focus: "EC対応とバックアップ利用可だけでなく、復元方法と障害時対応を確認できるまで推奨を確定しません" },
+      { title: "比較前提", focus: "容量、転送量、無料SSL、バックアップ、EC対応を最低条件として確認します" },
+      { title: "料金と上限", focus: "確認済みの初年度料金とバックアップ料金を示し、復元料金と復旧時間は別に扱います" },
+      { title: "12か月TCO", focus: "価格が確認済みでもEC用途が未確認なら、計算結果から順位と差額を外します" },
+      { title: "反証", focus: "高負荷対応、SLA、決済や個人情報への対応をプラン名から推測しません" },
+      { title: "選び方", focus: "売上停止時の復旧条件を先に確認し、同じ条件を満たした候補だけで費用を比べます" },
+    ],
+    reusableObservationFields: [
+      "pricing.base_price", "pricing.renewal_fee", "servers.compute_hours",
+      "servers.storage_gb", "servers.data_transfer_gb", "servers.backup_price",
+    ],
+    additionalHumanChecks: ["backupの保存期間・復元料金・復旧時間", "障害時のSLAとサポート範囲", "決済・個人情報を扱う場合の公式対応条件"],
+    approvalQuestion: "性能や安全性をプラン名から推測せず、未確認の復旧・運用条件を明示しているか。",
+  },
+];
+
+export function serverLaunchBriefFor(
+  articleId: ServerArticleSlateEntry["id"],
+): ServerLaunchArticleBrief | null {
+  return serverLaunchArticleBriefs.find((brief) => brief.articleId === articleId) ?? null;
+}
 
 export function serverLaunchPriorityArticles(): readonly ServerArticleSlateEntry[] {
   const byId = new Map(serverArticleSlate.map((article) => [article.id, article]));

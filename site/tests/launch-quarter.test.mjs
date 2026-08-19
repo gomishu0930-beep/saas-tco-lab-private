@@ -14,10 +14,14 @@ import {
   serverArticleSlate,
   serverBigWordHubs,
   serverCtaPresentationPolicy,
+  serverLaunchArticleBriefs,
   serverLaunchPriorityArticles,
   serverLaunchPriorityIds,
 } from "../app/lib/pilot-pages.ts";
-import { articleStructuredData } from "../app/lib/structured-data.ts";
+import {
+  articleStructuredData,
+  serverArticleStructuredData,
+} from "../app/lib/structured-data.ts";
 import { hasUnknownFact } from "../app/lib/editorial-input-contract.ts";
 
 test("partner ledger keeps Japanese ASP account and program approval evidence exact", async () => {
@@ -205,6 +209,32 @@ test("servers launch slate fixes twenty long-tail candidates and defers big-word
     serverLaunchPriorityArticles().map((article) => article.id),
     [...serverLaunchPriorityIds],
   );
+  assert.deepEqual(
+    serverLaunchArticleBriefs.map((brief) => brief.articleId),
+    [...serverLaunchPriorityIds],
+  );
+  const serverFieldCatalog = new Set([
+    "pricing.initial_fee", "pricing.base_price", "pricing.renewal_fee",
+    "servers.campaign_price", "servers.campaign_period_months",
+    "servers.domain_benefit_amount", "servers.domain_benefit_period_months",
+    "servers.compute_hours", "servers.storage_gb", "servers.data_transfer_gb",
+    "servers.backup_price",
+  ]);
+  assert.ok(serverLaunchArticleBriefs.every((brief) => brief.reusableObservationFields.length > 0));
+  assert.ok(serverLaunchArticleBriefs.every((brief) => brief.additionalHumanChecks.length > 0));
+  assert.ok(serverLaunchArticleBriefs.every((brief) => brief.readerSections.length === 6));
+  assert.ok(serverLaunchArticleBriefs.every((brief) => (
+    JSON.stringify(brief.readerSections.map((section) => section.title))
+      === JSON.stringify(["結論", "比較前提", "料金と上限", "12か月TCO", "反証", "選び方"])
+  )));
+  assert.ok(serverLaunchArticleBriefs.every((brief) => (
+    !/contract|billing toggle|Human scenario|candidate_only/i.test(JSON.stringify(brief.readerSections))
+  )));
+  assert.ok(serverLaunchArticleBriefs.every((brief) => brief.reusableObservationFields.every(
+    (field) => serverFieldCatalog.has(field),
+  )));
+  assert.equal(new Set(serverLaunchArticleBriefs.map((brief) => brief.decisionRule)).size, 8);
+  assert.equal(new Set(serverLaunchArticleBriefs.map((brief) => brief.approvalQuestion)).size, 8);
 });
 
 test("servers CTA policy is disabled, single, or comparison and warns above 80 percent", () => {
@@ -325,6 +355,21 @@ test("released note and X derivatives contain verified copy while held pages fai
   }
 });
 
+test("server article production release is recorded without widening index or CTA scope", async () => {
+  const launchState = JSON.parse(await readFile(
+    new URL("../../docs/EDITORIAL_LAUNCH_STATE.json", import.meta.url),
+    "utf8",
+  ));
+  assert.deepEqual(
+    launchState.server_articles,
+    Object.fromEntries(Array.from({ length: 9 }, (_, index) => [`SVR${String(index + 1).padStart(2, "0")}`, "approved"])),
+  );
+  assert.deepEqual(launchState.deployed_server_articles, [
+    "SVR01", "SVR05", "SVR04", "SVR06", "SVR07", "SVR02", "SVR03", "SVR09", "SVR08",
+  ]);
+  assert.deepEqual(launchState.index_approved_server_articles, ["SVR01"]);
+});
+
 function contract(reviewStatus, fieldReviewStatus) {
   return {
     schema_version: "2.3",
@@ -388,6 +433,40 @@ test("structured data emits an Offer only for Human-approved price fields", () =
 
   const fieldHeld = articleStructuredData(page, contract("approved", "unreviewed"));
   assert.equal("offers" in fieldHeld["@graph"][0], false);
+});
+
+test("server structured data exposes prices only for exact approved article semantics", () => {
+  const evidence = [{
+    displayName: "Vendor Plan",
+    initialPayment: {
+      amount: "12000",
+      annualCheckoutTotal: "12000",
+      initialFee: "0",
+      currency: "JPY",
+      taxTreatment: "included",
+      observedOn: "2026-08-18",
+      nextReviewOn: "2026-09-17",
+    },
+    calculatorContract: { plans: [{ eligibleUseCases: ["small_site"] }] },
+  }];
+  const firstYear = serverArticleSlate.find((article) => article.id === "SVR04");
+  const ecommerce = serverArticleSlate.find((article) => article.id === "SVR03");
+  assert.ok(firstYear && ecommerce);
+
+  const held = serverArticleStructuredData(firstYear, "unreviewed", evidence);
+  assert.equal("offers" in held["@graph"][0], false);
+
+  const approved = serverArticleStructuredData(firstYear, "approved", evidence);
+  assert.deepEqual(approved["@graph"][0].offers, [{
+    "@type": "Offer",
+    name: "Vendor Plan（12か月）",
+    price: "12000",
+    priceCurrency: "JPY",
+    priceValidUntil: "2026-09-17",
+  }]);
+
+  const semanticallyIncomplete = serverArticleStructuredData(ecommerce, "approved", evidence);
+  assert.equal("offers" in semanticallyIncomplete["@graph"][0], false);
 });
 
 test("v2.3 treats only time-limited or unknown price display classes as held facts", () => {

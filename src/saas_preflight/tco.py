@@ -235,6 +235,8 @@ class ServerZeroInputPlan:
     quote: PricingQuote | None = None
     server_terms: ServerTcoTerms | None = None
     unknown_reason: str | None = None
+    confirmed_through_months: int | None = None
+    horizon_unknown_reason: str | None = None
 
 
 @dataclass(frozen=True, slots=True)
@@ -247,6 +249,7 @@ class ServerZeroInputRow:
     currency: str | None
     minor_unit_digits: int | None
     rank: int | None
+    difference_from_lowest_minor: int | None
     reason: str | None
 
 
@@ -254,6 +257,8 @@ class ServerZeroInputRow:
 class ServerZeroInputTable:
     months: int
     use_case: ServerUseCase
+    comparison_mode: str
+    confirmed_vendor_count: int
     rows: tuple[ServerZeroInputRow, ...]
 
 
@@ -329,8 +334,10 @@ def calculate_server_zero_input_table(
 
     Only 12/24/36-month horizons are supported. Unknown, unreviewed, or
     explicitly ineligible rows remain visible but are excluded from ranking.
-    Mixed currencies are calculated but not ranked because conversion is
-    intentionally outside the canonical TCO boundary.
+    A ranking and first-place difference are emitted only when at least three
+    distinct vendors have comparable, approved prices. Mixed currencies are
+    calculated but not ranked because conversion is intentionally outside the
+    canonical TCO boundary.
     """
 
     if months not in {12, 24, 36}:
@@ -362,12 +369,36 @@ def calculate_server_zero_input_table(
                     currency=None,
                     minor_unit_digits=None,
                     rank=None,
+                    difference_from_lowest_minor=None,
                     reason=plan.unknown_reason.strip(),
                 )
             )
             continue
         if plan.quote is None or plan.server_terms is None:
             raise TcoError("known server plan requires quote and server terms")
+        if plan.confirmed_through_months is not None:
+            if plan.confirmed_through_months not in {12, 24, 36}:
+                raise TcoError("confirmed server horizon must be 12, 24, or 36 months")
+            if not plan.horizon_unknown_reason or not plan.horizon_unknown_reason.strip():
+                raise TcoError("bounded server horizon requires an unknown reason")
+            if months > plan.confirmed_through_months:
+                pending.append(
+                    ServerZeroInputRow(
+                        vendor_id=plan.vendor_id,
+                        plan_id=plan.plan_id,
+                        display_name=plan.display_name,
+                        status="unconfirmed",
+                        total_minor=None,
+                        currency=plan.quote.currency,
+                        minor_unit_digits=plan.quote.minor_unit_digits,
+                        rank=None,
+                        difference_from_lowest_minor=None,
+                        reason=plan.horizon_unknown_reason.strip(),
+                    )
+                )
+                continue
+        elif plan.horizon_unknown_reason is not None:
+            raise TcoError("unbounded server horizon cannot carry an unknown reason")
         if not article_review_approved or plan.review_status is not ServerPlanReviewStatus.APPROVED:
             pending.append(
                 ServerZeroInputRow(
@@ -379,6 +410,7 @@ def calculate_server_zero_input_table(
                     currency=None,
                     minor_unit_digits=None,
                     rank=None,
+                    difference_from_lowest_minor=None,
                     reason="Human承認前のため計算対象外",
                 )
             )
@@ -394,6 +426,7 @@ def calculate_server_zero_input_table(
                     currency=plan.quote.currency,
                     minor_unit_digits=plan.quote.minor_unit_digits,
                     rank=None,
+                    difference_from_lowest_minor=None,
                     reason="選択した用途区分の承認対象外",
                 )
             )
@@ -407,9 +440,13 @@ def calculate_server_zero_input_table(
         calculated.append((plan, calculate_server_tco(plan.quote, scenario, plan.server_terms)))
 
     currencies = {result.currency for _, result in calculated}
-    comparable = len(currencies) <= 1
+    confirmed_vendor_count = len({plan.vendor_id for plan, _ in calculated})
+    currencies_comparable = len(currencies) <= 1
+    ranking_enabled = currencies_comparable and confirmed_vendor_count >= 3
     rank_by_identity: dict[tuple[str, str], int] = {}
-    if comparable:
+    lowest_total_minor: int | None = None
+    if ranking_enabled:
+        lowest_total_minor = min(result.total_minor for _, result in calculated)
         for rank, (plan, _) in enumerate(
             sorted(calculated, key=lambda item: (item[1].total_minor, item[0].display_name)),
             start=1,
@@ -421,12 +458,29 @@ def calculate_server_zero_input_table(
             vendor_id=plan.vendor_id,
             plan_id=plan.plan_id,
             display_name=plan.display_name,
-            status="ranked" if comparable else "currency_mismatch",
             total_minor=result.total_minor,
             currency=result.currency,
             minor_unit_digits=result.minor_unit_digits,
             rank=rank_by_identity.get((plan.vendor_id, plan.plan_id)),
-            reason=None if comparable else "通貨換算を行わないため順位なし",
+            difference_from_lowest_minor=(
+                result.total_minor - lowest_total_minor
+                if ranking_enabled and lowest_total_minor is not None
+                else None
+            ),
+            reason=(
+                None
+                if ranking_enabled
+                else "確認済みvendorが3社未満のため順位なし"
+                if currencies_comparable
+                else "通貨換算を行わないため順位なし"
+            ),
+            status=(
+                "ranked"
+                if ranking_enabled
+                else "confirmed_unranked"
+                if currencies_comparable
+                else "currency_mismatch"
+            ),
         )
         for plan, result in calculated
     ]
@@ -436,6 +490,8 @@ def calculate_server_zero_input_table(
     return ServerZeroInputTable(
         months=months,
         use_case=use_case,
+        comparison_mode="ranked_comparison" if ranking_enabled else "confirmed_list",
+        confirmed_vendor_count=confirmed_vendor_count,
         rows=tuple(rows_by_identity[identity] for identity in identities),
     )
 

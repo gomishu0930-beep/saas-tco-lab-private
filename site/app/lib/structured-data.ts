@@ -1,11 +1,11 @@
-import type { EditorialContract } from "./editorial-input-contract";
+import type { EditorialContract, ServerCandidateEvidence } from "./editorial-input-contract";
 import {
   billingPeriodLabel,
   editorialPresentation,
   planDisplayName,
   vendorDisplayName,
 } from "./editorial-presentation.ts";
-import type { PilotPage } from "./pilot-pages";
+import type { PilotPage, ServerArticleSlateEntry } from "./pilot-pages";
 
 type JsonLdObject = Record<string, unknown>;
 
@@ -70,6 +70,73 @@ export function articleStructuredData(
           { "@type": "ListItem", position: 1, name: "SaaS TCO Lab" },
           { "@type": "ListItem", position: 2, name: "記事" },
           { "@type": "ListItem", position: 3, name: presentation.title },
+        ],
+      },
+    ],
+  };
+}
+
+const SERVER_OFFER_SCOPE: Readonly<Partial<Record<ServerArticleSlateEntry["id"], "all" | "small_site" | "corporate_site" | "ecommerce">>> = {
+  SVR02: "small_site",
+  SVR04: "all",
+  SVR07: "corporate_site",
+};
+
+/**
+ * Server comparison schema keeps article approval and price semantics separate.
+ * Only articles whose question is exactly answered by a confirmed first-year
+ * checkout amount may emit Offers; all other pages keep Product/FAQ/Breadcrumb
+ * without a modeled or partial price.
+ */
+export function serverArticleStructuredData(
+  article: ServerArticleSlateEntry,
+  articleReviewStatus: "approved" | "unreviewed",
+  evidence: readonly ServerCandidateEvidence[],
+): JsonLdObject {
+  const scope = SERVER_OFFER_SCOPE[article.id];
+  const offers = articleReviewStatus !== "approved" || !scope
+    ? []
+    : evidence.flatMap((item) => {
+      const payment = item.initialPayment;
+      const plan = item.calculatorContract.plans[0];
+      const eligible = scope === "all" || plan?.eligibleUseCases.includes(scope);
+      if (!payment || !eligible) return [];
+      return [{
+        "@type": "Offer",
+        name: item.displayName.includes("12か月") ? item.displayName : `${item.displayName}（12か月）`,
+        price: payment.amount,
+        priceCurrency: payment.currency,
+        priceValidUntil: payment.nextReviewOn,
+      }];
+    });
+  const product: JsonLdObject = {
+    "@type": "Product",
+    name: article.titleTemplate,
+    description: article.readerQuestion,
+    category: "レンタルサーバー",
+  };
+  if (offers.length) product.offers = offers;
+  return {
+    "@context": "https://schema.org",
+    "@graph": [
+      product,
+      {
+        "@type": "FAQPage",
+        mainEntity: [{
+          "@type": "Question",
+          name: article.readerQuestion,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "公式ページで確認できた料金と条件だけを使い、未確認項目は0円や推測値に置き換えず説明します。",
+          },
+        }],
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          { "@type": "ListItem", position: 1, name: "SaaS TCO Lab" },
+          { "@type": "ListItem", position: 2, name: "サーバー料金" },
+          { "@type": "ListItem", position: 3, name: article.titleTemplate },
         ],
       },
     ],

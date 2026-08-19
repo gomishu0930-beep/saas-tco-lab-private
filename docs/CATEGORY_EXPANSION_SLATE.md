@@ -206,12 +206,14 @@ SEOツールの新規記事へは投資しない。`server_price_input: done SVR
   Human分類外は`対象外`と表示し、いずれも順位から除外する。通貨が混在する場合も換算せず順位を付けない。
 - 任意入力式の従来計算機は`/methodology/#detailed-calculator`へ移し、記事からは1リンクで参照する。
   zero-input表と詳細計算モードは同じPython正本を使い、TypeScriptは12/24/36か月のgolden一致を必須とする。
-  現時点では承認済みservers価格contractが0件のため、実価格をseedせず空状態をfail-closedで表示する。
+  初期実装時は承認済みservers価格contractが0件だったため、実価格をseedせず空状態をfail-closedで表示した。
+  以後もHuman承認済みcontractだけを採用し、現在の承認・公開状態は`docs/CURRENT_ADOPTION_ACTIONS.md`を正本とする。
 
 ## 国内ASP案件の有無checklist
 
-現時点では各ASPの案件有無をすべて`unknown`とする。ASPログイン後のHuman検索結果だけで更新し、検索結果が
-0件でも「将来も案件なし」とは断定しない。非公開報酬、program ID、tracking URLはrepoへ保存しない。
+未確認のcategory×ASPセルだけを`unknown`とする。ASPログイン後のHuman検索結果だけで更新し、検索結果が
+0件でも「将来も案件なし」とは断定しない。serversの確認済み状態は下表へ反映済みである。非公開報酬、
+program ID、tracking URLはrepoへ保存しない。
 
 |category|A8.net検索語|もしも検索語|バリューコマース検索語|現在状態|
 |---|---|---|---|---|
@@ -255,14 +257,15 @@ authorityを持たない。数値は将来のHuman観測値だけを受け入れ
 |forms|`<月間回答数>向けフォーム料金比較: storage・決済手数料込み12か月TCO`|response数、添付容量、月間決済額|決済率、ファイル保存、回答超過、個人情報機能、外部連携|
 |email_marketing|`<登録者数>向けメール配信料金比較: 配信通数・超過込み12か月TCO`|contact数、月間send数、配信頻度|contact重複、超過、到達率機能、専用IP、automation addon|
 
-## 次の解除条件
+## 実測後も維持する境界
 
-1. Humanが対象slateのKWFinder exportを行う別GOを返す。
-2. rawをrepo外に置いたまま、query count可変のsafe-summary intakeを後方互換で検証する。
+1. 6 slateのHuman exportは完了済み。rawをrepo外に置き、完全一致したsafe-summaryだけを判断へ使う。
+2. query count可変のsafe-summary intakeは、欠落・重複・対象外queryが1行でもあればbatch全体をfail-closedにする。
 3. serversはHuman選定済みのため、`docs/PRICE_CHECK_CHECKLIST.md`に沿って1 vendor・1 planずつ価格を観測する。
 4. serversはXServerビジネス、ロリポップ、ABLENET、シンレンタルサーバー、ConoHa WING、
    お名前.com レンタルサーバーの6programが提携承認済みである。ただし、記事承認、公開、index、
    runtime destination、partner別CTA gateはそれぞれ独立して満たす。
-5. accounting / forms / crm / email_marketingは需要未観測のためunknownを維持し、有望と判定しない。
+5. accounting / crm / forms / email_marketingは40/40実測済みだが、known下限はいずれも必要22,227を下回り、
+   no_data率も高い。総需要不足とは断定せず、新規投資はHOLDする。
 
 R1–R6、P06–P09、既存ASP申請準備の優先順位は変更しない。

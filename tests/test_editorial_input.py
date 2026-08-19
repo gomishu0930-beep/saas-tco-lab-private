@@ -21,7 +21,9 @@ from saas_preflight.editorial_input import (
     EditorialValueStatus,
     HumanEditorialNumericField,
     ExpansionCategory,
+    ServerObservationConditions,
     expansion_field_kinds,
+    merge_category_expansion_inputs,
 )
 
 
@@ -407,4 +409,153 @@ def test_category_expansion_rejects_partial_or_cross_category_rows() -> None:
         CategoryExpansionInput(
             category_id=ExpansionCategory.ACCOUNTING,
             numeric_fields=(_price(field="pricing.base_price"),),
+        )
+
+
+def _server_candidate(vendor_id: str, plan_id: str) -> CategoryExpansionInput:
+    source = CategoryExpansionInput.model_validate_json(
+        (
+            ROOT
+            / "artifacts/category-expansion-inputs"
+            / "SVR01-servers-category-expansion-input-v3-2026-08-14.json"
+        ).read_text(encoding="utf-8")
+    )
+    return source.model_copy(
+        update={
+            "numeric_fields": tuple(
+                field.model_copy(
+                    update={"vendor_id": vendor_id, "plan_id": plan_id}
+                )
+                for field in source.numeric_fields
+            )
+        }
+    )
+
+
+def _server_conditions(
+    vendor_id: str, plan_id: str, **changes: object
+) -> ServerObservationConditions:
+    values: dict[str, object] = {
+        "vendor_id": vendor_id,
+        "plan_id": plan_id,
+        "campaign_ends_on_status": "not_applicable",
+        "campaign_ends_on_unknown_reason": "終了日を伴う期間限定施策なしをHuman確認",
+        "minimum_commitment_months_status": "known",
+        "minimum_commitment_months": 12,
+        "domain_benefit_terms_status": "known",
+        "domain_benefit_terms": "契約中かつ自動更新を維持する場合に対象",
+        "source_url": "https://vendor.example/pricing",
+        "observed_on": date(2026, 8, 17),
+        "next_review_on": date(2026, 9, 17),
+        "acquisition_method": "manual_public_page",
+    }
+    values.update(changes)
+    for key in (
+        "campaign_ends_on_status",
+        "minimum_commitment_months_status",
+        "domain_benefit_terms_status",
+    ):
+        if isinstance(values[key], str):
+            values[key] = EditorialValueStatus(values[key])
+    return ServerObservationConditions.model_validate(values)
+
+
+def test_merge_category_expansion_inputs_revalidates_complete_unique_rows() -> None:
+    first = _server_candidate("xserver-business", "shared-standard-12m").model_copy(
+        update={
+            "server_conditions": (
+                _server_conditions("xserver-business", "shared-standard-12m"),
+            )
+        }
+    )
+    second = _server_candidate("conoha-wing", "business-12m").model_copy(
+        update={
+            "server_conditions": (
+                _server_conditions("conoha-wing", "business-12m"),
+            )
+        }
+    )
+
+    merged = merge_category_expansion_inputs((first, second))
+
+    assert merged.category_id is ExpansionCategory.SERVERS
+    assert merged.state == "candidate_only"
+    assert len(merged.numeric_fields) == 22
+    assert len(merged.server_conditions) == 2
+    assert {
+        (str(field.vendor_id), str(field.plan_id))
+        for field in merged.numeric_fields
+    } == {
+        ("xserver-business", "shared-standard-12m"),
+        ("conoha-wing", "business-12m"),
+    }
+
+
+def test_merge_category_expansion_inputs_rejects_duplicate_and_cross_category() -> None:
+    server = _server_candidate("xserver-business", "shared-standard-12m")
+    with pytest.raises(ValidationError, match="identities must be unique"):
+        merge_category_expansion_inputs((server, server))
+
+    with pytest.raises(ValueError, match="share one category"):
+        merge_category_expansion_inputs(
+            (server, CategoryExpansionInput(category_id=ExpansionCategory.CRM))
+        )
+
+
+def test_server_conditions_require_matching_server_rows_and_explicit_status_values() -> None:
+    source = _server_candidate("xserver-business", "shared-standard-12m")
+    condition = _server_conditions("xserver-business", "shared-standard-12m")
+    candidate = CategoryExpansionInput(
+        category_id=ExpansionCategory.SERVERS,
+        numeric_fields=source.numeric_fields,
+        server_conditions=(condition,),
+    )
+    assert candidate.server_conditions == (condition,)
+
+    with pytest.raises(ValidationError, match="valid only for the servers"):
+        CategoryExpansionInput(
+            category_id=ExpansionCategory.CRM,
+            server_conditions=(condition,),
+        )
+    with pytest.raises(ValidationError, match="matching numeric"):
+        CategoryExpansionInput(
+            category_id=ExpansionCategory.SERVERS,
+            server_conditions=(condition,),
+        )
+    with pytest.raises(ValidationError, match="match every numeric"):
+        CategoryExpansionInput(
+            category_id=ExpansionCategory.SERVERS,
+            numeric_fields=source.numeric_fields,
+            server_conditions=(
+                _server_conditions("conoha-wing", "business-12m"),
+            ),
+        )
+    with pytest.raises(ValidationError, match="identities must be unique"):
+        CategoryExpansionInput(
+            category_id=ExpansionCategory.SERVERS,
+            numeric_fields=source.numeric_fields,
+            server_conditions=(condition, condition),
+        )
+
+    with pytest.raises(ValidationError, match="known campaign end date"):
+        _server_conditions(
+            "xserver-business",
+            "shared-standard-12m",
+            campaign_ends_on_status="known",
+            campaign_ends_on=None,
+            campaign_ends_on_unknown_reason=None,
+        )
+    with pytest.raises(ValidationError, match="later than the campaign end"):
+        _server_conditions(
+            "xserver-business",
+            "shared-standard-12m",
+            campaign_ends_on_status="known",
+            campaign_ends_on=date(2026, 8, 31),
+            campaign_ends_on_unknown_reason=None,
+        )
+    with pytest.raises(ValidationError, match="must use HTTPS"):
+        _server_conditions(
+            "xserver-business",
+            "shared-standard-12m",
+            source_url="http://vendor.example/pricing",
         )

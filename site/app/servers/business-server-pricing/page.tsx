@@ -2,26 +2,24 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 
-import savedSvr01Candidate from "../../../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v3-2026-08-14.json";
-
 import { ServerArticleTemplate } from "../../components/PilotArticle";
 import {
-  reviewedServerCandidateEvidence,
   serverEvidenceLabels,
   serverEvidenceValue,
 } from "../../lib/editorial-input-contract";
 import { serverArticleSlate, serverCtaPresentationPolicy } from "../../lib/pilot-pages";
+import {
+  m3ConfirmedFirstYearEvidence,
+  m3ServerEvidence,
+  serverUseCaseRequirements,
+  xserverSmallSiteEvidence,
+} from "../../lib/server-comparison-contract";
 
-const svr01Evidence = reviewedServerCandidateEvidence(
-  savedSvr01Candidate,
-  "XServerビジネス 共有スタンダード（12か月）",
-  "business.xserver.ne.jp",
-);
+const svr01Evidence = xserverSmallSiteEvidence;
 
 const svr01ArticleApproved = svr01Evidence?.initialPayment !== null;
 const approvedSvr01Title = "XServerビジネス料金（2026年8月確認）：契約時請求66,660円と未確認費用";
 const unconfirmedServerComparators = [
-  ["conoha-wing", "ConoHa WING / プラン未確認"],
   ["lolipop", "ロリポップ！ / プラン未確認"],
   ["onamae-rental-server", "お名前.com レンタルサーバー / プラン未確認"],
   ["shin-rental-server", "シンレンタルサーバー / プラン未確認"],
@@ -72,9 +70,14 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
   const evidenceObservedDates = [...new Set(evidence?.fields.map((field) => field.observed_on) ?? [])];
   const evidenceNextReviewDates = [...new Set(evidence?.fields.map((field) => field.next_review_on) ?? [])];
   const calculatorContract = evidence ? {
-    ...evidence.calculatorContract,
+    articleReviewStatus: article.id === "SVR01" && initialPayment ? "approved" as const : "unreviewed" as const,
+    useCaseRequirements: serverUseCaseRequirements,
     plans: [
-      ...evidence.calculatorContract.plans,
+      ...evidence.calculatorContract.plans.map((plan) => ({
+        ...plan,
+        eligibleUseCases: plan.eligibleUseCases,
+      })),
+      ...m3ServerEvidence.flatMap((item) => item.calculatorContract.plans),
       ...unconfirmedServerComparators.map(([vendorId, displayName]) => ({
         vendorId,
         planId: "unconfirmed",
@@ -85,11 +88,31 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
         quote: null,
         serverTerms: null,
         unknownReason: "公式価格と同条件の請求総額が未確認のため順位対象外",
+        confirmedThroughMonths: null,
+        horizonUnknownReason: null,
         observedOn: null,
         nextReviewOn: null,
       })),
     ],
-  } : { articleReviewStatus: "unreviewed" as const, plans: [] };
+  } : {
+    articleReviewStatus: "unreviewed" as const,
+    useCaseRequirements: serverUseCaseRequirements,
+    plans: [],
+  };
+  const confirmedFirstYearPrices = [
+    ...(evidence?.initialPayment ? [{
+      displayName: evidence.displayName,
+      initialPayment: evidence.initialPayment,
+      suitability: "small_siteをHuman確認済み",
+    }] : []),
+    ...m3ConfirmedFirstYearEvidence.map((item) => ({
+      displayName: item.displayName,
+      initialPayment: item.initialPayment!,
+      suitability: item.calculatorContract.plans[0].eligibleUseCases.length
+        ? `${item.calculatorContract.plans[0].eligibleUseCases.join(" / ")}をHuman確認済み`
+        : "用途条件の追加Human確認待ち",
+    })),
+  ];
   const displayArticle = initialPayment ? {
     ...article,
     titleTemplate: approvedSvr01Title,
@@ -177,6 +200,29 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
               <p>{evidence.displayName}は、確認済み{evidence.knownCount}項目、未確認{evidence.unknownCount}項目、該当なし{evidence.notApplicableCount}項目です。</p>
               <p><strong>年次請求50,160 JPYと初期費用16,500 JPYは個別の確認値として表示しますが、期間限定表示と更新額未確認が残るため、合算総額・TCO・順位・推奨は表示しません。</strong></p>
             </>}
+          </article> : null}
+          {confirmedFirstYearPrices.length ? <article className="server-first-year-price-summary" data-server-confirmed-price-vendors={confirmedFirstYearPrices.length}>
+            <span>00B</span>
+            <h2>3社の12か月契約時価格を確認</h2>
+            <p>
+              同じ通貨・税込・12か月の契約時請求額として確認できた価格だけを並べます。
+              更新時請求額が未確認の行は24か月・36か月へ延長せず、用途条件が未確認の行は順位から除外します。
+            </p>
+            <div className="table-scroll" tabIndex={0} aria-label="3社の12か月契約時価格を横スクロール">
+              <table>
+                <thead><tr><th>サービス・プラン</th><th>契約時請求額</th><th>用途条件</th><th>観測日</th><th>次回確認日</th></tr></thead>
+                <tbody>{confirmedFirstYearPrices.map(({ displayName: name, initialPayment: payment, suitability }) => (
+                  <tr key={name}>
+                    <th>{name}</th>
+                    <td><strong>{payment.currency} {displayAmount(payment.amount)}</strong></td>
+                    <td>{suitability}</td>
+                    <td>{payment.observedOn}</td>
+                    <td>{payment.nextReviewOn}</td>
+                  </tr>
+                ))}</tbody>
+              </table>
+            </div>
+            <p>この一覧は確認済み価格の存在を示すもので、用途条件がそろう前に最安順位を付けるものではありません。</p>
           </article> : null}
           {readerSections.map((section, index) => (
             <article key={section.title}>
