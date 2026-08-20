@@ -30,7 +30,22 @@ ALLOWED_INTENTS = frozenset(
     {"category", "comparison", "pricing", "alternative", "fit", "brand"}
 )
 ALLOWED_VENDORS = frozenset(
-    {"", "semrush", "se-ranking", "mangools", "serpstat", "hubspot"}
+    {
+        "",
+        "semrush",
+        "se-ranking",
+        "mangools",
+        "serpstat",
+        "hubspot",
+        "xserver-business",
+        "conoha-wing",
+        "sakura-rental-server",
+        "kagoya",
+        "lolipop",
+        "onamae-rental-server",
+        "shin-rental-server",
+        "ablenet",
+    }
 )
 _VERSION_PATTERN = re.compile(r"^jp-ja-v[1-9][0-9]*$")
 _CLUSTER_PATTERN = re.compile(r"^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$")

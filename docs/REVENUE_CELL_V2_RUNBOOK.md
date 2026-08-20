@@ -1,0 +1,116 @@
+# Revenue Cell V2 runbook
+
+基準日: 2026-08-20 / 観測基準: 2026-08-19 / Asia/Tokyo
+
+## 公開権限と正本
+
+- 本書は実装・検証手順であり、公開、CTA activation、GA4管理画面変更、外部投稿の権限を付与しない。
+- price・tax・renewal・cancellation・use-case fit・program規約はHuman確認済みcontractだけを使う。
+- runtime destinationはsecretから読み、URL全文やtracking parameterを本書・event・logへ残さない。
+- P11はnoindex, follow・CTA無効のまま維持する。
+
+## Revenue Cells
+
+|Cell|記事|型|現在のlocal状態|production状態|
+|---|---|---|---|---|
+|A|SVR01|比較型|XServer primary + ConoHa alternativeの最大2枠|2026-08-20 read-backでは6 CTA。V2は未deploy|
+|B|SVR04|初期費用込み総額の単独型|記事を暫定選定。vendor未選定のためCTA slotはHOLD|affiliate CTA 0|
+
+Cell Bはpage別GSC値を取得していないため、検索表示の多寡を推測して選んでいない。Human指示のfallbackである「初期費用込み総額」とrepository内intentが一致するSVR04を暫定候補にした。
+
+## Event contract
+
+正本: `artifacts/revenue-cells/revenue-analytics-contract-v1.json`
+
+|Event|発火条件|dedupe|主なdimension|
+|---|---|---|---|
+|`calculator_result_view`|server計算結果がviewportへ25%以上表示|同一DOM elementは1回|article / cell / channel / campaign / environment / traffic scope / test|
+|`cta_view`|active affiliate CTAがviewportへ25%以上表示|同一DOM elementは1回|上記 + vendor / position / type|
+|`cta_eligible_session`|session内で最初のactive CTA表示|sessionStorageのglobal keyで1回|最初にeligibilityを作ったarticle / cell / vendor|
+|`outbound_click`|active CTAかつ許可hostへのclick|同一elementの750ms以内重複を抑止|article / cell / vendor / position / type / channel / campaign|
+
+一般の外部リンクは`external_link_click`とし、affiliate用`outbound_click`へ混ぜない。disabled CTAはanchorへ変換されないため、view/clickのselectorに一致しない。
+
+### Safe campaign attribution
+
+query stringは使用しない。site URLのfragmentだけに、列挙済みchannelと短いcampaign IDを置く。
+
+```text
+https://saastcolab.jp/servers/business-server-pricing#ch=note&cid=svr01-note-audit-01
+```
+
+fragmentはHTTP request、canonical、page_locationへ送られない。受理channelは`direct / organic / note / x / partner / internal / unknown`だけ、campaignは英小文字・数字・hyphenの最大64文字だけである。
+
+## CTA eligible sessionとsafe aggregate
+
+`page_view`をCTRの分母にしない。GA4から日次・article・cell・vendor・position・channel別のsafe aggregateだけを転記し、`examples/revenue_cell_daily_aggregate.json`の形にする。
+
+```sh
+uv run python scripts/summarize_revenue_cells.py --input <safe-aggregate.json>
+```
+
+集計はproduction・external・test=falseだけを含める。internal、bot、test、local/previewは除外する。maturityまたはcommissionが未取得なら、confirmed RPESは`null`のままにする。
+
+## Production read-back
+
+deploy権限受領後にだけ実施する。
+
+1. `/servers/business-server-pricing`でPR表示がCTAより前にある。
+2. active CTAが1 primary + 最大1 alternativeである。
+3. `rel="sponsored noopener noreferrer"`、許可host、vendor/position/type属性を確認する。URL全文は報告しない。
+4. `/servers/server-first-year-total`はCell B markerを持つがaffiliate anchor 0件である。
+5. SVR02〜SVR09からSVR01へのintent別内部リンクを確認する。
+6. P11はnoindex, follow、affiliate anchor 0件である。
+7. consent前はGA通信がない。consent後にDebugViewでresult → CTA view → outboundの順を確認する。
+8. 同じCTAを750ms以内に二度押しても`outbound_click`が1回であることを確認する。
+
+## Internal/test traffic
+
+### Codex側で実装済み
+
+- production / local / previewをaggregate contractで分離する。
+- browser自動化を`bot`、明示flagを`internal`、test flagを`test_flag=true`として送る。
+- query/referrer本文、IP、Cookie、affiliate URLは送らない。
+
+テスト端末ではDevTools Consoleで一時的に次を設定し、検証後に削除する。
+
+```js
+localStorage.setItem("saas_tco_lab_traffic_scope_v1", "internal")
+localStorage.setItem("saas_tco_lab_test_traffic_v1", "1")
+```
+
+終了時:
+
+```js
+localStorage.removeItem("saas_tco_lab_traffic_scope_v1")
+localStorage.removeItem("saas_tco_lab_test_traffic_v1")
+```
+
+### Human: GA4管理画面
+
+現在のdecisionは`ga4_internal_filter: HOLD`。変更しない。
+
+1. 管理 → データの収集と修正 → データフィルタ。
+2. Internal Trafficが`テスト`であることを確認。
+3. DebugViewで自分のeventがinternal/testとして識別できるか確認。
+4. Realtime/DebugViewで外部テスト1件が誤除外されないことを別回線で確認。
+5. 24時間の比較後、Humanが`ga4_internal_filter: GO active`を明示した場合だけ有効化する。
+6. 有効化後にeventが全消失した場合は直ちにHOLDへ戻し、設定値を推測で変更しない。
+
+## ASP reconciliation
+
+1. networkごとの確認期間をHumanがprogram詳細画面で確認する。
+2. 許可されたexportだけを取得し、`affiliate-export-intake`でtransaction IDをhash化したlocal evidenceへ変換する。
+3. GA4はdate / article / cell / vendor / position / channelのaggregate、ASPはdate / vendor / pending / confirmed / rejectedのaggregateで照合する。
+4. network sub ID仕様がHuman確認されるまではcapability=`unknown`、sub ID付与は無効。
+5. maturity期間前のoutboundをconfirmed 0として扱わない。
+6. confirmed RPESは、成熟済みeligible sessionとconfirmed commissionの両方が揃った時だけ計算する。
+
+## STOP conditions
+
+- 30 eligible sessionsでoutbound 0: 新規記事を止め、Cell Aのintent/offer/CTAを再確認する。
+- 100 eligible sessionsでoutbound 5未満: 該当記事とofferの組合せを停止候補にする。
+- 確認期間後outbound 100でconfirmed 0: program / merchant / intentの組合せを停止候補にする。
+- productionとrepositoryが再び対応不能: deployをHOLDしrelease基線を復旧する。
+
+100 eligible sessions未満だけを理由にCTA失敗とは判定しない。

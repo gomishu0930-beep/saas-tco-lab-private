@@ -1,4 +1,5 @@
 import Link from "next/link";
+import editorialLaunchState from "../../docs/EDITORIAL_LAUNCH_STATE.json";
 
 import savedSvr01Candidate from "../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v3-2026-08-14.json";
 
@@ -6,7 +7,7 @@ import { ComparisonTable } from "./components/ComparisonTable";
 import { StatusStrip } from "./components/StatusStrip";
 import { reviewedServerCandidateEvidence } from "./lib/editorial-input-contract";
 import { editorialContract } from "./lib/editorial-contracts";
-import { pilotPages, type PilotPage } from "./lib/pilot-pages";
+import { pilotPages, serverArticleSlate, type PilotPage } from "./lib/pilot-pages";
 import { syntheticComparison } from "./lib/synthetic-data";
 
 const productionRuntime = process.env.SAAS_RUNTIME_MODE === "production";
@@ -43,6 +44,23 @@ function sourceApprovedPublicArticles() {
     categoryLabel: "サーバー",
     featured: true,
   }] : [];
+  const approvedServerArticles = new Set(
+    Object.entries(editorialLaunchState.server_articles ?? {})
+      .filter(([, state]) => state === "approved")
+      .map(([articleId]) => articleId),
+  );
+  const additionalServers = serverArticleSlate.flatMap((article) => {
+    if (article.id === "SVR01" || !approvedServerArticles.has(article.id)) return [];
+    return [{
+      id: article.id,
+      path: `/servers/${article.slug}`,
+      title: article.titleTemplate,
+      summary: article.readerQuestion,
+      category: "servers",
+      categoryLabel: "サーバー",
+      featured: false,
+    }];
+  });
   const seo = pilotPages.flatMap((page) => {
     if (editorialContract(page)?.article_review_status !== "approved") return [];
     return [{
@@ -55,7 +73,7 @@ function sourceApprovedPublicArticles() {
       featured: featuredPublicSeoIds.has(page.id),
     }];
   });
-  return [...server, ...seo];
+  return [...server, ...additionalServers, ...seo];
 }
 
 function PublicEditorialHome() {

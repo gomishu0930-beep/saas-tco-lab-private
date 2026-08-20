@@ -1,0 +1,240 @@
+{
+  "$defs": {
+    "RevenueCellId": {
+      "enum": [
+        "cell-a-comparison",
+        "cell-b-single",
+        "none"
+      ],
+      "title": "RevenueCellId",
+      "type": "string"
+    },
+    "RevenueChannel": {
+      "enum": [
+        "direct",
+        "organic",
+        "note",
+        "x",
+        "partner",
+        "internal",
+        "unknown"
+      ],
+      "title": "RevenueChannel",
+      "type": "string"
+    },
+    "RevenueEnvironment": {
+      "enum": [
+        "production",
+        "preview",
+        "local"
+      ],
+      "title": "RevenueEnvironment",
+      "type": "string"
+    },
+    "RevenueTrafficScope": {
+      "enum": [
+        "external",
+        "internal",
+        "bot",
+        "unknown"
+      ],
+      "title": "RevenueTrafficScope",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "article_id": {
+      "title": "Article Id",
+      "type": "string"
+    },
+    "asp_clicks": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Asp Clicks"
+    },
+    "calculator_result_views": {
+      "minimum": 0,
+      "title": "Calculator Result Views",
+      "type": "integer"
+    },
+    "campaign_id": {
+      "title": "Campaign Id",
+      "type": "string"
+    },
+    "channel": {
+      "$ref": "#/$defs/RevenueChannel"
+    },
+    "confirmed_commission_minor": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confirmed Commission Minor"
+    },
+    "confirmed_conversions": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Confirmed Conversions"
+    },
+    "cta_position": {
+      "enum": [
+        "primary",
+        "alternative",
+        "single",
+        "article_action",
+        "none"
+      ],
+      "title": "Cta Position",
+      "type": "string"
+    },
+    "cta_type": {
+      "enum": [
+        "affiliate_comparison",
+        "affiliate_single",
+        "saas_affiliate",
+        "none"
+      ],
+      "title": "Cta Type",
+      "type": "string"
+    },
+    "cta_views": {
+      "minimum": 0,
+      "title": "Cta Views",
+      "type": "integer"
+    },
+    "eligible_sessions": {
+      "minimum": 0,
+      "title": "Eligible Sessions",
+      "type": "integer"
+    },
+    "environment": {
+      "$ref": "#/$defs/RevenueEnvironment"
+    },
+    "matured_eligible_sessions": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Matured Eligible Sessions"
+    },
+    "observed_on": {
+      "format": "date",
+      "title": "Observed On",
+      "type": "string"
+    },
+    "outbound_clicks": {
+      "minimum": 0,
+      "title": "Outbound Clicks",
+      "type": "integer"
+    },
+    "pending_conversions": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Pending Conversions"
+    },
+    "rejected_conversions": {
+      "anyOf": [
+        {
+          "minimum": 0,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rejected Conversions"
+    },
+    "revenue_cell_id": {
+      "$ref": "#/$defs/RevenueCellId"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "test_flag": {
+      "title": "Test Flag",
+      "type": "boolean"
+    },
+    "traffic_scope": {
+      "$ref": "#/$defs/RevenueTrafficScope"
+    },
+    "vendor_id": {
+      "anyOf": [
+        {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "type": "string"
+        },
+        {
+          "const": "none",
+          "type": "string"
+        }
+      ],
+      "title": "Vendor Id"
+    }
+  },
+  "required": [
+    "observed_on",
+    "article_id",
+    "revenue_cell_id",
+    "vendor_id",
+    "cta_position",
+    "cta_type",
+    "channel",
+    "campaign_id",
+    "environment",
+    "traffic_scope",
+    "test_flag",
+    "calculator_result_views",
+    "cta_views",
+    "eligible_sessions",
+    "outbound_clicks"
+  ],
+  "title": "RevenueCellDailyAggregate",
+  "type": "object"
+}

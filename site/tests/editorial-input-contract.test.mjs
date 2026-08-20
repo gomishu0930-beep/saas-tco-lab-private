@@ -16,15 +16,17 @@ import {
   parseConfirmedOwnedObservations,
   prefillExtractedCandidate,
   reviewedServerCandidateEvidence,
+  reviewedServerCandidateEvidenceBatch,
   reusableEditorialEvidence,
   secondsToDecimalHours,
+  serverCategoryRowsFromCandidate,
   serverEvidenceValue,
   serverInitialPaymentProjection,
   summedObservationHours,
   validateEditorialInput,
   valuesFromContract,
 } from "../app/lib/editorial-input-contract.ts";
-import { pilotFieldScope, pilotPages } from "../app/lib/pilot-pages.ts";
+import { pilotFieldScope, pilotPages, serverObservationPage } from "../app/lib/pilot-pages.ts";
 
 const approvedSourceContracts = ["P01", "P02", "P03", "P06", "P07"].map((articleId) => JSON.parse(readFileSync(
   new URL(`../../artifacts/editorial-inputs/${articleId}-editorial-input.json`, import.meta.url),
@@ -33,6 +35,11 @@ const approvedSourceContracts = ["P01", "P02", "P03", "P06", "P07"].map((article
 
 const approvedServerCandidate = JSON.parse(readFileSync(
   new URL("../../artifacts/category-expansion-inputs/SVR01-servers-category-expansion-input-v3-2026-08-14.json", import.meta.url),
+  "utf8",
+));
+
+const m3ServerCandidates = JSON.parse(readFileSync(
+  new URL("../../artifacts/category-expansion-inputs/M3-servers-3vendor-candidate-2026-08-18.json", import.meta.url),
   "utf8",
 ));
 
@@ -713,7 +720,7 @@ test("servers promotion assessment accepts explicit approved values and not-appl
   assert.deepEqual(assessment.reviewBlockers, []);
 });
 
-test("reviewed servers evidence is display-only, unranked, and host constrained", () => {
+test("reviewed servers evidence carries only a bounded first-year calculator input", () => {
   const evidence = reviewedServerCandidateEvidence(
     approvedServerCandidate,
     "XServerビジネス 共有スタンダード（12か月）",
@@ -725,9 +732,12 @@ test("reviewed servers evidence is display-only, unranked, and host constrained"
     [4, 6, 1],
   );
   assert.equal(evidence.calculatorContract.articleReviewStatus, "unreviewed");
-  assert.equal(evidence.calculatorContract.plans[0].priceStatus, "unknown");
-  assert.equal(evidence.calculatorContract.plans[0].quote, null);
-  assert.equal(evidence.calculatorContract.plans[0].serverTerms, null);
+  assert.equal(evidence.calculatorContract.plans[0].priceStatus, "known");
+  assert.equal(evidence.calculatorContract.plans[0].reviewStatus, "approved");
+  assert.equal(evidence.calculatorContract.plans[0].quote.base.amount, "50160");
+  assert.equal(evidence.calculatorContract.plans[0].serverTerms.initialFee, "16500");
+  assert.equal(evidence.calculatorContract.plans[0].confirmedThroughMonths, 12);
+  assert.match(evidence.calculatorContract.plans[0].horizonUnknownReason, /24か月・36か月/);
   assert.ok(evidence.tcoBlockers.length > 0);
   assert.ok(evidence.suitabilityBlockers.length > 0);
   assert.deepEqual(evidence.initialPayment, {
@@ -743,7 +753,7 @@ test("reviewed servers evidence is display-only, unranked, and host constrained"
   const campaign = evidence.fields.find((field) => field.field === "servers.campaign_price");
   assert.equal(campaign.value_status, "unknown");
   assert.equal(campaign.sale_banner_state, "time_limited_promo");
-  assert.equal(evidence.calculatorContract.plans[0].priceStatus, "unknown");
+  assert.equal(evidence.calculatorContract.articleReviewStatus, "unreviewed");
 
   const basePrice = evidence.fields.find((field) => field.field === "pricing.base_price");
   const renewal = evidence.fields.find((field) => field.field === "pricing.renewal_fee");
@@ -772,6 +782,125 @@ test("reviewed servers evidence is display-only, unranked, and host constrained"
     unsafe.numeric_fields[0].source_url = sourceUrl;
     assert.equal(reviewedServerCandidateEvidence(unsafe, "XServerビジネス", "business.xserver.ne.jp"), null);
   }
+});
+
+test("servers candidate batch restores and validates every complete vendor-plan independently", () => {
+  const identities = [
+    { vendorId: "alpha-host", planId: "business", displayName: "Alpha Business", host: "pricing.alpha.test" },
+    { vendorId: "beta-host", planId: "standard", displayName: "Beta Standard", host: "pricing.beta.test" },
+  ];
+  const numericFields = identities.flatMap(({ vendorId, planId, host }) => (
+    approvedServerCandidate.numeric_fields.map((field) => ({
+      ...structuredClone(field),
+      vendor_id: vendorId,
+      plan_id: planId,
+      source_url: `https://${host}/pricing`,
+    }))
+  ));
+  const batch = {
+    schema_version: "1.0",
+    category_id: "servers",
+    template_kind: "pricing_tco",
+    state: "candidate_only",
+    numeric_fields: numericFields,
+  };
+
+  const rows = serverCategoryRowsFromCandidate(serverObservationPage, batch);
+  assert.ok(rows);
+  assert.equal(rows.length, 2);
+  assert.deepEqual(rows.map((row) => [row.vendorId, row.planId]), [
+    ["alpha-host", "business"],
+    ["beta-host", "standard"],
+  ]);
+
+  const evidence = reviewedServerCandidateEvidenceBatch(
+    batch,
+    identities.map(({ host, ...source }) => ({ ...source, expectedSourceHost: host })),
+  );
+  assert.ok(evidence);
+  assert.equal(evidence.length, 2);
+  assert.ok(evidence.every((item) => item.calculatorContract.articleReviewStatus === "unreviewed"));
+  assert.ok(evidence.every((item) => item.calculatorContract.plans[0].reviewStatus === "approved"));
+  assert.ok(evidence.every((item) => item.calculatorContract.plans[0].confirmedThroughMonths === 12));
+
+  const incomplete = structuredClone(batch);
+  incomplete.numeric_fields.pop();
+  assert.equal(serverCategoryRowsFromCandidate(serverObservationPage, incomplete), null);
+  assert.equal(reviewedServerCandidateEvidenceBatch(incomplete, identities.map(({ host, ...source }) => ({
+    ...source,
+    expectedSourceHost: host,
+  }))), null);
+  assert.equal(reviewedServerCandidateEvidenceBatch(batch, [{
+    vendorId: "alpha-host",
+    planId: "business",
+    displayName: "Alpha Business",
+    expectedSourceHost: "pricing.alpha.test",
+  }]), null);
+});
+
+test("M3 servers evidence promotes only Human-confirmed first-year checkout totals", () => {
+  const evidence = reviewedServerCandidateEvidenceBatch(m3ServerCandidates, [
+    {
+      vendorId: "conoha-wing",
+      planId: "wing-pack-standard-12m",
+      displayName: "ConoHa WING Standard（WINGパック12か月）",
+      expectedSourceHost: "www.conoha.jp",
+      eligibleUseCases: ["small_site"],
+    },
+    {
+      vendorId: "sakura-rental-server",
+      planId: "business-12m",
+      displayName: "さくらのレンタルサーバ Business（12か月）",
+      expectedSourceHost: "rs.sakura.ad.jp",
+      eligibleUseCases: ["small_site", "corporate_site"],
+    },
+    {
+      vendorId: "kagoya",
+      planId: "light-1c4g-12m",
+      displayName: "KAGOYA Light（1コア/4GB・12か月）",
+      expectedSourceHost: "www.kagoya.jp",
+      eligibleUseCases: ["small_site", "corporate_site"],
+    },
+  ]);
+
+  assert.ok(evidence);
+  assert.equal(evidence.length, 3);
+  assert.deepEqual(evidence.map((item) => [item.knownCount, item.unknownCount, item.notApplicableCount]), [
+    [5, 5, 1],
+    [3, 5, 3],
+    [5, 3, 3],
+  ]);
+  assert.ok(evidence.every((item) => item.calculatorContract.articleReviewStatus === "unreviewed"));
+  assert.deepEqual(evidence.map((item) => item.calculatorContract.plans[0].priceStatus), [
+    "unknown", "known", "known",
+  ]);
+  assert.equal(evidence[0].calculatorContract.plans[0].quote, null);
+  assert.deepEqual(evidence.slice(1).map((item) => item.calculatorContract.plans[0].confirmedThroughMonths), [12, 12]);
+  assert.deepEqual(evidence.map((item) => item.calculatorContract.plans[0].eligibleUseCases), [
+    ["small_site"],
+    ["small_site", "corporate_site"],
+    ["small_site", "corporate_site"],
+  ]);
+  assert.ok(evidence.every((item) => item.tcoBlockers.length > 0));
+  assert.equal(evidence[0].initialPayment, null, "ConoHaの期間限定価格を通常TCOへ昇格しない");
+  assert.deepEqual(evidence[1].initialPayment, {
+    amount: "29040",
+    annualCheckoutTotal: "29040",
+    initialFee: "0",
+    currency: "JPY",
+    taxTreatment: "included",
+    observedOn: "2026-08-18",
+    nextReviewOn: "2026-09-17",
+  });
+  assert.deepEqual(evidence[2].initialPayment, {
+    amount: "17820",
+    annualCheckoutTotal: "17820",
+    initialFee: "0",
+    currency: "JPY",
+    taxTreatment: "included",
+    observedOn: "2026-08-18",
+    nextReviewOn: "2026-09-17",
+  });
 });
 
 test("remaining articles reuse only approved same-type evidence as unreviewed form candidates", () => {

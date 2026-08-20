@@ -173,6 +173,11 @@ from saas_preflight.repository_acceptance import (
     RepositoryVerificationAttestation,
     RepositoryVerificationRequirement,
 )
+from saas_preflight.revenue_cells import (
+    MerchantEvidenceMatrix,
+    RevenueAnalyticsContract,
+    RevenueCellDailyAggregate,
+)
 from saas_preflight.production_consumer import (
     GlobalStopSnapshot,
     HumanGlobalStopReset,
@@ -330,6 +335,9 @@ SCHEMA_MODELS = {
     "business-dossier.schema.json": BusinessDossier,
     "affiliate-decisions.schema.json": AffiliateDecisionBatch,
     "affiliate-partner-ledger.schema.json": AffiliatePartnerLedger,
+    "merchant-evidence-matrix.schema.json": MerchantEvidenceMatrix,
+    "revenue-analytics-contract.schema.json": RevenueAnalyticsContract,
+    "revenue-cell-daily-aggregate.schema.json": RevenueCellDailyAggregate,
     "demand-evidence.schema.json": DemandEvidence,
     "cohort-evidence.schema.json": CohortEvidence,
     "operations-evidence.schema.json": OperationsEvidence,

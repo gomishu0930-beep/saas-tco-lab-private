@@ -23,6 +23,16 @@ from .keyword_universe import KeywordUniverseRow, normalize_query
 from .models import Sha256, StrictModel
 
 
+def _normalize_mangools_batch_query(value: str) -> str:
+    """Match KWFinder's observed removal of exclamation marks on import.
+
+    The frozen slate remains unchanged. Any canonicalization collision is
+    rejected by the existing unique-query checks in the batch validator.
+    """
+
+    return normalize_query(value).casefold().replace("!", "")
+
+
 class DemandCapacityDecision(str, Enum):
     INSUFFICIENT_EVEN_AT_FULL_CAPTURE = "insufficient_even_at_full_capture"
     KNOWN_VOLUME_FLOOR_BELOW_REQUIRED_INCOMPLETE = (
@@ -37,6 +47,20 @@ class MangoolsVolumeStatus(str, Enum):
     DECIMAL = "decimal"
     NO_DATA = "no_data"
     REJECTED = "rejected"
+
+
+class HeadwordConcentrationStatus(str, Enum):
+    HIGH = "high"
+    NOT_HIGH = "not_high"
+    INSUFFICIENT_KNOWN_ROWS = "insufficient_known_rows"
+    NOT_RECOMPUTABLE_FROM_SAFE_SUMMARY = "not_recomputable_from_safe_summary"
+
+
+class AddressableDemandStatus(str, Enum):
+    UNKNOWN_HEADWORD_CONCENTRATED = "unknown_headword_concentrated"
+    NOT_SEPARATED_BY_CONCENTRATION = "not_separated_by_concentration"
+    UNKNOWN_INSUFFICIENT_EVIDENCE = "unknown_insufficient_evidence"
+    UNKNOWN_REEXPORT_REQUIRED = "unknown_reexport_required"
 
 
 class MangoolsVolumeClassification(StrictModel):
@@ -145,7 +169,7 @@ class MangoolsDemandSafeSummary(StrictModel):
 class MangoolsSlateDemandSafeSummary(StrictModel):
     """Safe aggregate for one frozen variable-length query slate."""
 
-    schema_version: Literal["1.0"] = "1.0"
+    schema_version: Literal["1.1"] = "1.1"
     provider: Literal["mangools_kwfinder_human_csv"] = "mangools_kwfinder_human_csv"
     country: Literal["JP"] = "JP"
     language: Literal["ja"] = "ja"
@@ -163,6 +187,21 @@ class MangoolsSlateDemandSafeSummary(StrictModel):
     decimal_volume_count: int = Field(ge=0, le=200)
     known_monthly_search_volume_total: Decimal = Field(ge=0)
     no_data_rate: Decimal = Field(ge=0, le=1, decimal_places=8)
+    headword_concentration_rule: Literal[
+        "top2_gte_0_50_or_top5_gte_0_80"
+    ] = "top2_gte_0_50_or_top5_gte_0_80"
+    top_2_known_volume_share: Decimal | None = Field(
+        default=None, ge=0, le=1, decimal_places=8
+    )
+    top_5_known_volume_share: Decimal | None = Field(
+        default=None, ge=0, le=1, decimal_places=8
+    )
+    headword_concentration_status: HeadwordConcentrationStatus = (
+        HeadwordConcentrationStatus.NOT_RECOMPUTABLE_FROM_SAFE_SUMMARY
+    )
+    addressable_demand_status: AddressableDemandStatus = (
+        AddressableDemandStatus.UNKNOWN_REEXPORT_REQUIRED
+    )
     rejected_rows: tuple[MangoolsSlateRejectedVolumeRow, ...] = ()
     observed_on: date
     next_review_on: date
@@ -205,6 +244,47 @@ class MangoolsSlateDemandSafeSummary(StrictModel):
         ).quantize(Decimal("0.00000001"), rounding=ROUND_HALF_UP)
         if self.no_data_rate != expected_no_data_rate:
             raise ValueError("no_data_rate does not match no_data_volume_count")
+
+        shares_available = (
+            self.top_2_known_volume_share is not None
+            and self.top_5_known_volume_share is not None
+        )
+        if shares_available:
+            assert self.top_2_known_volume_share is not None
+            assert self.top_5_known_volume_share is not None
+            if self.top_2_known_volume_share > self.top_5_known_volume_share:
+                raise ValueError("top-2 known-volume share cannot exceed top-5 share")
+            expected_concentration = (
+                HeadwordConcentrationStatus.HIGH
+                if self.top_2_known_volume_share >= Decimal("0.50000000")
+                or self.top_5_known_volume_share >= Decimal("0.80000000")
+                else HeadwordConcentrationStatus.NOT_HIGH
+            )
+            if self.headword_concentration_status is not expected_concentration:
+                raise ValueError("headword concentration status does not match shares")
+        elif (
+            self.top_2_known_volume_share is not None
+            or self.top_5_known_volume_share is not None
+        ):
+            raise ValueError("top-2 and top-5 shares must be present or absent together")
+        elif self.headword_concentration_status not in {
+            HeadwordConcentrationStatus.INSUFFICIENT_KNOWN_ROWS,
+            HeadwordConcentrationStatus.NOT_RECOMPUTABLE_FROM_SAFE_SUMMARY,
+        }:
+            raise ValueError("concentration shares are required for a measured status")
+
+        expected_addressable_status = {
+            HeadwordConcentrationStatus.HIGH:
+                AddressableDemandStatus.UNKNOWN_HEADWORD_CONCENTRATED,
+            HeadwordConcentrationStatus.NOT_HIGH:
+                AddressableDemandStatus.NOT_SEPARATED_BY_CONCENTRATION,
+            HeadwordConcentrationStatus.INSUFFICIENT_KNOWN_ROWS:
+                AddressableDemandStatus.UNKNOWN_INSUFFICIENT_EVIDENCE,
+            HeadwordConcentrationStatus.NOT_RECOMPUTABLE_FROM_SAFE_SUMMARY:
+                AddressableDemandStatus.UNKNOWN_REEXPORT_REQUIRED,
+        }[self.headword_concentration_status]
+        if self.addressable_demand_status is not expected_addressable_status:
+            raise ValueError("addressable demand status does not match concentration evidence")
 
         below_required = (
             self.known_monthly_search_volume_total < self.required_sessions_at_assumed_ctr
@@ -561,6 +641,55 @@ def validate_mangools_human_export(
     )
 
 
+def _headword_concentration(
+    classifications: list[MangoolsVolumeClassification],
+) -> tuple[
+    Decimal | None,
+    Decimal | None,
+    HeadwordConcentrationStatus,
+    AddressableDemandStatus,
+]:
+    """Return distribution-only evidence without retaining any query/value pairs."""
+
+    known_volumes = sorted(
+        (
+            classification.normalized_volume
+            for classification in classifications
+            if classification.status in _KNOWN_VOLUME_STATUSES
+            and classification.normalized_volume is not None
+        ),
+        reverse=True,
+    )
+    known_total = sum(known_volumes, start=Decimal("0"))
+    if len(known_volumes) < 5 or known_total <= 0:
+        return (
+            None,
+            None,
+            HeadwordConcentrationStatus.INSUFFICIENT_KNOWN_ROWS,
+            AddressableDemandStatus.UNKNOWN_INSUFFICIENT_EVIDENCE,
+        )
+
+    top_2_share = (sum(known_volumes[:2], start=Decimal("0")) / known_total).quantize(
+        Decimal("0.00000001"), rounding=ROUND_HALF_UP
+    )
+    top_5_share = (sum(known_volumes[:5], start=Decimal("0")) / known_total).quantize(
+        Decimal("0.00000001"), rounding=ROUND_HALF_UP
+    )
+    if top_2_share >= Decimal("0.50000000") or top_5_share >= Decimal("0.80000000"):
+        return (
+            top_2_share,
+            top_5_share,
+            HeadwordConcentrationStatus.HIGH,
+            AddressableDemandStatus.UNKNOWN_HEADWORD_CONCENTRATED,
+        )
+    return (
+        top_2_share,
+        top_5_share,
+        HeadwordConcentrationStatus.NOT_HIGH,
+        AddressableDemandStatus.NOT_SEPARATED_BY_CONCENTRATION,
+    )
+
+
 def validate_mangools_human_export_batches(
     csv_paths: tuple[Path, ...],
     *,
@@ -581,7 +710,7 @@ def validate_mangools_human_export_batches(
 
     if not 1 <= len(csv_paths) <= 20:
         raise ValueError("Mangools slate export requires 1–20 CSV files")
-    expected_queries = {normalize_query(row.query).casefold() for row in universe_rows}
+    expected_queries = {_normalize_mangools_batch_query(row.query) for row in universe_rows}
     if not 1 <= len(expected_queries) <= 200:
         raise ValueError("frozen slate must contain 1–200 unique queries")
     if len(expected_queries) != len(universe_rows):
@@ -615,7 +744,7 @@ def validate_mangools_human_export_batches(
                 raise ValueError(
                     f"Mangools CSV batch {batch_number} row {line_number} is malformed"
                 )
-            query = normalize_query(row[columns["keyword"]]).casefold()
+            query = _normalize_mangools_batch_query(row[columns["keyword"]])
             if not query:
                 raise ValueError(
                     f"Mangools CSV batch {batch_number} row {line_number} has a blank keyword"
@@ -694,6 +823,13 @@ def validate_mangools_human_export_batches(
     else:
         decision = DemandCapacityDecision.INSUFFICIENT_EVEN_AT_FULL_CAPTURE
 
+    (
+        top_2_share,
+        top_5_share,
+        concentration_status,
+        addressable_status,
+    ) = _headword_concentration(classifications)
+
     return MangoolsSlateDemandSafeSummary(
         slate_id=slate_id,
         source_file_count=len(csv_paths),
@@ -706,6 +842,10 @@ def validate_mangools_human_export_batches(
         decimal_volume_count=status_counts[MangoolsVolumeStatus.DECIMAL],
         known_monthly_search_volume_total=known_total,
         no_data_rate=no_data_rate,
+        top_2_known_volume_share=top_2_share,
+        top_5_known_volume_share=top_5_share,
+        headword_concentration_status=concentration_status,
+        addressable_demand_status=addressable_status,
         rejected_rows=tuple(rejected_rows),
         observed_on=observed_on,
         next_review_on=next_review_on,

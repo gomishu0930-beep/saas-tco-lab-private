@@ -1,0 +1,551 @@
+{
+  "$defs": {
+    "CtaEligibility": {
+      "enum": [
+        "eligible",
+        "hold"
+      ],
+      "title": "CtaEligibility",
+      "type": "string"
+    },
+    "EvidenceStatus": {
+      "enum": [
+        "known",
+        "unknown",
+        "not_applicable",
+        "restricted_dashboard_only"
+      ],
+      "title": "EvidenceStatus",
+      "type": "string"
+    },
+    "EvidenceText": {
+      "additionalProperties": false,
+      "properties": {
+        "reason": {
+          "anyOf": [
+            {
+              "maxLength": 800,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "status": {
+          "$ref": "#/$defs/EvidenceStatus"
+        },
+        "value": {
+          "anyOf": [
+            {
+              "maxLength": 800,
+              "minLength": 1,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Value"
+        }
+      },
+      "required": [
+        "status"
+      ],
+      "title": "EvidenceText",
+      "type": "object"
+    },
+    "GateStatus": {
+      "enum": [
+        "go",
+        "hold",
+        "unknown"
+      ],
+      "title": "GateStatus",
+      "type": "string"
+    },
+    "MerchantEvidenceEntry": {
+      "additionalProperties": false,
+      "properties": {
+        "affiliate_approval_status": {
+          "enum": [
+            "approved",
+            "pending",
+            "denied",
+            "unknown"
+          ],
+          "title": "Affiliate Approval Status",
+          "type": "string"
+        },
+        "article_go": {
+          "$ref": "#/$defs/GateStatus"
+        },
+        "billing_cycle": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "cancellation_condition": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "channel_go": {
+          "$ref": "#/$defs/GateStatus"
+        },
+        "channel_scope": {
+          "const": "owned_site",
+          "default": "owned_site",
+          "title": "Channel Scope",
+          "type": "string"
+        },
+        "confidence": {
+          "enum": [
+            "high",
+            "medium",
+            "low",
+            "insufficient"
+          ],
+          "title": "Confidence",
+          "type": "string"
+        },
+        "confirmation_period": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "currency": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "current_cta_eligibility": {
+          "$ref": "#/$defs/CtaEligibility"
+        },
+        "data_completeness_percent": {
+          "anyOf": [
+            {
+              "maximum": 100.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,2}0*$",
+              "type": "string"
+            }
+          ],
+          "title": "Data Completeness Percent"
+        },
+        "deep_link_permission": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "disclosure_precedes_cta": {
+          "title": "Disclosure Precedes Cta",
+          "type": "boolean"
+        },
+        "first_invoice_total": {
+          "$ref": "#/$defs/MoneyEvidence"
+        },
+        "hold_reasons": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Hold Reasons",
+          "type": "array"
+        },
+        "human_verifier": {
+          "maxLength": 80,
+          "minLength": 2,
+          "title": "Human Verifier",
+          "type": "string"
+        },
+        "known_required_field_count": {
+          "maximum": 100,
+          "minimum": 0,
+          "title": "Known Required Field Count",
+          "type": "integer"
+        },
+        "minimum_contract_term": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "network": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "next_review_date": {
+          "format": "date",
+          "title": "Next Review Date",
+          "type": "string"
+        },
+        "observation_date": {
+          "format": "date",
+          "title": "Observation Date",
+          "type": "string"
+        },
+        "plan_name": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "program_id": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "promotion_condition": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "promotion_expiry": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "rejection_condition": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "renewal_amount": {
+          "$ref": "#/$defs/MoneyEvidence"
+        },
+        "required_field_count": {
+          "maximum": 100,
+          "minimum": 1,
+          "title": "Required Field Count",
+          "type": "integer"
+        },
+        "runtime_destination_status": {
+          "$ref": "#/$defs/GateStatus"
+        },
+        "scorecard": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MerchantScorecard"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "source_url_references": {
+          "items": {
+            "format": "uri",
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 5,
+          "minItems": 1,
+          "title": "Source Url References",
+          "type": "array"
+        },
+        "success_condition": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "tax_treatment": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "unknown_fields": {
+          "items": {
+            "type": "string"
+          },
+          "title": "Unknown Fields",
+          "type": "array"
+        },
+        "use_case_fit": {
+          "$ref": "#/$defs/EvidenceText"
+        },
+        "vendor_id": {
+          "maxLength": 80,
+          "minLength": 1,
+          "pattern": "^[a-z0-9]+(?:[a-z0-9-]*[a-z0-9])?$",
+          "title": "Vendor Id",
+          "type": "string"
+        }
+      },
+      "required": [
+        "vendor_id",
+        "program_id",
+        "network",
+        "affiliate_approval_status",
+        "runtime_destination_status",
+        "article_go",
+        "channel_go",
+        "use_case_fit",
+        "plan_name",
+        "currency",
+        "tax_treatment",
+        "billing_cycle",
+        "first_invoice_total",
+        "renewal_amount",
+        "minimum_contract_term",
+        "cancellation_condition",
+        "promotion_condition",
+        "promotion_expiry",
+        "observation_date",
+        "next_review_date",
+        "source_url_references",
+        "human_verifier",
+        "success_condition",
+        "rejection_condition",
+        "confirmation_period",
+        "deep_link_permission",
+        "disclosure_precedes_cta",
+        "required_field_count",
+        "known_required_field_count",
+        "data_completeness_percent",
+        "unknown_fields",
+        "confidence",
+        "current_cta_eligibility",
+        "hold_reasons"
+      ],
+      "title": "MerchantEvidenceEntry",
+      "type": "object"
+    },
+    "MerchantScorecard": {
+      "additionalProperties": false,
+      "properties": {
+        "confirmation_speed": {
+          "anyOf": [
+            {
+              "maximum": 5,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confirmation Speed"
+        },
+        "confirmed_revenue_expectation": {
+          "anyOf": [
+            {
+              "maximum": 15,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Confirmed Revenue Expectation"
+        },
+        "destination_continuity": {
+          "anyOf": [
+            {
+              "maximum": 15,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Destination Continuity"
+        },
+        "editorial_fit": {
+          "anyOf": [
+            {
+              "maximum": 30,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Editorial Fit"
+        },
+        "human_audit_load": {
+          "anyOf": [
+            {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Human Audit Load"
+        },
+        "outcome_rule_clarity": {
+          "anyOf": [
+            {
+              "maximum": 10,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Outcome Rule Clarity"
+        },
+        "price_contract_completeness": {
+          "anyOf": [
+            {
+              "maximum": 15,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Price Contract Completeness"
+        },
+        "total": {
+          "anyOf": [
+            {
+              "maximum": 100,
+              "minimum": 0,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Total"
+        }
+      },
+      "title": "MerchantScorecard",
+      "type": "object"
+    },
+    "MoneyEvidence": {
+      "additionalProperties": false,
+      "properties": {
+        "amount": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*(?:\\d{0,16}|(?=[\\d.]{1,25}0*$)\\d{0,16}\\.\\d{0,8}0*$)",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Amount"
+        },
+        "billing_cycle": {
+          "enum": [
+            "one_time",
+            "monthly",
+            "annual",
+            "unknown",
+            "not_applicable"
+          ],
+          "title": "Billing Cycle",
+          "type": "string"
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "pattern": "^[A-Z]{3}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "reason": {
+          "anyOf": [
+            {
+              "maxLength": 800,
+              "minLength": 2,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Reason"
+        },
+        "status": {
+          "$ref": "#/$defs/EvidenceStatus"
+        },
+        "tax_treatment": {
+          "enum": [
+            "included",
+            "excluded",
+            "unknown",
+            "not_applicable"
+          ],
+          "title": "Tax Treatment",
+          "type": "string"
+        }
+      },
+      "required": [
+        "status",
+        "tax_treatment",
+        "billing_cycle"
+      ],
+      "title": "MoneyEvidence",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "affiliate_urls_saved": {
+      "const": false,
+      "default": false,
+      "title": "Affiliate Urls Saved",
+      "type": "boolean"
+    },
+    "article_id": {
+      "const": "SVR01",
+      "default": "SVR01",
+      "title": "Article Id",
+      "type": "string"
+    },
+    "as_of_date": {
+      "format": "date",
+      "title": "As Of Date",
+      "type": "string"
+    },
+    "entries": {
+      "items": {
+        "$ref": "#/$defs/MerchantEvidenceEntry"
+      },
+      "maxItems": 3,
+      "minItems": 3,
+      "title": "Entries",
+      "type": "array"
+    },
+    "property_domain": {
+      "const": "saastcolab.jp",
+      "default": "saastcolab.jp",
+      "title": "Property Domain",
+      "type": "string"
+    },
+    "schema_version": {
+      "const": "2.0",
+      "default": "2.0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "selection_basis": {
+      "const": "cell_a_primary_and_alternative_plus_non_affiliate_evidence_control",
+      "default": "cell_a_primary_and_alternative_plus_non_affiliate_evidence_control",
+      "title": "Selection Basis",
+      "type": "string"
+    },
+    "tracking_ids_saved": {
+      "const": false,
+      "default": false,
+      "title": "Tracking Ids Saved",
+      "type": "boolean"
+    }
+  },
+  "required": [
+    "as_of_date",
+    "entries"
+  ],
+  "title": "MerchantEvidenceMatrix",
+  "type": "object"
+}

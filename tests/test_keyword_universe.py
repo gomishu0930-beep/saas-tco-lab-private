@@ -47,6 +47,9 @@ EXPANSION_SLATES = {
         "1cd09f8281e0227b9e614f7da6b65a763c83920fcec434402f9bab6105539219",
     ),
 }
+BRAND_SERVER_SLATE = (
+    ROOT / "examples" / "jp_ja_keyword_slate_v3_brand_servers.csv"
+)
 
 
 def test_checked_in_keyword_universe_is_frozen_and_safe() -> None:
@@ -106,6 +109,39 @@ def test_scope_expansion_query_slates_are_frozen_safe_and_disjoint() -> None:
                 "pricing": 10,
             }
         seen_queries.update(queries)
+
+
+def test_brand_server_slate_is_frozen_and_matches_published_vendor_scope() -> None:
+    rows = load_keyword_universe(
+        BRAND_SERVER_SLATE,
+        minimum_keywords=30,
+        maximum_keywords=30,
+    )
+    summary = summarize_keyword_universe(rows)
+    generic_server_queries = {
+        row.query
+        for row in load_keyword_universe(
+            EXPANSION_SLATES["servers"][0], minimum_keywords=30, maximum_keywords=50
+        )
+    }
+
+    assert summary.universe_version == "jp-ja-v3"
+    assert summary.keyword_count == 30
+    assert summary.sha256 == (
+        "f16005b8bf6acdd06627a0b2a7787c372a3a441cf372876d89e3f3785d43726b"
+    )
+    assert dict(summary.intent_counts) == {"brand": 30}
+    assert dict(summary.vendor_counts) == {
+        "ablenet": 3,
+        "conoha-wing": 5,
+        "kagoya": 4,
+        "lolipop": 3,
+        "onamae-rental-server": 3,
+        "sakura-rental-server": 4,
+        "shin-rental-server": 3,
+        "xserver-business": 5,
+    }
+    assert not {row.query for row in rows}.intersection(generic_server_queries)
 
 
 def test_cli_emits_hash_only_summary(capsys: pytest.CaptureFixture[str]) -> None:

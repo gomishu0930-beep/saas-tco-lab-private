@@ -13,6 +13,7 @@ import {
 import {
   pilotFieldScope,
   pilotPages,
+  serverRevenueCellFor,
   type PilotPage,
   type ServerArticleSlateEntry,
   type ServerCtaPresentationPolicy,
@@ -250,7 +251,12 @@ export function PilotArticle({
     reviewApprovedArticleIds: new Set(reviewApprovedPages.map((candidate) => candidate.id)),
   });
   return (
-    <main id="main-content" className="page-main">
+    <main
+      id="main-content"
+      className="page-main"
+      data-article-id={page.id}
+      data-revenue-cell-id="none"
+    >
       <AdvertisingDisclosure />
       <ArticleStructuredData page={page} contract={contract} />
       <header className="shell page-header">
@@ -443,19 +449,29 @@ export function ServerArticleTemplate({
   calculatorContract,
   evidence,
   ctaPolicy,
+  internalRevenueFunnel,
 }: {
   article: ServerArticleSlateEntry;
   articleReviewStatus: "approved" | "unreviewed";
   calculatorContract: ServerZeroInputContract;
   evidence: ReactNode;
   ctaPolicy: ServerCtaPresentationPolicy;
+  internalRevenueFunnel?: {
+    destination: "/servers/business-server-pricing";
+    label: string;
+    context: string;
+  } | null;
 }) {
+  const revenueCell = serverRevenueCellFor(article.id);
   return (
     <main
       id="main-content"
       className="page-main"
       data-server-article-state={article.state}
       data-server-article-review={articleReviewStatus}
+      data-article-id={article.id}
+      data-revenue-cell-id={revenueCell?.id ?? "none"}
+      data-revenue-cell-state={revenueCell?.state ?? "not_assigned"}
     >
       <AdvertisingDisclosure />
       <header className="shell page-header">
@@ -465,42 +481,91 @@ export function ServerArticleTemplate({
       </header>
       <section className="shell page-section" data-server-template-step="calculator">
         <div data-server-template-step="result" aria-label="計算結果">
-          <ServerZeroInputCalculator contract={calculatorContract} />
+          <ServerZeroInputCalculator
+            contract={calculatorContract}
+            afterResults={(
+              <section
+                className="target-band server-zero-input-cta"
+                data-server-template-step="cta_slot"
+                data-server-cta-mode={ctaPolicy.mode}
+                aria-label="サーバー紹介リンク枠"
+              >
+                <p>記事で確認した料金と、公式サイトの現在の料金・契約条件を照合してください。各紹介リンクの有効状態は下に表示します。</p>
+                <p>
+                  <span data-server-affiliate-cta-state="disabled">
+                    サーバー紹介リンクは無効です
+                  </span>
+                </p>
+                {revenueCell?.id === "cell-a-comparison" ? <>
+                  <div className="server-cta-primary" aria-label="記事で料金を確認したサーバー">
+                    <span
+                      className="cta-disabled"
+                      aria-describedby="article-pr-disclosure"
+                      data-server-cta-position="primary"
+                      data-server-cta-type="affiliate_comparison"
+                      data-server-affiliate-cta-placeholder="a8net-xserver-business"
+                    >
+                      XServerビジネス紹介リンクは無効です
+                    </span>
+                  </div>
+                  <details className="server-cta-secondary">
+                    <summary>同じ用途条件で確認した代替候補を1社見る</summary>
+                    <p>比較対象を増やしすぎないため、Human確認済みの用途条件と提携条件がそろう代替候補を最大1社だけ表示します。</p>
+                    <div className="server-cta-options" aria-label="確認済みの代替候補">
+                      <span
+                        className="cta-disabled"
+                        aria-describedby="article-pr-disclosure"
+                        data-server-cta-position="alternative"
+                        data-server-cta-type="affiliate_comparison"
+                        data-server-affiliate-cta-placeholder="moshimo-conoha-wing"
+                      >
+                        ConoHa WING紹介リンクは無効です
+                      </span>
+                    </div>
+                  </details>
+                </> : revenueCell?.id === "cell-b-single" ? (
+                  <div
+                    className="server-cta-primary"
+                    data-revenue-cell-hold="vendor-selection"
+                    aria-label="単独サーバー紹介リンク候補"
+                  >
+                    <span
+                      className="cta-disabled"
+                      aria-describedby="article-pr-disclosure"
+                      data-server-cta-position="single"
+                      data-server-cta-type="affiliate_single"
+                    >
+                      単独vendorのHuman選定待ちです。紹介リンクは無効です
+                    </span>
+                  </div>
+                ) : (
+                  <p data-revenue-cell-state="not_assigned">この記事はaffiliate CTA対象外です。比較記事への内部導線を利用してください。</p>
+                )}
+              </section>
+            )}
+          />
         </div>
       </section>
-      <section
-        className="shell target-band"
-        data-server-template-step="cta_slot"
-        data-server-cta-mode={ctaPolicy.mode}
-        aria-label="サーバー紹介リンク枠"
-      >
-        <p>記事で確認した料金と、公式サイトの現在の料金・契約条件を照合してください。各紹介リンクの有効状態は下に表示します。</p>
-        <p>
-          <span data-server-affiliate-cta-state="disabled">
-            サーバー紹介リンクは無効です
-          </span>
-        </p>
-        <div className="server-cta-primary" aria-label="記事で料金を確認したサーバー">
-          <span
-            className="cta-disabled"
-            aria-describedby="article-pr-disclosure"
-            data-server-affiliate-cta-placeholder="a8net-xserver-business"
-          >
-            XServerビジネス紹介リンクは無効です
-          </span>
-        </div>
-        <details className="server-cta-secondary">
-          <summary>他のサーバー公式サイトも確認する（この記事では料金未比較）</summary>
-          <p>次のサービスはこの記事の料金表では同じ条件で比較していません。紹介リンクは各サービスの公開条件が有効な場合だけ表示されます。</p>
-          <div className="server-cta-options" aria-label="料金未比較のサーバー候補">
-            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="moshimo-conoha-wing">ConoHa WING紹介リンクは無効です</span>
-            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="moshimo-lolipop-rental-server">ロリポップ！紹介リンクは無効です</span>
-            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="moshimo-onamae-rental-server">お名前.com レンタルサーバー紹介リンクは無効です</span>
-            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="moshimo-shin-rental-server">シンレンタルサーバー紹介リンクは無効です</span>
-            <span className="cta-disabled" aria-describedby="article-pr-disclosure" data-server-affiliate-cta-placeholder="valuecommerce-ablenet-shared-server">ABLENET紹介リンクは無効です</span>
+      {internalRevenueFunnel ? (
+        <section
+          className="shell page-section server-internal-revenue-funnel"
+          data-server-internal-funnel={article.id}
+          aria-labelledby={`${article.id}-comparison-next-step`}
+        >
+          <div className="section-heading">
+            <p className="eyebrow">比較へ進む</p>
+            <h2 id={`${article.id}-comparison-next-step`}>確認済み条件で候補を絞る</h2>
           </div>
-        </details>
-      </section>
+          <p>{internalRevenueFunnel.context}</p>
+          <Link
+            className="button button-secondary"
+            href={internalRevenueFunnel.destination}
+            data-analytics-event="server_internal_funnel"
+          >
+            {internalRevenueFunnel.label}
+          </Link>
+        </section>
+      ) : null}
       <section className="shell page-section" data-server-template-step="evidence" aria-label="価格の根拠表">{evidence}</section>
     </main>
   );

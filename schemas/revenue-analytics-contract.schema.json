@@ -1,0 +1,74 @@
+{
+  "$defs": {
+    "RevenueEventName": {
+      "enum": [
+        "calculator_result_view",
+        "cta_view",
+        "cta_eligible_session",
+        "outbound_click"
+      ],
+      "title": "RevenueEventName",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "allowed_dimensions": {
+      "items": {
+        "enum": [
+          "article_id",
+          "revenue_cell_id",
+          "vendor_id",
+          "cta_position",
+          "cta_type",
+          "channel",
+          "campaign_id",
+          "environment",
+          "traffic_scope",
+          "test_flag"
+        ],
+        "type": "string"
+      },
+      "title": "Allowed Dimensions",
+      "type": "array"
+    },
+    "event_names": {
+      "items": {
+        "$ref": "#/$defs/RevenueEventName"
+      },
+      "title": "Event Names",
+      "type": "array"
+    },
+    "prohibited_dimensions": {
+      "items": {
+        "enum": [
+          "name",
+          "email",
+          "ip_address",
+          "cookie",
+          "credential",
+          "affiliate_url",
+          "raw_referrer_query",
+          "raw_search_query",
+          "tracking_parameters"
+        ],
+        "type": "string"
+      },
+      "title": "Prohibited Dimensions",
+      "type": "array"
+    },
+    "schema_version": {
+      "const": "1.0",
+      "default": "1.0",
+      "title": "Schema Version",
+      "type": "string"
+    }
+  },
+  "required": [
+    "event_names",
+    "allowed_dimensions",
+    "prohibited_dimensions"
+  ],
+  "title": "RevenueAnalyticsContract",
+  "type": "object"
+}

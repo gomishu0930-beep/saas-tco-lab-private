@@ -22,7 +22,23 @@ const SERVER_CANDIDATE_PATHS = [
   "server-backup-cost",
   "small-corporate-server",
   "server-cancellation-terms",
-].map((_, index) => `/servers/business-server-pricing?candidate=SVR${String(index + 1).padStart(2, "0")}`);
+].map((slug, index) => index === 0 ? "/servers/business-server-pricing" : `/servers/${slug}`);
+
+const APPROVED_SERVER_LAUNCH_PATHS = new Set([
+  "/servers/server-renewal-cost",
+  "/servers/server-first-year-total",
+  "/servers/server-migration-cost",
+  "/servers/business-rental-server",
+  "/servers/small-business-server",
+  "/servers/ec-server-cost",
+  "/servers/business-mail-server",
+  "/servers/ec-server-requirements",
+]);
+const SERVER_OFFER_COUNTS = new Map([
+  ["/servers/small-business-server", 3],
+  ["/servers/server-first-year-total", 3],
+  ["/servers/business-rental-server", 2],
+]);
 
 async function render(path = "/") {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
@@ -282,7 +298,7 @@ test("operator route reduces Human work to form input and exact reply tokens", a
   assert.match(html, /Site analysis 150 requests \/ 24h/);
 });
 
-test("servers operator and all twenty article routes remain candidate-only and fail closed", async () => {
+test("servers operator and twenty article routes preserve approval, ranking, and release gates", async () => {
   const operator = await (await render("/operator/servers")).text();
   assert.match(operator, /SERVERS \/ CANDIDATE ONLY/);
   assert.match(operator, /Human確認してservers候補contractを確定/);
@@ -290,8 +306,9 @@ test("servers operator and all twenty article routes remain candidate-only and f
   assert.match(operator, /用途判定: HOLD/);
   assert.match(operator, /contract昇格: HOLD/);
   assert.match(operator, /記事承認・index・CTAは別のHuman gate/);
-  assert.match(operator, /共通の画面情報を11 fieldへ一括適用/);
-  assert.match(operator, /共通情報を全fieldへ適用/);
+  assert.match(operator, /共通の画面情報を11 fieldと条件記録へ一括適用/);
+  assert.match(operator, /共通情報をfield・条件へ適用/);
+  assert.match(operator, /vendor・plan行を追加/);
   assert.match(operator, /値、通貨、税、請求周期、確認状態は変更しません/);
   assert.match(operator, /保存済みSVR01候補から再開/);
   assert.match(operator, /repositoryのSVR01候補を読込/);
@@ -313,17 +330,77 @@ test("servers operator and all twenty article routes remain candidate-only and f
   assert.doesNotMatch(operator, /候補JSONを保存/);
 
   assert.match(operator, /data-server-candidate-index="20"/);
-  assert.match(operator, /href="\/servers\/business-server-pricing\/\?candidate=SVR01"/);
-  assert.match(operator, /href="\/servers\/business-server-pricing\/\?candidate=SVR20"/);
+  assert.match(operator, /href="\/servers\/business-server-pricing\/"/);
+  assert.match(operator, /href="\/servers\/server-cancellation-terms\/"/);
+  assert.match(operator, /data-server-vendor-observation-guide-count="3"/);
+  assert.match(operator, /data-server-vendor-guide="conoha-wing"/);
+  assert.match(operator, /data-server-vendor-guide="sakura-rental-server"/);
+  assert.match(operator, /data-server-vendor-guide="kagoya-rental-server"/);
+  assert.ok(
+    operator.indexOf("比較に追加する3社の価格確認")
+      < operator.indexOf("サーバー価格をfield単位で確認"),
+    "Humanは長い入力formより先にvendor別の確認手順を読める",
+  );
+  assert.match(operator, /初期費用と税表示/);
+  assert.match(operator, /更新時請求額・請求周期・更新月/);
+  assert.match(operator, /キャンペーン終了日/);
+  assert.match(operator, /ドメイン特典/);
+  assert.match(operator, /最低契約期間/);
+  assert.match(operator, /data-m3-followup-authority="human_confirmed_2026-08-18"/);
+  assert.match(operator, /data-m3-followup-vendor-count="3"/);
+  assert.match(operator, /data-m3-followup-vendor="conoha-wing"/);
+  assert.match(operator, /通常料金は4.4円\/時、月額上限2,640円/);
+  assert.match(operator, /future|将来のexact更新総額/);
+  assert.match(operator, /12か月一括を選んだ申込カートの請求総額は29,040円/);
+  assert.match(operator, /Web・MySQL合計100GB/);
+  assert.match(operator, /Human確認済みの用途条件/);
+  assert.match(operator, /ストレージ100GB以上・転送量無制限・バックアップ利用可・無料SSL/);
+  assert.ok(
+    operator.indexOf("checkout・更新・用途条件の最終確認")
+      < operator.indexOf("サーバー価格をfield単位で確認"),
+    "Humanは入力formより先にM3 follow-up候補を確認できる",
+  );
+  assert.match(operator, /契約・キャンペーン・ドメイン特典条件/);
+  assert.match(operator, /条件の公式出典URL/);
+  assert.match(operator, /契約・特典条件:[\s\S]{0,20}HOLD/);
+  assert.match(operator, /data-server-launch-queue-count="8"/);
+  assert.match(operator, /data-server-launch-input-matrix="8"/);
+  assert.doesNotMatch(operator, /公式価格未取込/);
+  assert.match(operator, /共通価格候補取込済み/);
+  assert.match(
+    operator,
+    /data-server-launch-approval-token="article_approve: SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08"/,
+  );
+  assert.match(operator, /data-server-launch-approval-state="approved"/);
+  assert.match(operator, /data-server-launch-deploy-state="deployed"/);
+  assert.match(operator, /data-server-launch-index-state="indexed"/);
+  assert.match(operator, /8記事をindex対象へ反映済み/);
+  assert.doesNotMatch(operator, /index_go: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08 \/ HOLD/);
+  assert.match(operator, /CTAはSVR01だけに限定/);
+  assert.match(operator, /共通のvendor価格は一度だけ入力/);
+  assert.match(operator, /旧契約の月額と重複月数/);
+  assert.match(operator, /mail account数と1accountあたり容量/);
+  const launchQueuePositions = [
+    "server-renewal-cost",
+    "server-first-year-total",
+    "server-migration-cost",
+    "business-rental-server",
+    "small-business-server",
+    "ec-server-cost",
+    "business-mail-server",
+    "ec-server-requirements",
+  ].map((slug) => operator.indexOf(`href="/servers/${slug}/"`));
+  assert.ok(launchQueuePositions.every((position) => position >= 0));
+  assert.deepEqual([...launchQueuePositions].sort((left, right) => left - right), launchQueuePositions);
 
   assert.equal(SERVER_CANDIDATE_PATHS.length, 20);
   for (const path of SERVER_CANDIDATE_PATHS) {
     const article = await (await render(path)).text();
     assert.match(article, /data-server-article-state="candidate_only"/, path);
-    if (path.endsWith("candidate=SVR01")) {
+    if (path === "/servers/business-server-pricing") {
       assert.match(article, /確認済み(?:<!-- -->)?4(?:<!-- -->)?項目、未確認(?:<!-- -->)?6(?:<!-- -->)?項目、[\s\S]{0,40}該当なし(?:<!-- -->)?1(?:<!-- -->)?項目/, path);
       assert.match(article, /data-ranking-eligible="false"[\s\S]{0,400}<strong>未確認<\/strong>/, path);
-      assert.match(article, /ConoHa WING \/ プラン未確認/, path);
+      assert.match(article, /ConoHa WING Standard（WINGパック12か月）/, path);
       assert.match(article, /ロリポップ！ \/ プラン未確認/, path);
       assert.match(article, /ABLENET \/ プラン未確認/, path);
       assert.match(article, /class="evidence-details"/, path);
@@ -337,14 +414,80 @@ test("servers operator and all twenty article routes remain candidate-only and f
       assert.match(article, /他社より安いとは断定せず/, path);
       assert.match(article, /キャッシュバックの確定額と受取条件/, path);
       assert.match(article, /href="https:\/\/business\.xserver\.ne\.jp\//, path);
+      assert.match(article, /確認内容/, path);
+      assert.match(article, /data-comparison-mode="ranked_comparison"/, path);
+      assert.equal((article.match(/data-ranking-eligible="true"/g) ?? []).length, 3, path);
+      assert.match(article, /JPY 48840/, path);
+      assert.match(article, /JPY 11220/, path);
     } else {
-      assert.match(article, /承認済みのservers価格contractはまだありません/, path);
+      assert.match(article, /data-server-candidate-batch="M3"/, path);
+      assert.match(article, /"@type":"Product"/, path);
+      assert.match(article, /"@type":"FAQPage"/, path);
+      assert.match(article, /"@type":"BreadcrumbList"/, path);
+      assert.match(article, /4(?:<!-- -->)?社・(?:<!-- -->)?44(?:<!-- -->)?項目/, path);
+      assert.match(article, /確認済み(?:<!-- -->)?17(?:<!-- -->)?項目、未確認(?:<!-- -->)?19(?:<!-- -->)?項目、該当なし(?:<!-- -->)?8(?:<!-- -->)?項目/, path);
+      assert.match(article, /XServerビジネス 共有スタンダード（12か月）/, path);
+      assert.match(article, /ConoHa WING Standard（WINGパック12か月）/, path);
+      assert.match(article, /さくらのレンタルサーバ Business（12か月）/, path);
+      assert.match(article, /KAGOYA Light（1コア\/4GB・12か月）/, path);
+      assert.match(article, /JPY 29040 \/ yr/, path);
+      assert.match(article, /JPY 17820 \/ yr/, path);
+      assert.match(article, /通常表示31,680円はcheckoutの実請求額ではなく/, path);
+      assert.match(article, /checkout未確認価格|checkoutの実請求額/, path);
+      if (APPROVED_SERVER_LAUNCH_PATHS.has(path)) {
+        assert.match(article, /data-server-article-review="approved"/, path);
+        assert.match(article, /内容確認済みです/, path);
+        assert.match(article, /data-comparison-mode="ranked_comparison"/, path);
+        assert.equal((article.match(/data-ranking-eligible="true"/g) ?? []).length, 3, path);
+        assert.match(article, /JPY 48840/, path);
+        assert.match(article, /JPY 11220/, path);
+        const offerCount = SERVER_OFFER_COUNTS.get(path) ?? 0;
+        assert.equal((article.match(/"@type":"Offer"/g) ?? []).length, offerCount, path);
+      } else {
+        assert.match(article, /公開前レビュー中です/, path);
+        assert.match(article, /data-server-article-review="unreviewed"/, path);
+        assert.match(article, /data-ranking-eligible="false"/, path);
+        assert.doesNotMatch(article, /data-ranking-eligible="true"|"@type":"Offer"/, path);
+      }
       assert.doesNotMatch(article, /https:\/\/business\.xserver\.ne\.jp\//, path);
+      if ([
+        "/servers/server-renewal-cost",
+        "/servers/server-first-year-total",
+        "/servers/server-migration-cost",
+        "/servers/business-rental-server",
+        "/servers/small-business-server",
+        "/servers/ec-server-cost",
+        "/servers/business-mail-server",
+        "/servers/ec-server-requirements",
+      ].includes(path)) {
+        assert.match(article, /data-server-launch-brief="SVR0[2-9]"/, path);
+        assert.match(article, /この記事で判断すること/, path);
+        assert.match(article, /公式ページで確認できた金額と条件だけを使います/, path);
+        assert.match(article, /data-server-launch-checks="SVR0[2-9]"/, path);
+        assert.match(article, /公開前に残る確認/, path);
+        assert.match(article, /最終確認/, path);
+        assert.match(article, /data-server-internal-funnel="SVR0[2-9]"/, path);
+        assert.match(article, /href="\/servers\/business-server-pricing"/, path);
+        assert.match(article, /data-analytics-event="server_internal_funnel"/, path);
+      }
+      if (path === "/servers/server-first-year-total") {
+        assert.match(article, /data-revenue-cell-id="cell-b-single"/, path);
+        assert.match(article, /data-revenue-cell-state="hold_vendor_selection"/, path);
+        assert.match(article, /data-revenue-cell-hold="vendor-selection"/, path);
+        assert.match(article, /単独vendorのHuman選定待ち/, path);
+        assert.doesNotMatch(article, /data-server-affiliate-cta-placeholder=/, path);
+      }
     }
     assert.match(article, /各紹介リンクの有効状態は下に表示/, path);
+    assert.match(article, /料金比較/);
+    assert.match(article, /12(?:<!-- -->)?か月の総額で比べる/);
+    assert.match(article, /1位との差/);
+    assert.match(article, /この条件を公式情報で確認できたプランだけを順位対象にします/);
+    assert.doesNotMatch(article, />ZERO-INPUT TCO</);
     assert.ok(article.indexOf("article-pr-disclosure") < article.indexOf("data-server-template-step=\"calculator\""), path);
     assert.ok(article.indexOf("data-server-template-step=\"calculator\"") < article.indexOf("data-server-template-step=\"cta_slot\""), path);
-    assert.match(article, /href="\/operator\/servers\//, path);
+    assert.ok(article.indexOf("1位との差") < article.indexOf("data-server-template-step=\"cta_slot\""), path);
+    assert.match(article, /href="\/methodology(?:"|#)/, path);
     assert.doesNotMatch(article, /rel="sponsored|https?:\/\/[^\s<]*affiliate/i, path);
   }
 });

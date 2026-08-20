@@ -86,6 +86,9 @@
   <h2>収益 KPI(月次正本5指標)</h2>
   <div class="grid kpi-grid" id="kpis"></div>
 
+  <h2>8月末4条件</h2>
+  <div class="grid kpi-grid" id="august-goal"></div>
+
   <h2>収益目標への進捗</h2>
   <div class="grid rev-grid" id="revenue"></div>
 
@@ -150,20 +153,20 @@
 <script>
 // DASHBOARD_DATA_START
 const DATA = {
-  "asOf": "2026-08-17",
+  "asOf": "2026-08-20",
   "reportingPeriod": "2026-07",
-  "phase": "公開後成長運転—12記事公開・P記事1本証拠/承認待ち",
+  "phase": "公開後成長運転—20記事公開・P記事1本証拠/承認待ち",
   "kpis": [
     {
       "label": "公開記事数",
-      "value": 12,
+      "value": 20,
       "target": 20,
-      "sub": "P記事 11本・servers 1本"
+      "sub": "P記事 11本・servers 9本"
     },
     {
       "label": "インデックス数",
       "value": 7,
-      "target": 12,
+      "target": 20,
       "sub": "index_go: GO"
     },
     {
@@ -231,7 +234,7 @@ const DATA = {
       "id": "L3",
       "name": "noindex解除",
       "status": "GO",
-      "note": "index承認 11本・記事承認だけでは追加しない"
+      "note": "index承認 20本・記事承認だけでは追加しない"
     },
     {
       "id": "L4",
@@ -320,7 +323,23 @@ const DATA = {
     },
     {
       "done": true,
-      "label": "SVR01証拠付き・SVR02–SVR20 noindex候補view"
+      "label": "M2 差額付き4列zero-input比較と直後CTA"
+    },
+    {
+      "done": true,
+      "label": "M3 ConoHa・さくら・KAGOYA 1画面checklist"
+    },
+    {
+      "done": true,
+      "label": "M3 複数vendor candidate統合command"
+    },
+    {
+      "done": true,
+      "label": "SVR01証拠付き公開route"
+    },
+    {
+      "done": true,
+      "label": "SVR02–SVR20独立noindex候補route"
     },
     {
       "done": true,
@@ -345,8 +364,24 @@ const DATA = {
       "label": "W6 150 query完了・拡張準備260 query凍結"
     },
     {
+      "date": "2026-08-18",
+      "label": "M1 crawl経路の本番read-back完了"
+    },
+    {
+      "date": "2026-08-22",
+      "label": "M2 差額付きzero-input計算機の公開候補完成"
+    },
+    {
+      "date": "2026-08-27",
+      "label": "M3 servers確認済み価格を3vendor以上へ"
+    },
+    {
+      "date": "2026-08-29",
+      "label": "M4 承認済み公開記事20本へ"
+    },
+    {
       "date": "2026-08-31",
-      "label": "約8本・Impact・W6・ASP申請可能状態"
+      "label": "M5 8月5 KPIをsafe aggregateで記録"
     },
     {
       "date": "2026-09-01",
@@ -391,17 +426,22 @@ const DATA = {
     {
       "riskId": "gsc-processing",
       "level": "monitor",
-      "label": "GSC sitemapは12/12検出済み。index登録7・未登録6の再処理を監視"
+      "label": "GSC sitemapは20/20検出済み。index登録7・未登録6・表示13・clicks 0の再処理を監視"
+    },
+    {
+      "riskId": "ga4-traffic-evidence",
+      "level": "monitor",
+      "label": "GA4直近7日はpage_view 7・qualified_session 2・outbound_click 0。内部訪問分離不能のため収益証拠へ未算入"
     },
     {
       "riskId": "index-discovery-path",
-      "level": "warn",
-      "label": "robots.txt over-blockによりクロール経路が欠落（J1で対処）。deploy・cache purge後の再処理を監視"
+      "level": "monitor",
+      "label": "M1 crawl経路は本番解消済み。GSC index登録7/20の再処理を監視"
     },
     {
       "riskId": "server-launch",
       "level": "warn",
-      "label": "SVR01は承認・index対象として公開済み。servers CTA 6件稼働・残る0partnerはHOLD"
+      "label": "server記事9本は承認・index対象。SVR01は14日実験で2件表示・runtime GO 6件・残る0partnerはHOLD"
     }
   ],
   "launchQuarter": {
@@ -504,14 +544,7 @@ const DATA = {
     "warning": false,
     "individualCtaGateRequired": true
   },
-  "externalActions": [
-    {
-      "priority": 1,
-      "label": "P11のHuman確認済み実測（Operator timer準備済み）",
-      "status": "owned_data_waiting",
-      "token": "article_evidence: pending P11"
-    }
-  ],
+  "externalActions": [],
   "articleReviews": [
     {
       "articleId": "P11",
@@ -532,16 +565,18 @@ const DATA = {
     }
   ],
   "serverLaunch": {
-    "approvedArticles": 1,
-    "deployedArticles": 1,
-    "indexApprovedArticles": 1,
+    "approvedArticles": 9,
+    "deployedArticles": 9,
+    "indexApprovedArticles": 9,
+    "ctaApprovedArticles": 1,
     "ctaEnabledPartners": 6,
+    "ctaDisplayedPartners": 2,
     "ctaHeldPartners": 0
   },
   "categoryPublication": [
     {
       "category": "servers",
-      "publishedArticles": 1,
+      "publishedArticles": 9,
       "targetArticles": 9
     },
     {
@@ -549,7 +584,23 @@ const DATA = {
       "publishedArticles": 11,
       "targetArticles": 11
     }
-  ]
+  ],
+  "augustGoal": {
+    "deadline": "2026-08-31",
+    "crawlPathReady": true,
+    "observedServerVendors": 3,
+    "comparisonReadyServerVendors": 0,
+    "requiredServerVendors": 3,
+    "publishedArticles": 20,
+    "requiredPublishedArticles": 20,
+    "launchDraftsPrepared": 8,
+    "requiredLaunchDrafts": 8,
+    "differenceImplementationReady": true,
+    "ctaAfterResultsImplementationReady": true,
+    "useCaseRequirementsConfirmed": true,
+    "liveDifferenceReady": true,
+    "allConditionsReady": true
+  }
 };
 // DASHBOARD_DATA_END
 
@@ -570,6 +621,35 @@ el("kpis").innerHTML = DATA.kpis.map(k => {
     ${pct !== null ? `<div class="bar"><div style="width:${pct}%"></div></div>` : ""}
   </div>`;
 }).join("");
+
+const augustGoal = DATA.augustGoal;
+const augustGoalItems = [
+  {
+    label: "1. クロール経路",
+    value: augustGoal.crawlPathReady ? "READY" : "HOLD",
+    sub: "homeから承認記事・非記事はnoindex follow"
+  },
+  {
+    label: "2. 比較可能vendor",
+    value: `${augustGoal.comparisonReadyServerVendors}/${augustGoal.requiredServerVendors}`,
+    sub: `価格観測済み ${augustGoal.observedServerVendors}社・用途条件 ${augustGoal.useCaseRequirementsConfirmed ? "確認済み" : "未確認"}`
+  },
+  {
+    label: "3. 公開記事",
+    value: `${augustGoal.publishedArticles}/${augustGoal.requiredPublishedArticles}`,
+    sub: `残り ${Math.max(0, augustGoal.requiredPublishedArticles - augustGoal.publishedArticles)}本・入力matrix ${augustGoal.launchDraftsPrepared}/${augustGoal.requiredLaunchDrafts}`
+  },
+  {
+    label: "4. 差額→CTA",
+    value: augustGoal.liveDifferenceReady ? "LIVE" : "DATA待ち",
+    sub: `実装 ${augustGoal.differenceImplementationReady && augustGoal.ctaAfterResultsImplementationReady ? "READY" : "HOLD"}`
+  }
+];
+el("august-goal").innerHTML = augustGoalItems.map(item => `<div class="card kpi">
+  <div class="label">${esc(item.label)}</div>
+  <div class="value">${esc(item.value)}</div>
+  <div class="sub">${esc(item.sub)}</div>
+</div>`).join("");
 
 const r = DATA.revenue;
 const epc = r.epcActualYen === null ? "—" : yen(r.epcActualYen);
@@ -615,13 +695,12 @@ el("lane").innerHTML = DATA.lane.map(s => {
 }).join("");
 
 const quarter = DATA.launchQuarter;
-const serverPolicy = DATA.serverPartnerPolicy;
 el("quarter-summary").innerHTML = `
   <div class="card"><div class="muted">期間 / Human予算</div><div class="big">${esc(quarter.period)}</div><div class="muted">${quarter.humanBudgetMinutesPerMonth.toLocaleString("ja-JP")}分/月・${esc(quarter.budgetReview)}再判定</div></div>
   <div class="card"><div class="muted">90日判定日</div><div class="big">${esc(quarter.decisionDate)}</div><div class="muted">閾値は実測前に固定済み</div></div>
   <div class="card"><div class="muted">採用decision</div>${quarter.decisions.map(item => `<div>${esc(item)}</div>`).join("")}</div>
   <div class="card"><div class="muted">カテゴリ拡張</div><div class="big">${esc(quarter.scopeExpansion.state)}</div><div class="muted">known ${quarter.scopeExpansion.observedKnownVolume.toLocaleString("ja-JP")} / 必要 ${quarter.scopeExpansion.requiredSessions.toLocaleString("ja-JP")}・no_data ${esc(quarter.scopeExpansion.noDataRate)}・凍結${quarter.scopeExpansion.frozenQueries}語・外部操作 ${esc(quarter.scopeExpansion.externalActions)}</div></div>
-  <div class="card"><div class="muted">servers CTA冗長化</div><div class="big">${serverPolicy.approvedPartnerCount}社 / ${esc(serverPolicy.ctaMode)}</div><div class="muted">2社以上で比較CTA。1社時は単独CTA・依存率100%警告。各partnerの既存gateは省略しない</div></div>
+  <div class="card"><div class="muted">servers CTA実験</div><div class="big">${DATA.serverLaunch.ctaDisplayedPartners}表示 / ${DATA.serverLaunch.ctaEnabledPartners} runtime GO</div><div class="muted">SVR01はprimary 1＋alternative 1。残る承認partnerは台帳・runtime gateを維持し画面には表示しない</div></div>
   <div class="card"><div class="muted">固定撤退ライン</div><div class="big">${esc(quarter.exitLine.decisionDate)}</div><div class="muted">公開${quarter.exitLine.publishedArticlesMinimum}本・GSC clicks ${quarter.exitLine.gscClicksPerMonthMinimum}/月・confirmed ${quarter.exitLine.confirmedConversionsMinimum}件をすべて要求。事後緩和なし</div></div>
 `;
 el("weekly-plan").innerHTML = `<tr><th>期間</th><th>週次計画</th></tr>${quarter.weeklyPlan.map(item => `<tr><td>${esc(item.date)}</td><td>${esc(item.label)}</td></tr>`).join("")}`;

@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "event_names": [
+    "calculator_result_view",
+    "cta_view",
+    "cta_eligible_session",
+    "outbound_click"
+  ],
+  "allowed_dimensions": [
+    "article_id",
+    "revenue_cell_id",
+    "vendor_id",
+    "cta_position",
+    "cta_type",
+    "channel",
+    "campaign_id",
+    "environment",
+    "traffic_scope",
+    "test_flag"
+  ],
+  "prohibited_dimensions": [
+    "name",
+    "email",
+    "ip_address",
+    "cookie",
+    "credential",
+    "affiliate_url",
+    "raw_referrer_query",
+    "raw_search_query",
+    "tracking_parameters"
+  ]
+}

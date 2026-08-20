@@ -6,6 +6,7 @@ import {
   DEFAULT_IMAGE_SIZES,
 } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import editorialLaunchState from "../../docs/EDITORIAL_LAUNCH_STATE.json";
 
 interface ProductionEnv {
   ASSETS: Fetcher;
@@ -16,6 +17,7 @@ interface ProductionEnv {
   INDEX_GO?: string;
   INDEX_APPROVED_ARTICLES?: string;
   INDEX_APPROVED_SERVER_ARTICLES?: string;
+  SERVER_CTA_APPROVED_SERVER_ARTICLES?: string;
   CTA_GO?: string;
   CTA_APPROVED_PARTNER?: string;
   MANGOOLS_AFFILIATE_APPROVAL_CURRENT?: string;
@@ -99,6 +101,14 @@ const PUBLIC_ROUTES = new Set([
   "/advertising-policy",
   "/embed/tco-calculator",
   "/servers/business-server-pricing",
+  "/servers/server-renewal-cost",
+  "/servers/server-first-year-total",
+  "/servers/server-migration-cost",
+  "/servers/business-rental-server",
+  "/servers/small-business-server",
+  "/servers/ec-server-cost",
+  "/servers/business-mail-server",
+  "/servers/ec-server-requirements",
 ]);
 
 // Crawling and indexing are separate controls. These public navigation and
@@ -134,11 +144,33 @@ const ARTICLE_PATH_TO_ID = new Map([
 
 const SERVER_ARTICLE_PATH_TO_ID = new Map([
   ["/servers/business-server-pricing", "SVR01"],
+  ["/servers/small-business-server", "SVR02"],
+  ["/servers/ec-server-cost", "SVR03"],
+  ["/servers/server-first-year-total", "SVR04"],
+  ["/servers/server-renewal-cost", "SVR05"],
+  ["/servers/server-migration-cost", "SVR06"],
+  ["/servers/business-rental-server", "SVR07"],
+  ["/servers/ec-server-requirements", "SVR08"],
+  ["/servers/business-mail-server", "SVR09"],
 ]);
 
 // Source-level Human editorial approval. Runtime INDEX_GO alone must never
-// promote an unreviewed server candidate into the public index.
-const SOURCE_APPROVED_SERVER_ARTICLE_IDS = new Set(["SVR01"]);
+// promote an unreviewed server candidate into the public index. The local
+// decision record is the sole source; invalid values fail closed.
+const SOURCE_APPROVED_SERVER_ARTICLE_IDS = new Set(
+  Object.entries(editorialLaunchState.server_articles ?? {})
+    .filter(([, state]) => state === "approved")
+    .map(([articleId]) => articleId)
+    .filter((articleId) => /^SVR(?:0[1-9]|1[0-9]|20)$/.test(articleId)),
+);
+
+// Article-level CTA approval is deliberately narrower than article indexing.
+// An index release must never inherit the global partner GO automatically.
+const SOURCE_CTA_APPROVED_SERVER_ARTICLE_IDS = new Set(
+  (editorialLaunchState.server_cta_approved_articles ?? [])
+    .filter((articleId) => /^SVR(?:0[1-9]|1[0-9]|20)$/.test(articleId))
+    .filter((articleId) => SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(articleId)),
+);
 
 interface IndexApprovalState {
   approvedArticlesValid: boolean;
@@ -280,8 +312,30 @@ const SERVER_AFFILIATE_PARTNER_IDS: readonly ServerAffiliatePartnerId[] = [
   "valuecommerce-ablenet-shared-server",
 ];
 
+const SERVER_AFFILIATE_VENDOR_IDS: Readonly<Record<ServerAffiliatePartnerId, string>> = {
+  "a8net-xserver-business": "xserver-business",
+  "moshimo-conoha-wing": "conoha-wing",
+  "moshimo-lolipop-rental-server": "lolipop-rental-server",
+  "moshimo-onamae-rental-server": "onamae-rental-server",
+  "moshimo-shin-rental-server": "shin-rental-server",
+  "valuecommerce-ablenet-shared-server": "ablenet-shared-server",
+};
+
+// The 14-day revenue experiment keeps the already-reviewed SVR01 ordering:
+// XServer is the article-specific primary and ConoHa is the only displayed
+// alternative. Other approved programs remain in the ledger/runtime but are
+// intentionally excluded from this page experiment.
+const SERVER_REVENUE_EXPERIMENT_PARTNER_IDS: readonly ServerAffiliatePartnerId[] = [
+  "a8net-xserver-business",
+  "moshimo-conoha-wing",
+];
+
 function consentGatedAnalyticsBootstrap(measurementId: string): string {
-  return `<script data-saastco-analytics-consent>(()=>{const m=${JSON.stringify(measurementId)},k="saas_tco_lab_analytics_consent_v1",p=location.pathname;let l=false,q=false;const g=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)},u=()=>location.origin+location.pathname,e=(n,v={})=>g("event",n,{content_path:p,...v}),s=()=>{if(q||document.visibilityState!=="visible")return;q=true;e("qualified_session",{qualification_seconds:30})},o=()=>{if(l)return;l=true;g("consent","default",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",wait_for_update:500});g("consent","update",{analytics_storage:"granted"});g("js",new Date);g("config",m,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,page_location:u(),page_referrer:""});const t=document.createElement("script");t.async=true;t.src="https://www.googletagmanager.com/gtag/js?id="+encodeURIComponent(m);t.referrerPolicy="no-referrer";document.head.appendChild(t);e("page_view",{page_location:u(),page_title:document.title});setTimeout(s,30000);document.addEventListener("visibilitychange",s,{passive:true});document.addEventListener("click",t=>{const a=t.target instanceof Element?t.target.closest("a[href],button,[role=button]"):null;if(!a||a.closest("[data-analytics-consent-ui]"))return;if(a instanceof HTMLAnchorElement){const h=new URL(a.href,location.href);if(h.origin!==location.origin){e("outbound_click",{link_domain:h.hostname});return}}if(a.closest('[data-analytics-scope="comparison"]')||a.getAttribute("data-analytics-event")==="comparison_interaction")e("comparison_interaction",{interaction_type:a.tagName.toLowerCase()})},{passive:true})},c=v=>{localStorage.setItem(k,v);document.querySelector("[data-analytics-consent-banner]")?.remove();if(v==="granted")o()},b=()=>{if(document.querySelector("[data-analytics-consent-banner]"))return;const d=document.createElement("div");d.dataset.analyticsConsentBanner="";d.dataset.analyticsConsentUi="";d.setAttribute("role","dialog");d.setAttribute("aria-label","アクセス解析の同意");d.style.cssText="position:fixed;z-index:2147483647;right:12px;bottom:12px;width:min(420px,calc(100vw - 24px));padding:14px;border:1px solid #1d2420;background:#fff;color:#1d2420;box-shadow:4px 4px 0 #1d2420;font:14px/1.55 system-ui,sans-serif";d.innerHTML='<strong>アクセス解析について</strong><p style="margin:7px 0 10px">改善のため匿名の利用状況を計測します。同意するまでGoogleへの通信は行いません。</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" data-consent="granted" style="min-height:40px;padding:8px 14px">同意する</button><button type="button" data-consent="denied" style="min-height:40px;padding:8px 14px">拒否する</button></div>';d.addEventListener("click",t=>{const v=t.target instanceof Element?t.target.getAttribute("data-consent"):null;if(v==="granted"||v==="denied")c(v)});document.body.appendChild(d)},r=()=>{let x=document.querySelector("[data-analytics-settings]");if(x)return;x=document.createElement("button");x.type="button";x.dataset.analyticsSettings="";x.dataset.analyticsConsentUi="";x.textContent="アクセス解析設定";x.style.cssText="position:fixed;z-index:2147483646;left:12px;bottom:12px;min-height:36px;padding:6px 9px;border:1px solid #1d2420;background:#fff;color:#1d2420;font:12px system-ui,sans-serif";x.addEventListener("click",b);document.body.appendChild(x)};addEventListener("DOMContentLoaded",()=>{r();const v=localStorage.getItem(k);if(v==="granted")o();else if(v!=="denied")b()},{once:true})})();</script>`;
+  return `<script data-saastco-analytics-consent>(()=>{const m=${JSON.stringify(measurementId)},k="saas_tco_lab_analytics_consent_v1",p=location.pathname;let l=false,q=false;const g=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)},u=()=>location.origin+location.pathname,e=(n,v={})=>g("event",n,{content_path:p,...v}),s=()=>{if(q||document.visibilityState!=="visible")return;q=true;e("qualified_session",{qualification_seconds:30})},o=()=>{if(l)return;l=true;g("consent","default",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",wait_for_update:500});g("consent","update",{analytics_storage:"granted"});g("js",new Date);g("config",m,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,page_location:u(),page_referrer:""});const t=document.createElement("script");t.async=true;t.src="https://www.googletagmanager.com/gtag/js?id="+encodeURIComponent(m);t.referrerPolicy="no-referrer";document.head.appendChild(t);e("page_view",{page_location:u(),page_title:document.title});setTimeout(s,30000);document.addEventListener("visibilitychange",s,{passive:true});document.addEventListener("click",t=>{const a=t.target instanceof Element?t.target.closest("a[href],button,[role=button]"):null;if(!a||a.closest("[data-analytics-consent-ui]"))return;if(a instanceof HTMLAnchorElement){if(a.matches("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"))return;const h=new URL(a.href,location.href);if(h.origin!==location.origin){e("external_link_click",{link_domain:h.hostname});return}}if(a.closest('[data-analytics-scope="comparison"]')||a.getAttribute("data-analytics-event")==="comparison_interaction")e("comparison_interaction",{interaction_type:a.tagName.toLowerCase()})},{passive:true})},c=v=>{localStorage.setItem(k,v);document.querySelector("[data-analytics-consent-banner]")?.remove();if(v==="granted")o()},b=()=>{if(document.querySelector("[data-analytics-consent-banner]"))return;const d=document.createElement("div");d.dataset.analyticsConsentBanner="";d.dataset.analyticsConsentUi="";d.setAttribute("role","dialog");d.setAttribute("aria-label","アクセス解析の同意");d.style.cssText="position:fixed;z-index:2147483647;right:12px;bottom:12px;width:min(420px,calc(100vw - 24px));padding:14px;border:1px solid #1d2420;background:#fff;color:#1d2420;box-shadow:4px 4px 0 #1d2420;font:14px/1.55 system-ui,sans-serif";d.innerHTML='<strong>アクセス解析について</strong><p style="margin:7px 0 10px">改善のため匿名の利用状況を計測します。同意するまでGoogleへの通信は行いません。</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" data-consent="granted" style="min-height:40px;padding:8px 14px">同意する</button><button type="button" data-consent="denied" style="min-height:40px;padding:8px 14px">拒否する</button></div>';d.addEventListener("click",t=>{const v=t.target instanceof Element?t.target.getAttribute("data-consent"):null;if(v==="granted"||v==="denied")c(v)});document.body.appendChild(d)},r=()=>{let x=document.querySelector("[data-analytics-settings]");if(x)return;x=document.createElement("button");x.type="button";x.dataset.analyticsSettings="";x.dataset.analyticsConsentUi="";x.textContent="アクセス解析設定";x.style.cssText="position:fixed;z-index:2147483646;left:12px;bottom:12px;min-height:36px;padding:6px 9px;border:1px solid #1d2420;background:#fff;color:#1d2420;font:12px system-ui,sans-serif";x.addEventListener("click",b);document.body.appendChild(x)};addEventListener("DOMContentLoaded",()=>{r();const v=localStorage.getItem(k);if(v==="granted")o();else if(v!=="denied")b()},{once:true})})();</script>`;
+}
+
+function revenueFunnelMeasurementBootstrap(): string {
+  return `<script data-saastco-funnel-measurement>(()=>{const k="saas_tco_lab_analytics_consent_v1",p=location.pathname,w=new WeakSet(),x=new WeakSet(),j=new WeakMap(),h=new Set(["mangools.com","px.a8.net","af.moshimo.com","ck.jp.ap.valuecommerce.com"]),z=new Set(["direct","organic","note","x","partner","internal","unknown"]);let i=null,r=false,q=false;const g=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)},a=()=>document.querySelector("main[data-article-id]"),d=()=>{let c="direct",m="baseline";try{const u=new URL(location.href),hp=new URLSearchParams(u.hash.startsWith("#")?u.hash.slice(1):""),rc=hp.get("ch"),rm=hp.get("cid"),sc=sessionStorage.getItem("saas_tco_lab_channel_v1"),sm=sessionStorage.getItem("saas_tco_lab_campaign_v1");if(rc&&z.has(rc)){c=rc;sessionStorage.setItem("saas_tco_lab_channel_v1",c)}else if(sc&&z.has(sc))c=sc;else if(document.referrer){const rh=new URL(document.referrer).hostname.toLowerCase();c=rh===location.hostname?"internal":/(?:^|\\.)(?:google\\.|bing\\.com$|search\\.yahoo\\.)/.test(rh)?"organic":"unknown"}if(rm&&/^[a-z0-9]+(?:[a-z0-9-]{0,62}[a-z0-9])?$/.test(rm)){m=rm;sessionStorage.setItem("saas_tco_lab_campaign_v1",m)}else if(sm&&/^[a-z0-9]+(?:[a-z0-9-]{0,62}[a-z0-9])?$/.test(sm))m=sm}catch{}let ts="external";try{if(navigator.webdriver)ts="bot";else if(localStorage.getItem("saas_tco_lab_traffic_scope_v1")==="internal")ts="internal"}catch{}let tf=false;try{tf=localStorage.getItem("saas_tco_lab_test_traffic_v1")==="1"}catch{}const root=a();return{article_id:root?.getAttribute("data-article-id")||"unknown",revenue_cell_id:root?.getAttribute("data-revenue-cell-id")||"none",channel:c,campaign_id:m,environment:"production",traffic_scope:ts,test_flag:tf}},e=(n,v={})=>g("event",n,{content_path:p,...d(),...v}),c=t=>t.getAttribute("data-server-cta-position")||t.getAttribute("data-cta-position")||"article_action",y=t=>t.getAttribute("data-vendor-id")||(t.getAttribute("data-affiliate-cta-partner")==="mangools"?"mangools":"unknown"),o=t=>t.getAttribute("data-server-cta-type")||t.getAttribute("data-cta-type")||(t.hasAttribute("data-server-affiliate-cta-partner")?"affiliate_comparison":"saas_affiliate"),v=t=>{if(w.has(t))return;w.add(t);const n={vendor_id:y(t),cta_position:c(t),cta_type:o(t)};e("cta_view",n);try{const s="saas_tco_lab_cta_eligible_v2";if(sessionStorage.getItem(s)!=="1"){sessionStorage.setItem(s,"1");e("cta_eligible_session",{...n,eligibility_rule:"active_cta_view"})}}catch{}},f=t=>{if(x.has(t))return;x.add(t);e("calculator_result_view",{vendor_id:"none",cta_position:"none",cta_type:"none",calculator_kind:"server_zero_input"})},b=()=>{if(localStorage.getItem(k)!=="granted")return;if(!i)i=new IntersectionObserver(es=>es.forEach(en=>{if(!en.isIntersecting)return;const t=en.target;if(t.matches("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"))v(t);else if(t.matches('[data-server-template-step="result"]'))f(t)}),{threshold:.25});document.querySelectorAll("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]").forEach(t=>i.observe(t));document.querySelectorAll('[data-server-template-step="result"]').forEach(t=>i.observe(t));if(!r){document.addEventListener("click",t=>{if(localStorage.getItem(k)!=="granted")return;const l=t.target instanceof Element?t.target.closest("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"):null;if(l instanceof HTMLAnchorElement){const u=new URL(l.href,location.href),n=Date.now(),last=j.get(l)||0;if(u.origin===location.origin||!h.has(u.hostname.toLowerCase())||n-last<750)return;j.set(l,n);e("outbound_click",{vendor_id:y(l),cta_position:c(l),cta_type:o(l)});return}const it=t.target instanceof Element?t.target.closest('a[data-analytics-event="server_internal_funnel"]'):null;if(it instanceof HTMLAnchorElement){const u=new URL(it.href,location.href);if(u.origin===location.origin)e("server_internal_funnel",{destination_path:u.pathname})}},{passive:true});r=true}},s=()=>{if(q)return;q=true;queueMicrotask(()=>{q=false;b()})};new MutationObserver(s).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["data-affiliate-cta-partner","data-server-affiliate-cta-partner"]});addEventListener("DOMContentLoaded",b,{once:true});b()})();</script>`;
 }
 
 function runtimeHeadControls(env: ProductionEnv): RuntimeHeadControls {
@@ -305,6 +359,7 @@ function runtimeHeadControls(env: ProductionEnv): RuntimeHeadControls {
   }
   if (analyticsEnabled && measurementId) {
     markup.push(consentGatedAnalyticsBootstrap(measurementId));
+    markup.push(revenueFunnelMeasurementBootstrap());
   }
   return { analyticsEnabled, markup: markup.join("") };
 }
@@ -392,6 +447,24 @@ function serverAffiliateCtaControls(
   if (!indexPaths.has(path) || env.CTA_GO?.trim() !== "GO") {
     return { enabled: false, mode: "disabled", partners: [] };
   }
+  const articleId = SERVER_ARTICLE_PATH_TO_ID.get(path);
+  const approvedArticleValues = (env.SERVER_CTA_APPROVED_SERVER_ARTICLES ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const approvedArticleValuesValid =
+    approvedArticleValues.length > 0
+    && approvedArticleValues.every((item) => /^SVR(?:0[1-9]|1[0-9]|20)$/.test(item))
+    && new Set(approvedArticleValues).size === approvedArticleValues.length;
+  const runtimeApprovedArticles = new Set(approvedArticleValues);
+  if (
+    !articleId
+    || !approvedArticleValuesValid
+    || !runtimeApprovedArticles.has(articleId)
+    || !SOURCE_CTA_APPROVED_SERVER_ARTICLE_IDS.has(articleId)
+  ) {
+    return { enabled: false, mode: "disabled", partners: [] };
+  }
   const requested = (env.SERVER_CTA_GO ?? "")
     .split(",")
     .map((item) => item.trim().toLowerCase())
@@ -402,8 +475,16 @@ function serverAffiliateCtaControls(
     || requested.some((item) => !SERVER_AFFILIATE_PARTNER_IDS.includes(item as ServerAffiliatePartnerId))
   ) return { enabled: false, mode: "disabled", partners: [] };
 
+  if (!requested.includes(SERVER_REVENUE_EXPERIMENT_PARTNER_IDS[0])) {
+    return { enabled: false, mode: "disabled", partners: [] };
+  }
+  const experimentRequested = (requested as ServerAffiliatePartnerId[])
+    .filter((partnerId) => (
+      (SERVER_REVENUE_EXPERIMENT_PARTNER_IDS as readonly ServerAffiliatePartnerId[]).includes(partnerId)
+    ));
+
   const partners: ServerAffiliatePartnerControl[] = [];
-  for (const partnerId of requested as ServerAffiliatePartnerId[]) {
+  for (const partnerId of experimentRequested) {
     if (partnerId === "a8net-xserver-business") {
       if (env.A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT?.trim().toLowerCase() !== "true") continue;
       const destination = validatedServerAffiliateDestination(
@@ -458,7 +539,9 @@ function serverAffiliateCtaControls(
       if (destination) partners.push({ destination, id: partnerId, label: "ABLENET公式サイトを見る" });
     }
   }
-  if (partners.length === 0) return { enabled: false, mode: "disabled", partners: [] };
+  if (partners[0]?.id !== SERVER_REVENUE_EXPERIMENT_PARTNER_IDS[0]) {
+    return { enabled: false, mode: "disabled", partners: [] };
+  }
   return {
     enabled: true,
     mode: partners.length >= 2 ? "comparison" : "single",
@@ -637,7 +720,7 @@ async function withNextReading(
 function affiliateCtaBootstrap(controls: AffiliateCtaControls): string {
   const destination = JSON.stringify(controls.destination).replaceAll("<", "\\u003c");
   const approvedPaths = JSON.stringify(controls.approvedPaths).replaceAll("<", "\\u003c");
-  return `<script data-saastco-affiliate-cta>(()=>{const u=${destination},a=new Set(${approvedPaths}),n=()=>location.pathname==="/"?"/":location.pathname.replace(/\\/+$/,"");let q=false;const r=()=>{q=false;if(!u||!a.has(n()))return;const d=document.querySelector('[data-affiliate-disclosure-status]'),s=document.querySelector('[data-affiliate-cta-state]'),p=document.querySelector('[data-affiliate-cta-placeholder="mangools"]'),x=document.querySelector('a[data-affiliate-cta-partner="mangools"]');if(!d||!s||(!p&&!x))return;const c=p||x;if(!(d.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING))return;d.dataset.affiliateDisclosureStatus="enabled";d.textContent="この記事にはMangoolsのアフィリエイトリンクが含まれます。";s.dataset.affiliateCtaState="enabled";s.textContent="ACTIVE — MANGOOLS";if(p){const l=document.createElement("a");l.className="cta-active";l.dataset.affiliateCtaPartner="mangools";l.href=u;l.target="_blank";l.rel="sponsored noopener noreferrer";l.setAttribute("aria-describedby","article-pr-disclosure");l.textContent="Mangools公式サイトを見る";p.replaceWith(l)}},t=()=>{if(q)return;q=true;queueMicrotask(r)};new MutationObserver(t).observe(document.documentElement,{subtree:true,childList:true});addEventListener("popstate",t,{passive:true});addEventListener("DOMContentLoaded",r,{once:true});r()})();</script>`;
+  return `<script data-saastco-affiliate-cta>(()=>{const u=${destination},a=new Set(${approvedPaths}),n=()=>location.pathname==="/"?"/":location.pathname.replace(/\\/+$/,"");let q=false;const r=()=>{q=false;if(!u||!a.has(n()))return;const d=document.querySelector('[data-affiliate-disclosure-status]'),s=document.querySelector('[data-affiliate-cta-state]'),p=document.querySelector('[data-affiliate-cta-placeholder="mangools"]'),x=document.querySelector('a[data-affiliate-cta-partner="mangools"]');if(!d||!s||(!p&&!x))return;const c=p||x;if(!(d.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING))return;d.dataset.affiliateDisclosureStatus="enabled";d.textContent="この記事にはMangoolsのアフィリエイトリンクが含まれます。";s.dataset.affiliateCtaState="enabled";s.textContent="ACTIVE — MANGOOLS";if(p){const l=document.createElement("a");l.className="cta-active";l.dataset.affiliateCtaPartner="mangools";l.dataset.vendorId="mangools";l.dataset.ctaPosition="article_action";l.dataset.ctaType="saas_affiliate";l.href=u;l.target="_blank";l.rel="sponsored noopener noreferrer";l.setAttribute("aria-describedby","article-pr-disclosure");l.textContent="Mangools公式サイトを見る";p.replaceWith(l)}},t=()=>{if(q)return;q=true;queueMicrotask(r)};new MutationObserver(t).observe(document.documentElement,{subtree:true,childList:true});addEventListener("popstate",t,{passive:true});addEventListener("DOMContentLoaded",r,{once:true});r()})();</script>`;
 }
 
 async function withAffiliateCta(
@@ -684,7 +767,7 @@ async function withAffiliateCta(
     )
     .replace(
       placeholderPattern,
-      `<a class="cta-active" data-affiliate-cta-partner="mangools" href="${destination}" target="_blank" rel="sponsored noopener noreferrer" aria-describedby="article-pr-disclosure">Mangools公式サイトを見る</a>`,
+      `<a class="cta-active" data-affiliate-cta-partner="mangools" data-vendor-id="mangools" data-cta-position="article_action" data-cta-type="saas_affiliate" href="${destination}" target="_blank" rel="sponsored noopener noreferrer" aria-describedby="article-pr-disclosure">Mangools公式サイトを見る</a>`,
     );
   const openingHead = body.match(/<head(?:\s[^>]*)?>/i);
   if (openingHead?.index === undefined) {
@@ -756,9 +839,13 @@ async function withServerAffiliateCta(
     )
     .replace(/data-server-cta-mode=["']disabled["']/i, `data-server-cta-mode="${controls.mode}"`);
   for (const { partner, pattern } of placeholderMatches) {
+    const position = partner.id === SERVER_REVENUE_EXPERIMENT_PARTNER_IDS[0]
+      ? "primary"
+      : "alternative";
+    const vendorId = SERVER_AFFILIATE_VENDOR_IDS[partner.id];
     body = body.replace(
       pattern,
-      `<a class="cta-active" data-server-affiliate-cta-partner="${partner.id}" href="${escapeHtmlAttribute(partner.destination)}" target="_blank" rel="sponsored noopener noreferrer" aria-describedby="article-pr-disclosure">${partner.label}</a>`,
+      `<a class="cta-active" data-server-affiliate-cta-partner="${partner.id}" data-vendor-id="${vendorId}" data-server-cta-position="${position}" data-server-cta-type="affiliate_comparison" href="${escapeHtmlAttribute(partner.destination)}" target="_blank" rel="sponsored noopener noreferrer" aria-describedby="article-pr-disclosure">${partner.label}</a>`,
     );
   }
   const headers = new Headers(response.headers);
@@ -842,9 +929,14 @@ const worker = {
     const indexApproval = indexApprovalState(env);
     const indexPaths = indexApproval.paths;
     const indexable = url.search === "" && indexPaths.has(normalizedPath);
+    const serverArticleId = SERVER_ARTICLE_PATH_TO_ID.get(normalizedPath);
     const followableNoindex = url.search === ""
       && PUBLIC_ROUTES.has(normalizedPath)
-      && !indexable;
+      && !indexable
+      && (
+        serverArticleId === undefined
+        || SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(serverArticleId)
+      );
     const gatedPath = indexable ? normalizedPath : "";
     const ctaControls = affiliateCtaControls(env, indexPaths, gatedPath);
     const serverCtaControls = serverAffiliateCtaControls(env, indexPaths, gatedPath);

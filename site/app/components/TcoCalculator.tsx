@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 
 import type { CalculatorPrefill } from "../lib/calculator-prefill";
 import {
@@ -226,11 +226,16 @@ const serverUseCaseLabels: Record<ServerUseCase, string> = {
 
 export function ServerZeroInputCalculator({
   contract,
+  afterResults = null,
 }: {
   contract: ServerZeroInputContract;
+  afterResults?: ReactNode;
 }) {
   const [months, setMonths] = useState<12 | 24 | 36>(12);
   const [useCase, setUseCase] = useState<ServerUseCase>("small_site");
+  const confirmedUseCaseRequirements = contract.useCaseRequirements[useCase]
+    .map((requirement) => requirement.trim())
+    .filter(Boolean);
   const outcome = useMemo(() => {
     try {
       return { table: calculateServerZeroInputTable(contract, months, useCase), error: null };
@@ -243,9 +248,9 @@ export function ServerZeroInputCalculator({
     <div className="server-zero-input" data-server-zero-input="approved-contract-only">
       <div className="server-zero-input-heading">
         <div>
-          <p className="eyebrow">ZERO-INPUT TCO</p>
-          <h2>確認済み価格で総額を比較</h2>
-          <p>金額・人数・税区分は入力せず、確認済みの価格記録だけを端末内で再計算します。</p>
+          <p className="eyebrow">料金比較</p>
+          <h2>{months}か月の総額で比べる</h2>
+          <p>初期費用と更新料を含めた実際の支払総額です。確認できていない費用は足しません。</p>
         </div>
         <div className="server-zero-input-controls">
           <fieldset>
@@ -280,34 +285,64 @@ export function ServerZeroInputCalculator({
           </fieldset>
         </div>
       </div>
+      <p className="server-use-case-description" aria-live="polite">
+        <strong>{serverUseCaseLabels[useCase]}の必要条件:</strong>{" "}
+        {confirmedUseCaseRequirements.length
+          ? `${confirmedUseCaseRequirements.join("・")}。この条件を公式情報で確認できたプランだけを順位対象にします。`
+          : "確認済みの必要条件はまだありません。用途適合を推測せず、順位対象にしません。"}
+      </p>
 
       {outcome.table ? (
         <div data-server-zero-input-results="precomputed">
+          <p className="server-comparison-mode" data-comparison-mode={outcome.table.comparisonMode}>
+            {outcome.table.comparisonMode === "ranked_comparison"
+              ? `順位付き比較（確認済み${outcome.table.confirmedVendorCount}社）`
+              : `確認済み一覧（${outcome.table.confirmedVendorCount}社・3社未満は順位を付けません）`}
+          </p>
           <div className="table-scroll" tabIndex={0} aria-label={`${months}か月のサーバー総額表を横スクロール`}>
             <table className="server-zero-input-table">
-              <thead><tr><th>順位</th><th>サービス / プラン</th><th>{months}か月総額</th><th>確認状態</th><th>観測・再確認</th></tr></thead>
+              <thead><tr><th>順位</th><th>サービス・プラン</th><th>{months}か月総額</th><th>1位との差</th></tr></thead>
               <tbody>
                 {outcome.table.rows.map((row) => (
                   <tr key={`${row.vendorId}-${row.planId}`} data-ranking-eligible={row.rank !== null ? "true" : "false"}>
                     <td>{row.rank ?? "—"}</td>
-                    <th>{row.displayName}</th>
+                    <th>
+                      <span>{row.displayName}</span>
+                      <details className="server-row-details">
+                        <summary>確認内容</summary>
+                        <dl>
+                          <div><dt>状態</dt><dd>{row.status === "ranked" || row.status === "confirmed_unranked" ? "確認済み" : row.reason}</dd></div>
+                          <div><dt>観測日</dt><dd>{row.observedOn ?? "未確認"}</dd></div>
+                          <div><dt>次回確認日</dt><dd>{row.nextReviewOn ?? "未確認"}</dd></div>
+                          {row.reason ? <div><dt>順位を付けない理由</dt><dd>{row.reason}</dd></div> : null}
+                        </dl>
+                      </details>
+                    </th>
                     <td>
                       {row.totalMinor !== null && row.currency !== null && row.minorUnitDigits !== null
                         ? <strong>{formatMinor(row.totalMinor, row.currency, row.minorUnitDigits)}</strong>
                         : row.status === "unconfirmed" ? <strong>未確認</strong> : "対象外"}
                     </td>
-                    <td>{row.status === "ranked" ? "確認済み" : row.reason}</td>
-                    <td>{row.observedOn ? `${row.observedOn} / 次回 ${row.nextReviewOn}` : "未確認"}</td>
+                    <td>
+                      {row.differenceFromLowestMinor !== null && row.currency !== null && row.minorUnitDigits !== null
+                        ? <strong>{formatMinor(row.differenceFromLowestMinor, row.currency, row.minorUnitDigits)}</strong>
+                        : row.status === "unconfirmed"
+                          ? "未確認"
+                          : row.status === "ineligible"
+                            ? "対象外"
+                            : "比較保留"}
+                    </td>
                   </tr>
                 ))}
                 {outcome.table.rows.length === 0 ? (
-                  <tr><td colSpan={5}>承認済みのservers価格contractはまだありません。</td></tr>
+                  <tr><td colSpan={4}>確認済みのサーバー料金はまだありません。</td></tr>
                 ) : null}
               </tbody>
             </table>
           </div>
+          {afterResults}
           <p className="server-zero-input-note">
-            未確認の行は0円に置き換えず、順位から除外します。用途適合も確認済みの分類だけを使います。
+            未確認の行は0円に置き換えず、順位と差額の計算から除外します。順位は同じ通貨で確認済みのvendorが3社以上ある場合だけ表示します。
           </p>
         </div>
       ) : (

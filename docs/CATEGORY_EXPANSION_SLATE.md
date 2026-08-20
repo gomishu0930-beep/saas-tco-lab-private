@@ -44,6 +44,31 @@ program提携、新vendor照会、価格観測、Affiliate CTA、KWFinder画面�
 |`forms`|`examples/jp_ja_keyword_slate_v2_forms.csv`|40|`2ea8dacda2813cbf1752b9886a1888e226acb50b763571a0976c436175b0f68d`|
 |`email_marketing`|`examples/jp_ja_keyword_slate_v2_email_marketing.csv`|40|`1cd09f8281e0227b9e614f7da6b65a763c83920fcec434402f9bab6105539219`|
 
+### brand_servers — 公開対象vendorの指名複合語30語
+
+2026-08-19、実際にservers記事・比較候補で扱う8 vendorについて、料金、初期費用、更新料、移行、
+解約条件、法人/EC用途の指名複合語30語を別slateとして凍結した。generic servers 40語との正規化重複は
+0件である。同日のHuman exportは30/30で完全一致し、known 2、no_data 28、rejected 0、known合計490/月、
+no_data率93.333333%だった。証拠不足のため需要不足を確定せず、generic servers需要へも加算しない。
+
+|slate_id|file|件数|intent|frozen SHA-256|状態|
+|---|---|---:|---|---|---|
+|`brand_servers`|`examples/jp_ja_keyword_slate_v3_brand_servers.csv`|30|brand 30|`f16005b8bf6acdd06627a0b2a7787c372a3a441cf372876d89e3f3785d43726b`|Human export・safe-summary受入完了|
+
+```bash
+uv run saas-preflight validate-keyword-universe \
+  examples/jp_ja_keyword_slate_v3_brand_servers.csv \
+  --minimum-keywords 30 --maximum-keywords 30
+
+uv run saas-preflight prepare-kwfinder-upload \
+  examples/jp_ja_keyword_slate_v3_brand_servers.csv \
+  --output outputs/kwfinder_brand_servers_30.txt \
+  --start-index 0 --limit 30
+```
+
+v2の6 slate 260語にこの30語を加え、凍結済み拡張queryは290語となる。ただし観測済み需要の集計単位は
+slateごとに分離し、brand 30語をgeneric servers 28,220へ混ぜない。
+
 ### Human export前のlocal検証
 
 現ニッチextension:
@@ -82,6 +107,71 @@ query別volume、Mangools固有IDはrepositoryへ保存しない。v1.1の150語
 serversの`volume_floor_met_not_proven`は、known行だけで月20万円逆算の必要sessionを超えたという下限判定で
 あり、売上達成・総需要・カテゴリ採用の確定ではない。no_dataは0へ置換していない。残りslateはKWFinderの
 検索回数カウンター回復後に再開し、部分CSVの集計値はrepositoryへ保存しない。
+
+### servers known 14語のヘッドワード集中度再評価
+
+2026-08-19、同一servers 40語をKWFinder正規画面でJapan指定のまま再exportし、validator v1.1で
+完全一致を確認した。raw CSVとquery別volumeは保存せず、集中度比率だけをappend-only safe-summaryへ残した。
+
+|指標|現在値|扱い|
+|---|---:|---|
+|known合計|28,220/月|観測済みaggregate|
+|known件数|14|観測済みcount|
+|上位2語比率|71.934798%|高集中閾値50%以上|
+|上位5語比率|97.271439%|高集中閾値80%以上|
+|実質addressable需要|unknown|`unknown_headword_concentrated`。28,220を獲得可能sessionsとはみなさない|
+
+validator v1.1は同一slate完全exportをlocalで一度だけ読み、query/value pairを保存せず、
+`top_2_known_volume_share`と`top_5_known_volume_share`だけをsafe-summaryへ残した。判定規則は
+`top2 >= 50% OR top5 >= 80%`を「高集中」とする。高集中ならstatusを
+`unknown_headword_concentrated`とし、実質addressable需要を数値化しない。閾値未満でもknown合計を
+流入予測へ読み替えず、集中度による控除を行わないという意味に限定する。
+
+servers集中度と`brand_servers`のHuman export待ちキューは完了した。両者は別safe-summaryで保持し、
+generic serversの28,220/月とbrandの490/月を合算しない。
+
+### KWFinder exportからsafe-summary保存まで
+
+画面操作と保存は次の順に限定する。
+
+1. KWFinder Importで対象slateの件数（servers 40 / brand_servers 30）とlocation=`Japan`をread-backする。
+2. `Process keywords`を実行する。upgrade、支払い、CAPTCHAが出たら停止する。
+3. 結果一覧の全行を選択し、`Export`からraw CSVをDownloadsへ保存する。raw CSVはrepositoryへ移動しない。
+4. 次のコマンドで完全一致検証とappend-only保存を行う。CSVが分割された場合は同じコマンドへ全件を並べる。
+
+```bash
+cd /Users/oumishuu/Documents/Codex/2026-07-21/x-note-x-30
+
+uv run saas-preflight validate-mangools-slate-export \
+  /Users/oumishuu/Downloads/<brand_servers-export.csv> \
+  --slate-id brand_servers \
+  --universe examples/jp_ja_keyword_slate_v3_brand_servers.csv \
+  --observed-on 2026-08-19 \
+  --next-review-on 2026-09-18 \
+  --repository-root . \
+  --output outputs/demand-safe-summaries/brand_servers-2026-08-19.json
+
+uv run saas-preflight validate-mangools-slate-export \
+  /Users/oumishuu/Downloads/<servers-export.csv> \
+  --slate-id servers \
+  --universe examples/jp_ja_keyword_slate_v2_servers.csv \
+  --observed-on 2026-08-19 \
+  --next-review-on 2026-09-18 \
+  --repository-root . \
+  --output outputs/demand-safe-summaries/servers-2026-08-19.json
+
+uv run python scripts/update_status_dashboard.py
+```
+
+保存modeはraw CSVがrepository内にある場合、凍結slateの欠落・重複・対象外queryがある場合、rejected行が
+ある場合、出力先・ファイル名が規約外の場合、既存日付を上書きしようとした場合に全体を拒否する。
+新規観測はP18固定scopeを広げない`outputs/demand-safe-summaries/`へappend-only保存する。保存するのは
+queryを含まないsafe-summaryだけで、raw CSV、query別volume、Mangools固有IDは残さない。
+
+2026-08-19の準備時は、servers 40語・JapanのProcessでMangools側のGoogleデータ取得エラーが2回発生し、
+画面上でcredits未消費を確認した。同日の再試行は成功し、40/40をexport、完全一致検証、safe-summary保存まで
+完了した。brand_serversも30/30をexportし、Mangoolsが正式名中の感嘆符だけを削除する正規化を
+衝突なしで検証したうえでsafe-summary受入まで完了した。
 
 2026-08-11、未取得語を手入力せず正規画面へ渡せるよう、凍結slateのexact sliceをquery-only textへ
 生成する`prepare-kwfinder-upload`を追加した。当初CRM残り10は`--start-index 30 --limit 10`、formsと
@@ -206,12 +296,14 @@ SEOツールの新規記事へは投資しない。`server_price_input: done SVR
   Human分類外は`対象外`と表示し、いずれも順位から除外する。通貨が混在する場合も換算せず順位を付けない。
 - 任意入力式の従来計算機は`/methodology/#detailed-calculator`へ移し、記事からは1リンクで参照する。
   zero-input表と詳細計算モードは同じPython正本を使い、TypeScriptは12/24/36か月のgolden一致を必須とする。
-  現時点では承認済みservers価格contractが0件のため、実価格をseedせず空状態をfail-closedで表示する。
+  初期実装時は承認済みservers価格contractが0件だったため、実価格をseedせず空状態をfail-closedで表示した。
+  以後もHuman承認済みcontractだけを採用し、現在の承認・公開状態は`docs/CURRENT_ADOPTION_ACTIONS.md`を正本とする。
 
 ## 国内ASP案件の有無checklist
 
-現時点では各ASPの案件有無をすべて`unknown`とする。ASPログイン後のHuman検索結果だけで更新し、検索結果が
-0件でも「将来も案件なし」とは断定しない。非公開報酬、program ID、tracking URLはrepoへ保存しない。
+未確認のcategory×ASPセルだけを`unknown`とする。ASPログイン後のHuman検索結果だけで更新し、検索結果が
+0件でも「将来も案件なし」とは断定しない。serversの確認済み状態は下表へ反映済みである。非公開報酬、
+program ID、tracking URLはrepoへ保存しない。
 
 |category|A8.net検索語|もしも検索語|バリューコマース検索語|現在状態|
 |---|---|---|---|---|
@@ -255,14 +347,15 @@ authorityを持たない。数値は将来のHuman観測値だけを受け入れ
 |forms|`<月間回答数>向けフォーム料金比較: storage・決済手数料込み12か月TCO`|response数、添付容量、月間決済額|決済率、ファイル保存、回答超過、個人情報機能、外部連携|
 |email_marketing|`<登録者数>向けメール配信料金比較: 配信通数・超過込み12か月TCO`|contact数、月間send数、配信頻度|contact重複、超過、到達率機能、専用IP、automation addon|
 
-## 次の解除条件
+## 実測後も維持する境界
 
-1. Humanが対象slateのKWFinder exportを行う別GOを返す。
-2. rawをrepo外に置いたまま、query count可変のsafe-summary intakeを後方互換で検証する。
+1. 6 slateのHuman exportは完了済み。rawをrepo外に置き、完全一致したsafe-summaryだけを判断へ使う。
+2. query count可変のsafe-summary intakeは、欠落・重複・対象外queryが1行でもあればbatch全体をfail-closedにする。
 3. serversはHuman選定済みのため、`docs/PRICE_CHECK_CHECKLIST.md`に沿って1 vendor・1 planずつ価格を観測する。
 4. serversはXServerビジネス、ロリポップ、ABLENET、シンレンタルサーバー、ConoHa WING、
    お名前.com レンタルサーバーの6programが提携承認済みである。ただし、記事承認、公開、index、
    runtime destination、partner別CTA gateはそれぞれ独立して満たす。
-5. accounting / forms / crm / email_marketingは需要未観測のためunknownを維持し、有望と判定しない。
+5. accounting / crm / forms / email_marketingは40/40実測済みだが、known下限はいずれも必要22,227を下回り、
+   no_data率も高い。総需要不足とは断定せず、新規投資はHOLDする。
 
 R1–R6、P06–P09、既存ASP申請準備の優先順位は変更しない。

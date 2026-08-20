@@ -11,8 +11,8 @@ domain GOからindex GOやCTA GOを推論しない。
 P11だけが2026年9月・10月の完全暦月データ待ちです。
 Search Console domain propertyと専用GA4 streamも連携済みです。SVR01は通常料金と期間限定cashbackを分離した
 v3 contractに基づき、年次一括前払50,160円+初期費用16,500円=契約時請求66,660円を承認・index対象として
-公開済みです。24/36か月TCO、更新時料金、順位、推奨はunknownのままです。servers案件は6件提携承認済みですが、
-runtime destination未設定のためserver CTAは0件です。Xは`@saastcolab`でP01初回スレッド8件を公開済みです。
+公開済みです。24/36か月TCO、更新時料金、順位、推奨はunknownのままです。servers案件は6件提携承認済みで、
+runtime destinationとpartner別GOが揃った6件のCTAがSVR01で稼働しています。Xは`@saastcolab`でP01初回スレッド8件を公開済みです。
 X API connectorは2026-08-17に`@saastcolab`へ再認証し、`getUsersMe` read-backも一致しましたが、
 OAuth application credentialがFANZA環境3件と共有されているため使用停止を維持します。
 SaaS専用developer applicationへ切り替わるまで分析値を算入せず、API writeも停止します。
@@ -36,6 +36,8 @@ SaaS専用developer applicationへ切り替わるまで分析値を算入せず�
 |Mangools需要CSV|`mangools_csv: done / pending`|`mangools_csv: done`|凍結済みquery CSVのlocal検証を開始|
 |Mangools一時upgrade（完了）|`mangools_upgrade: done Basic monthly`|`mangools_upgrade: done Basic monthly`|2026-08-09に正規DashboardでBasic有効化、2026-08-13までに残り180語のHuman export・検証、2026-08-14に自動更新OFFをread-back済み。2026-09-10までは利用可能で、追加Human操作なし|
 |拡張需要CSVの残り180語|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension / pending`|`mangools_category_csv: done crm,forms,email_marketing,seo_tools_v2_extension`|CRM 40、forms 40、email marketing 40、SEO追加60をHuman export後に行単位validatorへ渡す。自動取得は行わない|
+|servers集中度の再測定|`mangools_servers_concentration_csv: done / pending`|`mangools_servers_concentration_csv: done`|凍結済みservers 40語を同一条件で再exportし、query値を保存せずtop 2 / top 5比率だけをsafe-summaryへ残す|
+|servers指名語30語|`mangools_brand_servers_csv: done / pending`|`mangools_brand_servers_csv: done`|凍結済み`brand_servers` 30語をHuman exportし、generic serversとは別に行単位validatorへ渡す|
 |Scope拡大準備|`scope_expand: GO (準備scope) / HOLD`|`scope_expand: GO (準備scope)`|2026-08-05受領済み。query・checklist・template準備だけで、公開・申請・照会は許可しない|
 |優先カテゴリ|`category_primary: GO <category> / HOLD`|`category_primary: GO servers`|2026-08-06受領済み。serversのlocal記事・観測表・計算機準備だけを許可|
 |日本ASP申請|`asp_signup: GO <ASP> / HOLD <ASP>`|`asp_signup: GO A8.net`|列挙したASPのHuman申請だけを開始|
@@ -49,9 +51,14 @@ SaaS専用developer applicationへ切り替わるまで分析値を算入せず�
 |もしも再認証・結果確認（完了）|`moshimo_reauth: done`|`moshimo_reauth: done`|2026-08-09にメディア登録とロリポップ提携承認をread-back済み。再返信不要|
 |もしもメディア適法性確認（完了）|`moshimo_media_attestation: done`|`moshimo_media_attestation: done`|2026-08-09にHuman本人が確認済み。saastcolab.jpのメディア登録へ反映済み|
 |バリューコマース本登録完了|`valuecommerce_registration: done`|`valuecommerce_registration: done`|本登録案内メールの期限内URLからHumanが手続きを完了した後、ABLENET候補の個別条件をread-onlyで再確認|
-|servers候補入力|`server_price_input: done <SVR-ID>`|`server_price_input: done SVR01`|`/operator/servers/`の候補値をHumanが確認し、確定ボタンを押して保存したcandidate-only JSONをlocal検証。公開・CTAには効かない|
+|servers候補入力|`server_price_input: done <vendor_id>/<plan_id>[,...]`|`server_price_input: done conoha-wing/<確認したplan_id>`|`/operator/servers/`で11数値fieldとcampaign期限・最低契約期間・domain特典条件をHumanが確認し、確定ボタンを押して保存したcandidate-only JSONをlocal検証。記事IDの`SVRxx`とは別。公開・CTAには効かない。過去の`SVR01` tokenは履歴としてのみ維持|
+|M3 follow-up候補確認（完了）|`m3_followup_candidates: confirm_all / corrections <vendor>:<field>=<value>`|`m3_followup_candidates: confirm_all`|2026-08-18に訂正なしでHuman確認済み。将来checkout非公開項目はunknownのまま。再返信不要|
+|servers用途条件（完了）|`server_use_case_requirements: GO <区分>=<確認済み条件> / HOLD`|`server_use_case_requirements: GO corporate_site=<公式画面で確認した条件>`|2026-08-18に3区分をHuman確認済み。条件変更時だけ再返信する|
 |SVR01公式画面候補の確認|`svr01_candidates: confirm_all` または `svr01_candidates: corrections <field>: <value>`|`svr01_candidates: confirm_all`|`/operator/servers/`の「公式画面の確認候補」9件をHuman本人が読み、すべて正しければ一括確認、相違があればfield単位で訂正する。確認前はcontract・TCO・順位・記事・CTAへ採用しない|
 |servers記事承認|`article_approve: <SVR-ID>`|`article_approve: SVR01`|当該本文が扱うmaterial claimとHuman確認がREADYの場合だけ承認。SVR01は2026-08-14に承認・公開済み。index・CTAには自動では効かない|
+|servers 8本一括承認（完了）|`article_approve: SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08`|同左|2026-08-19にHuman承認済み。unknownを残した80点公開scope。index・CTA・deployには自動では効かない。再返信不要|
+|servers 8本production release（完了）|`deploy_update: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08`|同左|2026-08-19にSites version 32へ反映済み。8 routeはHTTP 200・noindex・CTA無効。index・CTA・GitHub pushは変更していない。再返信不要|
+|XServer小規模用途の不足1点（完了）|`server_use_case_plan: GO xserver-business/shared-standard-12m small_site free_ssl_confirmed`|同左|2026-08-19にHuman確認済み。既存の容量・転送量・backup確認と合わせて、12か月差額表の3社目へ算入。corporate_site・ecommerceや24/36か月へは拡張しない。再返信不要|
 |servers destination設定完了|`server_destination_configured: done <partner-id,...>`|`server_destination_configured: done a8net-xserver-business`|ASP正規画面で取得した広告linkをruntime secretへ設定した事実だけを通知。URL・tracking ID・secret値は返信・repo保存しない|
 |servers記事index|`index_go: GO <SVR-ID> / HOLD <SVR-ID>`|`index_go: GO SVR01`|Human承認済みの列挙記事だけをindex対象へ加える。CTAには効かない|
 |servers partner CTA|`server_cta_go: GO <SVR-ID> partners=<partner-id,...> / HOLD <SVR-ID>`|`server_cta_go: GO SVR01 partners=a8net-xserver-business`|記事承認・index・現行提携・runtime destination・開示先行が全て成立した列挙partnerだけを有効化。未列挙partnerと未承認記事は無効|
@@ -133,6 +140,12 @@ API/FTP credential、定期取得、raw保存、公開、CTA変更を許可し�
 ## 完了済み・再利用しないtoken
 
 次は履歴確認用であり、新しい指示として再送しない。
+
+2026-08-19受領済み（M4 servers 8記事、CTAはSVR01だけを維持）:
+
+```text
+index_go: GO SVR05,SVR04,SVR06,SVR07,SVR02,SVR03,SVR09,SVR08
+```
 
 ```text
 gsc_verification_deploy: GO

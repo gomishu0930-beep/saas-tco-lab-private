@@ -1,5 +1,15 @@
 {
   "$defs": {
+    "AddressableDemandStatus": {
+      "enum": [
+        "unknown_headword_concentrated",
+        "not_separated_by_concentration",
+        "unknown_insufficient_evidence",
+        "unknown_reexport_required"
+      ],
+      "title": "AddressableDemandStatus",
+      "type": "string"
+    },
     "DemandCapacityDecision": {
       "enum": [
         "insufficient_even_at_full_capture",
@@ -7,6 +17,16 @@
         "volume_floor_met_not_proven"
       ],
       "title": "DemandCapacityDecision",
+      "type": "string"
+    },
+    "HeadwordConcentrationStatus": {
+      "enum": [
+        "high",
+        "not_high",
+        "insufficient_known_rows",
+        "not_recomputable_from_safe_summary"
+      ],
+      "title": "HeadwordConcentrationStatus",
       "type": "string"
     },
     "MangoolsSlateDemandSafeSummary": {
@@ -18,6 +38,10 @@
           "default": "human_ui_export",
           "title": "Acquisition Method",
           "type": "string"
+        },
+        "addressable_demand_status": {
+          "$ref": "#/$defs/AddressableDemandStatus",
+          "default": "unknown_reexport_required"
         },
         "assumed_confirmed_epc_jpy": {
           "anyOf": [
@@ -71,6 +95,16 @@
           "pattern": "^[0-9a-f]{64}$",
           "title": "Frozen Universe Sha256",
           "type": "string"
+        },
+        "headword_concentration_rule": {
+          "const": "top2_gte_0_50_or_top5_gte_0_80",
+          "default": "top2_gte_0_50_or_top5_gte_0_80",
+          "title": "Headword Concentration Rule",
+          "type": "string"
+        },
+        "headword_concentration_status": {
+          "$ref": "#/$defs/HeadwordConcentrationStatus",
+          "default": "not_recomputable_from_safe_summary"
         },
         "integer_volume_count": {
           "maximum": 200,
@@ -197,8 +231,8 @@
           "type": "integer"
         },
         "schema_version": {
-          "const": "1.0",
-          "default": "1.0",
+          "const": "1.1",
+          "default": "1.1",
           "title": "Schema Version",
           "type": "string"
         },
@@ -216,6 +250,42 @@
           "minimum": 1,
           "title": "Source File Count",
           "type": "integer"
+        },
+        "top_2_known_volume_share": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top 2 Known Volume Share"
+        },
+        "top_5_known_volume_share": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Top 5 Known Volume Share"
         }
       },
       "required": [

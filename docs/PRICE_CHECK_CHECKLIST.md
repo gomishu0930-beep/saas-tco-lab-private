@@ -51,6 +51,79 @@ HOLDにしない。恒常割引率は、同一plan・同一通貨・同一税条
 |SK|さくらのレンタルサーバ|[料金プラン](https://rs.sakura.ad.jp/plan/)|planと月払い / 年払いを分離|
 |KG|KAGOYAレンタルサーバー|[料金・スペック](https://www.kagoya.jp/kir/price/)|light / basic / high-end、月払い / 12か月一括を分離|
 
+### M3-1 — 3vendorを1画面ずつ確認する手順
+
+比較表へ追加する候補は、次の順で1社ずつ処理する。複数tabの値を混ぜず、対象planと契約期間が同じ画面で
+特定できることを開始条件とする。各画面で必須なのは、`初期費用`、`更新時請求額`、`campaign終了日`、
+`domain特典`、`最低契約期間`の5項目である。表示が見つからない項目は空欄や0にせず、確認した画面と
+不明理由を付けて`unknown`にする。
+
+#### ConoHa WING（1画面）
+
+1. [公式料金ページ](https://www.conoha.jp/pricing/)を開く。
+2. WINGパックまたは通常料金のどちらを観測するか選び、plan名と契約期間が同時に見える状態にする。
+3. 初期費用・税、更新時請求額と周期、campaign終了日、domain特典の対象と期間、最低契約期間を読む。
+4. 月額換算は請求総額に置き換えず、通常料金と期間限定表示を別fieldへ入力する。
+5. `/operator/servers`へ入力し、candidate JSONをHuman操作でdownloadする。
+
+#### さくらのレンタルサーバ（1画面）
+
+1. [公式料金プラン](https://rs.sakura.ad.jp/plan/)を開く。
+2. 対象planを一つ選び、月払い・年払いのどちらを観測するか固定する。
+3. 初期費用・税、更新時請求額と周期、campaign終了日、domain特典の対象と期間、最低契約期間を読む。
+4. 無料期間や初回表示を、2年目以降の更新額として流用しない。
+5. `/operator/servers`へ入力し、candidate JSONをHuman操作でdownloadする。
+
+#### KAGOYAレンタルサーバー（1画面）
+
+1. [公式料金・スペック](https://www.kagoya.jp/kir/price/)を開く。
+2. service種別と対象planを一つ選び、月払いまたは12か月一括を固定する。
+3. 初期費用・税、更新時請求額と周期、campaign終了日、domain特典の対象と期間、最低契約期間を読む。
+4. 共有・VPS・managed等の異なるservice種別を同じ比較行にしない。
+5. `/operator/servers`へ入力し、candidate JSONをHuman操作でdownloadする。
+
+3社のうち同一用途・同一通貨でHuman承認済みの価格contractが3vendor以上になった時だけ順位と
+`1位との差`を表示する。確認済みが2vendor以下の間は金額を残した`確認済み一覧`とし、順位を付けない。
+各vendor・planには11個の数値fieldに加え、campaign終了日、最低契約期間、domain特典条件を持つ
+`server_conditions`を1件必須とする。3条件は`known / unknown / not_applicable`を明示し、`unknown`が
+1つでもある行は比較READYへ数えない。`not_applicable`はHumanが公式画面で非該当を確認した理由を必須とする。
+用途区分ごとの必要条件もHumanが明示確認した語だけを1行で記録する。条件が空の用途はplan名や一般知識から
+SSL、SLA、請求書払い等を補完せず、全planを当該用途の順位対象外にする。
+
+### M3-2 — 2026-08-18 follow-up（Human確認済み）
+
+公式画面と公式supportから整理した次の内容は、2026-08-18にHuman Approver `omishu`が訂正なしで確認した。
+未確認価格はunknown、artifactは`candidate_only`のままで、記事review、index、CTA、deploy、pushへは効かない。
+
+|Vendor / plan|checkout・更新候補|用途判定に使える公式仕様候補|未解消の扱い|
+|---|---|---|---|
+|ConoHa WING Standard / WINGパック12か月|通常料金は4.4円/時・月額上限2,640円（税込）の別料金タイプ。WINGパック更新は満了30日前決済|SSD 600GB、転送量無制限、無料SSL、無料自動backup（1日1回・14日）|将来のWINGパックexact更新総額はactive契約画面でのみ確認可能。通常料金や取消線priceへ置換せずunknownで確定候補|
+|さくら Business / 12か月|申込カートで12か月一括29,040円（税込）。月額換算2,420円、毎月払い2,970円|SSD 600GB、転送量無制限、backup & staging、複数人管理|将来更新額は契約中の概算見積で確認し、初回更新前は取得不可。初回checkout総額だけknown候補|
+|KAGOYA Light 1コア/4GB / 12か月|17,820円（税込）、途中解約返金なし。初月無料は終了日付きcampaignではない候補|Web・MySQL 100GB、転送量無制限・従量課金なし、無料backup最大10GB、無料SSL、独自domain 1個初年度無料|初月無料の適用期間とdomainの2年目価格は別field。exact金額を推測しない|
+
+用途区分は次のHuman確認済み条件を使う。planの一般的な評判やカテゴリ名から適合を補完しない。
+
+```text
+small_site: storage 100GB以上 / 転送量無制限 / backup利用可 / 無料SSL
+corporate_site: small_site条件 + 複数人管理またはmanaged運用
+ecommerce: small_site条件 + EC用途またはECアプリ対応
+```
+
+Human確認済みのplan適合はConoHa=`small_site`、さくら=`small_site, corporate_site`、KAGOYA=`small_site,
+corporate_site`とする。ConoHaの法人・EC、さくらのEC、KAGOYA LightのECはplan単位の追加根拠がないため
+除外候補である。KAGOYA公式画面が高負荷/ECを上位planへ対応付けているため、Lightへ推定転用しない。
+
+各社を別々のcandidate JSONとしてdownloadした場合は、次のローカルcommandで一つの比較候補へ統合する。
+出力は`candidate_only`のままで承認権限を持たず、標準出力へ価格・URLは出さない。同じvendor・plan・fieldの
+重複、11 field未満の行、数値行と`server_conditions`のidentity不一致、servers以外のcategory、
+既存outputへの上書きはfail-closedで停止する。
+
+```bash
+uv run saas-preflight merge-server-candidates \
+  <candidate-1.json> <candidate-2.json> <candidate-3.json> \
+  --output <servers-comparison-candidate-v1.json>
+```
+
 候補掲載はAffiliate提携や推奨を意味しない。service種別が違う行を同じplanとして比較せず、まずXBの
 共有サーバー1 planを最小観測単位とする。各vendor・planで次を上から確認する。
 
@@ -87,10 +160,21 @@ storage / transfer / backup / overage:
 migration support / exclusions:
 observed_on / next_review_on:
 unknown fields and reason:
+small_site confirmed requirements:
+corporate_site confirmed requirements:
+ecommerce confirmed requirements:
 ```
 
 氏名、住所、email、カード、account固有URL、見積書、tracking parameterはカードにもrepositoryにも残さない。
 Human確認前の候補値はcontractへ保存しない。
+
+### 複数vendor候補の取込
+
+`/operator/servers`は1つのcandidate JSONに複数のvendor・plan行を保持し、再読込時に行単位で復元する。
+各identityは上記11 fieldと対応する`server_conditions`を1件ずつ持つ必要がある。重複field、欠落field、
+条件recordの欠落・重複・identity不一致、想定外field、source host設定の欠落が
+1件でもあればbatch全体を採用しない。取込後も全行は`candidate_only`かつ`unreviewed`で、記事承認、index、
+CTA authorityにはならない。
 
 ### Z4 — servers記事60分標準workflow
 

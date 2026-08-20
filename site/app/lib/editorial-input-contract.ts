@@ -1,5 +1,5 @@
 import { pilotFieldScope, type PilotPage, type PilotNumericField } from "./pilot-pages.ts";
-import type { ServerZeroInputContract } from "./tco.ts";
+import type { ServerUseCase, ServerZeroInputContract } from "./tco.ts";
 
 export type EditorialScopeKind = "vendor_plan" | "human_scenario";
 export type EditorialValueStatus = "known" | "unknown" | "not_applicable";
@@ -91,12 +91,45 @@ export type EditorialValidation = {
   contract: EditorialContract | null;
 };
 
-type ServerCandidateArtifact = {
+export type ServerConditionStatus = "known" | "unknown" | "not_applicable";
+
+export type ServerObservationConditionRecord = {
+  schema_version: "1.0";
+  vendor_id: string;
+  plan_id: string;
+  campaign_ends_on_status: ServerConditionStatus;
+  campaign_ends_on: string | null;
+  campaign_ends_on_unknown_reason: string | null;
+  minimum_commitment_months_status: ServerConditionStatus;
+  minimum_commitment_months: number | null;
+  minimum_commitment_unknown_reason: string | null;
+  domain_benefit_terms_status: ServerConditionStatus;
+  domain_benefit_terms: string | null;
+  domain_benefit_terms_unknown_reason: string | null;
+  source_url: string;
+  observed_on: string;
+  next_review_on: string;
+  entered_by: "human";
+  acquisition_method: "manual_public_page" | "manual_checkout_review";
+  rights_path: "human_editorial";
+  review_status: EditorialReviewStatus;
+};
+
+export type ServerCandidateArtifact = {
   schema_version: "1.0";
   category_id: "servers";
   template_kind: "pricing_tco";
   state: "candidate_only";
   numeric_fields: EditorialContract["numeric_fields"];
+  server_conditions?: readonly ServerObservationConditionRecord[];
+};
+
+export type ServerCandidateEvidenceSource = {
+  vendorId: string;
+  planId: string;
+  displayName: string;
+  expectedSourceHost: string;
+  eligibleUseCases?: readonly ServerUseCase[];
 };
 
 export type ServerCandidateEvidence = {
@@ -708,7 +741,7 @@ function addError(target: Record<string, string[]>, key: string, message: string
   (target[key] ??= []).push(message);
 }
 
-function isoDay(value: string): number | null {
+export function isoDay(value: string): number | null {
   const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(value);
   if (!match) return null;
   const year = Number(match[1]);
@@ -724,7 +757,7 @@ function isoDay(value: string): number | null {
   return stamp / dayMilliseconds;
 }
 
-function validateSourceUrl(value: string): string | null {
+export function validateSourceUrl(value: string): string | null {
   let url: URL;
   try {
     url = new URL(value);
@@ -1235,6 +1268,61 @@ export function valuesFromContract(page: PilotPage, contract: EditorialContract)
   return rows;
 }
 
+/**
+ * Restore a candidate-only servers batch into editable rows.
+ *
+ * One file may contain several vendor/plan rows, but every identity must carry
+ * the complete field catalog. Imported values remain unreviewed form input and
+ * never become article, index, or CTA authority through this helper.
+ */
+export function serverCategoryRowsFromCandidate(
+  page: PilotPage,
+  input: unknown,
+): EditorialRowFormValue[] | null {
+  if (!input || typeof input !== "object") return null;
+  const candidate = input as Partial<ServerCandidateArtifact>;
+  if (
+    candidate.schema_version !== "1.0"
+    || candidate.category_id !== "servers"
+    || candidate.template_kind !== "pricing_tco"
+    || candidate.state !== "candidate_only"
+    || !Array.isArray(candidate.numeric_fields)
+    || candidate.numeric_fields.length === 0
+  ) return null;
+
+  const expectedFields = new Set(page.numericFields.map((field) => field.key));
+  const groups = new Map<string, Set<string>>();
+  for (const field of candidate.numeric_fields) {
+    if (
+      field.scope_kind !== "vendor_plan"
+      || !safeServerEvidenceSlug(field.vendor_id)
+      || !safeServerEvidenceSlug(field.plan_id)
+      || !expectedFields.has(field.field)
+    ) return null;
+    const identity = `${field.vendor_id}\u0000${field.plan_id}`;
+    const fields = groups.get(identity) ?? new Set<string>();
+    if (fields.has(field.field)) return null;
+    fields.add(field.field);
+    groups.set(identity, fields);
+  }
+  if (
+    [...groups.values()].some((fields) => (
+      fields.size !== expectedFields.size
+      || [...expectedFields].some((field) => !fields.has(field))
+    ))
+  ) return null;
+
+  return valuesFromContract(page, {
+    schema_version: "2.3",
+    article_id: page.id,
+    slug: page.slug,
+    title: page.title,
+    disclosure_version: "pr-affiliate-v1",
+    numeric_fields: candidate.numeric_fields,
+    article_review_status: "unreviewed",
+  });
+}
+
 export function validateEditorialInput(
   page: PilotPage,
   rows: readonly EditorialRowFormValue[],
@@ -1692,13 +1780,15 @@ export function serverInitialPaymentProjection(
 
 /**
  * Convert a Pydantic-validated candidate artifact into display-only evidence.
- * The resulting calculator row is deliberately unknown and unranked: candidate
- * evidence is not article approval, canonical price, index, or CTA authority.
+ * A Human-approved first-year checkout total can be carried as a bounded
+ * 12-month calculator input, but the enclosing article remains unreviewed.
+ * Candidate evidence is never article approval, index, CTA, or publish authority.
  */
 export function reviewedServerCandidateEvidence(
   input: unknown,
   displayName: string,
   expectedSourceHost: string,
+  eligibleUseCases: readonly ServerUseCase[] = [],
 ): ServerCandidateEvidence | null {
   if (!input || typeof input !== "object") return null;
   const candidate = input as Partial<ServerCandidateArtifact>;
@@ -1712,6 +1802,11 @@ export function reviewedServerCandidateEvidence(
   ) return null;
 
   const fields = candidate.numeric_fields as EditorialContract["numeric_fields"];
+  const allowedUseCases = new Set<ServerUseCase>(["small_site", "corporate_site", "ecommerce"]);
+  if (
+    eligibleUseCases.some((useCase) => !allowedUseCases.has(useCase))
+    || new Set(eligibleUseCases).size !== eligibleUseCases.length
+  ) return null;
   const identities = new Set(fields.map((field) => `${field.vendor_id ?? ""}\u0000${field.plan_id ?? ""}`));
   const fieldNames = new Set(fields.map((field) => field.field));
   if (
@@ -1733,6 +1828,7 @@ export function reviewedServerCandidateEvidence(
   const assessment = assessServerPromotionCandidate(fields);
   const observedOn = latestServerEvidenceDay(fields.map((field) => field.observed_on));
   const nextReviewOn = earliestServerEvidenceDay(fields.map((field) => field.next_review_on));
+  const initialPayment = serverInitialPaymentProjection(fields);
   const unknownReason = assessment.tcoBlockers.length || assessment.suitabilityBlockers.length
     ? "期間限定表示、更新時請求額または用途条件に未確認項目があるため総額を算出しません"
     : "記事確認前のため計算対象外";
@@ -1745,26 +1841,121 @@ export function reviewedServerCandidateEvidence(
     unknownCount: fields.filter((field) => field.value_status === "unknown").length,
     notApplicableCount: fields.filter((field) => field.value_status === "not_applicable").length,
     fields,
-    initialPayment: serverInitialPaymentProjection(fields),
+    initialPayment,
     tcoBlockers: assessment.tcoBlockers,
     suitabilityBlockers: assessment.suitabilityBlockers,
     calculatorContract: {
       articleReviewStatus: "unreviewed",
+      useCaseRequirements: {
+        small_site: [],
+        corporate_site: [],
+        ecommerce: [],
+      },
       plans: [{
         vendorId,
         planId,
         displayName,
-        priceStatus: "unknown",
-        reviewStatus: "unreviewed",
-        eligibleUseCases: [],
-        quote: null,
-        serverTerms: null,
-        unknownReason,
+        priceStatus: initialPayment ? "known" : "unknown",
+        reviewStatus: initialPayment ? "approved" : "unreviewed",
+        eligibleUseCases: [...eligibleUseCases],
+        quote: initialPayment ? {
+          currency: initialPayment.currency,
+          minorUnitDigits: initialPayment.currency === "JPY" ? 0 : 2,
+          minimumCommitmentMonths: 12,
+          base: {
+            name: `${displayName} 12か月請求総額`,
+            amount: initialPayment.annualCheckoutTotal,
+            currency: initialPayment.currency,
+            billingPeriod: "annual",
+            priceBasis: "flat",
+            minimumSeats: 1,
+            includedSeats: 1,
+            maximumSeats: 1,
+          },
+          addons: [],
+          usage: null,
+          tax: { treatment: initialPayment.taxTreatment, rate: null },
+        } : null,
+        serverTerms: initialPayment ? {
+          initialFee: initialPayment.initialFee,
+          renewalFee: null,
+          renewalDueMonth: null,
+          campaignPrice: null,
+          campaignPeriodMonths: null,
+          domainPrice: null,
+          domainBillingPeriod: null,
+          domainIncludedMonths: null,
+        } : null,
+        unknownReason: initialPayment ? null : unknownReason,
+        confirmedThroughMonths: initialPayment ? 12 : null,
+        horizonUnknownReason: initialPayment
+          ? "更新時請求総額が未確認のため24か月・36か月は計算しません"
+          : null,
         observedOn,
         nextReviewOn,
       }],
     },
   };
+}
+
+/**
+ * Validate every identity in a multi-vendor candidate batch independently.
+ * A missing source declaration, extra identity, or invalid row fails the whole
+ * batch closed. Returned evidence remains display-only and unreviewed.
+ */
+export function reviewedServerCandidateEvidenceBatch(
+  input: unknown,
+  sources: readonly ServerCandidateEvidenceSource[],
+): readonly ServerCandidateEvidence[] | null {
+  if (!input || typeof input !== "object" || sources.length === 0) return null;
+  const candidate = input as Partial<ServerCandidateArtifact>;
+  if (
+    candidate.schema_version !== "1.0"
+    || candidate.category_id !== "servers"
+    || candidate.template_kind !== "pricing_tco"
+    || candidate.state !== "candidate_only"
+    || !Array.isArray(candidate.numeric_fields)
+  ) return null;
+
+  const sourceByIdentity = new Map<string, ServerCandidateEvidenceSource>();
+  for (const source of sources) {
+    const identity = `${source.vendorId}\u0000${source.planId}`;
+    if (
+      !safeServerEvidenceSlug(source.vendorId)
+      || !safeServerEvidenceSlug(source.planId)
+      || !source.displayName.trim()
+      || !source.expectedSourceHost.trim()
+      || sourceByIdentity.has(identity)
+    ) return null;
+    sourceByIdentity.set(identity, source);
+  }
+
+  const fieldsByIdentity = new Map<string, EditorialContract["numeric_fields"]>();
+  for (const field of candidate.numeric_fields) {
+    if (!safeServerEvidenceSlug(field.vendor_id) || !safeServerEvidenceSlug(field.plan_id)) return null;
+    const identity = `${field.vendor_id}\u0000${field.plan_id}`;
+    fieldsByIdentity.set(identity, [...(fieldsByIdentity.get(identity) ?? []), field]);
+  }
+  if (
+    fieldsByIdentity.size !== sourceByIdentity.size
+    || [...fieldsByIdentity.keys()].some((identity) => !sourceByIdentity.has(identity))
+  ) return null;
+
+  const evidence: ServerCandidateEvidence[] = [];
+  for (const [identity, source] of sourceByIdentity) {
+    const fields = fieldsByIdentity.get(identity);
+    if (!fields) return null;
+    const reviewed = reviewedServerCandidateEvidence({
+      schema_version: "1.0",
+      category_id: "servers",
+      template_kind: "pricing_tco",
+      state: "candidate_only",
+      numeric_fields: fields,
+    }, source.displayName, source.expectedSourceHost, source.eligibleUseCases ?? []);
+    if (!reviewed) return null;
+    evidence.push(reviewed);
+  }
+  return evidence;
 }
 
 export function serverEvidenceValue(

@@ -5,6 +5,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from saas_preflight.cli import run
+from saas_preflight.editorial_input import CategoryExpansionInput
 from saas_preflight.models import BillingPeriod, FieldEvidence, PolicyAction, PolicyDecision
 from saas_preflight.preview import FitStatus, PreviewPage, PreviewPlan
 
@@ -34,6 +35,95 @@ def _write_plan(path: Path, *, derive: PolicyDecision = PolicyDecision.APPROVED)
         evidence_items.append(evidence.model_copy(update={"pointers": tuple(pointers)}))
     plan = plan.model_copy(update={"field_evidence": tuple(evidence_items)})
     path.write_text(plan.model_dump_json(indent=2), encoding="utf-8")
+
+
+def _write_server_candidate(
+    path: Path, *, vendor_id: str, plan_id: str
+) -> None:
+    source = CategoryExpansionInput.model_validate_json(
+        (
+            Path(__file__).resolve().parents[1]
+            / "artifacts/category-expansion-inputs"
+            / "SVR01-servers-category-expansion-input-v3-2026-08-14.json"
+        ).read_text(encoding="utf-8")
+    )
+    candidate = source.model_copy(
+        update={
+            "numeric_fields": tuple(
+                field.model_copy(
+                    update={"vendor_id": vendor_id, "plan_id": plan_id}
+                )
+                for field in source.numeric_fields
+            )
+        }
+    )
+    path.write_text(candidate.model_dump_json(indent=2), encoding="utf-8")
+
+
+def test_merge_server_candidates_writes_new_safe_candidate_only_contract(
+    tmp_path: Path, capsys
+) -> None:
+    first = tmp_path / "first.json"
+    second = tmp_path / "second.json"
+    output = tmp_path / "merged.json"
+    _write_server_candidate(
+        first, vendor_id="xserver-business", plan_id="shared-standard-12m"
+    )
+    _write_server_candidate(second, vendor_id="conoha-wing", plan_id="business-12m")
+
+    assert run(
+        [
+            "merge-server-candidates",
+            str(first),
+            str(second),
+            "--output",
+            str(output),
+        ]
+    ) == 0
+    payload = json.loads(capsys.readouterr().out)
+    assert payload == {
+        "authority": "none",
+        "category_id": "servers",
+        "condition_record_count": 0,
+        "field_count": 22,
+        "output_sha256": payload["output_sha256"],
+        "status": "candidate_only_merged",
+        "values_emitted_to_stdout": False,
+        "vendor_plan_count": 2,
+    }
+    assert len(payload["output_sha256"]) == 64
+    merged = CategoryExpansionInput.model_validate_json(output.read_text(encoding="utf-8"))
+    assert len(merged.numeric_fields) == 22
+    assert merged.server_conditions == ()
+
+    assert run(
+        ["merge-server-candidates", str(first), "--output", str(output)]
+    ) == 2
+    assert "File exists" in capsys.readouterr().err
+
+
+def test_merge_server_candidates_rejects_duplicates_without_output(
+    tmp_path: Path, capsys
+) -> None:
+    candidate = tmp_path / "candidate.json"
+    output = tmp_path / "merged.json"
+    _write_server_candidate(
+        candidate, vendor_id="xserver-business", plan_id="shared-standard-12m"
+    )
+
+    assert run(
+        [
+            "merge-server-candidates",
+            str(candidate),
+            str(candidate),
+            "--output",
+            str(output),
+        ]
+    ) == 2
+    captured = capsys.readouterr()
+    assert captured.out == ""
+    assert "identities must be unique" in captured.err
+    assert not output.exists()
 
 
 def test_validate_plan_reports_rights_status(tmp_path: Path, capsys) -> None:

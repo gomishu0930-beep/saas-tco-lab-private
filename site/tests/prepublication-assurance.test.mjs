@@ -23,7 +23,7 @@ const SERVER_CANDIDATE_ROUTES = [
   "server-backup-cost",
   "small-corporate-server",
   "server-cancellation-terms",
-].map((_, index) => `/servers/business-server-pricing?candidate=SVR${String(index + 1).padStart(2, "0")}`);
+].map((slug, index) => index === 0 ? "/servers/business-server-pricing" : `/servers/${slug}`);
 
 const ROUTES = [
   "/",
@@ -58,13 +58,27 @@ const ROUTES = [
 ];
 const ARTICLE_ROUTES = ROUTES.filter((path) => path.startsWith("/pilot/"));
 const ROUTE_PATHS = new Set(ROUTES.map(normalizedRoute));
-const SVR01_ROUTE = "/servers/business-server-pricing?candidate=SVR01";
+const SVR01_ROUTE = "/servers/business-server-pricing";
+const SERVER_OPERATOR_ROUTE = "/operator/servers";
+const APPROVED_SERVER_LAUNCH_ROUTES = new Set([
+  "/servers/server-renewal-cost",
+  "/servers/server-first-year-total",
+  "/servers/server-migration-cost",
+  "/servers/business-rental-server",
+  "/servers/small-business-server",
+  "/servers/ec-server-cost",
+  "/servers/business-mail-server",
+  "/servers/ec-server-requirements",
+]);
 const ALLOWED_EVIDENCE_HOSTS = new Set([
   "saastcolab.jp",
   "mangools.com",
   "seranking.com",
   "www.semrush.com",
   "business.xserver.ne.jp",
+  "www.conoha.jp",
+  "rs.sakura.ad.jp",
+  "www.kagoya.jp",
 ]);
 const pages = new Map();
 
@@ -214,7 +228,7 @@ test("every P01-P12 article renders PR disclosure before a disabled CTA", () => 
   }
 });
 
-test("every servers candidate stays noindex, unranked, CTA-disabled, and disclosure-first", () => {
+test("server source approvals can rank locally while every unreleased route stays noindex and CTA-disabled", () => {
   assert.equal(SERVER_CANDIDATE_ROUTES.length, 20);
   for (const path of SERVER_CANDIDATE_ROUTES) {
     const html = pages.get(path);
@@ -234,8 +248,22 @@ test("every servers candidate stays noindex, unranked, CTA-disabled, and disclos
       assert.match(html, /24\/36か月総額・順位・推奨は表示しません/, path);
       assert.match(html, /他社より安いとは断定せず/, path);
       assert.match(html, /キャッシュバックの確定額と受取条件/, path);
+      assert.match(html, /data-comparison-mode="ranked_comparison"/, path);
+      assert.equal((html.match(/data-ranking-eligible="true"/g) ?? []).length, 3, path);
     } else {
-      assert.match(html, /承認済みのservers価格contractはまだありません/, path);
+      assert.match(html, /data-server-candidate-batch="M3"/, path);
+      assert.match(html, /4(?:<!-- -->)?社・(?:<!-- -->)?44(?:<!-- -->)?項目/, path);
+      if (APPROVED_SERVER_LAUNCH_ROUTES.has(path)) {
+        assert.match(html, /data-server-article-review="approved"/, path);
+        assert.match(html, /data-comparison-mode="ranked_comparison"/, path);
+        assert.equal((html.match(/data-ranking-eligible="true"/g) ?? []).length, 3, path);
+        assert.match(html, /JPY 48840/, path);
+        assert.match(html, /JPY 11220/, path);
+      } else {
+        assert.match(html, /data-server-article-review="unreviewed"/, path);
+        assert.match(html, /data-ranking-eligible="false"/, path);
+        assert.doesNotMatch(html, /data-ranking-eligible="true"/, path);
+      }
     }
     assert.match(html, /各紹介リンクの有効状態は下に表示/, path);
     assert.doesNotMatch(html, /data-server-cta-mode="(?:single|comparison)"|rel=["'][^"']*sponsored/i, path);
@@ -298,7 +326,11 @@ test("navigation, skip links, and every rendered link stay internal and valid", 
       }
       if (/^https:\/\//i.test(href)) {
         const external = new URL(href);
-        assert.equal(path, SVR01_ROUTE, `${path}: unexpected external evidence link`);
+        assert.equal(
+          path === SVR01_ROUTE || path === SERVER_OPERATOR_ROUTE,
+          true,
+          `${path}: unexpected external evidence link`,
+        );
         assert.equal(ALLOWED_EVIDENCE_HOSTS.has(external.hostname), true, `${path}: external evidence host`);
         assert.equal(external.search, "", `${path}: evidence link query`);
         assert.equal(external.hash, "", `${path}: evidence link fragment`);
@@ -444,11 +476,12 @@ test("static CSS preserves mobile reflow, keyboard focus, and reduced motion", a
   assert.match(mobile, /\.target-band dl\s*\{[^}]*grid-template-columns:\s*1fr/s);
   assert.match(mobile, /\.page-header h1\s*\{[^}]*font-size:\s*clamp\(2rem, 9\.5vw, 3rem\)/s);
   assert.match(mobile, /\.more-topics ul\s*\{[^}]*grid-template-columns:\s*1fr/s);
+  assert.match(mobile, /\.operator-paste-actions input\[type="file"\]\s*\{[^}]*width:\s*100%[^}]*max-width:\s*100%/s);
 
   const minWidthRules = [...css.matchAll(/([^{}]+)\{([^{}]*\bmin-width\s*:[^{}]*)\}/g)].map(
     (match) => match[1].trim(),
   );
-  assert.deepEqual(minWidthRules, ["table", "tbody th", "td"]);
+  assert.deepEqual(minWidthRules, ["table", "tbody th", "td", ".server-zero-input-table th:nth-child(2)"]);
   assert.doesNotMatch(css, /(?:html|body)\s*\{[^}]*overflow-x\s*:\s*hidden/is);
   assert.match(css, /\.table-scroll\s*\{[^}]*overflow-x:\s*auto/s);
   assert.match(css, /\.table-scroll\s*\{[^}]*overscroll-behavior-inline:\s*contain/s);

@@ -86,7 +86,7 @@ def test_flat_monthly_twelve_month_tco() -> None:
     assert result.line_items[0].billed_occurrences == 12
 
 
-def test_server_zero_input_table_ranks_only_approved_known_eligible_rows() -> None:
+def test_server_zero_input_table_keeps_two_vendors_as_confirmed_list() -> None:
     plans = (
         ServerZeroInputPlan(
             vendor_id="alpha",
@@ -127,9 +127,45 @@ def test_server_zero_input_table_ranks_only_approved_known_eligible_rows() -> No
     )
 
     assert [row.total_minor for row in table.rows] == [24_000, 36_000, None]
-    assert [row.rank for row in table.rows] == [1, 2, None]
-    assert [row.status for row in table.rows] == ["ranked", "ranked", "unconfirmed"]
+    assert table.comparison_mode == "confirmed_list"
+    assert table.confirmed_vendor_count == 2
+    assert [row.rank for row in table.rows] == [None, None, None]
+    assert [row.difference_from_lowest_minor for row in table.rows] == [None, None, None]
+    assert [row.status for row in table.rows] == ["confirmed_unranked", "confirmed_unranked", "unconfirmed"]
+    assert table.rows[0].reason == "確認済みvendorが3社未満のため順位なし"
     assert table.rows[2].reason == "更新料が未確認"
+
+
+def test_server_zero_input_table_ranks_three_vendors_and_derives_first_place_difference() -> None:
+    plans = tuple(
+        ServerZeroInputPlan(
+            vendor_id=vendor_id,
+            plan_id="business",
+            display_name=display_name,
+            price_status=ServerPlanPriceStatus.KNOWN,
+            review_status=ServerPlanReviewStatus.APPROVED,
+            eligible_use_cases=(ServerUseCase.CORPORATE_SITE,),
+            quote=_quote(amount=amount),
+            server_terms=ServerTcoTerms(),
+        )
+        for vendor_id, display_name, amount in (
+            ("alpha", "Alpha", Decimal("1000")),
+            ("beta", "Beta", Decimal("1500")),
+            ("gamma", "Gamma", Decimal("1250")),
+        )
+    )
+
+    table = calculate_server_zero_input_table(
+        plans,
+        months=12,
+        use_case=ServerUseCase.CORPORATE_SITE,
+        article_review_approved=True,
+    )
+
+    assert table.comparison_mode == "ranked_comparison"
+    assert table.confirmed_vendor_count == 3
+    assert [row.rank for row in table.rows] == [1, 3, 2]
+    assert [row.difference_from_lowest_minor for row in table.rows] == [0, 6_000, 3_000]
 
 
 def test_server_zero_input_table_filters_use_case_and_article_review() -> None:
@@ -182,6 +218,41 @@ def test_server_zero_input_table_uses_canonical_horizons(months: int, expected: 
         article_review_approved=True,
     )
     assert table.rows[0].total_minor == expected
+    assert table.rows[0].rank is None
+    assert table.rows[0].difference_from_lowest_minor is None
+
+
+def test_server_zero_input_table_holds_beyond_human_confirmed_horizon() -> None:
+    plan = ServerZeroInputPlan(
+        vendor_id="alpha",
+        plan_id="annual-first-year",
+        display_name="Alpha 12か月確認済み",
+        price_status=ServerPlanPriceStatus.KNOWN,
+        review_status=ServerPlanReviewStatus.APPROVED,
+        eligible_use_cases=(ServerUseCase.SMALL_SITE,),
+        quote=_quote(amount=Decimal("12000"), billing_period=BillingPeriod.ANNUAL),
+        server_terms=ServerTcoTerms(initial_fee=Decimal("1000")),
+        confirmed_through_months=12,
+        horizon_unknown_reason="更新時請求総額が未確認のため24か月・36か月は計算しません",
+    )
+
+    first_year = calculate_server_zero_input_table(
+        (plan,),
+        months=12,
+        use_case=ServerUseCase.SMALL_SITE,
+        article_review_approved=True,
+    )
+    second_year = calculate_server_zero_input_table(
+        (plan,),
+        months=24,
+        use_case=ServerUseCase.SMALL_SITE,
+        article_review_approved=True,
+    )
+
+    assert first_year.rows[0].total_minor == 13_000
+    assert second_year.rows[0].total_minor is None
+    assert second_year.rows[0].status == "unconfirmed"
+    assert second_year.rows[0].reason == plan.horizon_unknown_reason
 
 
 def test_monthly_and_annual_fixture_are_equivalent() -> None:

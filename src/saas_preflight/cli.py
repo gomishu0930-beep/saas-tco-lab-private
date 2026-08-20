@@ -9,6 +9,7 @@ current field-level derivation-rights check.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import sys
 from collections.abc import Sequence
@@ -28,6 +29,11 @@ from .ai_routing import (
     evaluate_model_route,
 )
 from .goldset import CandidateBatch, HumanGoldSet, evaluate_goldset
+from .editorial_input import (
+    CategoryExpansionInput,
+    ExpansionCategory,
+    merge_category_expansion_inputs,
+)
 from .growth_system import (
     ActivationDecision,
     ConditionalActivationInput,
@@ -217,6 +223,17 @@ def _parser() -> argparse.ArgumentParser:
     mangools_slate_export.add_argument(
         "--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15")
     )
+    mangools_slate_export.add_argument(
+        "--output",
+        type=Path,
+        help=(
+            "Append-only local safe-summary destination under outputs/. Raw CSV "
+            "inputs must be outside --repository-root."
+        ),
+    )
+    mangools_slate_export.add_argument(
+        "--repository-root", type=Path, default=Path.cwd()
+    )
 
     mangools_expansion_set = commands.add_parser(
         "validate-mangools-expansion-set",
@@ -250,6 +267,16 @@ def _parser() -> argparse.ArgumentParser:
     mangools_expansion_set.add_argument(
         "--assumed-outbound-ctr", type=_decimal_argument, default=Decimal("0.15")
     )
+
+    merge_servers = commands.add_parser(
+        "merge-server-candidates",
+        help=(
+            "Merge separately saved server candidate JSON files into one "
+            "candidate-only contract."
+        ),
+    )
+    merge_servers.add_argument("candidate", type=Path, nargs="+")
+    merge_servers.add_argument("--output", type=Path, required=True)
 
     store = commands.add_parser("store-plan", help="Append one validated plan to a local DB.")
     store.add_argument("plan", type=Path)
@@ -891,7 +918,52 @@ def run(argv: Sequence[str] | None = None) -> int:
                 assumed_confirmed_epc_jpy=args.assumed_confirmed_epc_jpy,
                 assumed_outbound_ctr=args.assumed_outbound_ctr,
             )
-            _emit(summary.model_dump(mode="json"))
+            if args.output is None:
+                _emit(summary.model_dump(mode="json"))
+                return 0
+
+            repository_root = args.repository_root.resolve()
+            csv_paths = tuple(path.resolve() for path in args.csv)
+            if any(path.is_relative_to(repository_root) for path in csv_paths):
+                raise ValueError("raw Mangools CSV must stay outside the repository")
+            safe_summary_dir = (
+                repository_root / "outputs" / "demand-safe-summaries"
+            ).resolve()
+            output = args.output.resolve()
+            if output.parent != safe_summary_dir:
+                raise ValueError(
+                    "safe-summary output must use outputs/demand-safe-summaries"
+                )
+            expected_name = f"{args.slate_id}-{args.observed_on.isoformat()}.json"
+            if output.name != expected_name:
+                raise ValueError(
+                    f"safe-summary output filename must be {expected_name}"
+                )
+            if summary.raw_saved or summary.query_values_saved:
+                raise ValueError("safe-summary unexpectedly retains raw or query values")
+            if summary.rejected_volume_count:
+                raise ValueError("rejected rows prevent safe-summary saving")
+            output.parent.mkdir(parents=True, exist_ok=True)
+            _write_new_model(output, summary)
+            _emit(
+                {
+                    "keyword_count": summary.keyword_count,
+                    "known_monthly_search_volume_total": (
+                        summary.known_monthly_search_volume_total
+                    ),
+                    "known_volume_count": summary.known_volume_count,
+                    "no_data_rate": summary.no_data_rate,
+                    "no_data_volume_count": summary.no_data_volume_count,
+                    "output": str(output.relative_to(repository_root)),
+                    "query_values_saved": False,
+                    "raw_saved": False,
+                    "rejected_volume_count": summary.rejected_volume_count,
+                    "slate_id": summary.slate_id,
+                    "status": "safe_summary_saved",
+                    "top_2_known_volume_share": summary.top_2_known_volume_share,
+                    "top_5_known_volume_share": summary.top_5_known_volume_share,
+                }
+            )
             return 0
 
         if args.command == "validate-mangools-expansion-set":
@@ -931,6 +1003,37 @@ def run(argv: Sequence[str] | None = None) -> int:
                 )
             summary_set = build_mangools_expansion_set_safe_summary(tuple(summaries))
             _emit(summary_set.model_dump(mode="json"))
+            return 0
+
+        if args.command == "merge-server-candidates":
+            candidates = tuple(
+                _load_model(path, CategoryExpansionInput)
+                for path in args.candidate
+            )
+            if any(
+                candidate.category_id is not ExpansionCategory.SERVERS
+                for candidate in candidates
+            ):
+                raise ValueError("merge-server-candidates accepts servers inputs only")
+            merged = merge_category_expansion_inputs(candidates)
+            _write_new_model(args.output, merged)
+            output_bytes = args.output.read_bytes()
+            identities = {
+                (field.vendor_id, field.plan_id)
+                for field in merged.numeric_fields
+            }
+            _emit(
+                {
+                    "authority": "none",
+                    "category_id": merged.category_id.value,
+                    "condition_record_count": len(merged.server_conditions),
+                    "field_count": len(merged.numeric_fields),
+                    "output_sha256": hashlib.sha256(output_bytes).hexdigest(),
+                    "status": "candidate_only_merged",
+                    "values_emitted_to_stdout": False,
+                    "vendor_plan_count": len(identities),
+                }
+            )
             return 0
 
         if args.command == "store-plan":

@@ -1,6 +1,6 @@
 # GSC / GA4 deployment gate
 
-基準日: 2026-08-13（Asia/Tokyo）
+基準日: 2026-08-19（Asia/Tokyo）
 
 ## 現在地
 
@@ -161,6 +161,18 @@ analytics scope拡張をこの承認へ含めない。
 - 2026-08-17に既存`/sitemap.xml`を1回だけ再送信し、成功・12 URL検出を確認した。再送信を繰り返さない。
 - robots.txtはcrawl、HTML/headerのrobots指定はindexを制御する。非記事の公開routeはcrawl許可と
   `noindex, follow, noarchive, nosnippet`を併用し、承認済み記事だけを`index, follow`とする。
+- 2026-08-18のread-only再確認では、sitemapは`成功しました`・最終読み込み2026-08-17・検出12、
+  ページ集計は登録済み7・未登録6、ウェブ検索clicksは0だった。GA4の直近7日集計は`page_view` 7、
+  `qualified_session` 2、`outbound_click` 0である。内部訪問を分離できないため、これらを実訪問・送客・
+  収益証拠とは断定しない。query文字列、Affiliate識別子、PIIは取得・保存していない。
+- 2026-08-19のread-only再確認では、sitemapは`成功しました`・最終読み込み2026-08-19・検出20となり、
+  公開sitemap 20 URLと一致した。ページ集計は登録済み7・未登録6、検索パフォーマンスのaggregateは
+  表示13・clicks 0である。query文字列は記録せず、20 URLのindex完了とも扱わない。GA4はRealtime 0、
+  直近7日間の`page_view` 7・`qualified_session` 2・`outbound_click` 0である。内部訪問を分離できないため、
+  8月月次KPI・需要・CVR・収益証拠には算入しない。公開read-backではsitemap 20記事がすべてHTTP 200、
+  `index, follow`、self-canonicalを満たし、P11は`noindex, follow`・CTA無効を維持した。Mangools CTAは
+  P記事11本、server CTAはSVR01だけで6リンクが稼働し、いずれも開示先行と
+  `rel="sponsored noopener noreferrer"`を満たす。
 
 ## Deploy後のcache purge・同時刻read-back
 

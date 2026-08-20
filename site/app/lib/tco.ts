@@ -64,12 +64,15 @@ export type ServerZeroInputPlan = {
   quote: PricingQuote | null;
   serverTerms: ServerTcoTerms | null;
   unknownReason: string | null;
+  confirmedThroughMonths?: 12 | 24 | 36 | null;
+  horizonUnknownReason?: string | null;
   observedOn: string | null;
   nextReviewOn: string | null;
 };
 
 export type ServerZeroInputContract = {
   articleReviewStatus: ServerPlanReviewStatus;
+  useCaseRequirements: Readonly<Record<ServerUseCase, readonly string[]>>;
   plans: readonly ServerZeroInputPlan[];
 };
 
@@ -77,11 +80,12 @@ export type ServerZeroInputRow = {
   vendorId: string;
   planId: string;
   displayName: string;
-  status: "ranked" | "unconfirmed" | "ineligible" | "currency_mismatch";
+  status: "ranked" | "confirmed_unranked" | "unconfirmed" | "ineligible" | "currency_mismatch";
   totalMinor: bigint | null;
   currency: string | null;
   minorUnitDigits: number | null;
   rank: number | null;
+  differenceFromLowestMinor: bigint | null;
   reason: string | null;
   observedOn: string | null;
   nextReviewOn: string | null;
@@ -90,6 +94,8 @@ export type ServerZeroInputRow = {
 export type ServerZeroInputTable = {
   months: 12 | 24 | 36;
   useCase: ServerUseCase;
+  comparisonMode: "ranked_comparison" | "confirmed_list";
+  confirmedVendorCount: number;
   rows: readonly ServerZeroInputRow[];
 };
 
@@ -511,6 +517,12 @@ export function calculateServerZeroInputTable(
   if (!["small_site", "corporate_site", "ecommerce"].includes(useCase)) {
     throw new TcoError("server zero-input use case is invalid");
   }
+  const useCaseRequirements = contract.useCaseRequirements?.[useCase];
+  if (!Array.isArray(useCaseRequirements) || useCaseRequirements.some((item) => typeof item !== "string")) {
+    throw new TcoError("server zero-input use-case requirements are invalid");
+  }
+  const confirmedRequirements = useCaseRequirements.map((item) => item.trim()).filter(Boolean);
+  const requirementsConfirmed = confirmedRequirements.length > 0;
   const identities = contract.plans.map((plan) => `${plan.vendorId}\u0000${plan.planId}`);
   if (new Set(identities).size !== identities.length) {
     throw new TcoError("server zero-input plan identities must be unique");
@@ -538,6 +550,7 @@ export function calculateServerZeroInputTable(
         currency: null,
         minorUnitDigits: null,
         rank: null,
+        differenceFromLowestMinor: null,
         reason: plan.unknownReason.trim(),
         observedOn: plan.observedOn,
         nextReviewOn: plan.nextReviewOn,
@@ -546,6 +559,33 @@ export function calculateServerZeroInputTable(
     }
     if (plan.quote === null || plan.serverTerms === null) {
       throw new TcoError("known server plan requires quote and server terms");
+    }
+    if (plan.confirmedThroughMonths !== undefined && plan.confirmedThroughMonths !== null) {
+      if (![12, 24, 36].includes(plan.confirmedThroughMonths)) {
+        throw new TcoError("confirmed server horizon must be 12, 24, or 36 months");
+      }
+      if (!plan.horizonUnknownReason?.trim()) {
+        throw new TcoError("bounded server horizon requires an unknown reason");
+      }
+      if (months > plan.confirmedThroughMonths) {
+        pending.push({
+          vendorId: plan.vendorId,
+          planId: plan.planId,
+          displayName: plan.displayName,
+          status: "unconfirmed",
+          totalMinor: null,
+          currency: plan.quote.currency,
+          minorUnitDigits: plan.quote.minorUnitDigits,
+          rank: null,
+          differenceFromLowestMinor: null,
+          reason: plan.horizonUnknownReason.trim(),
+          observedOn: plan.observedOn,
+          nextReviewOn: plan.nextReviewOn,
+        });
+        continue;
+      }
+    } else if (plan.horizonUnknownReason !== undefined && plan.horizonUnknownReason !== null) {
+      throw new TcoError("unbounded server horizon cannot carry an unknown reason");
     }
     if (contract.articleReviewStatus !== "approved" || plan.reviewStatus !== "approved") {
       pending.push({
@@ -557,13 +597,14 @@ export function calculateServerZeroInputTable(
         currency: null,
         minorUnitDigits: null,
         rank: null,
+        differenceFromLowestMinor: null,
         reason: "Human承認前のため計算対象外",
         observedOn: plan.observedOn,
         nextReviewOn: plan.nextReviewOn,
       });
       continue;
     }
-    if (!plan.eligibleUseCases.includes(useCase)) {
+    if (!requirementsConfirmed || !plan.eligibleUseCases.includes(useCase)) {
       pending.push({
         vendorId: plan.vendorId,
         planId: plan.planId,
@@ -573,7 +614,10 @@ export function calculateServerZeroInputTable(
         currency: plan.quote.currency,
         minorUnitDigits: plan.quote.minorUnitDigits,
         rank: null,
-        reason: "選択した用途区分の承認対象外",
+        differenceFromLowestMinor: null,
+        reason: requirementsConfirmed
+          ? "選択した用途区分の承認対象外"
+          : "用途の必要条件がHuman確認前のため順位対象外",
         observedOn: plan.observedOn,
         nextReviewOn: plan.nextReviewOn,
       });
@@ -589,9 +633,17 @@ export function calculateServerZeroInputTable(
     });
   }
 
-  const comparable = new Set(calculated.map(({ result }) => result.currency)).size <= 1;
+  const currenciesComparable = new Set(calculated.map(({ result }) => result.currency)).size <= 1;
+  const confirmedVendorCount = new Set(calculated.map(({ plan }) => plan.vendorId)).size;
+  const rankingEnabled = currenciesComparable && confirmedVendorCount >= 3;
   const ranks = new Map<string, number>();
-  if (comparable) {
+  const lowestTotalMinor = rankingEnabled
+    ? calculated.reduce<bigint | null>(
+        (lowest, { result }) => lowest === null || result.totalMinor < lowest ? result.totalMinor : lowest,
+        null,
+      )
+    : null;
+  if (rankingEnabled) {
     [...calculated]
       .sort((left, right) => {
         if (left.result.totalMinor < right.result.totalMinor) return -1;
@@ -604,12 +656,23 @@ export function calculateServerZeroInputTable(
     vendorId: plan.vendorId,
     planId: plan.planId,
     displayName: plan.displayName,
-    status: comparable ? "ranked" : "currency_mismatch",
+    status: rankingEnabled
+      ? "ranked"
+      : currenciesComparable
+        ? "confirmed_unranked"
+        : "currency_mismatch",
     totalMinor: result.totalMinor,
     currency: result.currency,
     minorUnitDigits: result.minorUnitDigits,
     rank: ranks.get(`${plan.vendorId}\u0000${plan.planId}`) ?? null,
-    reason: comparable ? null : "通貨換算を行わないため順位なし",
+    differenceFromLowestMinor: rankingEnabled && lowestTotalMinor !== null
+      ? result.totalMinor - lowestTotalMinor
+      : null,
+    reason: rankingEnabled
+      ? null
+      : currenciesComparable
+        ? "確認済みvendorが3社未満のため順位なし"
+        : "通貨換算を行わないため順位なし",
     observedOn: plan.observedOn,
     nextReviewOn: plan.nextReviewOn,
   }));
@@ -619,6 +682,8 @@ export function calculateServerZeroInputTable(
   return {
     months,
     useCase,
+    comparisonMode: rankingEnabled ? "ranked_comparison" : "confirmed_list",
+    confirmedVendorCount,
     rows: identities.map((identity) => rows.get(identity)!),
   };
 }

@@ -11,7 +11,9 @@ import pytest
 from saas_preflight.cli import run
 from saas_preflight.keyword_universe import load_keyword_universe, summarize_keyword_universe
 from saas_preflight.mangools_export import (
+    AddressableDemandStatus,
     DemandCapacityDecision,
+    HeadwordConcentrationStatus,
     MangoolsCsvBomError,
     MangoolsCsvColumnMappingError,
     MangoolsCsvHeaderError,
@@ -27,6 +29,9 @@ from saas_preflight.mangools_export import (
 ROOT = Path(__file__).resolve().parents[1]
 UNIVERSE_PATH = ROOT / "examples" / "jp_ja_keyword_universe_v1.csv"
 SERVER_SLATE_PATH = ROOT / "examples" / "jp_ja_keyword_slate_v2_servers.csv"
+BRAND_SERVER_SLATE_PATH = (
+    ROOT / "examples" / "jp_ja_keyword_slate_v3_brand_servers.csv"
+)
 
 
 def _queries(path: Path) -> list[str]:
@@ -77,7 +82,12 @@ def _validate(path: Path):
     )
 
 
-def _slate_exports(tmp_path: Path, *, row_limit: int = 40) -> tuple[Path, ...]:
+def _slate_exports(
+    tmp_path: Path,
+    *,
+    row_limit: int = 40,
+    overrides: dict[int, int | str | Decimal] | None = None,
+) -> tuple[Path, ...]:
     rows = load_keyword_universe(
         SERVER_SLATE_PATH, minimum_keywords=40, maximum_keywords=40
     )[:row_limit]
@@ -90,7 +100,9 @@ def _slate_exports(tmp_path: Path, *, row_limit: int = 40) -> tuple[Path, ...]:
         )
         writer.writeheader()
         for absolute_index, row in enumerate(rows[start : start + 15], start=start):
-            if absolute_index == 0:
+            if absolute_index in (overrides or {}):
+                volume = (overrides or {})[absolute_index]
+            elif absolute_index == 0:
                 volume: int | str | Decimal = ""
             elif absolute_index == 1:
                 volume = "1,234"
@@ -199,6 +211,11 @@ def test_kwfinder_upload_command_writes_exact_frozen_slate_derivatives(
             0,
             60,
         ),
+        (
+            BRAND_SERVER_SLATE_PATH,
+            0,
+            30,
+        ),
     ]
     for index, (slate_path, start_index, limit) in enumerate(cases):
         upload_path = tmp_path / f"upload-{index}.txt"
@@ -213,7 +230,12 @@ def test_kwfinder_upload_command_writes_exact_frozen_slate_derivatives(
             str(limit),
         ]) == 0
         upload_queries = upload_path.read_text(encoding="utf-8").splitlines()
-        expected = _queries(slate_path)[start_index:start_index + limit]
+        expected = [
+            row.query
+            for row in load_keyword_universe(
+                slate_path, minimum_keywords=1, maximum_keywords=200
+            )
+        ][start_index:start_index + limit]
         assert upload_queries == expected
         assert len(upload_queries) == len(set(query.casefold() for query in upload_queries))
 
@@ -457,7 +479,7 @@ def test_bom_header_and_column_mapping_fail_with_distinct_errors(tmp_path: Path)
 def test_variable_slate_batches_emit_one_complete_safe_summary(tmp_path: Path) -> None:
     summary = _validate_slate(_slate_exports(tmp_path))
 
-    assert summary.schema_version == "1.0"
+    assert summary.schema_version == "1.1"
     assert summary.slate_id == "servers"
     assert summary.source_file_count == 3
     assert summary.keyword_count == 40
@@ -469,6 +491,16 @@ def test_variable_slate_batches_emit_one_complete_safe_summary(tmp_path: Path) -
     assert summary.decimal_volume_count == 1
     assert summary.known_monthly_search_volume_total == Decimal("38246.5")
     assert summary.no_data_rate == Decimal("0.02500000")
+    assert summary.top_2_known_volume_share == Decimal("0.05841057")
+    assert summary.top_5_known_volume_share == Decimal("0.13684912")
+    assert (
+        summary.headword_concentration_status
+        is HeadwordConcentrationStatus.NOT_HIGH
+    )
+    assert (
+        summary.addressable_demand_status
+        is AddressableDemandStatus.NOT_SEPARATED_BY_CONCENTRATION
+    )
     assert len(summary.raw_csv_sha256) == 3
     assert summary.capacity_decision is DemandCapacityDecision.VOLUME_FLOOR_MET_NOT_PROVEN
     assert summary.raw_saved is False
@@ -478,6 +510,56 @@ def test_variable_slate_batches_emit_one_complete_safe_summary(tmp_path: Path) -
 def test_variable_slate_batches_fail_closed_when_incomplete(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="observed 30 of 40"):
         _validate_slate(_slate_exports(tmp_path, row_limit=30))
+
+
+def test_variable_slate_reports_high_concentration_without_query_values(
+    tmp_path: Path,
+) -> None:
+    summary = _validate_slate(
+        _slate_exports(tmp_path, overrides={0: 100_000, 1: 100_000})
+    )
+
+    assert summary.headword_concentration_status is HeadwordConcentrationStatus.HIGH
+    assert (
+        summary.addressable_demand_status
+        is AddressableDemandStatus.UNKNOWN_HEADWORD_CONCENTRATED
+    )
+    assert summary.top_2_known_volume_share == Decimal("0.84383735")
+    assert summary.top_5_known_volume_share == Decimal("0.85649491")
+    serialized = summary.model_dump_json()
+    assert "XServer" not in serialized
+    assert '"query_values_saved":false' in serialized
+
+
+def test_brand_slate_accepts_kwfinder_exclamation_normalization(
+    tmp_path: Path,
+) -> None:
+    target = _single_slate_export(
+        tmp_path,
+        BRAND_SERVER_SLATE_PATH,
+        name="brand-servers-normalized.csv",
+    )
+    target.write_text(
+        target.read_text(encoding="utf-8").replace("ロリポップ！", "ロリポップ"),
+        encoding="utf-8",
+    )
+    rows = load_keyword_universe(
+        BRAND_SERVER_SLATE_PATH, minimum_keywords=30, maximum_keywords=30
+    )
+
+    summary = validate_mangools_human_export_batches(
+        (target,),
+        slate_id="brand_servers",
+        universe_rows=rows,
+        universe_sha256=summarize_keyword_universe(rows).sha256,
+        observed_on=date(2026, 8, 19),
+        next_review_on=date(2026, 9, 18),
+    )
+
+    assert summary.keyword_count == 30
+    assert summary.rejected_volume_count == 0
+    assert summary.raw_saved is False
+    assert summary.query_values_saved is False
 
 
 def test_variable_slate_cli_emits_no_queries(
@@ -506,3 +588,83 @@ def test_variable_slate_cli_emits_no_queries(
     assert first_query not in output
     assert '"query_values_saved": false' in output
     assert '"keyword_count": 40' in output
+    assert '"top_2_known_volume_share": "0.05841057"' in output
+
+
+def test_variable_slate_cli_saves_only_append_only_safe_summary(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repository_root = tmp_path / "repo"
+    raw_dir = tmp_path / "raw"
+    repository_root.mkdir()
+    raw_dir.mkdir()
+    paths = _slate_exports(raw_dir)
+    output = (
+        repository_root
+        / "outputs"
+        / "demand-safe-summaries"
+        / "servers-2026-08-19.json"
+    )
+
+    arguments = [
+        "validate-mangools-slate-export",
+        *(str(path) for path in paths),
+        "--slate-id",
+        "servers",
+        "--universe",
+        str(SERVER_SLATE_PATH),
+        "--observed-on",
+        "2026-08-19",
+        "--next-review-on",
+        "2026-09-18",
+        "--repository-root",
+        str(repository_root),
+        "--output",
+        str(output),
+    ]
+    assert run(arguments) == 0
+    receipt = capsys.readouterr().out
+    assert '"status": "safe_summary_saved"' in receipt
+    assert '"raw_saved": false' in receipt
+    assert '"query_values_saved": false' in receipt
+
+    saved = output.read_text(encoding="utf-8")
+    assert '"raw_saved": false' in saved
+    assert '"query_values_saved": false' in saved
+    assert _queries(SERVER_SLATE_PATH)[0] not in saved
+    assert run(arguments) == 2
+
+
+def test_variable_slate_cli_rejects_raw_csv_inside_repository(
+    tmp_path: Path, capsys: pytest.CaptureFixture[str]
+) -> None:
+    repository_root = tmp_path / "repo"
+    raw_dir = repository_root / "raw"
+    raw_dir.mkdir(parents=True)
+    paths = _slate_exports(raw_dir)
+    output = (
+        repository_root
+        / "outputs"
+        / "demand-safe-summaries"
+        / "servers-2026-08-19.json"
+    )
+
+    assert run(
+        [
+            "validate-mangools-slate-export",
+            *(str(path) for path in paths),
+            "--slate-id",
+            "servers",
+            "--universe",
+            str(SERVER_SLATE_PATH),
+            "--observed-on",
+            "2026-08-19",
+            "--next-review-on",
+            "2026-09-18",
+            "--repository-root",
+            str(repository_root),
+            "--output",
+            str(output),
+        ]
+    ) == 2
+    assert "raw Mangools CSV must stay outside" in capsys.readouterr().err

@@ -1,0 +1,31 @@
+universe_version,country,language,cluster_id,intent,vendor,query
+jp-ja-v3,JP,ja,brand-servers-xserver,brand,xserver-business,XServerビジネス 料金
+jp-ja-v3,JP,ja,brand-servers-xserver,brand,xserver-business,XServerビジネス 初期費用
+jp-ja-v3,JP,ja,brand-servers-xserver,brand,xserver-business,XServerビジネス 更新料
+jp-ja-v3,JP,ja,brand-servers-xserver,brand,xserver-business,XServerビジネス 移行 費用
+jp-ja-v3,JP,ja,brand-servers-xserver,brand,xserver-business,XServerビジネス メールサーバー 法人
+jp-ja-v3,JP,ja,brand-servers-conoha,brand,conoha-wing,ConoHa WING 料金
+jp-ja-v3,JP,ja,brand-servers-conoha,brand,conoha-wing,ConoHa WING 初期費用
+jp-ja-v3,JP,ja,brand-servers-conoha,brand,conoha-wing,ConoHa WING 更新料
+jp-ja-v3,JP,ja,brand-servers-conoha,brand,conoha-wing,ConoHa WING 移行 費用
+jp-ja-v3,JP,ja,brand-servers-conoha,brand,conoha-wing,ConoHa WING ECサイト 費用
+jp-ja-v3,JP,ja,brand-servers-sakura,brand,sakura-rental-server,さくらのレンタルサーバ 料金
+jp-ja-v3,JP,ja,brand-servers-sakura,brand,sakura-rental-server,さくらのレンタルサーバ 初期費用
+jp-ja-v3,JP,ja,brand-servers-sakura,brand,sakura-rental-server,さくらのレンタルサーバ 更新料
+jp-ja-v3,JP,ja,brand-servers-sakura,brand,sakura-rental-server,さくらのレンタルサーバ 法人 比較
+jp-ja-v3,JP,ja,brand-servers-kagoya,brand,kagoya,KAGOYA レンタルサーバー 料金
+jp-ja-v3,JP,ja,brand-servers-kagoya,brand,kagoya,KAGOYA レンタルサーバー 初期費用
+jp-ja-v3,JP,ja,brand-servers-kagoya,brand,kagoya,KAGOYA レンタルサーバー 更新料
+jp-ja-v3,JP,ja,brand-servers-kagoya,brand,kagoya,KAGOYA レンタルサーバー ECサイト 費用
+jp-ja-v3,JP,ja,brand-servers-lolipop,brand,lolipop,ロリポップ！ 料金
+jp-ja-v3,JP,ja,brand-servers-lolipop,brand,lolipop,ロリポップ！ 更新料
+jp-ja-v3,JP,ja,brand-servers-lolipop,brand,lolipop,ロリポップ！ 移行 費用
+jp-ja-v3,JP,ja,brand-servers-onamae,brand,onamae-rental-server,お名前.com レンタルサーバー 料金
+jp-ja-v3,JP,ja,brand-servers-onamae,brand,onamae-rental-server,お名前.com レンタルサーバー 更新料
+jp-ja-v3,JP,ja,brand-servers-onamae,brand,onamae-rental-server,お名前.com レンタルサーバー 解約 条件
+jp-ja-v3,JP,ja,brand-servers-shin,brand,shin-rental-server,シンレンタルサーバー 料金
+jp-ja-v3,JP,ja,brand-servers-shin,brand,shin-rental-server,シンレンタルサーバー 更新料
+jp-ja-v3,JP,ja,brand-servers-shin,brand,shin-rental-server,シンレンタルサーバー 年払い 割引
+jp-ja-v3,JP,ja,brand-servers-ablenet,brand,ablenet,ABLENET レンタルサーバー 料金
+jp-ja-v3,JP,ja,brand-servers-ablenet,brand,ablenet,ABLENET 更新料
+jp-ja-v3,JP,ja,brand-servers-ablenet,brand,ablenet,ABLENET 法人 比較
