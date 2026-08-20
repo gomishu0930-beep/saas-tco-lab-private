@@ -777,7 +777,7 @@ async function withNextReading(
 function affiliateCtaBootstrap(controls: AffiliateCtaControls): string {
   const destination = JSON.stringify(controls.destination).replaceAll("<", "\\u003c");
   const approvedPaths = JSON.stringify(controls.approvedPaths).replaceAll("<", "\\u003c");
-  return `<script data-saastco-affiliate-cta>(()=>{const u=${destination},a=new Set(${approvedPaths}),n=()=>location.pathname==="/"?"/":location.pathname.replace(/\\/+$/,"");let q=false;const r=()=>{q=false;if(!u||!a.has(n()))return;const d=document.querySelector('[data-affiliate-disclosure-status]'),s=document.querySelector('[data-affiliate-cta-state]'),p=document.querySelector('[data-affiliate-cta-placeholder="mangools"]'),x=document.querySelector('a[data-affiliate-cta-partner="mangools"]');if(!d||!s||(!p&&!x))return;const c=p||x;if(!(d.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING))return;d.dataset.affiliateDisclosureStatus="enabled";d.textContent="この記事にはMangoolsのアフィリエイトリンクが含まれます。";s.dataset.affiliateCtaState="enabled";s.textContent="ACTIVE — MANGOOLS";if(p){const l=document.createElement("a");l.className="cta-active";l.dataset.affiliateCtaPartner="mangools";l.dataset.vendorId="mangools";l.dataset.ctaPosition="article_action";l.dataset.ctaType="saas_affiliate";l.href=u;l.target="_blank";l.rel="sponsored noopener noreferrer";l.setAttribute("aria-describedby","article-pr-disclosure");l.textContent="Mangools公式サイトを見る";p.replaceWith(l)}},t=()=>{if(q)return;q=true;queueMicrotask(r)};new MutationObserver(t).observe(document.documentElement,{subtree:true,childList:true});addEventListener("popstate",t,{passive:true});addEventListener("DOMContentLoaded",r,{once:true});r()})();</script>`;
+  return `<script data-saastco-affiliate-cta>(()=>{const u=${destination},a=new Set(${approvedPaths}),n=()=>location.pathname==="/"?"/":location.pathname.replace(/\\/+$/,"");let q=false,o=null;const r=()=>{q=false;if(!u||!a.has(n()))return;const d=document.querySelector('[data-affiliate-disclosure-status]'),s=document.querySelector('[data-affiliate-cta-state]'),p=document.querySelector('[data-affiliate-cta-placeholder="mangools"]'),x=document.querySelector('a[data-affiliate-cta-partner="mangools"]');if(!d||!s||(!p&&!x))return;const c=p||x;if(!(d.compareDocumentPosition(c)&Node.DOCUMENT_POSITION_FOLLOWING))return;d.dataset.affiliateDisclosureStatus="enabled";d.textContent="この記事にはMangoolsのアフィリエイトリンクが含まれます。";s.dataset.affiliateCtaState="enabled";s.textContent="ACTIVE — MANGOOLS";if(p){const l=document.createElement("a");l.className="cta-active";l.dataset.affiliateCtaPartner="mangools";l.dataset.vendorId="mangools";l.dataset.ctaPosition="article_action";l.dataset.ctaType="saas_affiliate";l.href=u;l.target="_blank";l.rel="sponsored noopener noreferrer";l.setAttribute("aria-describedby","article-pr-disclosure");l.textContent="Mangools公式サイトを見る";p.replaceWith(l)}},t=()=>{if(q)return;q=true;queueMicrotask(r)},i=()=>{if(o)return;o=new MutationObserver(t);o.observe(document.documentElement,{subtree:true,childList:true});r()};addEventListener("popstate",t,{passive:true});if(document.readyState==="complete")setTimeout(i,0);else addEventListener("load",()=>setTimeout(i,0),{once:true})})();</script>`;
 }
 
 async function withAffiliateCta(
@@ -812,21 +812,7 @@ async function withAffiliateCta(
     });
   }
 
-  const destination = escapeHtmlAttribute(controls.destination);
-  let body = originalBody
-    .replace(
-      disclosurePattern,
-      '<span data-affiliate-disclosure-status="enabled">この記事にはMangoolsのアフィリエイトリンクが含まれます。</span>',
-    )
-    .replace(
-      statePattern,
-      '<span data-affiliate-cta-state="enabled">ACTIVE — MANGOOLS</span>',
-    )
-    .replace(
-      placeholderPattern,
-      `<a class="cta-active" data-affiliate-cta-partner="mangools" data-vendor-id="mangools" data-cta-position="article_action" data-cta-type="saas_affiliate" href="${destination}" target="_blank" rel="sponsored noopener noreferrer" aria-describedby="article-pr-disclosure">Mangools公式サイトを見る</a>`,
-    );
-  const openingHead = body.match(/<head(?:\s[^>]*)?>/i);
+  const openingHead = originalBody.match(/<head(?:\s[^>]*)?>/i);
   if (openingHead?.index === undefined) {
     return new Response(originalBody, {
       status: response.status,
@@ -835,7 +821,7 @@ async function withAffiliateCta(
     });
   }
   const insertionPoint = openingHead.index + openingHead[0].length;
-  body = `${body.slice(0, insertionPoint)}${affiliateCtaBootstrap(controls)}${body.slice(insertionPoint)}`;
+  const body = `${originalBody.slice(0, insertionPoint)}${affiliateCtaBootstrap(controls)}${originalBody.slice(insertionPoint)}`;
   const headers = new Headers(response.headers);
   headers.delete("content-length");
   return new Response(body, {
@@ -884,27 +870,26 @@ async function withServerAffiliateCta(
       headers: response.headers,
     });
   }
-
-  let body = originalBody
-    .replace(
-      disclosurePattern,
-      '<span data-affiliate-disclosure-status="enabled">この記事には承認済みサーバーサービスのアフィリエイトリンクが含まれます。</span>',
-    )
-    .replace(
-      statePattern,
-      `<span data-server-affiliate-cta-state="enabled">ACTIVE — ${controls.mode.toUpperCase()}</span>`,
-    )
-    .replace(/data-server-cta-mode=["']disabled["']/i, `data-server-cta-mode="${controls.mode}"`);
-  for (const { partner, pattern } of placeholderMatches) {
-    const position = partner.id === SERVER_REVENUE_EXPERIMENT_PARTNER_IDS[0]
-      ? "primary"
-      : "alternative";
-    const vendorId = SERVER_AFFILIATE_VENDOR_IDS[partner.id];
-    body = body.replace(
-      pattern,
-      `<a class="cta-active" data-server-affiliate-cta-partner="${partner.id}" data-vendor-id="${vendorId}" data-server-cta-position="${position}" data-server-cta-type="affiliate_comparison" href="${escapeHtmlAttribute(partner.destination)}" target="_blank" rel="sponsored noopener noreferrer" aria-describedby="article-pr-disclosure">${partner.label}</a>`,
-    );
+  const openingHead = originalBody.match(/<head(?:\s[^>]*)?>/i);
+  if (openingHead?.index === undefined) {
+    return new Response(originalBody, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: response.headers,
+    });
   }
+  const runtimePartners = controls.partners.map((partner) => ({
+    destination: partner.destination,
+    id: partner.id,
+    label: partner.label,
+    position: partner.id === SERVER_REVENUE_EXPERIMENT_PARTNER_IDS[0] ? "primary" : "alternative",
+    vendorId: SERVER_AFFILIATE_VENDOR_IDS[partner.id],
+  }));
+  const serializedPartners = JSON.stringify(runtimePartners).replaceAll("<", "\\u003c");
+  const serializedMode = JSON.stringify(controls.mode);
+  const bootstrap = `<script data-saastco-server-affiliate-cta>(()=>{const ps=${serializedPartners},m=${serializedMode};let q=false,o=null;const r=()=>{q=false;const d=document.querySelector('[data-affiliate-disclosure-status]'),s=document.querySelector('[data-server-affiliate-cta-state]'),c=document.querySelector('[data-server-cta-mode]');if(!d||!s||!c||!ps.length)return;const ns=ps.map(p=>document.querySelector('[data-server-affiliate-cta-placeholder="'+p.id+'"]')||document.querySelector('a[data-server-affiliate-cta-partner="'+p.id+'"]'));if(ns.some(n=>!n)||ns.some(n=>!(d.compareDocumentPosition(n)&Node.DOCUMENT_POSITION_FOLLOWING)))return;d.dataset.affiliateDisclosureStatus="enabled";d.textContent="この記事には承認済みサーバーサービスのアフィリエイトリンクが含まれます。";s.dataset.serverAffiliateCtaState="enabled";s.textContent="ACTIVE — "+m.toUpperCase();c.dataset.serverCtaMode=m;ps.forEach((p,i)=>{const n=ns[i];if(n instanceof HTMLAnchorElement)return;const a=document.createElement("a");a.className="cta-active";a.dataset.serverAffiliateCtaPartner=p.id;a.dataset.vendorId=p.vendorId;a.dataset.serverCtaPosition=p.position;a.dataset.serverCtaType="affiliate_comparison";a.href=p.destination;a.target="_blank";a.rel="sponsored noopener noreferrer";a.setAttribute("aria-describedby","article-pr-disclosure");a.textContent=p.label;n.replaceWith(a)})},t=()=>{if(q)return;q=true;queueMicrotask(r)},i=()=>{if(o)return;o=new MutationObserver(t);o.observe(document.documentElement,{subtree:true,childList:true});r()};addEventListener("popstate",t,{passive:true});if(document.readyState==="complete")setTimeout(i,0);else addEventListener("load",()=>setTimeout(i,0),{once:true})})();</script>`;
+  const insertionPoint = openingHead.index + openingHead[0].length;
+  const body = `${originalBody.slice(0, insertionPoint)}${bootstrap}${originalBody.slice(insertionPoint)}`;
   const headers = new Headers(response.headers);
   headers.delete("content-length");
   return new Response(body, {

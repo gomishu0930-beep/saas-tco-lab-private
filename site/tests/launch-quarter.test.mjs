@@ -465,10 +465,11 @@ function contract(reviewStatus, fieldReviewStatus) {
 test("structured data emits an Offer only for Human-approved price fields", () => {
   const page = pilotPages[0];
   const unreviewed = articleStructuredData(page, contract("unreviewed", "unreviewed"));
-  assert.equal("offers" in unreviewed["@graph"][0], false);
+  assert.equal(unreviewed["@graph"].some((item) => item["@type"] === "Product"), false);
 
   const approved = articleStructuredData(page, contract("approved", "approved"));
-  assert.deepEqual(approved["@graph"][0].offers, [{
+  const approvedProduct = approved["@graph"].find((item) => item["@type"] === "Product");
+  assert.deepEqual(approvedProduct.offers, [{
     "@type": "Offer",
     name: "vendor plan（月次請求）",
     price: "100",
@@ -476,12 +477,15 @@ test("structured data emits an Offer only for Human-approved price fields", () =
     priceValidUntil: "2026-10-28",
   }]);
   assert.equal(
-    approved["@graph"][0].name,
+    approvedProduct.name,
     "vendor料金(2026年7月確認): JPY 100と12か月TCO",
   );
+  const approvedBreadcrumb = approved["@graph"].find((item) => item["@type"] === "BreadcrumbList");
+  assert.equal(approvedBreadcrumb.itemListElement[0].item, "https://saastcolab.jp/");
+  assert.equal(approvedBreadcrumb.itemListElement[1].item, "https://saastcolab.jp/pilot");
 
   const fieldHeld = articleStructuredData(page, contract("approved", "unreviewed"));
-  assert.equal("offers" in fieldHeld["@graph"][0], false);
+  assert.equal(fieldHeld["@graph"].some((item) => item["@type"] === "Product"), false);
 });
 
 test("server structured data exposes prices only for exact approved article semantics", () => {
@@ -503,10 +507,11 @@ test("server structured data exposes prices only for exact approved article sema
   assert.ok(firstYear && ecommerce);
 
   const held = serverArticleStructuredData(firstYear, "unreviewed", evidence);
-  assert.equal("offers" in held["@graph"][0], false);
+  assert.equal(held["@graph"].some((item) => item["@type"] === "Product"), false);
 
   const approved = serverArticleStructuredData(firstYear, "approved", evidence);
-  assert.deepEqual(approved["@graph"][0].offers, [{
+  const approvedProduct = approved["@graph"].find((item) => item["@type"] === "Product");
+  assert.deepEqual(approvedProduct.offers, [{
     "@type": "Offer",
     name: "Vendor Plan（12か月）",
     price: "12000",
@@ -515,7 +520,7 @@ test("server structured data exposes prices only for exact approved article sema
   }]);
 
   const semanticallyIncomplete = serverArticleStructuredData(ecommerce, "approved", evidence);
-  assert.equal("offers" in semanticallyIncomplete["@graph"][0], false);
+  assert.equal(semanticallyIncomplete["@graph"].some((item) => item["@type"] === "Product"), false);
 });
 
 test("v2.3 treats only time-limited or unknown price display classes as held facts", () => {

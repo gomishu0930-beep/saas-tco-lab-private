@@ -325,30 +325,27 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
         new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${path}">`, "i"),
         path,
       );
-      const disclosurePosition = documentHtml.indexOf('data-affiliate-disclosure-status="enabled"');
-      const ctaPosition = documentHtml.indexOf(
-        '<a class="cta-active" data-affiliate-cta-partner="mangools"',
-      );
-      assert.ok(disclosurePosition >= 0, `${path}: active disclosure`);
-      assert.ok(ctaPosition > disclosurePosition, `${path}: disclosure before CTA`);
+      const visible = visibleMarkup(documentHtml);
+      const disclosurePosition = visible.indexOf('data-affiliate-disclosure-status="disabled"');
+      const ctaPosition = visible.indexOf('data-affiliate-cta-placeholder="mangools"');
+      assert.ok(disclosurePosition >= 0, `${path}: fail-closed disclosure before hydration`);
+      assert.ok(ctaPosition > disclosurePosition, `${path}: disclosure before CTA placeholder`);
       assert.match(documentHtml, /この記事にはMangoolsのアフィリエイトリンクが含まれます。/i, path);
-      assert.match(documentHtml, /data-affiliate-cta-state="enabled">ACTIVE — MANGOOLS/i, path);
+      assert.match(visible, /data-affiliate-cta-state="disabled"/i, path);
       assert.match(
         documentHtml,
-        /<a\b[^>]*class="cta-active"[^>]*data-affiliate-cta-partner="mangools"[^>]*href="https:\/\/mangools\.com\/#a1234567890bcdef123456789"[^>]*rel="sponsored noopener noreferrer"[^>]*>Mangools公式サイトを見る<\/a>/i,
+        /data-saastco-affiliate-cta>[\s\S]*https:\/\/mangools\.com\/#a1234567890bcdef123456789[\s\S]*sponsored noopener noreferrer/i,
         path,
       );
       assert.match(documentHtml, /<script data-saastco-affiliate-cta>/i, path);
+      assert.match(documentHtml, /compareDocumentPosition\(c\)&Node\.DOCUMENT_POSITION_FOLLOWING/i, path);
+      assert.doesNotMatch(visible, /data-affiliate-cta-partner|rel="sponsored noopener noreferrer"/i, path);
       const nextReadingPosition = documentHtml.indexOf('class="shell page-section next-reading"');
       assert.ok(nextReadingPosition > ctaPosition, `${path}: next-to-read after CTA`);
       const nextReading = documentHtml.slice(nextReadingPosition, documentHtml.indexOf("</section>", nextReadingPosition));
       assert.match(nextReading, /href="\/pilot\/(?:pricing-calculator|plan-comparison|alternatives|annual-vs-monthly|usage-overage)"/i, path);
       assert.doesNotMatch(nextReading, /small-team-fit|enterprise-fit|addon-cost|migration-cost/i, path);
-      assert.doesNotMatch(
-        documentHtml,
-        /<span\b[^>]*data-affiliate-cta-placeholder|>CTA DISABLED</i,
-        path,
-      );
+      assert.doesNotMatch(visible, />CTA DISABLED</i, path);
     } else if (followableNonArticlePaths.has(path) || heldArticlePaths.has(path)) {
       assert.equal(
         response.headers.get("x-robots-tag"),
@@ -777,13 +774,13 @@ test("the approved nine-article release candidate stays scoped and disclosure-fi
     for (const match of body.matchAll(/href="(\/[^"#?]*)(?:[#?][^"]*)?"/gi)) {
       assert.ok(match[1] === "/" || !match[1].endsWith("/"), `${path}: redirecting internal link ${match[1]}`);
     }
-    const disclosure = body.indexOf('data-affiliate-disclosure-status="enabled"');
-    const cta = body.indexOf(
-      '<a class="cta-active" data-affiliate-cta-partner="mangools"',
-    );
-    assert.ok(disclosure >= 0, `${path}: disclosure enabled`);
-    assert.ok(cta > disclosure, `${path}: disclosure before CTA`);
-    assert.match(body, /rel="sponsored noopener noreferrer"/i, path);
+    const visible = visibleMarkup(body);
+    const disclosure = visible.indexOf('data-affiliate-disclosure-status="disabled"');
+    const cta = visible.indexOf('data-affiliate-cta-placeholder="mangools"');
+    assert.ok(disclosure >= 0, `${path}: fail-closed disclosure before hydration`);
+    assert.ok(cta > disclosure, `${path}: disclosure before CTA placeholder`);
+    assert.match(body, /data-saastco-affiliate-cta>[\s\S]*rel="sponsored noopener noreferrer"/i, path);
+    assert.doesNotMatch(visible, /data-affiliate-cta-partner|rel="sponsored noopener noreferrer"/i, path);
   }
 
   for (const path of held) {
@@ -836,11 +833,13 @@ test("approved P05 is ready for an exact ten-article release without widening P0
   assert.equal(p05.headers.get("x-robots-tag"), "index, follow");
   const p05Body = await p05.text();
   assert.match(p05Body, new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${p05Path}">`, "i"));
-  const disclosure = p05Body.indexOf('data-affiliate-disclosure-status="enabled"');
-  const cta = p05Body.indexOf('<a class="cta-active" data-affiliate-cta-partner="mangools"');
+  const p05Visible = visibleMarkup(p05Body);
+  const disclosure = p05Visible.indexOf('data-affiliate-disclosure-status="disabled"');
+  const cta = p05Visible.indexOf('data-affiliate-cta-placeholder="mangools"');
   assert.ok(disclosure >= 0);
   assert.ok(cta > disclosure);
-  assert.match(p05Body, /rel="sponsored noopener noreferrer"/i);
+  assert.match(p05Body, /data-saastco-affiliate-cta>[\s\S]*rel="sponsored noopener noreferrer"/i);
+  assert.doesNotMatch(p05Visible, /data-affiliate-cta-partner|rel="sponsored noopener noreferrer"/i);
 
   const releasedPaths = [
     "/pilot/pricing-calculator",
@@ -919,11 +918,13 @@ test("approved P09 widens the release to exactly eleven articles while P11 stays
   assert.match(p09Body, new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${p09Path}">`, "i"));
   assert.match(p09Body, /JPY 2,006\.67/);
   assert.match(p09Body, /公式移行支援費は未確認/);
-  const disclosure = p09Body.indexOf('data-affiliate-disclosure-status="enabled"');
-  const cta = p09Body.indexOf('<a class="cta-active" data-affiliate-cta-partner="mangools"');
+  const p09Visible = visibleMarkup(p09Body);
+  const disclosure = p09Visible.indexOf('data-affiliate-disclosure-status="disabled"');
+  const cta = p09Visible.indexOf('data-affiliate-cta-placeholder="mangools"');
   assert.ok(disclosure >= 0);
   assert.ok(cta > disclosure);
-  assert.match(p09Body, /rel="sponsored noopener noreferrer"/i);
+  assert.match(p09Body, /data-saastco-affiliate-cta>[\s\S]*rel="sponsored noopener noreferrer"/i);
+  assert.doesNotMatch(p09Visible, /data-affiliate-cta-partner|rel="sponsored noopener noreferrer"/i);
 
   const p11Path = "/pilot/break-even";
   const p11 = await worker.fetch(new Request(`https://saastcolab.jp${p11Path}`), env, ctx);
@@ -1080,28 +1081,32 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   assert.equal(response.status, 200);
   assert.equal(response.headers.get("x-robots-tag"), "index, follow");
   const body = await response.text();
-  const disclosurePosition = body.indexOf('data-affiliate-disclosure-status="enabled"');
-  const xserverPosition = body.indexOf('data-server-affiliate-cta-partner="a8net-xserver-business"');
-  const conohaPosition = body.indexOf('data-server-affiliate-cta-partner="moshimo-conoha-wing"');
+  const visible = visibleMarkup(body);
+  const bootstrap = body.match(/<script data-saastco-server-affiliate-cta>[\s\S]*?<\/script>/i)?.[0] ?? "";
+  const disclosurePosition = visible.indexOf('data-affiliate-disclosure-status="disabled"');
+  const xserverPosition = visible.indexOf('data-server-affiliate-cta-placeholder="a8net-xserver-business"');
+  const conohaPosition = visible.indexOf('data-server-affiliate-cta-placeholder="moshimo-conoha-wing"');
   assert.ok(disclosurePosition >= 0);
   assert.ok(xserverPosition > disclosurePosition);
   assert.ok(conohaPosition > disclosurePosition);
-  assert.match(body, /data-server-cta-mode="comparison"/);
+  assert.match(visible, /data-server-cta-mode="disabled"/);
+  assert.match(bootstrap, /m="comparison"/);
   assert.match(body, /class="server-cta-primary"/);
   assert.match(body, /class="server-cta-secondary"/);
   assert.match(body, /代替候補を1社/);
   assert.match(body, /最大1社だけ表示/);
   assert.ok(xserverPosition < conohaPosition, "既存のHuman確認順で主CTAを代替CTAより先に表示する");
-  assert.match(body, /href="https:\/\/px\.a8\.net\/svt\/ejp\?a8mat=synthetic"/);
-  assert.match(body, /a_id=synthetic-conoha/);
-  assert.match(body, /data-server-cta-position="primary"/);
-  assert.match(body, /data-server-cta-position="alternative"/);
-  assert.match(body, /data-vendor-id="xserver-business"/);
-  assert.match(body, /data-vendor-id="conoha-wing"/);
-  assert.equal((body.match(/data-server-cta-type="affiliate_comparison"/g) ?? []).length, 2);
-  assert.doesNotMatch(body, /data-server-affiliate-cta-partner="(?:moshimo-lolipop-rental-server|moshimo-onamae-rental-server|moshimo-shin-rental-server|valuecommerce-ablenet-shared-server)"/);
-  assert.equal((body.match(/rel="sponsored noopener noreferrer"/g) ?? []).length, 2);
-  assert.doesNotMatch(body, /data-affiliate-cta-partner="mangools"/);
+  assert.match(bootstrap, /https:\/\/px\.a8\.net\/svt\/ejp\?a8mat=synthetic/);
+  assert.match(bootstrap, /a_id=synthetic-conoha/);
+  assert.match(bootstrap, /"position":"primary"/);
+  assert.match(bootstrap, /"position":"alternative"/);
+  assert.match(bootstrap, /"vendorId":"xserver-business"/);
+  assert.match(bootstrap, /"vendorId":"conoha-wing"/);
+  assert.match(bootstrap, /a\.rel="sponsored noopener noreferrer"/);
+  assert.match(bootstrap, /compareDocumentPosition\(n\)&Node\.DOCUMENT_POSITION_FOLLOWING/);
+  assert.doesNotMatch(bootstrap, /"id":"(?:moshimo-lolipop-rental-server|moshimo-onamae-rental-server|moshimo-shin-rental-server|valuecommerce-ablenet-shared-server)"/);
+  assert.doesNotMatch(visible, /data-server-affiliate-cta-partner|rel="sponsored noopener noreferrer"/);
+  assert.doesNotMatch(visible, /data-affiliate-cta-partner="mangools"/);
 
   const singleResponse = await worker.fetch(
     new Request("https://saastcolab.jp/servers/business-server-pricing"),
@@ -1109,10 +1114,14 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
     ctx,
   );
   const singleBody = await singleResponse.text();
-  assert.match(singleBody, /data-server-cta-mode="single"/);
+  const singleVisible = visibleMarkup(singleBody);
+  const singleBootstrap = singleBody.match(/<script data-saastco-server-affiliate-cta>[\s\S]*?<\/script>/i)?.[0] ?? "";
+  assert.match(singleVisible, /data-server-cta-mode="disabled"/);
+  assert.match(singleBootstrap, /m="single"/);
   assert.match(singleBody, /各紹介リンクの有効状態は下に表示/);
-  assert.equal((singleBody.match(/rel="sponsored noopener noreferrer"/g) ?? []).length, 1);
-  assert.match(singleBody, /data-server-affiliate-cta-partner="a8net-xserver-business"/);
+  assert.match(singleBootstrap, /a\.rel="sponsored noopener noreferrer"/);
+  assert.match(singleBootstrap, /"id":"a8net-xserver-business"/);
+  assert.doesNotMatch(singleVisible, /data-server-affiliate-cta-partner|rel="sponsored noopener noreferrer"/);
   assert.doesNotMatch(singleBody, /紹介できる公式サイトが確認できていない/);
 
   const alternativeOnlyResponse = await worker.fetch(
@@ -1204,12 +1213,17 @@ test("server index release cannot widen CTA beyond the exact article allowlist",
     const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
     assert.equal(response.headers.get("x-robots-tag"), "index, follow", serverIds[index]);
     const body = await response.text();
+    const visible = visibleMarkup(body);
     if (serverIds[index] === "SVR01") {
-      assert.match(body, /data-server-affiliate-cta-partner="a8net-xserver-business"/);
-      assert.match(body, /rel="sponsored noopener noreferrer"/);
+      assert.match(body, /<script data-saastco-server-affiliate-cta>/);
+      assert.match(body, /"id":"a8net-xserver-business"/);
+      assert.match(body, /a\.rel="sponsored noopener noreferrer"/);
+      assert.match(visible, /data-server-affiliate-cta-placeholder="a8net-xserver-business"/);
+      assert.doesNotMatch(visible, /data-server-affiliate-cta-partner|rel="sponsored noopener noreferrer"/);
     } else {
-      assert.match(body, /data-server-affiliate-cta-state="disabled"/, serverIds[index]);
-      assert.doesNotMatch(body, /rel="sponsored noopener noreferrer"/, serverIds[index]);
+      assert.match(visible, /data-server-affiliate-cta-state="disabled"/, serverIds[index]);
+      assert.doesNotMatch(body, /data-saastco-server-affiliate-cta/, serverIds[index]);
+      assert.doesNotMatch(visible, /rel="sponsored noopener noreferrer"/, serverIds[index]);
     }
   }
 

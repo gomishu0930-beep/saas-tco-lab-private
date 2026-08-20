@@ -235,7 +235,8 @@ td { min-width: 175px; font-size: 0.75rem; }
 .calculator-source { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 9px 20px; margin: 0; padding-top: 14px; border-top: 1px solid var(--line); color: var(--muted); font-size: 0.7rem; }
 .calculator-source a { color: var(--green); font-weight: 800; text-underline-offset: 4px; }
 .calculator-note { grid-column: 1 / -1; margin: 0; }
-.server-zero-input { display: grid; gap: 22px; }
+.server-zero-input { display: grid; width: 100%; max-width: 100%; min-inline-size: 0; gap: 22px; }
+.server-zero-input > *, .server-zero-input-heading > *, .server-zero-input-controls > *, .target-band > * { min-inline-size: 0; }
 .server-zero-input-heading { display: grid; grid-template-columns: minmax(260px, 0.8fr) minmax(420px, 1.2fr); gap: 32px; align-items: end; }
 .server-zero-input-heading h2 { margin: 0; font: 500 clamp(2rem, 4vw, 3rem)/1.1 Georgia, "Yu Mincho", serif; }
 .server-zero-input-heading p:not(.eyebrow) { color: var(--muted); font-size: 0.76rem; }
@@ -250,6 +251,7 @@ td { min-width: 175px; font-size: 0.75rem; }
 .server-zero-input-table strong { color: var(--green); font: 800 0.9rem ui-monospace, monospace; white-space: nowrap; }
 .server-zero-input-table tr[data-ranking-eligible="false"] { color: var(--muted); background: #f3f2ed; }
 .server-zero-input-table th:nth-child(2) { min-width: 240px; }
+.server-zero-input .table-scroll { width: 100%; max-width: 100%; min-inline-size: 0; overflow-x: auto; }
 .server-row-details { margin-top: 7px; font-weight: 400; }
 .server-row-details > summary { display: inline-flex; min-height: 40px; align-items: center; color: var(--green); font-size: 0.82rem; font-weight: 800; cursor: pointer; text-underline-offset: 4px; }
 .server-row-details dl { display: grid; gap: 6px; margin: 4px 0 10px; font-size: 0.78rem; line-height: 1.55; }

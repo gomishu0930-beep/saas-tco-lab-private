@@ -421,7 +421,6 @@ test("servers operator and twenty article routes preserve approval, ranking, and
       assert.match(article, /JPY 11220/, path);
     } else {
       assert.match(article, /data-server-candidate-batch="M3"/, path);
-      assert.match(article, /"@type":"Product"/, path);
       assert.match(article, /"@type":"FAQPage"/, path);
       assert.match(article, /"@type":"BreadcrumbList"/, path);
       assert.match(article, /4(?:<!-- -->)?社・(?:<!-- -->)?44(?:<!-- -->)?項目/, path);
@@ -443,6 +442,8 @@ test("servers operator and twenty article routes preserve approval, ranking, and
         assert.match(article, /JPY 11220/, path);
         const offerCount = SERVER_OFFER_COUNTS.get(path) ?? 0;
         assert.equal((article.match(/"@type":"Offer"/g) ?? []).length, offerCount, path);
+        if (offerCount > 0) assert.match(article, /"@type":"Product"/, path);
+        else assert.doesNotMatch(article, /"@type":"Product"/, path);
       } else {
         assert.match(article, /公開前レビュー中です/, path);
         assert.match(article, /data-server-article-review="unreviewed"/, path);

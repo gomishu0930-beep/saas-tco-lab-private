@@ -10,6 +10,7 @@ import type { PilotPage, ServerArticleSlateEntry } from "./pilot-pages";
 type JsonLdObject = Record<string, unknown>;
 
 const OFFER_PRICE_FIELDS = new Set(["pricing.base_price", "plan.price", "alternative.price"]);
+const SITE_ORIGIN = "https://saastcolab.jp";
 
 function approvedOffers(contract: EditorialContract | null): JsonLdObject[] {
   if (!contract || contract.article_review_status !== "approved") return [];
@@ -41,18 +42,18 @@ export function articleStructuredData(
 ): JsonLdObject {
   const offers = approvedOffers(contract);
   const presentation = editorialPresentation(page, contract);
-  const product: JsonLdObject = {
+  const product = offers.length ? [{
     "@type": "Product",
     name: presentation.title,
     description: presentation.description,
     category: "Business Software",
-  };
-  if (offers.length) product.offers = offers;
+    offers,
+  }] : [];
 
   return {
     "@context": "https://schema.org",
     "@graph": [
-      product,
+      ...product,
       {
         "@type": "FAQPage",
         mainEntity: [{
@@ -67,8 +68,8 @@ export function articleStructuredData(
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "SaaS TCO Lab" },
-          { "@type": "ListItem", position: 2, name: "記事" },
+          { "@type": "ListItem", position: 1, name: "SaaS TCO Lab", item: `${SITE_ORIGIN}/` },
+          { "@type": "ListItem", position: 2, name: "SEOツール料金", item: `${SITE_ORIGIN}/pilot` },
           { "@type": "ListItem", position: 3, name: presentation.title },
         ],
       },
@@ -109,17 +110,17 @@ export function serverArticleStructuredData(
         priceValidUntil: payment.nextReviewOn,
       }];
     });
-  const product: JsonLdObject = {
+  const product = offers.length ? [{
     "@type": "Product",
     name: article.titleTemplate,
     description: article.readerQuestion,
     category: "レンタルサーバー",
-  };
-  if (offers.length) product.offers = offers;
+    offers,
+  }] : [];
   return {
     "@context": "https://schema.org",
     "@graph": [
-      product,
+      ...product,
       {
         "@type": "FAQPage",
         mainEntity: [{
@@ -134,9 +135,8 @@ export function serverArticleStructuredData(
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "SaaS TCO Lab" },
-          { "@type": "ListItem", position: 2, name: "サーバー料金" },
-          { "@type": "ListItem", position: 3, name: article.titleTemplate },
+          { "@type": "ListItem", position: 1, name: "SaaS TCO Lab", item: `${SITE_ORIGIN}/` },
+          { "@type": "ListItem", position: 2, name: article.titleTemplate },
         ],
       },
     ],

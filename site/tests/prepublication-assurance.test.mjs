@@ -284,19 +284,24 @@ test("structured data includes only Human-approved known prices while every arti
     )].map((match) => JSON.parse(match[1]));
     assert.equal(payloads.length, 1, `${path}: JSON-LD count`);
     const graph = payloads[0]["@graph"];
+    const expectedOffers = approvedOfferCounts.get(path) ?? 0;
     assert.deepEqual(
       graph.map((item) => item["@type"]),
-      ["Product", "FAQPage", "BreadcrumbList"],
+      expectedOffers > 0
+        ? ["Product", "FAQPage", "BreadcrumbList"]
+        : ["FAQPage", "BreadcrumbList"],
       `${path}: required structured-data types`,
     );
-    const expectedOffers = approvedOfferCounts.get(path) ?? 0;
     if (expectedOffers > 0) {
       assert.equal(graph[0].offers.length, expectedOffers, `${path}: approved price count`);
       assert.ok(graph[0].offers.every((offer) => offer.price && offer.priceCurrency), `${path}: known approved prices only`);
     } else {
-      assert.equal("offers" in graph[0], false, `${path}: unapproved price excluded`);
+      assert.equal(graph.some((item) => item["@type"] === "Product"), false, `${path}: unapproved Product excluded`);
       assert.doesNotMatch(JSON.stringify(payloads[0]), /"price"\s*:/i, `${path}: no price markup`);
     }
+    const breadcrumb = graph.find((item) => item["@type"] === "BreadcrumbList");
+    assert.equal(breadcrumb.itemListElement[0].item, "https://saastcolab.jp/", path);
+    assert.equal(breadcrumb.itemListElement[1].item, "https://saastcolab.jp/pilot", path);
   }
 });
 

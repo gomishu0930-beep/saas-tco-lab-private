@@ -148,9 +148,8 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
       {
         "@type": "BreadcrumbList",
         itemListElement: [
-          { "@type": "ListItem", position: 1, name: "SaaS TCO Lab" },
-          { "@type": "ListItem", position: 2, name: "サーバー料金" },
-          { "@type": "ListItem", position: 3, name: approvedSvr01Title },
+          { "@type": "ListItem", position: 1, name: "SaaS TCO Lab", item: "https://saastcolab.jp/" },
+          { "@type": "ListItem", position: 2, name: approvedSvr01Title },
         ],
       },
     ],
