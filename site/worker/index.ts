@@ -17,6 +17,8 @@ interface ProductionEnv {
   INDEX_GO?: string;
   INDEX_APPROVED_ARTICLES?: string;
   INDEX_APPROVED_SERVER_ARTICLES?: string;
+  HUB_INDEX_GO?: string;
+  INDEX_APPROVED_HUBS?: string;
   SERVER_CTA_APPROVED_SERVER_ARTICLES?: string;
   CTA_GO?: string;
   CTA_APPROVED_PARTNER?: string;
@@ -154,6 +156,16 @@ const SERVER_ARTICLE_PATH_TO_ID = new Map([
   ["/servers/business-mail-server", "SVR09"],
 ]);
 
+const HUB_PATH_TO_ID = new Map([
+  ["/", "HOME"],
+  ["/pilot", "SEO_TOOLS"],
+]);
+
+const SOURCE_APPROVED_HUB_IDS = new Set(
+  (editorialLaunchState.index_approved_hubs ?? [])
+    .filter((hubId) => /^(?:HOME|SEO_TOOLS)$/.test(hubId)),
+);
+
 // Source-level Human editorial approval. Runtime INDEX_GO alone must never
 // promote an unreviewed server candidate into the public index. The local
 // decision record is the sole source; invalid values fail closed.
@@ -175,6 +187,8 @@ const SOURCE_CTA_APPROVED_SERVER_ARTICLE_IDS = new Set(
 interface IndexApprovalState {
   approvedArticlesValid: boolean;
   approvedServerArticlesValid: boolean;
+  approvedHubsValid: boolean;
+  hubIndexGateActive: boolean;
   indexGateActive: boolean;
   paths: ReadonlySet<string>;
 }
@@ -185,17 +199,27 @@ function indexApprovalState(env: ProductionEnv): IndexApprovalState {
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
+  const hubValues = (env.INDEX_APPROVED_HUBS ?? "")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
   const approvedArticlesValid =
     values.every((item) => /^P(?:0[1-9]|1[0-2])$/.test(item))
     && new Set(values).size === values.length;
   const approvedServerArticlesValid =
     serverValues.every((item) => /^SVR(?:0[1-9]|1[0-9]|20)$/.test(item))
     && new Set(serverValues).size === serverValues.length;
+  const approvedHubsValid =
+    hubValues.every((item) => /^(?:HOME|SEO_TOOLS)$/.test(item))
+    && new Set(hubValues).size === hubValues.length;
   const indexGateActive = env.INDEX_GO?.trim() === "GO";
+  const hubIndexGateActive = env.HUB_INDEX_GO?.trim() === "GO";
   if (!indexGateActive || !approvedArticlesValid) {
     return {
       approvedArticlesValid,
       approvedServerArticlesValid,
+      approvedHubsValid,
+      hubIndexGateActive,
       indexGateActive,
       paths: new Set(),
     };
@@ -203,13 +227,46 @@ function indexApprovalState(env: ProductionEnv): IndexApprovalState {
   const approved = new Set(values);
   const paths = new Set([...ARTICLE_PATH_TO_ID].filter(([, id]) => approved.has(id)).map(([path]) => path));
   if (!approvedServerArticlesValid) {
-    return { approvedArticlesValid, approvedServerArticlesValid, indexGateActive, paths };
+    return {
+      approvedArticlesValid,
+      approvedServerArticlesValid,
+      approvedHubsValid,
+      hubIndexGateActive,
+      indexGateActive,
+      paths,
+    };
   }
   const approvedServers = new Set(serverValues);
   for (const [path, id] of SERVER_ARTICLE_PATH_TO_ID) {
     if (approvedServers.has(id) && SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(id)) paths.add(path);
   }
-  return { approvedArticlesValid, approvedServerArticlesValid, indexGateActive, paths };
+  if (hubIndexGateActive && approvedHubsValid) {
+    const approvedHubs = new Set(hubValues);
+    const approvedPilotPaths = [...ARTICLE_PATH_TO_ID]
+      .filter(([, id]) => id !== "P11")
+      .map(([path]) => path);
+    const approvedServerPaths = [...SERVER_ARTICLE_PATH_TO_ID]
+      .filter(([, id]) => SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(id))
+      .map(([path]) => path);
+    for (const [path, id] of HUB_PATH_TO_ID) {
+      const requiredPaths = id === "HOME"
+        ? [...approvedPilotPaths, ...approvedServerPaths]
+        : approvedPilotPaths;
+      if (
+        approvedHubs.has(id)
+        && SOURCE_APPROVED_HUB_IDS.has(id)
+        && requiredPaths.every((requiredPath) => paths.has(requiredPath))
+      ) paths.add(path);
+    }
+  }
+  return {
+    approvedArticlesValid,
+    approvedServerArticlesValid,
+    approvedHubsValid,
+    hubIndexGateActive,
+    indexGateActive,
+    paths,
+  };
 }
 
 function robotsTxt(indexPaths: ReadonlySet<string>): string {
@@ -928,6 +985,11 @@ const worker = {
     const normalizedPath = normalizePath(url.pathname);
     const indexApproval = indexApprovalState(env);
     const indexPaths = indexApproval.paths;
+    const articleIndexPaths = new Set(
+      [...indexPaths].filter((path) => (
+        ARTICLE_PATH_TO_ID.has(path) || SERVER_ARTICLE_PATH_TO_ID.has(path)
+      )),
+    );
     const indexable = url.search === "" && indexPaths.has(normalizedPath);
     const serverArticleId = SERVER_ARTICLE_PATH_TO_ID.get(normalizedPath);
     const followableNoindex = url.search === ""
@@ -937,9 +999,11 @@ const worker = {
         serverArticleId === undefined
         || SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(serverArticleId)
       );
-    const gatedPath = indexable ? normalizedPath : "";
-    const ctaControls = affiliateCtaControls(env, indexPaths, gatedPath);
-    const serverCtaControls = serverAffiliateCtaControls(env, indexPaths, gatedPath);
+    const gatedArticlePath = url.search === "" && articleIndexPaths.has(normalizedPath)
+      ? normalizedPath
+      : "";
+    const ctaControls = affiliateCtaControls(env, articleIndexPaths, gatedArticlePath);
+    const serverCtaControls = serverAffiliateCtaControls(env, articleIndexPaths, gatedArticlePath);
 
     if (url.hostname.toLowerCase() === LEGACY_PUBLIC_HOST) {
       const target = new URL(request.url);
@@ -963,6 +1027,8 @@ const worker = {
           "X-Index-Approval-Active": String(indexApproval.indexGateActive),
           "X-Index-Articles-Config-Valid": String(indexApproval.approvedArticlesValid),
           "X-Index-Server-Articles-Config-Valid": String(indexApproval.approvedServerArticlesValid),
+          "X-Index-Hubs-Config-Valid": String(indexApproval.approvedHubsValid),
+          "X-Index-Hubs-Approval-Active": String(indexApproval.hubIndexGateActive),
         },
       });
     }
@@ -1019,7 +1085,7 @@ const worker = {
       let response = await handler.fetch(request, env, ctx);
       const embeddable = normalizedPath === "/embed/tco-calculator";
       if (normalizedPath === "/") {
-        response = await withPublicHomeState(response, env, indexPaths);
+        response = await withPublicHomeState(response, env, articleIndexPaths);
       }
       return withSecurityHeaders(
         await withServerAffiliateCta(
@@ -1032,7 +1098,7 @@ const worker = {
                 followableNoindex,
                 normalizedPath,
               ),
-              indexable ? indexPaths : new Set(),
+              gatedArticlePath ? articleIndexPaths : new Set(),
               normalizedPath,
             ),
             ctaControls,

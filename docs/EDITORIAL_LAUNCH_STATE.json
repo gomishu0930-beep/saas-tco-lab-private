@@ -65,6 +65,10 @@
     "SVR09",
     "SVR08"
   ],
+  "index_approved_hubs": [
+    "HOME",
+    "SEO_TOOLS"
+  ],
   "server_cta_approved_articles": [
     "SVR01"
   ],

@@ -86,7 +86,7 @@ test("renders every synthetic-only local decision route with landmarks", async (
     ["/comparison", /同じ条件で、総額と適合を比べる。/],
     ["/methodology", /比較の作り方を、結果より先に公開する。/],
     ["/learning", /学習・施策・文章・収益導線を、同じ証拠鎖でつなぐ。/],
-    ["/pilot", /高意図記事を、公開前に12本組み立てる。/],
+    ["/pilot", /SEOツールの料金を、請求総額と契約条件から確認する。/],
     ["/about", /SaaS TCO Labについて/],
     ["/operator-information", /運営者情報/],
     ["/privacy", /プライバシーポリシー/],
@@ -117,7 +117,7 @@ test("renders every synthetic-only local decision route with landmarks", async (
   }
 });
 
-test("operator and pilot index report eleven live articles while P11 remains held", async () => {
+test("operator and public pilot hub report eleven live articles while P11 remains held", async () => {
   const operator = await (await render("/operator")).text();
   assert.match(operator, /P01–P10・P12（11\/12）/);
   assert.match(operator, /P01–P10・P12承認・公開済み/);
@@ -128,9 +128,9 @@ test("operator and pilot index report eleven live articles while P11 remains hel
   assert.doesNotMatch(operator, /release待ち|P01–P03 公開中/);
 
   const pilot = await (await render("/pilot")).text();
-  assert.match(pilot, /P01–P10・P12の11本はHuman承認後に公開済み/);
-  assert.match(pilot, /P11は完全暦月/);
-  assert.match(pilot, /noindex・CTA無効を維持/);
+  assert.match(pilot, /公式画面を人が確認した料金だけを使い/);
+  assert.equal((pilot.match(/<article>/g) ?? []).length, 11);
+  assert.doesNotMatch(pilot, /href=["']\/pilot\/break-even["']/);
   assert.doesNotMatch(pilot, /index GO未受領/);
 });
 

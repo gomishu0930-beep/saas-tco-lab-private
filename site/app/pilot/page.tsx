@@ -5,27 +5,28 @@ import { editorialContract } from "../lib/editorial-contracts";
 import { firstReleasePilotIds, launchPriorityPages } from "../lib/pilot-pages";
 
 export const metadata: Metadata = {
-  title: "公開前の記事template",
-  description: "Human確認済みの数値fieldを受け入れるP01–P12の公開前記事template。",
+  title: "SEOツール料金・契約条件の比較",
+  description: "人が公式画面で確認した料金、契約条件、利用上限をもとに、SEOツールの12か月費用と未確認条件を整理します。",
 };
 
 export default function PilotIndexPage() {
-  const orderedPages = launchPriorityPages();
+  const orderedPages = launchPriorityPages().filter(
+    (page) => editorialContract(page)?.article_review_status === "approved",
+  );
   const firstRelease = new Set(firstReleasePilotIds);
   return (
     <main id="main-content" className="page-main">
       <header className="shell page-header">
-        <p className="eyebrow">12 EDITORIAL TEMPLATES / NOINDEX</p>
-        <h1>高意図記事を、公開前に12本組み立てる。</h1>
-        <p>本文下書きは12本完成し、P01–P10・P12の11本はHuman承認後に公開済みです。P11は完全暦月の自データ取得とreviewを継続し、noindex・CTA無効を維持します。</p>
+        <p className="eyebrow">SEO TOOL PRICING / VERIFIED EDITORIAL</p>
+        <h1>SEOツールの料金を、請求総額と契約条件から確認する。</h1>
+        <p>公式画面を人が確認した料金だけを使い、12か月の支払額、プラン差、利用上限、税、移行費用を整理しています。未確認値は推測せず、計算や順位から除外します。</p>
       </header>
       <section className="shell page-section" aria-labelledby="pilot-list-title">
-        <div className="section-heading"><p className="eyebrow">PILOT MANIFEST</p><h2 id="pilot-list-title">記事構造一覧</h2></div>
+        <div className="section-heading"><p className="eyebrow">PUBLISHED GUIDES</p><h2 id="pilot-list-title">確認したい条件から選ぶ</h2></div>
         <div className="policy-cards">
           {orderedPages.map((page, index) => {
-            const approvedCandidate = editorialContract(page)?.article_review_status === "approved";
             return <article key={page.slug}>
-              <span>{page.id} / 優先 {String(index + 1).padStart(2, "0")}{firstRelease.has(page.id as (typeof firstReleasePilotIds)[number]) ? " / 公開第1弾" : ""}{approvedCandidate ? " / 承認済み公開候補" : ""}</span>
+              <span>{page.id} / {String(index + 1).padStart(2, "0")}{firstRelease.has(page.id as (typeof firstReleasePilotIds)[number]) ? " / 基本ガイド" : ""}</span>
               <h2><Link href={`/pilot/${page.slug}`}>{page.title}</Link></h2>
               <p>{page.question}</p>
             </article>;

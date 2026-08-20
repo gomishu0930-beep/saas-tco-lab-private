@@ -238,7 +238,7 @@ def _load_launch_state(path: Path) -> dict[str, Any]:
         "schema_version", "domain", "domain_state", "index_state", "affiliate_cta",
         "articles", "deployed_articles", "index_approved_articles", "server_articles",
         "deployed_server_articles", "index_approved_server_articles",
-        "server_cta_approved_articles", "server_affiliate_cta",
+        "index_approved_hubs", "server_cta_approved_articles", "server_affiliate_cta",
     }
     if not isinstance(state, dict) or set(state) != expected:
         raise DashboardInputError("editorial launch state fields do not match ease-track-2")
@@ -267,6 +267,15 @@ def _load_launch_state(path: Path) -> dict[str, Any]:
             raise DashboardInputError(
                 f"{field} must contain unique approved P01-P12 article IDs"
             )
+    approved_hubs = state["index_approved_hubs"]
+    if (
+        not isinstance(approved_hubs, list)
+        or any(value not in {"HOME", "SEO_TOOLS"} for value in approved_hubs)
+        or len(approved_hubs) != len(set(approved_hubs))
+    ):
+        raise DashboardInputError(
+            "index_approved_hubs must contain unique HOME or SEO_TOOLS IDs"
+        )
     cta = state["affiliate_cta"]
     if not isinstance(cta, dict) or any(value not in ALLOWED_LANE_STATES for value in cta.values()):
         raise DashboardInputError("affiliate CTA states must be HOLD, GO, or DONE")

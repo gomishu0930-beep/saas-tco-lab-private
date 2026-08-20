@@ -18,7 +18,8 @@
 ## Rejected Results
 
 - No commission, EPC, RPES, GSC per-URL status, network sub-ID capability, or merchant confirmation period was inferred.
-- No homepage/hub indexing, GA4 filter activation, external posting, affiliate activation, commit, push, or deploy was performed.
+- Initial V2 implementation was committed and pushed as `46b606d` after explicit Human GO. Production deployment and external read-back remain separate states until Sites confirms them.
+- Homepage and the SEO tools hub received source-level GO after the initial report. Their local implementation uses an additional runtime gate and excludes P11; deploy status must still be reported separately.
 - No Option Lane candidate was ranked because required evidence remains unknown.
 
 ## Conflicts Resolved
@@ -35,10 +36,10 @@
 
 ## Remaining Risks
 
-- The working tree was already broadly dirty; no safe scope commit can be made without explicit review of the existing overlapping files.
+- The working tree remains broadly dirty, but the reviewed V2 scope was isolated into an explicit 75-file commit without staging unrelated untracked files.
 - Cell B merchant selection, channel permission, success/rejection conditions, confirmation periods, and multiple renewal/cancellation fields remain Human-gated.
 - GA4 internal traffic filter remains HOLD, so current GA4 values are not revenue evidence.
-- Production remains on the pre-V2 six-link SVR01 experience until an explicitly scoped deploy.
+- Production remains on the pre-V2 experience until the saved Sites version is deployed and externally read back; a Git push alone is not treated as deployment evidence.
 
 ## Reusable Follow-up
 

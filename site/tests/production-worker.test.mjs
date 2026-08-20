@@ -1344,3 +1344,59 @@ test("server query variants and incomplete partner gates remain fail-closed", as
     assert.doesNotMatch(body, /rel="sponsored noopener noreferrer"/);
   }
 });
+
+test("Human-approved home and SEO tools hub index only behind exact runtime gates", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("hub-index-gate", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P12",
+    INDEX_APPROVED_SERVER_ARTICLES: "SVR01,SVR02,SVR03,SVR04,SVR05,SVR06,SVR07,SVR08,SVR09",
+    HUB_INDEX_GO: "GO",
+    INDEX_APPROVED_HUBS: "HOME,SEO_TOOLS",
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+
+  for (const path of ["/", "/pilot"]) {
+    const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
+    const body = await response.text();
+    assert.equal(response.headers.get("x-robots-tag"), "index, follow", path);
+    assert.match(body, /<meta name="robots" content="index, follow">/i, path);
+    assert.match(
+      body,
+      new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${path === "/" ? "/" : path}">`, "i"),
+      path,
+    );
+    assert.doesNotMatch(body, /href=["']\/pilot\/break-even["']/i, path);
+  }
+
+  const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
+  const locations = [...((await sitemap.text()).matchAll(/<loc>([^<]+)<\/loc>/g))]
+    .map((match) => match[1]);
+  assert.equal(locations.length, 22);
+  assert.ok(locations.includes("https://saastcolab.jp/"));
+  assert.ok(locations.includes("https://saastcolab.jp/pilot"));
+  assert.ok(!locations.includes("https://saastcolab.jp/pilot/break-even"));
+
+  for (const override of [
+    { HUB_INDEX_GO: "HOLD" },
+    { INDEX_APPROVED_HUBS: "HOME,HOME" },
+    { INDEX_APPROVED_HUBS: "HOME,UNKNOWN" },
+    { INDEX_APPROVED_ARTICLES: "P01" },
+    { INDEX_APPROVED_SERVER_ARTICLES: "SVR01" },
+  ]) {
+    const response = await worker.fetch(
+      new Request("https://saastcolab.jp/"),
+      { ...env, ...override },
+      ctx,
+    );
+    assert.equal(
+      response.headers.get("x-robots-tag"),
+      "noindex, follow, noarchive, nosnippet",
+    );
+  }
+});

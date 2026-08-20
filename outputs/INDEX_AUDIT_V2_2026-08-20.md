@@ -33,8 +33,8 @@ Production read-back: 2026-08-20。GSC列は2026-08-19のaggregate共有値か�
 
 |Route|現状|候補評価|Decision|
 |---|---|---|---|
-|`/`|noindex,follow|20記事・2カテゴリへのHuman編集済み入口として候補|`hub_index: HOLD`維持|
-|`/pilot`|noindex,follow|SEO/SaaS記事一覧hub候補|editorial reviewとGO待ち|
+|`/`|productionはnoindex,follow|20記事・2カテゴリへのHuman編集済み入口|`HOME` source GO済み。runtime `HUB_INDEX_GO=GO` + exact scope後だけindex|
+|`/pilot`|productionはnoindex,follow|公開済みSEOツール11記事だけの読者向けhubへ改稿|`SEO_TOOLS` source GO済み。P11除外・runtime二重gate後だけindex|
 |`/servers`|routeなし|新規route作成は今回scope外|HOLD|
 |`/comparison`|production public allowlist外|thin/function routeの可能性があり現状index候補にしない|HOLD|
 
