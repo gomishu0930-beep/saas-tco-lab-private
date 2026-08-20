@@ -67,8 +67,9 @@ function signalServerGroup(signal) {
 
 function serverGroupIsRunning() {
   if (!serverProcess?.pid) return false;
+  if (serverProcess.exitCode !== null || serverProcess.signalCode !== null) return false;
   if (process.platform === "win32") {
-    return serverProcess.exitCode === null && serverProcess.signalCode === null;
+    return true;
   }
   try {
     process.kill(-serverProcess.pid, 0);
@@ -339,6 +340,8 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       );
       assert.match(documentHtml, /<script data-saastco-affiliate-cta>/i, path);
       assert.match(documentHtml, /compareDocumentPosition\(c\)&Node\.DOCUMENT_POSITION_FOLLOWING/i, path);
+      assert.match(documentHtml, /d\.textContent!==dt/i, path);
+      assert.match(documentHtml, /s\.textContent!==st/i, path);
       assert.doesNotMatch(visible, /data-affiliate-cta-partner|rel="sponsored noopener noreferrer"/i, path);
       const nextReadingPosition = documentHtml.indexOf('class="shell page-section next-reading"');
       assert.ok(nextReadingPosition > ctaPosition, `${path}: next-to-read after CTA`);
