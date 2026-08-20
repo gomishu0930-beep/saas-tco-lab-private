@@ -1104,6 +1104,9 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   assert.match(bootstrap, /"vendorId":"conoha-wing"/);
   assert.match(bootstrap, /a\.rel="sponsored noopener noreferrer"/);
   assert.match(bootstrap, /compareDocumentPosition\(n\)&Node\.DOCUMENT_POSITION_FOLLOWING/);
+  assert.match(bootstrap, /d\.textContent!==dt/);
+  assert.match(bootstrap, /s\.textContent!==st/);
+  assert.match(bootstrap, /c\.dataset\.serverCtaMode!==m/);
   assert.doesNotMatch(bootstrap, /"id":"(?:moshimo-lolipop-rental-server|moshimo-onamae-rental-server|moshimo-shin-rental-server|valuecommerce-ablenet-shared-server)"/);
   assert.doesNotMatch(visible, /data-server-affiliate-cta-partner|rel="sponsored noopener noreferrer"/);
   assert.doesNotMatch(visible, /data-affiliate-cta-partner="mangools"/);
