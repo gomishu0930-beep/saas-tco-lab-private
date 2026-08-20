@@ -173,11 +173,11 @@ td { min-width: 175px; font-size: 0.75rem; }
 .more-topics li { display: grid; gap: 7px; padding: 17px; background: var(--card); }
 .more-topics a { font-weight: 850; text-underline-offset: 4px; }
 .more-topics span { color: var(--muted); font-size: 0.7rem; }
-.editorial-sections { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ink); border-left: 1px solid var(--ink); }
+.editorial-sections { display: grid; width: 100%; max-width: 100%; min-inline-size: 0; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid var(--ink); border-left: 1px solid var(--ink); }
 .article-lead { max-width: 900px; margin: 0 0 14px; font-family: Georgia, serif; font-size: clamp(1.2rem, 2vw, 1.7rem); line-height: 1.55; }
 .article-methodology-link { margin: 0 0 28px; color: var(--muted); font-size: 0.84rem; }
 .article-methodology-link a { margin-left: 0.25em; color: var(--green); font-weight: 800; text-underline-offset: 4px; }
-.editorial-sections article { min-height: 210px; padding: 26px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: var(--card); }
+.editorial-sections article { min-inline-size: 0; min-height: 210px; padding: 26px; border-right: 1px solid var(--ink); border-bottom: 1px solid var(--ink); background: var(--card); }
 .editorial-sections span { color: var(--green); font: 800 0.69rem ui-monospace, monospace; }
 .editorial-sections h2, .field-input-grid h2 { margin: 42px 0 7px; font-family: Georgia, serif; font-size: 1.3rem; font-weight: 500; }
 .editorial-sections p { margin: 0; color: var(--muted); font-size: 0.78rem; }
@@ -543,7 +543,7 @@ body:has(.embed-page) > .skip-link { display: none; }
   .conditions-grid { grid-template-columns: 1fr; gap: 28px; }
   .conditions-grid dl { grid-template-columns: 1fr 1fr; }
   .policy-cards { grid-template-columns: 1fr; }
-  .editorial-sections, .field-input-grid, .article-evidence-summary dl, .next-reading ul { grid-template-columns: 1fr; }
+  .editorial-sections, .field-input-grid, .article-evidence-summary dl, .next-reading ul { grid-template-columns: minmax(0, 1fr); }
   .calculator-card { grid-template-columns: 1fr; }
   .calculator-source { grid-column: 1; }
   .server-zero-input-controls { grid-template-columns: 1fr; }

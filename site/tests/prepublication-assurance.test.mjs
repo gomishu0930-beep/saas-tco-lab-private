@@ -490,6 +490,8 @@ test("static CSS preserves mobile reflow, keyboard focus, and reduced motion", a
   assert.doesNotMatch(css, /(?:html|body)\s*\{[^}]*overflow-x\s*:\s*hidden/is);
   assert.match(css, /\.table-scroll\s*\{[^}]*overflow-x:\s*auto/s);
   assert.match(css, /\.table-scroll\s*\{[^}]*overscroll-behavior-inline:\s*contain/s);
+  assert.match(css, /\.editorial-sections\s*\{[^}]*min-inline-size:\s*0[^}]*repeat\(3, minmax\(0, 1fr\)\)/s);
+  assert.match(css, /\.editorial-sections article\s*\{[^}]*min-inline-size:\s*0/s);
 
   assert.match(
     css,
