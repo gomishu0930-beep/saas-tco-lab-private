@@ -12,7 +12,7 @@
 |6|price / tax / renewal / cancellation|期限・主要条件の鮮度を維持|4社公式料金/checkout/規約画面|Operator / merchant matrix|180|該当fieldをapproved更新|unknown・順位/推奨除外|ConoHa 2026-08-24、他は次回確認日|
 |7|GA4 internal filter|実訪問と内部testの分離|管理→データストリーム→タグ設定→内部トラフィック定義で現IP、次にデータフィルタとDebugView|`ga4_internal_ip_transmit: GO`（現在IPをGoogleへ送る直前確認）|45|rule作成→別回線検証→filter active|test維持、KPIを収益証拠にしない|2026-08-21|
 |8|GSC 20 URL Inspection|aggregate 7/6の個別内訳を確定|URL検査の状態・理由・canonical・最終crawl・impression有無|Index audit表|200|page別next action|unknown維持、登録数を推測しない|2026-08-27|
-|9|homepage / hub index|editorial価値と重複を審査|本番home、`/pilot`、GSC canonical|`hub_index: GO HOME,SEO_TOOLS`受領済み|0|source + runtime二重gateでindex候補|gate欠落時はnoindex,follow|done（deploy待ち）|
+|9|homepage / hub index|editorial価値と重複を審査|本番home、`/pilot`、GSC canonical|`hub_index: GO HOME,SEO_TOOLS`受領済み|0|source + runtime二重gateでindex候補|gate欠落時はnoindex,follow|done（deployed）|
 |10|note / X / partner投稿|外部送信と表現を承認|distribution draft・各channel公開画面|all-GO受領済み、ただしchannel規約は未確認|180|規約確認済みcampaignだけ投稿確認へ進む|規約unknownならDRAFT_ONLY維持|規約確認後|
 |11|mobile / accessibility read-back|CTA・開示・tableの重大退行を確認|390px描画、開示/CTA DOM順、active数、rel、JS error|自動read-back完了|0|Sites v38へdeploy済み|再発時rollback|done|
 
