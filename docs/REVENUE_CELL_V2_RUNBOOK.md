@@ -13,8 +13,8 @@
 
 |Cell|記事|型|現在のlocal状態|production状態|
 |---|---|---|---|---|
-|A|SVR01|比較型|XServer primary + ConoHa alternativeの最大2枠|2026-08-20 read-backでは6 CTA。V2は未deploy|
-|B|SVR04|初期費用込み総額の単独型|記事を暫定選定。vendor未選定のためCTA slotはHOLD|affiliate CTA 0|
+|A|SVR01|比較型|XServer primary + ConoHa alternativeの最大2枠|Sites v38 / commit `af95bdb`。主1・代替1、開示先行、mobile overflowなしを外部read-back済み|
+|B|SVR04|初期費用込み総額の単独型|記事を暫定選定。vendor未選定のためCTA slotはHOLD|SVR01への内部導線のみ。affiliate CTA 0|
 
 Cell Bはpage別GSC値を取得していないため、検索表示の多寡を推測して選んでいない。Human指示のfallbackである「初期費用込み総額」とrepository内intentが一致するSVR04を暫定候補にした。
 
@@ -53,7 +53,7 @@ uv run python scripts/summarize_revenue_cells.py --input <safe-aggregate.json>
 
 ## Production read-back
 
-deploy権限受領後にだけ実施する。
+2026-08-20にSites v38で実施済み。以後のreleaseでも同じ項目を再確認する。
 
 1. `/servers/business-server-pricing`でPR表示がCTAより前にある。
 2. active CTAが1 primary + 最大1 alternativeである。
@@ -88,7 +88,7 @@ localStorage.removeItem("saas_tco_lab_test_traffic_v1")
 
 ### Human: GA4管理画面
 
-現在のdecisionは`ga4_internal_filter: HOLD`。変更しない。
+現在のfilterは`test`、internal traffic definition ruleは0件。現IPをGoogleへ送信するaction-time確認までは設定writeを行わない。
 
 1. 管理 → データの収集と修正 → データフィルタ。
 2. Internal Trafficが`テスト`であることを確認。

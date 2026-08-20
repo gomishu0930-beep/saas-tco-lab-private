@@ -1396,9 +1396,10 @@ def production_case(tmp_path, monkeypatch):
         postcondition_schema_path=POSTCONDITION_SCHEMA,
         adapter_id="synthetic-adapter",
         # The shared fixture verifies signatures and dependency manifests in two
-        # fresh Python subprocesses.  Give loaded developer/CI hosts enough
-        # scheduling margin; timeout-specific tests override this to one second.
-        timeout_seconds=15,
+        # fresh Python subprocesses. Give loaded developer/CI hosts enough
+        # scheduling margin for the full 870-test run; timeout-specific tests
+        # override this to one second.
+        timeout_seconds=30,
     )
     return {
         "measurement": measurement,
