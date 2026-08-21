@@ -248,7 +248,7 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
         "approvedArticles": 9,
         "deployedArticles": 9,
         "indexApprovedArticles": 9,
-        "ctaApprovedArticles": 1,
+            "ctaApprovedArticles": 2,
         "ctaEnabledPartners": 6,
         "ctaDisplayedPartners": 2,
         "ctaHeldPartners": 0,

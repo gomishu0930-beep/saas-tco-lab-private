@@ -387,6 +387,13 @@ const SERVER_REVENUE_EXPERIMENT_PARTNER_IDS: readonly ServerAffiliatePartnerId[]
   "moshimo-conoha-wing",
 ];
 
+const SERVER_REVENUE_CELL_PARTNER_IDS: Readonly<
+  Partial<Record<string, readonly ServerAffiliatePartnerId[]>>
+> = {
+  SVR01: SERVER_REVENUE_EXPERIMENT_PARTNER_IDS,
+  SVR04: ["a8net-xserver-business"],
+};
+
 function consentGatedAnalyticsBootstrap(measurementId: string): string {
   return `<script data-saastco-analytics-consent>(()=>{const m=${JSON.stringify(measurementId)},k="saas_tco_lab_analytics_consent_v1",p=location.pathname;let l=false,q=false;const g=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)},u=()=>location.origin+location.pathname,e=(n,v={})=>g("event",n,{content_path:p,...v}),s=()=>{if(q||document.visibilityState!=="visible")return;q=true;e("qualified_session",{qualification_seconds:30})},o=()=>{if(l)return;l=true;g("consent","default",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",wait_for_update:500});g("consent","update",{analytics_storage:"granted"});g("js",new Date);g("config",m,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,page_location:u(),page_referrer:""});const t=document.createElement("script");t.async=true;t.src="https://www.googletagmanager.com/gtag/js?id="+encodeURIComponent(m);t.referrerPolicy="no-referrer";document.head.appendChild(t);e("page_view",{page_location:u(),page_title:document.title});setTimeout(s,30000);document.addEventListener("visibilitychange",s,{passive:true});document.addEventListener("click",t=>{const a=t.target instanceof Element?t.target.closest("a[href],button,[role=button]"):null;if(!a||a.closest("[data-analytics-consent-ui]"))return;if(a instanceof HTMLAnchorElement){if(a.matches("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"))return;const h=new URL(a.href,location.href);if(h.origin!==location.origin){e("external_link_click",{link_domain:h.hostname});return}}if(a.closest('[data-analytics-scope="comparison"]')||a.getAttribute("data-analytics-event")==="comparison_interaction")e("comparison_interaction",{interaction_type:a.tagName.toLowerCase()})},{passive:true})},c=v=>{localStorage.setItem(k,v);document.querySelector("[data-analytics-consent-banner]")?.remove();if(v==="granted")o()},b=()=>{if(document.querySelector("[data-analytics-consent-banner]"))return;const d=document.createElement("div");d.dataset.analyticsConsentBanner="";d.dataset.analyticsConsentUi="";d.setAttribute("role","dialog");d.setAttribute("aria-label","アクセス解析の同意");d.style.cssText="position:fixed;z-index:2147483647;right:12px;bottom:12px;width:min(420px,calc(100vw - 24px));padding:14px;border:1px solid #1d2420;background:#fff;color:#1d2420;box-shadow:4px 4px 0 #1d2420;font:14px/1.55 system-ui,sans-serif";d.innerHTML='<strong>アクセス解析について</strong><p style="margin:7px 0 10px">改善のため匿名の利用状況を計測します。同意するまでGoogleへの通信は行いません。</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" data-consent="granted" style="min-height:40px;padding:8px 14px">同意する</button><button type="button" data-consent="denied" style="min-height:40px;padding:8px 14px">拒否する</button></div>';d.addEventListener("click",t=>{const v=t.target instanceof Element?t.target.getAttribute("data-consent"):null;if(v==="granted"||v==="denied")c(v)});document.body.appendChild(d)},r=()=>{let x=document.querySelector("[data-analytics-settings]");if(x)return;x=document.createElement("button");x.type="button";x.dataset.analyticsSettings="";x.dataset.analyticsConsentUi="";x.textContent="アクセス解析設定";x.style.cssText="position:fixed;z-index:2147483646;left:12px;bottom:12px;min-height:36px;padding:6px 9px;border:1px solid #1d2420;background:#fff;color:#1d2420;font:12px system-ui,sans-serif";x.addEventListener("click",b);document.body.appendChild(x)};addEventListener("DOMContentLoaded",()=>{r();const v=localStorage.getItem(k);if(v==="granted")o();else if(v!=="denied")b()},{once:true})})();</script>`;
 }
@@ -522,6 +529,10 @@ function serverAffiliateCtaControls(
   ) {
     return { enabled: false, mode: "disabled", partners: [] };
   }
+  const articlePartnerIds = SERVER_REVENUE_CELL_PARTNER_IDS[articleId] ?? [];
+  if (articlePartnerIds.length === 0) {
+    return { enabled: false, mode: "disabled", partners: [] };
+  }
   const requested = (env.SERVER_CTA_GO ?? "")
     .split(",")
     .map((item) => item.trim().toLowerCase())
@@ -532,12 +543,12 @@ function serverAffiliateCtaControls(
     || requested.some((item) => !SERVER_AFFILIATE_PARTNER_IDS.includes(item as ServerAffiliatePartnerId))
   ) return { enabled: false, mode: "disabled", partners: [] };
 
-  if (!requested.includes(SERVER_REVENUE_EXPERIMENT_PARTNER_IDS[0])) {
+  if (!requested.includes(articlePartnerIds[0])) {
     return { enabled: false, mode: "disabled", partners: [] };
   }
   const experimentRequested = (requested as ServerAffiliatePartnerId[])
     .filter((partnerId) => (
-      (SERVER_REVENUE_EXPERIMENT_PARTNER_IDS as readonly ServerAffiliatePartnerId[]).includes(partnerId)
+      articlePartnerIds.includes(partnerId)
     ));
 
   const partners: ServerAffiliatePartnerControl[] = [];
@@ -596,12 +607,12 @@ function serverAffiliateCtaControls(
       if (destination) partners.push({ destination, id: partnerId, label: "ABLENET公式サイトを見る" });
     }
   }
-  if (partners[0]?.id !== SERVER_REVENUE_EXPERIMENT_PARTNER_IDS[0]) {
+  if (partners[0]?.id !== articlePartnerIds[0]) {
     return { enabled: false, mode: "disabled", partners: [] };
   }
   return {
     enabled: true,
-    mode: partners.length >= 2 ? "comparison" : "single",
+    mode: articleId === "SVR01" && partners.length >= 2 ? "comparison" : "single",
     partners,
   };
 }
@@ -878,16 +889,20 @@ async function withServerAffiliateCta(
       headers: response.headers,
     });
   }
+  const isSingleVendorCell = originalBody.includes('data-revenue-cell-id="cell-b-single"');
   const runtimePartners = controls.partners.map((partner) => ({
     destination: partner.destination,
     id: partner.id,
     label: partner.label,
-    position: partner.id === SERVER_REVENUE_EXPERIMENT_PARTNER_IDS[0] ? "primary" : "alternative",
+    position: isSingleVendorCell
+      ? "single"
+      : partner.id === SERVER_REVENUE_EXPERIMENT_PARTNER_IDS[0] ? "primary" : "alternative",
+    ctaType: isSingleVendorCell ? "affiliate_single" : "affiliate_comparison",
     vendorId: SERVER_AFFILIATE_VENDOR_IDS[partner.id],
   }));
   const serializedPartners = JSON.stringify(runtimePartners).replaceAll("<", "\\u003c");
   const serializedMode = JSON.stringify(controls.mode);
-  const bootstrap = `<script data-saastco-server-affiliate-cta>(()=>{const ps=${serializedPartners},m=${serializedMode},dt="この記事には承認済みサーバーサービスのアフィリエイトリンクが含まれます。",st="ACTIVE — "+m.toUpperCase();let q=false,o=null;const r=()=>{q=false;const d=document.querySelector('[data-affiliate-disclosure-status]'),s=document.querySelector('[data-server-affiliate-cta-state]'),c=document.querySelector('[data-server-cta-mode]');if(!d||!s||!c||!ps.length)return;const ns=ps.map(p=>document.querySelector('[data-server-affiliate-cta-placeholder="'+p.id+'"]')||document.querySelector('a[data-server-affiliate-cta-partner="'+p.id+'"]'));if(ns.some(n=>!n)||ns.some(n=>!(d.compareDocumentPosition(n)&Node.DOCUMENT_POSITION_FOLLOWING)))return;if(d.dataset.affiliateDisclosureStatus!=="enabled")d.dataset.affiliateDisclosureStatus="enabled";if(d.textContent!==dt)d.textContent=dt;if(s.dataset.serverAffiliateCtaState!=="enabled")s.dataset.serverAffiliateCtaState="enabled";if(s.textContent!==st)s.textContent=st;if(c.dataset.serverCtaMode!==m)c.dataset.serverCtaMode=m;ps.forEach((p,i)=>{const n=ns[i];if(n instanceof HTMLAnchorElement)return;const a=document.createElement("a");a.className="cta-active";a.dataset.serverAffiliateCtaPartner=p.id;a.dataset.vendorId=p.vendorId;a.dataset.serverCtaPosition=p.position;a.dataset.serverCtaType="affiliate_comparison";a.href=p.destination;a.target="_blank";a.rel="sponsored noopener noreferrer";a.setAttribute("aria-describedby","article-pr-disclosure");a.textContent=p.label;n.replaceWith(a)})},t=()=>{if(q)return;q=true;queueMicrotask(r)},i=()=>{if(o)return;o=new MutationObserver(t);o.observe(document.documentElement,{subtree:true,childList:true});r()};addEventListener("popstate",t,{passive:true});if(document.readyState==="complete")setTimeout(i,0);else addEventListener("load",()=>setTimeout(i,0),{once:true})})();</script>`;
+  const bootstrap = `<script data-saastco-server-affiliate-cta>(()=>{const ps=${serializedPartners},m=${serializedMode},dt="この記事には承認済みサーバーサービスのアフィリエイトリンクが含まれます。",st="ACTIVE — "+m.toUpperCase();let q=false,o=null;const r=()=>{q=false;const d=document.querySelector('[data-affiliate-disclosure-status]'),s=document.querySelector('[data-server-affiliate-cta-state]'),c=document.querySelector('[data-server-cta-mode]');if(!d||!s||!c||!ps.length)return;const ns=ps.map(p=>document.querySelector('[data-server-affiliate-cta-placeholder="'+p.id+'"]')||document.querySelector('a[data-server-affiliate-cta-partner="'+p.id+'"]'));if(ns.some(n=>!n)||ns.some(n=>!(d.compareDocumentPosition(n)&Node.DOCUMENT_POSITION_FOLLOWING)))return;if(d.dataset.affiliateDisclosureStatus!=="enabled")d.dataset.affiliateDisclosureStatus="enabled";if(d.textContent!==dt)d.textContent=dt;if(s.dataset.serverAffiliateCtaState!=="enabled")s.dataset.serverAffiliateCtaState="enabled";if(s.textContent!==st)s.textContent=st;if(c.dataset.serverCtaMode!==m)c.dataset.serverCtaMode=m;ps.forEach((p,i)=>{const n=ns[i];if(n instanceof HTMLAnchorElement)return;const a=document.createElement("a");a.className="cta-active";a.dataset.serverAffiliateCtaPartner=p.id;a.dataset.vendorId=p.vendorId;a.dataset.serverCtaPosition=p.position;a.dataset.serverCtaType=p.ctaType;a.href=p.destination;a.target="_blank";a.rel="sponsored noopener noreferrer";a.setAttribute("aria-describedby","article-pr-disclosure");a.textContent=p.label;n.replaceWith(a)})},t=()=>{if(q)return;q=true;queueMicrotask(r)},i=()=>{if(o)return;o=new MutationObserver(t);o.observe(document.documentElement,{subtree:true,childList:true});r()};addEventListener("popstate",t,{passive:true});if(document.readyState==="complete")setTimeout(i,0);else addEventListener("load",()=>setTimeout(i,0),{once:true})})();</script>`;
   const insertionPoint = openingHead.index + openingHead[0].length;
   const body = `${originalBody.slice(0, insertionPoint)}${bootstrap}${originalBody.slice(insertionPoint)}`;
   const headers = new Headers(response.headers);

@@ -14,9 +14,9 @@
 |Cell|記事|型|現在のlocal状態|production状態|
 |---|---|---|---|---|
 |A|SVR01|比較型|XServer primary + ConoHa alternativeの最大2枠|Sites v38 / commit `af95bdb`。主1・代替1、開示先行、mobile overflowなしを外部read-back済み|
-|B|SVR04|初期費用込み総額の単独型|記事を暫定選定。vendor未選定のためCTA slotはHOLD|SVR01への内部導線のみ。affiliate CTA 0|
+|B|SVR04|初期費用込み総額の単独型|2026-08-22にXServerビジネスをHuman選定。owned-site限定の単独CTA|release前。source approvalとruntime article allowlistの両方が揃うまで無効|
 
-Cell Bはpage別GSC値を取得していないため、検索表示の多寡を推測して選んでいない。Human指示のfallbackである「初期費用込み総額」とrepository内intentが一致するSVR04を暫定候補にした。
+Cell Bはpage別GSC値を取得していないため、検索表示の多寡を推測して選んでいない。Human指示のfallbackである「初期費用込み総額」とrepository内intentが一致するSVR04を採用し、`cell_b: GO SVR04 xserver-business`によりXServerビジネスを単独vendorとして確定した。更新時請求額、解約条件、キャンペーン条件、A8.netのprogram別外部channel条件はunknownのまま保持する。
 
 ## Event contract
 
@@ -58,7 +58,7 @@ uv run python scripts/summarize_revenue_cells.py --input <safe-aggregate.json>
 1. `/servers/business-server-pricing`でPR表示がCTAより前にある。
 2. active CTAが1 primary + 最大1 alternativeである。
 3. `rel="sponsored noopener noreferrer"`、許可host、vendor/position/type属性を確認する。URL全文は報告しない。
-4. `/servers/server-first-year-total`はCell B markerを持つがaffiliate anchor 0件である。
+4. `/servers/server-first-year-total`はCell B markerを持ち、XServerビジネスの単独CTAが1件だけである。ConoHaその他のaffiliate anchorは0件とする。
 5. SVR02〜SVR09からSVR01へのintent別内部リンクを確認する。
 6. P11はnoindex, follow、affiliate anchor 0件である。
 7. consent前はGA通信がない。consent後にDebugViewでresult → CTA view → outboundの順を確認する。
@@ -88,7 +88,7 @@ localStorage.removeItem("saas_tco_lab_test_traffic_v1")
 
 ### Human: GA4管理画面
 
-現在のfilterは`test`、internal traffic definition ruleは0件。現IPをGoogleへ送信するaction-time確認までは設定writeを行わない。
+現在のfilterは`test`。2026-08-22に`ga4_internal_ip_transmit: GO`を受領し、現回線を`traffic_type=internal`のdefinition ruleへ登録した。IP値はrepo・docs・報告へ保存していない。
 
 1. 管理 → データの収集と修正 → データフィルタ。
 2. Internal Trafficが`テスト`であることを確認。

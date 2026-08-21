@@ -320,7 +320,7 @@ test("the eight server launch articles route to the single SVR01 revenue experim
   assert.equal(serverInternalRevenueFunnelFor("SVR01"), null);
 });
 
-test("revenue cells keep Cell A bounded and Cell B vendor selection fail-closed", () => {
+test("revenue cells keep Cell A bounded and Cell B single-vendor selected", () => {
   assert.deepEqual(serverRevenueCellFor("SVR01"), {
     id: "cell-a-comparison",
     ctaType: "affiliate_comparison",
@@ -331,8 +331,8 @@ test("revenue cells keep Cell A bounded and Cell B vendor selection fail-closed"
   assert.deepEqual(serverRevenueCellFor("SVR04"), {
     id: "cell-b-single",
     ctaType: "affiliate_single",
-    state: "hold_vendor_selection",
-    primaryPartnerId: null,
+    state: "human_selected",
+    primaryPartnerId: "a8net-xserver-business",
     alternativePartnerId: null,
   });
   for (const articleId of ["SVR02", "SVR03", "SVR05", "SVR06", "SVR07", "SVR08", "SVR09"]) {
@@ -416,7 +416,7 @@ test("server article index release records all approved articles without widenin
   assert.deepEqual(launchState.index_approved_server_articles, [
     "SVR01", "SVR05", "SVR04", "SVR06", "SVR07", "SVR02", "SVR03", "SVR09", "SVR08",
   ]);
-  assert.deepEqual(launchState.server_cta_approved_articles, ["SVR01"]);
+  assert.deepEqual(launchState.server_cta_approved_articles, ["SVR01", "SVR04"]);
 });
 
 function contract(reviewStatus, fieldReviewStatus) {

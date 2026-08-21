@@ -526,16 +526,18 @@ export function ServerArticleTemplate({
                 </> : revenueCell?.id === "cell-b-single" ? (
                   <div
                     className="server-cta-primary"
-                    data-revenue-cell-hold="vendor-selection"
-                    aria-label="単独サーバー紹介リンク候補"
+                    data-revenue-cell-selection="xserver-business"
+                    aria-label="XServerビジネスの単独紹介リンク"
                   >
+                    <p>確認済みの共有スタンダード12か月契約を公式画面で再確認できます。更新時請求額、解約条件、キャンペーン条件は未確認です。</p>
                     <span
                       className="cta-disabled"
                       aria-describedby="article-pr-disclosure"
                       data-server-cta-position="single"
                       data-server-cta-type="affiliate_single"
+                      data-server-affiliate-cta-placeholder="a8net-xserver-business"
                     >
-                      単独vendorのHuman選定待ちです。紹介リンクは無効です
+                      XServerビジネス紹介リンクは無効です
                     </span>
                   </div>
                 ) : (

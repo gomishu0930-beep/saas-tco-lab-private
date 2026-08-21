@@ -383,8 +383,8 @@ const serverRevenueCells = {
   SVR04: {
     id: "cell-b-single",
     ctaType: "affiliate_single",
-    state: "hold_vendor_selection",
-    primaryPartnerId: null,
+    state: "human_selected",
+    primaryPartnerId: "a8net-xserver-business",
     alternativePartnerId: null,
   },
 } as const satisfies Partial<Record<ServerArticleSlateEntry["id"], ServerRevenueCell>>;

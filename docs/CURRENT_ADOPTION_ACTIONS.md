@@ -917,3 +917,15 @@ raw契約全文、個人情報、credential、tracking IDは置かず、承認�
   Cell B HOLD、P11 noindex/CTA無効、sitemap 22 URL、価格・規約・用途のunknownは変更しない。
 - Cell BはGSC page別server impressionsが0で優先差を判定できず、SVR04を暫定候補のまま維持する。
   XServer/ConoHaのどちらを単独CTAにするかはHumanのexact vendor選択までfail-closedとする。
+
+## 2026-08-22 Revenue Cell B選定とGA4内部回線定義
+
+- Human Approverから`cell_b: GO SVR04 xserver-business`を受領した。Cell BはSVR04の初期費用込み総額記事、
+  単独vendorはXServerビジネスとする。source-level CTA allowlistへSVR04を追加するが、runtime article allowlist、
+  A8.net承認、destination検証、global CTA GOの全条件が揃わない場合は引き続き無効とする。
+- `channel_terms: GO a8net`はA8.net規約確認の実行権限として受領した。一般公開案内ではsite・note・SNSの
+  掲載例を確認したが、XServerビジネスprogram固有の外部channel、deep link、sub ID条件はlogin session失効で
+  確認できていない。Cell Bは既存の`owned_site`だけをGOとし、note・X・partner直配信とtracking拡張はHOLDする。
+- `ga4_internal_ip_transmit: GO`に基づき、現回線を`traffic_type=internal`のdefinition ruleへ登録した。
+  IP値はrepo・docs・報告へ保存していない。Internal Trafficデータフィルタは`テスト`を維持し、別回線read-back前に
+  `active`へ変更しない。

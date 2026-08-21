@@ -1257,6 +1257,60 @@ test("server index release cannot widen CTA beyond the exact article allowlist",
   }
 });
 
+test("SVR04 Cell B activates only the Human-selected XServer single CTA", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("server-cell-b-single", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const baseEnv = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P12",
+    INDEX_APPROVED_SERVER_ARTICLES: "SVR01,SVR02,SVR03,SVR04,SVR05,SVR06,SVR07,SVR08,SVR09",
+    CTA_GO: "GO",
+    SERVER_CTA_APPROVED_SERVER_ARTICLES: "SVR01,SVR04",
+    SERVER_CTA_GO: "a8net-xserver-business,moshimo-conoha-wing",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
+    A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
+    MOSHIMO_CONOHA_WING_AFFILIATE_APPROVAL_CURRENT: "true",
+    MOSHIMO_CONOHA_WING_AFFILIATE_DESTINATION: "https://af.moshimo.com/af/c/click?a_id=synthetic-conoha&p_id=synthetic&pc_id=synthetic&pl_id=synthetic",
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+
+  const response = await worker.fetch(
+    new Request("https://saastcolab.jp/servers/server-first-year-total"),
+    baseEnv,
+    ctx,
+  );
+  const body = await response.text();
+  const disclosurePosition = body.indexOf('id="article-pr-disclosure"');
+  const placeholderPosition = body.indexOf('data-server-affiliate-cta-placeholder="a8net-xserver-business"');
+  assert.ok(disclosurePosition >= 0 && disclosurePosition < placeholderPosition);
+  assert.match(body, /<script data-saastco-server-affiliate-cta>/);
+  assert.match(body, /"id":"a8net-xserver-business"/);
+  assert.match(body, /"position":"single"/);
+  assert.match(body, /"ctaType":"affiliate_single"/);
+  assert.doesNotMatch(body, /"id":"moshimo-conoha-wing"/);
+  assert.match(body, /a\.rel="sponsored noopener noreferrer"/);
+
+  const missingApproval = await worker.fetch(
+    new Request("https://saastcolab.jp/servers/server-first-year-total"),
+    { ...baseEnv, A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "false" },
+    ctx,
+  );
+  const missingApprovalBody = await missingApproval.text();
+  assert.match(missingApprovalBody, /data-server-affiliate-cta-state="disabled"/);
+  assert.doesNotMatch(missingApprovalBody, /data-saastco-server-affiliate-cta/);
+
+  const unrelatedArticle = await worker.fetch(
+    new Request("https://saastcolab.jp/servers/server-renewal-cost"),
+    baseEnv,
+    ctx,
+  );
+  const unrelatedBody = await unrelatedArticle.text();
+  assert.match(unrelatedBody, /data-server-affiliate-cta-state="disabled"/);
+  assert.doesNotMatch(unrelatedBody, /data-saastco-server-affiliate-cta/);
+});
+
 test("SVR01 approved source exposes gross contract charge while index and CTA stay runtime-held", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("server-public-preview", `${process.pid}-${Date.now()}`);

@@ -473,10 +473,13 @@ test("servers operator and twenty article routes preserve approval, ranking, and
       }
       if (path === "/servers/server-first-year-total") {
         assert.match(article, /data-revenue-cell-id="cell-b-single"/, path);
-        assert.match(article, /data-revenue-cell-state="hold_vendor_selection"/, path);
-        assert.match(article, /data-revenue-cell-hold="vendor-selection"/, path);
-        assert.match(article, /単独vendorのHuman選定待ち/, path);
-        assert.doesNotMatch(article, /data-server-affiliate-cta-placeholder=/, path);
+        assert.match(article, /data-revenue-cell-state="human_selected"/, path);
+        assert.match(article, /data-revenue-cell-selection="xserver-business"/, path);
+        assert.match(article, /data-server-affiliate-cta-placeholder="a8net-xserver-business"/, path);
+        assert.match(article, /data-server-cta-position="single"/, path);
+        assert.match(article, /data-server-cta-type="affiliate_single"/, path);
+        assert.match(article, /更新時請求額、解約条件、キャンペーン条件は未確認/, path);
+        assert.doesNotMatch(article, /data-revenue-cell-hold=|単独vendorのHuman選定待ち/, path);
       }
     }
     assert.match(article, /各紹介リンクの有効状態は下に表示/, path);
