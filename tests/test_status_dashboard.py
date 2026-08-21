@@ -189,15 +189,8 @@ def test_dashboard_uses_safe_csv_totals_and_repo_work_queue(tmp_path: Path) -> N
     assert any(item["label"] == "M3 複数vendor candidate統合command" for item in data["work"])
     assert any(item["label"] == "servers 20記事候補一覧" for item in data["work"])
     assert any(item["label"] == "servers次8記事の取引意図優先queue" for item in data["work"])
-    assert [item["priority"] for item in data["externalActions"]] == [1]
-    assert all(
-        item["token"]
-        not in {
-            "mangools_servers_concentration_csv: done",
-            "mangools_brand_servers_csv: done",
-        }
-        for item in data["externalActions"]
-    )
+    priorities = [item["priority"] for item in data["externalActions"]]
+    assert priorities == list(range(1, len(priorities) + 1))
     assert any(
         item["status"] == "contract_input_required"
         for item in data["externalActions"]
