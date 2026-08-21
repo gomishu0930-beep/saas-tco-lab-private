@@ -905,3 +905,15 @@ raw契約全文、個人情報、credential、tracking IDは置かず、承認�
 
 予定は専用Calendarだけに作成済みで、個人Calendar、参加者、Google Meet、場所、個人情報を
 追加していない。繰り返し2件はCalendar側で毎月展開されることを確認済みである。
+
+## 2026-08-21 GSC個別監査とindex blocker修正
+
+- 公開20記事のGSC URL Inspectionをread-onlyで完了した。index済み6件、discovered-not-indexed 5件、
+  Google未認識2件、旧noindex除外7件である。page別impressionsはP01のslashありvariantだけ29、clicks 0で、
+  server記事は0だった。query文字列は取得・保存していない。
+- SVR04のGSC live HTMLに相反するrobots metaが2件あり、後段noindexがserver 7記事のindex blockerだった。
+  Sites v38の同一version再deployだけでは解消しなかったため、workerを全robots meta除去後の1件再挿入へ修正した。
+- 変更はrobots出力の一意化と回帰testだけに限定する。公開20記事、Human承認済みhome/`/pilot`、Cell A CTA、
+  Cell B HOLD、P11 noindex/CTA無効、sitemap 22 URL、価格・規約・用途のunknownは変更しない。
+- Cell BはGSC page別server impressionsが0で優先差を判定できず、SVR04を暫定候補のまま維持する。
+  XServer/ConoHaのどちらを単独CTAにするかはHumanのexact vendor選択までfail-closedとする。

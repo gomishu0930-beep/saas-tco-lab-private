@@ -916,15 +916,20 @@ async function withRuntimeHeadControls(
   }
 
   let body = await response.text();
+  let robotsMarkup = "";
   if (indexable) {
-    body = body.replace(
-      /<meta\s+name=["']robots["'][^>]*>/i,
-      '<meta name="robots" content="index, follow">',
-    );
+    robotsMarkup = '<meta name="robots" content="index, follow">';
   } else if (followableNoindex) {
+    robotsMarkup = `<meta name="robots" content="${NOINDEX_FOLLOW_ROBOTS}">`;
+  }
+  if (robotsMarkup) {
+    // Vinext can emit both page- and layout-level robots metadata. Replacing only
+    // the first tag leaves a later fail-closed noindex in the final HTML, which
+    // Google correctly treats as noindex. Runtime publication controls are the
+    // final gate, so collapse every robots tag and insert exactly one directive.
     body = body.replace(
-      /<meta\s+name=["']robots["'][^>]*>/i,
-      `<meta name="robots" content="${NOINDEX_FOLLOW_ROBOTS}">`,
+      /<meta\b(?=[^>]*\bname\s*=\s*["']robots["'])[^>]*>/gi,
+      "",
     );
   }
   const openingHead = body.match(/<head(?:\s[^>]*)?>/i);
@@ -937,7 +942,7 @@ async function withRuntimeHeadControls(
   const headers = new Headers(response.headers);
   headers.delete("content-length");
   return new Response(
-    `${body.slice(0, insertionPoint)}${canonicalMarkup}${controls.markup}${body.slice(insertionPoint)}`,
+    `${body.slice(0, insertionPoint)}${canonicalMarkup}${controls.markup}${robotsMarkup}${body.slice(insertionPoint)}`,
     {
       status: response.status,
       statusText: response.statusText,

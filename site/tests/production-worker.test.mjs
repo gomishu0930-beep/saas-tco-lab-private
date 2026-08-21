@@ -33,6 +33,12 @@ function visibleMarkup(html) {
   return html.replace(/<script\b[\s\S]*?<\/script>/gi, "");
 }
 
+function robotsMetaCount(html) {
+  return (
+    html.match(/<meta\b(?=[^>]*\bname\s*=\s*["']robots["'])[^>]*>/gi) ?? []
+  ).length;
+}
+
 function robotsAllows(robotsText, targetPath) {
   const rules = robotsText
     .split("\n")
@@ -1219,6 +1225,8 @@ test("server index release cannot widen CTA beyond the exact article allowlist",
     const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
     assert.equal(response.headers.get("x-robots-tag"), "index, follow", serverIds[index]);
     const body = await response.text();
+    assert.equal(robotsMetaCount(body), 1, `${serverIds[index]}: one robots meta`);
+    assert.match(body, /<meta name="robots" content="index, follow">/i, serverIds[index]);
     const visible = visibleMarkup(body);
     if (serverIds[index] === "SVR01") {
       assert.match(body, /<script data-saastco-server-affiliate-cta>/);
@@ -1386,6 +1394,7 @@ test("Human-approved home and SEO tools hub index only behind exact runtime gate
     const body = await response.text();
     assert.equal(response.headers.get("x-robots-tag"), "index, follow", path);
     assert.match(body, /<meta name="robots" content="index, follow">/i, path);
+    assert.equal(robotsMetaCount(body), 1, `${path}: one robots meta`);
     assert.match(
       body,
       new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${path === "/" ? "/" : path}">`, "i"),

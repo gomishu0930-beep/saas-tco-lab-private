@@ -257,3 +257,18 @@ analytics scope拡張をこの承認へ含めない。
 権利3社、Affiliate 3社、JP/ja需要、rights承認済み実データ、non-synthetic gold、開始日付き
 `shadow_run: GO`が揃った後だけ実shadowを開始する。開始後はjob 99%以上、重大誤記0、例外24件以下、
 自動化率80%以上、Human 720分以下、rollback fault合格を30日連続で検査する。
+
+## 2026-08-21 robots重複の確定診断
+
+- GSC URL Inspectionを公開20記事へread-onlyで実施した。index済みはP01、P03、P05、P09、P12、SVR01の6件。
+  P02、P04、P06、P07、SVR02は`検出 - インデックス未登録`、P08とP10はGoogle未認識、SVR03〜SVR09は
+  `noindexタグによって除外`だった。aggregateから未検査URLを補完していない。
+- SVR04のlive testで、Google取得HTMLに`index, follow`と後段の`noindex, nofollow`が同時に存在することを
+  確認した。原因はVinextがpage/layoutのrobots metadataを複数出力し、workerが先頭1件しか置換していなかったこと。
+  公開Aレコード2系統とInspection Tool相当UAはいずれもheaderと先頭metaだけなら`index, follow`だったため、
+  従来の先頭1件read-backでは検知できなかった。
+- workerは、runtime publication gate通過時にrobots metaを全件除去し、正しいdirectiveを1件だけheadへ挿入する。
+  production testは公開server記事とHuman承認済みhubについてrobots metaが正確に1件であることを必須化する。
+  P11、未承認route、query variantのfail-closed境界は変更しない。
+- deploy後はSVR04の完全HTMLでrobots meta 1件、header`index, follow`、self-canonicalを確認してから、
+  GSC live testを1回だけ再実施する。全20 URLの一括登録要求とsitemap再送信は行わない。
