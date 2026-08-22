@@ -363,7 +363,7 @@ class RevenueCellDailyAggregate(StrictModel):
     observed_on: date
     article_id: str
     revenue_cell_id: RevenueCellId
-    revenue_cell_version: Literal["v2"]
+    revenue_cell_version: Literal["v2", "v3"]
     vendor_id: Slug | Literal["none"]
     cta_position: Literal["primary", "alternative", "single", "article_action", "none"]
     cta_type: Literal["affiliate_comparison", "affiliate_single", "saas_affiliate", "none"]
@@ -435,7 +435,7 @@ class RevenueCellAggregateSummary(StrictModel):
     decision_ready: bool
     article_id: str | None = None
     revenue_cell_id: RevenueCellId | None = None
-    revenue_cell_version: Literal["v2"] | None = None
+    revenue_cell_version: Literal["v2", "v3"] | None = None
     vendor_id: Slug | Literal["none"] | None = None
     cta_position: Literal["primary", "alternative", "single", "article_action", "none"] | None = None
     cta_type: Literal["affiliate_comparison", "affiliate_single", "saas_affiliate", "none"] | None = None

@@ -448,6 +448,7 @@ export function ServerArticleTemplate({
   article,
   articleReviewStatus,
   calculatorContract,
+  decisionSummary,
   evidence,
   ctaPolicy,
   internalRevenueFunnel,
@@ -455,6 +456,7 @@ export function ServerArticleTemplate({
   article: ServerArticleSlateEntry;
   articleReviewStatus: "approved" | "unreviewed";
   calculatorContract: ServerZeroInputContract;
+  decisionSummary?: ReactNode;
   evidence: ReactNode;
   ctaPolicy: ServerCtaPresentationPolicy;
   internalRevenueFunnel?: {
@@ -481,6 +483,7 @@ export function ServerArticleTemplate({
         <h1>{article.titleTemplate}</h1>
         <p>{article.readerQuestion}</p>
       </header>
+      {decisionSummary}
       <section className="shell page-section" data-server-template-step="calculator">
         <div data-server-template-step="result" aria-label="計算結果">
           <ServerZeroInputCalculator

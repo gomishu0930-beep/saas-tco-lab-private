@@ -306,6 +306,15 @@ function normalizePath(pathname: string): string {
   return pathname === "/" ? pathname : pathname.replace(/\/+$/, "");
 }
 
+function publicRouteForRequest(pathname: string): string {
+  const routePath = pathname === "/.rsc"
+    ? "/"
+    : pathname.endsWith(".rsc")
+      ? pathname.slice(0, -4)
+      : pathname;
+  return normalizePath(routePath);
+}
+
 function securityHeaders(
   analyticsEnabled = false,
   indexable = false,
@@ -1026,7 +1035,7 @@ async function withServerAffiliateCta(
   }));
   const serializedPartners = JSON.stringify(runtimePartners).replaceAll("<", "\\u003c");
   const serializedMode = JSON.stringify(controls.mode);
-  const bootstrap = `<script data-saastco-server-affiliate-cta>(()=>{const ps=${serializedPartners},m=${serializedMode},dt="この記事には承認済みサーバーサービスのアフィリエイトリンクが含まれます。",st="ACTIVE — "+m.toUpperCase();let q=false,o=null;const r=()=>{q=false;const d=document.querySelector('[data-affiliate-disclosure-status]'),s=document.querySelector('[data-server-affiliate-cta-state]'),c=document.querySelector('[data-server-cta-mode]');if(!d||!s||!c||!ps.length)return;const ns=ps.map(p=>document.querySelector('[data-server-affiliate-cta-placeholder="'+p.id+'"]')||document.querySelector('a[data-server-affiliate-cta-partner="'+p.id+'"]'));if(ns.some(n=>!n)||ns.some(n=>!(d.compareDocumentPosition(n)&Node.DOCUMENT_POSITION_FOLLOWING)))return;if(d.dataset.affiliateDisclosureStatus!=="enabled")d.dataset.affiliateDisclosureStatus="enabled";if(d.textContent!==dt)d.textContent=dt;if(s.dataset.serverAffiliateCtaState!=="enabled")s.dataset.serverAffiliateCtaState="enabled";if(s.textContent!==st)s.textContent=st;if(c.dataset.serverCtaMode!==m)c.dataset.serverCtaMode=m;ps.forEach((p,i)=>{const n=ns[i];if(n instanceof HTMLAnchorElement)return;const a=document.createElement("a");a.className="cta-active";a.dataset.serverAffiliateCtaPartner=p.id;a.dataset.vendorId=p.vendorId;a.dataset.serverCtaPosition=p.position;a.dataset.serverCtaType=p.ctaType;a.href=p.destination;a.target="_blank";a.rel="sponsored noopener noreferrer";a.setAttribute("aria-describedby","article-pr-disclosure");a.textContent=p.label;n.replaceWith(a)})},t=()=>{if(q)return;q=true;queueMicrotask(r)},i=()=>{if(o)return;o=new MutationObserver(t);o.observe(document.documentElement,{subtree:true,childList:true});r()};addEventListener("popstate",t,{passive:true});if(document.readyState==="complete")setTimeout(i,0);else addEventListener("load",()=>setTimeout(i,0),{once:true})})();</script>`;
+  const bootstrap = `<script data-saastco-server-affiliate-cta>(()=>{const ps=${serializedPartners},m=${serializedMode},dt="この記事には承認済みサーバーサービスのアフィリエイトリンクが含まれます。",st="ACTIVE — "+m.toUpperCase();let q=false,o=null;const r=()=>{q=false;const d=document.querySelector('[data-affiliate-disclosure-status]'),s=document.querySelector('[data-server-affiliate-cta-state]'),c=document.querySelector('[data-server-cta-mode]');if(!d||!s||!c||!ps.length)return;const ns=ps.map(p=>document.querySelector('[data-server-affiliate-cta-placeholder="'+p.id+'"]')||document.querySelector('a[data-server-affiliate-cta-partner="'+p.id+'"]'));if(ns.some(n=>!n)||ns.some(n=>!(d.compareDocumentPosition(n)&Node.DOCUMENT_POSITION_FOLLOWING)))return;if(d.dataset.affiliateDisclosureStatus!=="enabled")d.dataset.affiliateDisclosureStatus="enabled";if(d.textContent!==dt)d.textContent=dt;if(s.dataset.serverAffiliateCtaState!=="enabled")s.dataset.serverAffiliateCtaState="enabled";if(s.textContent!==st)s.textContent=st;if(c.dataset.serverCtaMode!==m)c.dataset.serverCtaMode=m;ps.forEach((p,i)=>{const n=ns[i];if(n instanceof HTMLAnchorElement)return;const a=document.createElement("a");a.className="cta-active";a.dataset.serverAffiliateCtaPartner=p.id;a.dataset.vendorId=p.vendorId;a.dataset.serverCtaPosition=p.position;a.dataset.serverCtaType=p.ctaType;a.href=p.destination;a.target="_blank";a.rel="sponsored noopener noreferrer";a.setAttribute("aria-describedby","article-pr-disclosure");a.textContent=p.label;n.replaceWith(a)})},t=()=>{if(q)return;q=true;queueMicrotask(r)},i=()=>{if(o)return;o=new MutationObserver(t);o.observe(document.documentElement,{subtree:true,childList:true});r()},h=()=>setTimeout(i,500);addEventListener("popstate",t,{passive:true});if(document.readyState==="complete")h();else addEventListener("load",h,{once:true})})();</script>`;
   const insertionPoint = openingHead.index + openingHead[0].length;
   const body = `${originalBody.slice(0, insertionPoint)}${bootstrap}${originalBody.slice(insertionPoint)}`;
   const headers = new Headers(response.headers);
@@ -1111,7 +1120,8 @@ const worker = {
   ): Promise<Response> {
     const url = new URL(request.url);
     const runtimeControls = runtimeHeadControls(env);
-    const normalizedPath = normalizePath(url.pathname);
+    const isRscRequest = url.pathname === "/.rsc" || url.pathname.endsWith(".rsc");
+    const normalizedPath = publicRouteForRequest(url.pathname);
     const indexApproval = indexApprovalState(env);
     const indexPaths = indexApproval.paths;
     const articleIndexPaths = new Set(
@@ -1119,16 +1129,16 @@ const worker = {
         ARTICLE_PATH_TO_ID.has(path) || SERVER_ARTICLE_PATH_TO_ID.has(path)
       )),
     );
-    const indexable = url.search === "" && indexPaths.has(normalizedPath);
+    const indexable = !isRscRequest && url.search === "" && indexPaths.has(normalizedPath);
     const serverArticleId = SERVER_ARTICLE_PATH_TO_ID.get(normalizedPath);
-    const followableNoindex = url.search === ""
+    const followableNoindex = !isRscRequest && url.search === ""
       && PUBLIC_ROUTES.has(normalizedPath)
       && !indexable
       && (
         serverArticleId === undefined
         || SOURCE_APPROVED_SERVER_ARTICLE_IDS.has(serverArticleId)
       );
-    const gatedArticlePath = url.search === "" && articleIndexPaths.has(normalizedPath)
+    const gatedArticlePath = !isRscRequest && url.search === "" && articleIndexPaths.has(normalizedPath)
       ? normalizedPath
       : "";
     const ctaControls = affiliateCtaControls(env, articleIndexPaths, gatedArticlePath);

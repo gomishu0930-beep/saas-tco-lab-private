@@ -252,13 +252,23 @@ test("server source approvals can rank locally while every unreleased route stay
       assert.equal((html.match(/data-ranking-eligible="true"/g) ?? []).length, 3, path);
     } else {
       assert.match(html, /data-server-candidate-batch="M3"/, path);
-      assert.match(html, /4(?:<!-- -->)?社・(?:<!-- -->)?44(?:<!-- -->)?項目/, path);
+      if (path === "/servers/server-first-year-total") {
+        assert.match(html, /1(?:<!-- -->)?社・(?:<!-- -->)?11(?:<!-- -->)?項目/, path);
+        assert.match(html, /data-server-cell-b-decision="SVR04"/, path);
+      } else {
+        assert.match(html, /4(?:<!-- -->)?社・(?:<!-- -->)?44(?:<!-- -->)?項目/, path);
+      }
       if (APPROVED_SERVER_LAUNCH_ROUTES.has(path)) {
         assert.match(html, /data-server-article-review="approved"/, path);
-        assert.match(html, /data-comparison-mode="ranked_comparison"/, path);
-        assert.equal((html.match(/data-ranking-eligible="true"/g) ?? []).length, 3, path);
-        assert.match(html, /JPY 48840/, path);
-        assert.match(html, /JPY 11220/, path);
+        if (path === "/servers/server-first-year-total") {
+          assert.match(html, /data-comparison-mode="confirmed_list"/, path);
+          assert.equal((html.match(/data-ranking-eligible="true"/g) ?? []).length, 0, path);
+        } else {
+          assert.match(html, /data-comparison-mode="ranked_comparison"/, path);
+          assert.equal((html.match(/data-ranking-eligible="true"/g) ?? []).length, 3, path);
+          assert.match(html, /JPY 48840/, path);
+          assert.match(html, /JPY 11220/, path);
+        }
       } else {
         assert.match(html, /data-server-article-review="unreviewed"/, path);
         assert.match(html, /data-ranking-eligible="false"/, path);

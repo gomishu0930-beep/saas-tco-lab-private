@@ -14,7 +14,7 @@
 |Cell|記事|型|現在のlocal状態|production状態|
 |---|---|---|---|---|
 |A|SVR01|比較型|XServer primary + ConoHa alternativeの最大2枠|Sites v38 / commit `af95bdb`。主1・代替1、開示先行、mobile overflowなしを外部read-back済み|
-|B|SVR04|初期費用込み総額の単独型|XServerビジネスをHuman選定。owned-site限定の単独CTA|単独CTA 1件を外部read-back済み。外部媒体・deep-link・sub-IDはHOLD|
+|B|SVR04|初期費用込み総額の単独型|Cell B v3。XServerビジネスだけの確認値・判断要約・owned-site限定の単独CTA|v2の単独CTA 1件を外部read-back済み。v3はlocal/PRのみで未deploy。外部媒体・deep-link・sub-IDはHOLD|
 
 Cell Bはpage別GSC値を取得していないため、検索表示の多寡を推測して選んでいない。Human指示のfallbackである「初期費用込み総額」とrepository内intentが一致するSVR04を採用し、`cell_b: GO SVR04 xserver-business`によりXServerビジネスを単独vendorとして確定した。更新時請求額、解約条件、キャンペーン条件、A8.netのprogram別外部channel条件はunknownのまま保持する。
 
@@ -44,6 +44,8 @@ fragmentはHTTP request、canonical、page_locationへ送られない。受理ch
 ## CTA eligible sessionとsafe aggregate
 
 `page_view`をCTRの分母にしない。GA4から日次・article・cell・version・CTA・channel・safe source/medium class・campaignが同一のsafe aggregateだけを転記し、`examples/revenue_cell_daily_aggregate.json`の形にする。異なるcell/version/sourceを同じ入力へ混ぜるとvalidatorは停止する。
+
+市場証拠からはinternal traffic、test、local/preview、debug、automated test、P11、自己クリック、運営者確認、研究募集による流入、ASP側で照合できないクリックを除外する。除外できない行は`traffic_scope=unknown`としてclean集計へ入れない。
 
 ```sh
 uv run python scripts/summarize_revenue_cells.py --input <safe-aggregate.json>
@@ -81,6 +83,7 @@ ASP側に許可済みsub-IDがない間、ASP click以降はdate / network / ven
 8. 同じsessionで同じCTAを二度押しても`outbound_click`が1回であり、Cell Aを見た後でもCell Bの`cta_eligible_session`が別に1回発火することを確認する。
 9. CTAを50%以上表示して1秒未満で離脱した場合は`cta_view`が発火せず、許可済みCTAを先にclickした場合は`cta_view`→`cta_eligible_session`→`outbound_click`の順で1回ずつ発火する。
 10. 同意を撤回した後のtimer・clickでは追加eventが発火しない。
+11. 公開routeのclient navigation用RSC payloadは200、private OperatorのRSC payloadは503である。
 
 ## Internal/test traffic
 
@@ -127,6 +130,12 @@ localStorage.removeItem("saas_tco_lab_test_traffic_v1")
 
 ## STOP conditions
 
+- V=30かつO=0: CTA表示、検索意図、コピーを診断する。これはCell全体の撤退判定ではない。
+- V=50かつO=0: 当該表示versionをHOLDし、一度に一要素だけ変更する。
+- V=100かつO=0: 当該収益Cellを停止候補にする。
+- O>0かつASP click=0: link、計測、帰属障害を優先調査する。
+- ASP click>0かつPending=0: merchant CVRまたは流入品質を調査する。
+- Pending>0かつConfirmed=0: 否認理由と成果条件を調査する。
 - 30 eligible sessionsでoutbound 0: 現cell/version × 現流入をHOLDし、CTR 15%仮説を強く疑う。事業全体の失敗判定にはしない。
 - 50 eligible sessionsでoutbound 0: 現versionを継続しない。1〜4件なら拡張しない。
 - 100 eligible sessionsでoutbound 0〜2: 現cellを失敗扱い。3〜7件は再設計、8〜14件はcommission検証継続、15件以上は点推定上15%以上だがASP/EPCは未証明。
@@ -158,6 +167,8 @@ localStorage.removeItem("saas_tco_lab_test_traffic_v1")
 |R15|Medium|不可能なsession数・金額関係を受理する|単調性とpositive conversionを検証|
 |R16|External|server impressionsの未発生原因が再処理待ちか品質か未確定|コードで補完せずURL Inspectionで再分類|
 |R17|Operational|GA4 Internal TrafficがTEST中でもself visitをclean扱いし得る|Human確認までclean KPIをHOLD|
+|R18|High|公開routeのRSC payloadが503となり、client navigationが壊れる|公開routeへ対応するRSCだけを200にし、index/CTA対象から除外。private RSCは503を維持|
+|R19|High|SVR04の4社比較表示と単独CTAの問いが一致せず、v2/v3の実績が混ざる|SVR04をXServer 1社の確認値へ限定し、Cell Bだけv3へ更新|
 
 ### 週次review template
 

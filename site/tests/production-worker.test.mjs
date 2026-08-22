@@ -455,6 +455,23 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
   }
 });
 
+test("public RSC navigation payloads remain available without widening private routes", async () => {
+  for (const path of [
+    "/.rsc",
+    "/servers/business-server-pricing.rsc",
+    "/servers/server-first-year-total.rsc",
+    "/pilot/pricing-calculator.rsc",
+    "/pilot/break-even.rsc",
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`);
+    assert.equal(response.status, 200, path);
+    assert.match(response.headers.get("content-type") ?? "", /text\/x-component|text\/plain/i, path);
+    assert.equal(response.headers.get("x-robots-tag"), "noindex, nofollow, noarchive, nosnippet", path);
+  }
+  const privateResponse = await fetch(`${baseUrl}/operator.rsc`);
+  assert.equal(privateResponse.status, 503);
+});
+
 test("public trust pages derive their article and CTA state from runtime gates", async () => {
   const homeResponse = await (await fetch(`${baseUrl}/`)).text();
   const home = homeResponse.slice(0, homeResponse.lastIndexOf("</html>") + "</html>".length);
@@ -1144,6 +1161,7 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   assert.match(bootstrap, /d\.textContent!==dt/);
   assert.match(bootstrap, /s\.textContent!==st/);
   assert.match(bootstrap, /c\.dataset\.serverCtaMode!==m/);
+  assert.match(bootstrap, /h=\(\)=>setTimeout\(i,500\)/);
   assert.doesNotMatch(bootstrap, /"id":"(?:moshimo-lolipop-rental-server|moshimo-onamae-rental-server|moshimo-shin-rental-server|valuecommerce-ablenet-shared-server)"/);
   assert.doesNotMatch(visible, /data-server-affiliate-cta-partner|rel="sponsored noopener noreferrer"/);
   assert.doesNotMatch(visible, /data-affiliate-cta-partner="mangools"/);
@@ -1331,7 +1349,7 @@ test("revenue funnel runtime records view and cell eligibility before one outbou
   click({ target: firstLink });
   click({ target: firstLink });
 
-  article = { article: "SVR04", cell: "server-high-intent-b", version: "v2" };
+  article = { article: "SVR04", cell: "server-high-intent-b", version: "v3" };
   const secondLink = makeLink("single");
   click({ target: secondLink });
 
@@ -1456,8 +1474,14 @@ test("SVR04 Cell B activates only the Human-selected XServer single CTA", async 
   );
   const body = await response.text();
   const disclosurePosition = body.indexOf('id="article-pr-disclosure"');
+  const decisionPosition = body.indexOf('data-server-cell-b-decision="SVR04"');
+  const calculatorPosition = body.indexOf('data-server-template-step="calculator"');
   const placeholderPosition = body.indexOf('data-server-affiliate-cta-placeholder="a8net-xserver-business"');
   assert.ok(disclosurePosition >= 0 && disclosurePosition < placeholderPosition);
+  assert.ok(disclosurePosition < decisionPosition && decisionPosition < calculatorPosition);
+  assert.match(body, /確認済み初年度請求総額は[\s\S]{0,80}JPY[\s\S]{0,20}66660/);
+  assert.match(body, /data-revenue-cell-version="v3"/);
+  assert.doesNotMatch(body, /ConoHa WING Standard|さくらのレンタルサーバ Business|KAGOYA Light/);
   assert.match(body, /<script data-saastco-server-affiliate-cta>/);
   assert.match(body, /"id":"a8net-xserver-business"/);
   assert.match(body, /"position":"single"/);

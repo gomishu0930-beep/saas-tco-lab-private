@@ -241,7 +241,10 @@
       "$ref": "#/$defs/RevenueCellId"
     },
     "revenue_cell_version": {
-      "const": "v2",
+      "enum": [
+        "v2",
+        "v3"
+      ],
       "title": "Revenue Cell Version",
       "type": "string"
     },

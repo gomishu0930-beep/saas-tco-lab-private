@@ -331,7 +331,7 @@ test("revenue cells keep Cell A bounded and Cell B single-vendor selected", () =
   });
   assert.deepEqual(serverRevenueCellFor("SVR04"), {
     id: "cell-b-single",
-    version: "v2",
+    version: "v3",
     ctaType: "affiliate_single",
     state: "human_selected",
     primaryPartnerId: "a8net-xserver-business",

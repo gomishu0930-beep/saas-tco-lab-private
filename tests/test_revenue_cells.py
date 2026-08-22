@@ -158,6 +158,19 @@ def test_revenue_summary_uses_unique_outbound_sessions_not_event_count() -> None
     assert summary.outbound_ctr_percent == Decimal("33.33")
 
 
+def test_cell_b_v3_is_separate_from_the_prechange_v2_group() -> None:
+    v3 = row(
+        article_id="SVR04",
+        revenue_cell_id=RevenueCellId.CELL_B,
+        revenue_cell_version="v3",
+        cta_position="single",
+        cta_type="affiliate_single",
+    )
+    assert summarize_revenue_cell((v3,)).revenue_cell_version == "v3"
+    with pytest.raises(ValueError, match="must share article"):
+        summarize_revenue_cell((row(), v3))
+
+
 def test_revenue_summary_rejects_mixed_cell_or_acquisition_groups() -> None:
     with pytest.raises(ValueError, match="must share article"):
         summarize_revenue_cell((

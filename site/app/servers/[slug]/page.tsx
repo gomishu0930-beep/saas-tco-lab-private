@@ -66,21 +66,27 @@ export default async function ServerCandidatePage({ params }: ServerCandidatePag
   const articleReviewStatus = approvedServerArticleIds.has(article.id) ? "approved" as const : "unreviewed" as const;
   const launchBrief = serverLaunchBriefFor(article.id);
   const internalRevenueFunnel = serverInternalRevenueFunnelFor(article.id);
+  const articleEvidence = article.id === "SVR04"
+    ? serverFirstYearComparisonEvidence.filter((evidence) => evidence.vendorId === "xserver-business")
+    : serverFirstYearComparisonEvidence;
+  const cellBPrimaryEvidence = article.id === "SVR04"
+    ? articleEvidence.find((evidence) => evidence.vendorId === "xserver-business") ?? null
+    : null;
   const calculatorContract = {
     articleReviewStatus,
     useCaseRequirements: serverUseCaseRequirements,
-    plans: serverFirstYearComparisonEvidence.flatMap((evidence) => evidence.calculatorContract.plans),
+    plans: articleEvidence.flatMap((evidence) => evidence.calculatorContract.plans),
   };
-  const totalKnown = serverFirstYearComparisonEvidence.reduce((total, evidence) => total + evidence.knownCount, 0);
-  const totalUnknown = serverFirstYearComparisonEvidence.reduce((total, evidence) => total + evidence.unknownCount, 0);
-  const totalNotApplicable = serverFirstYearComparisonEvidence.reduce(
+  const totalKnown = articleEvidence.reduce((total, evidence) => total + evidence.knownCount, 0);
+  const totalUnknown = articleEvidence.reduce((total, evidence) => total + evidence.unknownCount, 0);
+  const totalNotApplicable = articleEvidence.reduce(
     (total, evidence) => total + evidence.notApplicableCount,
     0,
   );
   const structuredData = serverArticleStructuredData(
     article,
     articleReviewStatus,
-    serverFirstYearComparisonEvidence,
+    articleEvidence,
   );
 
   return (
@@ -88,6 +94,25 @@ export default async function ServerCandidatePage({ params }: ServerCandidatePag
       article={article}
       articleReviewStatus={articleReviewStatus}
       calculatorContract={calculatorContract}
+      decisionSummary={cellBPrimaryEvidence?.initialPayment ? (
+        <section className="shell page-section server-cell-b-decision" data-server-cell-b-decision="SVR04">
+          <div className="section-heading">
+            <p className="eyebrow">先に結論</p>
+            <h2>確認できた初年度費用と、まだ決められないこと</h2>
+          </div>
+          <p>
+            XServerビジネス 共有スタンダード（12か月）の確認済み初年度請求総額は
+            <strong> {cellBPrimaryEvidence.initialPayment.currency} {cellBPrimaryEvidence.initialPayment.amount}</strong>です。
+            初期費用と12か月請求額を含みますが、更新時請求額、解約条件、キャンペーン条件は未確認です。
+          </p>
+          <dl className="decision-summary-list">
+            <div><dt>向いている人</dt><dd>確認済みの小規模サイト条件を満たす12か月契約について、契約時の支払額を把握したい人。</dd></div>
+            <div><dt>向いていない人</dt><dd>24か月・36か月の確定総額、更新額、解約条件まで揃った判断が必要な人。</dd></div>
+            <div><dt>契約前チェック</dt><dd>公式画面の現在価格、請求対象期間、更新条件、解約期限を再確認してください。</dd></div>
+            <div><dt>作業費</dt><dd>設定・移行に必要なHuman作業時間は未確認で、この金額には含めていません。</dd></div>
+          </dl>
+        </section>
+      ) : null}
       ctaPolicy={serverCtaPresentationPolicy([])}
       internalRevenueFunnel={internalRevenueFunnel}
       evidence={(
@@ -104,10 +129,10 @@ export default async function ServerCandidatePage({ params }: ServerCandidatePag
           </article> : null}
           <article className="server-observation-summary" data-server-candidate-batch="M3">
             <span>{launchBrief ? "00A" : "00"}</span>
-            <h2>4社の料金と用途条件を確認しました</h2>
+            <h2>{articleEvidence.length}社の料金と用途条件を確認しました</h2>
             <p>
-              XServerビジネス、ConoHa WING、さくらのレンタルサーバ、KAGOYAの公式画面を確認し、
-              {serverFirstYearComparisonEvidence.length}社・{serverFirstYearComparisonEvidence.length * Object.keys(serverEvidenceLabels).length}項目を記録しました。
+              {article.id === "SVR04" ? "XServerビジネス" : "XServerビジネス、ConoHa WING、さくらのレンタルサーバ、KAGOYA"}の公式画面を確認し、
+              {articleEvidence.length}社・{articleEvidence.length * Object.keys(serverEvidenceLabels).length}項目を記録しました。
             </p>
             <p>
               内訳は確認済み{totalKnown}項目、未確認{totalUnknown}項目、該当なし{totalNotApplicable}項目です。
@@ -132,7 +157,7 @@ export default async function ServerCandidatePage({ params }: ServerCandidatePag
             <span>{launchBrief ? "08" : "07"}</span>
             <h2>{launchBrief ? "この記事で使う確認値" : "確認値と未確認理由"}</h2>
             <p>値が確認できた項目だけを表示します。未確認値は0円へ置き換えず、計算機と順位から除外します。</p>
-            {serverFirstYearComparisonEvidence.map((evidence) => (
+            {articleEvidence.map((evidence) => (
               <details className="evidence-details" key={`${evidence.vendorId}-${evidence.planId}`}>
                 <summary>
                   {evidence.displayName}：確認済み{evidence.knownCount}／未確認{evidence.unknownCount}／該当なし{evidence.notApplicableCount}
