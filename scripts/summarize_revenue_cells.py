@@ -24,8 +24,13 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True, type=Path)
     args = parser.parse_args()
+    payload = json.loads(args.input.read_text(encoding="utf-8"))
+    # The checked-in example is one daily row, while multi-day exports are
+    # arrays. Accept both shapes and normalize to the same validated tuple so
+    # operators do not have to hand-edit otherwise valid evidence.
+    raw_rows = payload if isinstance(payload, list) else [payload]
     rows = TypeAdapter(tuple[RevenueCellDailyAggregate, ...]).validate_json(
-        args.input.read_text(encoding="utf-8")
+        json.dumps(raw_rows)
     )
     summary = summarize_revenue_cell(rows)
     print(summary.model_dump_json(indent=2))

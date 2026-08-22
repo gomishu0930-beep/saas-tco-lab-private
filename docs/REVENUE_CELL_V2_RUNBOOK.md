@@ -49,6 +49,8 @@ fragmentはHTTP request、canonical、page_locationへ送られない。受理ch
 uv run python scripts/summarize_revenue_cells.py --input <safe-aggregate.json>
 ```
 
+入力は、1観測日の単一JSON objectと、複数観測日のJSON arrayの両方を受理する。CLI内部で同じvalidated tupleへ正規化し、異なるgrouping keyは従来どおり停止する。
+
 集計はproduction・external・test=falseだけを含める。internal、bot、test、local/previewは除外する。CTRの分子はGA4のevent countではなく、`outbound_click`を含むunique session数である。maturityまたはcommissionが未取得なら、confirmed RPESは`null`のままにする。
 
 Cell全体のCTRはGA4でarticle + cell + version + acquisition groupを固定し、`outbound_click`を1回以上含むsessionを数える。vendor/position別のevent表を合算してCell全体を作ると同一sessionが重複し得るため禁止する。Cell全体のsafe aggregateではvendor/positionを`none`として転記し、CTA別内訳は診断表として分ける。

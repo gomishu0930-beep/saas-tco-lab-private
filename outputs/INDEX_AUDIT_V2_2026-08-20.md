@@ -1,5 +1,16 @@
 # Index audit V2 — 20 approved articles
 
+## 2026-08-22 GSC再確認 — regional delivery差異
+
+GSC domain propertyの現在集計はindex済み6、未index 9、sitemapは成功・検出22 URL（公開20記事 + Human承認済み2 hub）である。集計外URLの状態を推測しない。
+
+- SVR01は`検出 - インデックス未登録`。sitemapは検出済み、参照元と最終crawlは未取得である。登録要求済みの表示だったため再要求しない。
+- SVR04の保存済み検査は`noindexタグによって除外`、最終crawlは2026-08-20。2026-08-22のGSC live testでもGoogle Inspection Toolは`noindex`を検出したため、登録要求は実行不能だった。
+- 同時刻の通常外部read-backではSVR01/SVR04ともHTTP 200、header/metaは`index, follow`、self-canonicalだった。Google Inspection Toolと同じdesktop/mobile User-Agentを日本側から送っても同じく`index, follow`だった。
+- WorkerにはUser-Agent、国、地域、coloによるrobots分岐がない。同一version再deployと非秘密環境revision更新後も、Googleの米国検査経路だけ旧`noindex`を返した。
+
+したがって現在の主要blockerは、repositoryのrobots生成ロジックではなく、Sites/edgeの地域別配信不一致候補である。連続live test、全URL登録要求、sitemap再送信は停止し、host側へ「同一URL・同一versionでJP通常経路とUS Google Inspection経路のHTML metaが異なる」safe-summaryを提示する。affiliate URL、measurement ID、credential、取得HTML全文は提示しない。
+
 ## 2026-08-22 code / production再監査
 
 SVR01〜SVR09は全件、productionでHTTP 200、robots meta 1件の`index, follow`、self-canonical（末尾slashなし）、sitemap収録、SSR本文、内部リンクを確認した。末尾slashはcanonical URLへ308、query付きvariantはfail-closedでnoindexとなる。CSS・JSもGooglebotから200で取得できる。現在のHEADとproduction生成物に、残存するcrawl/index blockerは見つからなかった。
