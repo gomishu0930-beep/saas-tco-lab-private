@@ -328,6 +328,21 @@ def test_inventory_is_deterministic_and_content_mode_bound(tmp_path) -> None:
     assert hash_repository_tree(executable) != hash_repository_tree(changed)
 
 
+def test_inventory_ignores_only_explicit_local_tool_metadata_roots(tmp_path) -> None:
+    root = tmp_path / "repo"
+    _seed_repository(root)
+    baseline = build_repository_inventory(root)
+    for name in (".codex", ".devspace"):
+        metadata = root / name
+        metadata.mkdir()
+        (metadata / "local-metadata.txt").write_text("not release input\n", encoding="utf-8")
+    assert build_repository_inventory(root) == baseline
+
+    (root / ".unknown-tool").mkdir()
+    with pytest.raises(RepositoryAcceptanceInputError, match="unexpected top-level"):
+        build_repository_inventory(root)
+
+
 def test_inventory_rejects_symlink_hardlink_secret_and_unknown_top_level(
     tmp_path,
 ) -> None:

@@ -1178,16 +1178,19 @@ test("revenue analytics owns affiliate outbound events and keeps safe bounded di
   assert.match(consent, /"external_link_click"/);
   assert.equal((funnel.match(/"outbound_click"/g) ?? []).length, 1);
   for (const dimension of [
-    "article_id", "revenue_cell_id", "vendor_id", "cta_position", "cta_type",
-    "channel", "campaign_id", "environment", "traffic_scope", "test_flag",
+    "article_id", "revenue_cell_id", "revenue_cell_version", "vendor_id", "cta_position", "cta_type",
+    "channel", "source_class", "medium_class", "campaign_id", "environment", "traffic_scope", "test_flag",
   ]) assert.match(funnel, new RegExp(dimension), dimension);
-  assert.match(funnel, /saas_tco_lab_cta_eligible_v2/);
-  assert.match(funnel, /new URLSearchParams\(u\.hash\.startsWith\("#"\)/);
-  assert.doesNotMatch(funnel, /u\.searchParams\.get\("(?:ch|cid)"\)/);
-  assert.doesNotMatch(funnel, /saas_tco_lab_cta_eligible_v2:["']?\+?p/);
+  assert.match(funnel, /saas_tco_lab_cta_eligible_v3/);
+  assert.match(funnel, /current\.article_id,current\.revenue_cell_id,current\.revenue_cell_version/);
+  assert.match(funnel, /saas_tco_lab_outbound_session_v1/);
+  assert.match(funnel, /"referral"/);
+  assert.match(funnel, /new URLSearchParams\(current\.hash\.startsWith\("#"\)/);
+  assert.doesNotMatch(funnel, /current\.searchParams\.get\("(?:ch|cid)"\)/);
+  assert.doesNotMatch(funnel, /saas_tco_lab_cta_eligible_v2/);
   assert.match(funnel, /new WeakSet\(\)/);
   assert.match(funnel, /new WeakMap\(\)/);
-  assert.match(funnel, /n-last<750/);
+  assert.match(funnel, /now-last<750/);
   assert.match(funnel, /new Set\(\["mangools\.com","px\.a8\.net","af\.moshimo\.com","ck\.jp\.ap\.valuecommerce\.com"\]\)/);
   assert.doesNotMatch(funnel, /raw_referrer_query|raw_search_query|affiliate_url|tracking_parameters/);
 });

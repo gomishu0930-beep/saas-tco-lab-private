@@ -18,10 +18,13 @@
         "enum": [
           "article_id",
           "revenue_cell_id",
+          "revenue_cell_version",
           "vendor_id",
           "cta_position",
           "cta_type",
           "channel",
+          "source_class",
+          "medium_class",
           "campaign_id",
           "environment",
           "traffic_scope",
@@ -58,8 +61,8 @@
       "type": "array"
     },
     "schema_version": {
-      "const": "1.0",
-      "default": "1.0",
+      "const": "1.1",
+      "default": "1.1",
       "title": "Schema Version",
       "type": "string"
     }
