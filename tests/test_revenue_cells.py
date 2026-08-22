@@ -92,6 +92,7 @@ def test_revenue_aggregate_excludes_internal_test_and_non_production() -> None:
         row(environment=RevenueEnvironment.LOCAL),
     ))
     assert summary.included_rows == 1
+    assert summary.decision_ready is True
     assert summary.excluded_rows == 3
     assert summary.eligible_sessions == 6
     assert summary.outbound_clicks == 2
@@ -123,6 +124,29 @@ def test_revenue_row_rejects_unsafe_campaign_and_impossible_click_count() -> Non
         row(cta_views=1, outbound_clicks=2)
     with pytest.raises(ValidationError):
         row(unique_outbound_sessions=7)
+    with pytest.raises(ValidationError):
+        row(cta_views=1, cta_view_sessions=2)
+    with pytest.raises(ValidationError):
+        row(cta_view_sessions=1, eligible_sessions=2)
+    with pytest.raises(ValidationError):
+        row(cta_view_sessions=1, unique_outbound_sessions=2)
+    with pytest.raises(ValidationError):
+        row(pending_conversions=0, pending_commission_minor=Decimal("1"))
+    with pytest.raises(ValidationError):
+        row(confirmed_conversions=0, confirmed_commission_minor=Decimal("1"))
+    assert row(pending_conversions=0, pending_commission_minor=Decimal("0"))
+    assert row(confirmed_conversions=0, confirmed_commission_minor=Decimal("0"))
+
+
+def test_revenue_summary_is_not_decision_ready_without_clean_rows() -> None:
+    summary = summarize_revenue_cell((
+        row(traffic_scope=RevenueTrafficScope.UNKNOWN),
+        row(traffic_scope=RevenueTrafficScope.INTERNAL),
+        row(test_flag=True),
+    ))
+    assert summary.decision_ready is False
+    assert summary.included_rows == 0
+    assert summary.outbound_ctr_percent is None
 
 
 def test_revenue_summary_uses_unique_outbound_sessions_not_event_count() -> None:

@@ -153,7 +153,7 @@ export default async function ServerCandidatePage({ params }: ServerCandidatePag
                     ))}</tbody>
                   </table>
                 </div>
-                <p>出典URLは確認記録に保持しています。公開前レビュー中のため、このページから外部サイトへはリンクしません。</p>
+                <p>出典URLは確認記録に保持しています。この根拠表には外部リンクを置かず、紹介リンクとは分離しています。</p>
               </details>
             ))}
             {articleReviewStatus === "approved"

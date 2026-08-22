@@ -404,22 +404,35 @@ class RevenueCellDailyAggregate(StrictModel):
 
     @model_validator(mode="after")
     def require_consistent_counts(self) -> Self:
+        if self.cta_view_sessions > self.cta_views:
+            raise ValueError("CTA view sessions cannot exceed CTA view events")
+        if self.eligible_sessions > self.cta_view_sessions:
+            raise ValueError("eligible sessions cannot exceed CTA view sessions")
         if self.outbound_clicks > self.cta_views:
             raise ValueError("outbound clicks cannot exceed observed CTA views")
+        if self.unique_outbound_sessions > self.cta_view_sessions:
+            raise ValueError("unique outbound sessions cannot exceed CTA view sessions")
         if self.unique_outbound_sessions > self.eligible_sessions:
             raise ValueError("unique outbound sessions cannot exceed eligible sessions")
         if self.unique_outbound_sessions > self.outbound_clicks:
             raise ValueError("unique outbound sessions cannot exceed outbound click events")
         if self.matured_eligible_sessions is not None and self.matured_eligible_sessions > self.eligible_sessions:
             raise ValueError("matured eligible sessions cannot exceed eligible sessions")
-        if self.pending_commission_minor is not None and self.pending_conversions is None:
-            raise ValueError("pending commission requires a pending conversion count")
-        if self.confirmed_commission_minor is not None and self.confirmed_conversions is None:
-            raise ValueError("confirmed commission requires a confirmed conversion count")
+        if self.pending_commission_minor is not None:
+            if self.pending_conversions is None:
+                raise ValueError("pending commission requires a pending conversion count")
+            if self.pending_commission_minor > 0 and self.pending_conversions == 0:
+                raise ValueError("positive pending commission requires a positive conversion count")
+        if self.confirmed_commission_minor is not None:
+            if self.confirmed_conversions is None:
+                raise ValueError("confirmed commission requires a confirmed conversion count")
+            if self.confirmed_commission_minor > 0 and self.confirmed_conversions == 0:
+                raise ValueError("positive confirmed commission requires a positive conversion count")
         return self
 
 
 class RevenueCellAggregateSummary(StrictModel):
+    decision_ready: bool
     article_id: str | None = None
     revenue_cell_id: RevenueCellId | None = None
     revenue_cell_version: Literal["v2"] | None = None
@@ -517,6 +530,7 @@ def summarize_revenue_cell(
         else None
     )
     return RevenueCellAggregateSummary(
+        decision_ready=bool(included),
         article_id=grouping_key[0] if grouping_key else None,
         revenue_cell_id=grouping_key[1] if grouping_key else None,
         revenue_cell_version=grouping_key[2] if grouping_key else None,

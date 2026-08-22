@@ -24,8 +24,10 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", required=True, type=Path)
     args = parser.parse_args()
+    payload = json.loads(args.input.read_text(encoding="utf-8"))
+    raw_rows = payload if isinstance(payload, list) else [payload]
     rows = TypeAdapter(tuple[RevenueCellDailyAggregate, ...]).validate_json(
-        args.input.read_text(encoding="utf-8")
+        json.dumps(raw_rows)
     )
     summary = summarize_revenue_cell(rows)
     print(summary.model_dump_json(indent=2))

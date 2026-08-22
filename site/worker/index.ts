@@ -166,6 +166,18 @@ const SOURCE_APPROVED_HUB_IDS = new Set(
     .filter((hubId) => /^(?:HOME|SEO_TOOLS)$/.test(hubId)),
 );
 
+// Runtime article IDs are only requests. The repository decision record is
+// the source-level Human approval and must remain the narrower boundary. This
+// keeps P11 fail-closed even if a runtime list accidentally contains it.
+const SOURCE_APPROVED_ARTICLE_IDS = new Set(
+  (editorialLaunchState.index_approved_articles ?? [])
+    .filter((articleId) => /^P(?:0[1-9]|1[0-2])$/.test(articleId))
+    .filter((articleId) => (
+      editorialLaunchState.articles?.[articleId as keyof typeof editorialLaunchState.articles]
+      === "approved"
+    )),
+);
+
 // Source-level Human editorial approval. Runtime INDEX_GO alone must never
 // promote an unreviewed server candidate into the public index. The local
 // decision record is the sole source; invalid values fail closed.
@@ -225,7 +237,11 @@ function indexApprovalState(env: ProductionEnv): IndexApprovalState {
     };
   }
   const approved = new Set(values);
-  const paths = new Set([...ARTICLE_PATH_TO_ID].filter(([, id]) => approved.has(id)).map(([path]) => path));
+  const paths = new Set(
+    [...ARTICLE_PATH_TO_ID]
+      .filter(([, id]) => approved.has(id) && SOURCE_APPROVED_ARTICLE_IDS.has(id))
+      .map(([path]) => path),
+  );
   if (!approvedServerArticlesValid) {
     return {
       approvedArticlesValid,
@@ -395,13 +411,13 @@ const SERVER_REVENUE_CELL_PARTNER_IDS: Readonly<
 };
 
 function consentGatedAnalyticsBootstrap(measurementId: string): string {
-  return `<script data-saastco-analytics-consent>(()=>{const m=${JSON.stringify(measurementId)},k="saas_tco_lab_analytics_consent_v1",p=location.pathname;let l=false,q=false;const g=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)},u=()=>location.origin+location.pathname,e=(n,v={})=>g("event",n,{content_path:p,...v}),s=()=>{if(q||document.visibilityState!=="visible")return;q=true;e("qualified_session",{qualification_seconds:30})},o=()=>{if(l)return;l=true;g("consent","default",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",wait_for_update:500});g("consent","update",{analytics_storage:"granted"});g("js",new Date);g("config",m,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,page_location:u(),page_referrer:""});const t=document.createElement("script");t.async=true;t.src="https://www.googletagmanager.com/gtag/js?id="+encodeURIComponent(m);t.referrerPolicy="no-referrer";document.head.appendChild(t);e("page_view",{page_location:u(),page_title:document.title});setTimeout(s,30000);document.addEventListener("visibilitychange",s,{passive:true});document.addEventListener("click",t=>{const a=t.target instanceof Element?t.target.closest("a[href],button,[role=button]"):null;if(!a||a.closest("[data-analytics-consent-ui]"))return;if(a instanceof HTMLAnchorElement){if(a.matches("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"))return;const h=new URL(a.href,location.href);if(h.origin!==location.origin){e("external_link_click",{link_domain:h.hostname});return}}if(a.closest('[data-analytics-scope="comparison"]')||a.getAttribute("data-analytics-event")==="comparison_interaction")e("comparison_interaction",{interaction_type:a.tagName.toLowerCase()})},{passive:true})},c=v=>{localStorage.setItem(k,v);document.querySelector("[data-analytics-consent-banner]")?.remove();if(v==="granted")o()},b=()=>{if(document.querySelector("[data-analytics-consent-banner]"))return;const d=document.createElement("div");d.dataset.analyticsConsentBanner="";d.dataset.analyticsConsentUi="";d.setAttribute("role","dialog");d.setAttribute("aria-label","アクセス解析の同意");d.style.cssText="position:fixed;z-index:2147483647;right:12px;bottom:12px;width:min(420px,calc(100vw - 24px));padding:14px;border:1px solid #1d2420;background:#fff;color:#1d2420;box-shadow:4px 4px 0 #1d2420;font:14px/1.55 system-ui,sans-serif";d.innerHTML='<strong>アクセス解析について</strong><p style="margin:7px 0 10px">改善のため匿名の利用状況を計測します。同意するまでGoogleへの通信は行いません。</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" data-consent="granted" style="min-height:40px;padding:8px 14px">同意する</button><button type="button" data-consent="denied" style="min-height:40px;padding:8px 14px">拒否する</button></div>';d.addEventListener("click",t=>{const v=t.target instanceof Element?t.target.getAttribute("data-consent"):null;if(v==="granted"||v==="denied")c(v)});document.body.appendChild(d)},r=()=>{let x=document.querySelector("[data-analytics-settings]");if(x)return;x=document.createElement("button");x.type="button";x.dataset.analyticsSettings="";x.dataset.analyticsConsentUi="";x.textContent="アクセス解析設定";x.style.cssText="position:fixed;z-index:2147483646;left:12px;bottom:12px;min-height:36px;padding:6px 9px;border:1px solid #1d2420;background:#fff;color:#1d2420;font:12px system-ui,sans-serif";x.addEventListener("click",b);document.body.appendChild(x)};addEventListener("DOMContentLoaded",()=>{r();const v=localStorage.getItem(k);if(v==="granted")o();else if(v!=="denied")b()},{once:true})})();</script>`;
+  return `<script data-saastco-analytics-consent>(()=>{const m=${JSON.stringify(measurementId)},k="saas_tco_lab_analytics_consent_v1",p=location.pathname;let l=false,q=false;const g=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)},u=()=>location.origin+location.pathname,a=()=>{try{return localStorage.getItem(k)==="granted"}catch{return false}},e=(n,v={})=>{if(a())g("event",n,{content_path:p,...v})},s=()=>{if(q||!a()||document.visibilityState!=="visible")return;q=true;e("qualified_session",{qualification_seconds:30})},o=()=>{if(l){g("consent","update",{analytics_storage:"granted"});return}l=true;g("consent","default",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied",wait_for_update:500});g("consent","update",{analytics_storage:"granted"});g("js",new Date);g("config",m,{send_page_view:false,allow_google_signals:false,allow_ad_personalization_signals:false,page_location:u(),page_referrer:""});const t=document.createElement("script");t.async=true;t.src="https://www.googletagmanager.com/gtag/js?id="+encodeURIComponent(m);t.referrerPolicy="no-referrer";document.head.appendChild(t);e("page_view",{page_location:u(),page_title:document.title});setTimeout(s,30000);document.addEventListener("visibilitychange",s,{passive:true});document.addEventListener("click",t=>{const a=t.target instanceof Element?t.target.closest("a[href],button,[role=button]"):null;if(!a||a.closest("[data-analytics-consent-ui]"))return;if(a instanceof HTMLAnchorElement){if(a.matches("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"))return;const h=new URL(a.href,location.href);if(h.origin!==location.origin){e("external_link_click",{link_domain:h.hostname});return}}if(a.closest('[data-analytics-scope="comparison"]')||a.getAttribute("data-analytics-event")==="comparison_interaction")e("comparison_interaction",{interaction_type:a.tagName.toLowerCase()})},{passive:true})},c=v=>{localStorage.setItem(k,v);document.querySelector("[data-analytics-consent-banner]")?.remove();if(v==="granted")o();else if(l)g("consent","update",{analytics_storage:"denied",ad_storage:"denied",ad_user_data:"denied",ad_personalization:"denied"})},b=()=>{if(document.querySelector("[data-analytics-consent-banner]"))return;const d=document.createElement("div");d.dataset.analyticsConsentBanner="";d.dataset.analyticsConsentUi="";d.setAttribute("role","dialog");d.setAttribute("aria-label","アクセス解析の同意");d.style.cssText="position:fixed;z-index:2147483647;right:12px;bottom:12px;width:min(420px,calc(100vw - 24px));padding:14px;border:1px solid #1d2420;background:#fff;color:#1d2420;box-shadow:4px 4px 0 #1d2420;font:14px/1.55 system-ui,sans-serif";d.innerHTML='<strong>アクセス解析について</strong><p style="margin:7px 0 10px">改善のため匿名の利用状況を計測します。同意するまでGoogleへの通信は行いません。</p><div style="display:flex;gap:8px;flex-wrap:wrap"><button type="button" data-consent="granted" style="min-height:40px;padding:8px 14px">同意する</button><button type="button" data-consent="denied" style="min-height:40px;padding:8px 14px">拒否する</button></div>';d.addEventListener("click",t=>{const v=t.target instanceof Element?t.target.getAttribute("data-consent"):null;if(v==="granted"||v==="denied")c(v)});document.body.appendChild(d)},r=()=>{let x=document.querySelector("[data-analytics-settings]");if(x)return;x=document.createElement("button");x.type="button";x.dataset.analyticsSettings="";x.dataset.analyticsConsentUi="";x.textContent="アクセス解析設定";x.style.cssText="position:fixed;z-index:2147483646;left:12px;bottom:12px;min-height:36px;padding:6px 9px;border:1px solid #1d2420;background:#fff;color:#1d2420;font:12px system-ui,sans-serif";x.addEventListener("click",b);document.body.appendChild(x)};addEventListener("DOMContentLoaded",()=>{r();const v=localStorage.getItem(k);if(v==="granted")o();else if(v!=="denied")b()},{once:true})})();</script>`;
 }
 
 function revenueFunnelMeasurementBootstrap(): string {
   return `<script data-saastco-funnel-measurement>(()=>{
     const consentKey="saas_tco_lab_analytics_consent_v1",path=location.pathname;
-    const viewedCtas=new WeakSet(),viewedResults=new WeakSet(),recentClicks=new WeakMap();
+    const viewedCtas=new WeakSet(),viewedResults=new WeakSet(),recentClicks=new WeakMap(),pendingCtaViews=new WeakMap();
     const allowedHosts=new Set(["mangools.com","px.a8.net","af.moshimo.com","ck.jp.ap.valuecommerce.com"]);
     const allowedChannels=new Set(["direct","organic","referral","note","x","partner","internal","unknown"]);
     let observer=null,clickBound=false,mutationQueued=false;
@@ -420,8 +436,9 @@ function revenueFunnelMeasurementBootstrap(): string {
         else if(storedChannel&&allowedChannels.has(storedChannel))channel=storedChannel;
         else if(document.referrer){
           const referrerHost=new URL(document.referrer).hostname.toLowerCase();
-          channel=referrerHost===location.hostname?"internal":/(?:^|\\.)(?:google\\.|bing\\.com$|search\\.yahoo\\.)/.test(referrerHost)?"organic":"referral";
+          channel=referrerHost===location.hostname?"unknown":/(?:^|\\.)(?:google\\.|bing\\.com$|search\\.yahoo\\.)/.test(referrerHost)?"organic":"referral";
         }
+        if(!storedChannel&&allowedChannels.has(channel))sessionStorage.setItem("saas_tco_lab_channel_v1",channel);
         if(requestedCampaign){campaign=requestedCampaign;sessionStorage.setItem("saas_tco_lab_campaign_v1",campaign)}
         else if(storedCampaign)campaign=storedCampaign;
       }catch{}
@@ -434,54 +451,60 @@ function revenueFunnelMeasurementBootstrap(): string {
       try{if(navigator.webdriver)trafficScope="bot";else if(localStorage.getItem("saas_tco_lab_traffic_scope_v1")==="internal")trafficScope="internal"}catch{}
       let testFlag=false;try{testFlag=localStorage.getItem("saas_tco_lab_test_traffic_v1")==="1"}catch{}
       const articleRoot=root();
+      const acquisition=trafficScope==="internal"
+        ? {channel:"internal",source_class:"internal",medium_class:"internal",campaign_id:"baseline"}
+        : attribution();
       return{
         article_id:articleRoot?.getAttribute("data-article-id")||"unknown",
         revenue_cell_id:articleRoot?.getAttribute("data-revenue-cell-id")||"none",
         revenue_cell_version:articleRoot?.getAttribute("data-revenue-cell-version")||"none",
-        ...attribution(),environment:"production",traffic_scope:trafficScope,test_flag:testFlag
+        ...acquisition,environment:"production",traffic_scope:trafficScope,test_flag:testFlag
       };
     };
-    const emit=(name,value={})=>gtag("event",name,{content_path:path,...dimensions(),...value});
+    const hasConsent=()=>{try{return localStorage.getItem(consentKey)==="granted"}catch{return false}};
+    const emit=(name,value={})=>{if(hasConsent())gtag("event",name,{content_path:path,...dimensions(),...value})};
+    const markSessionOnce=key=>{try{if(sessionStorage.getItem(key)==="1")return false;sessionStorage.setItem(key,"1");return true}catch{return false}};
     const position=target=>target.getAttribute("data-server-cta-position")||target.getAttribute("data-cta-position")||"article_action";
     const vendor=target=>target.getAttribute("data-vendor-id")||(target.getAttribute("data-affiliate-cta-partner")==="mangools"?"mangools":"unknown");
     const ctaType=target=>target.getAttribute("data-server-cta-type")||target.getAttribute("data-cta-type")||(target.hasAttribute("data-server-affiliate-cta-partner")?"affiliate_comparison":"saas_affiliate");
     const showCta=target=>{
-      if(viewedCtas.has(target))return;viewedCtas.add(target);
+      if(!hasConsent()||viewedCtas.has(target))return;viewedCtas.add(target);
       const detail={vendor_id:vendor(target),cta_position:position(target),cta_type:ctaType(target)};
       emit("cta_view",detail);
-      let emitEligibility=true;
-      try{
-        const current=dimensions();
-        const key=["saas_tco_lab_cta_eligible_v3",current.article_id,current.revenue_cell_id,current.revenue_cell_version].join(":");
-        if(sessionStorage.getItem(key)==="1")emitEligibility=false;else sessionStorage.setItem(key,"1");
-      }catch{}
-      if(emitEligibility)emit("cta_eligible_session",{...detail,eligibility_rule:"active_cta_view"});
+      const current=dimensions();
+      const key=["saas_tco_lab_cta_eligible_v3",current.article_id,current.revenue_cell_id,current.revenue_cell_version].join(":");
+      if(markSessionOnce(key))emit("cta_eligible_session",{...detail,eligibility_rule:"active_cta_view"});
     };
-    const showResult=target=>{if(viewedResults.has(target))return;viewedResults.add(target);emit("calculator_result_view",{vendor_id:"none",cta_position:"none",cta_type:"none",calculator_kind:"server_zero_input"})};
+    const showResult=target=>{if(!hasConsent()||viewedResults.has(target))return;viewedResults.add(target);emit("calculator_result_view",{vendor_id:"none",cta_position:"none",cta_type:"none",calculator_kind:"server_zero_input"})};
+    const observeCta=(target,entry)=>{
+      if(!entry.isIntersecting||entry.intersectionRatio<.5){const timer=pendingCtaViews.get(target);if(timer){clearTimeout(timer);pendingCtaViews.delete(target)}return}
+      if(viewedCtas.has(target)||pendingCtaViews.has(target))return;
+      const timer=setTimeout(()=>{pendingCtaViews.delete(target);showCta(target)},1000);
+      pendingCtaViews.set(target,timer);
+    };
     const bind=()=>{
-      if(localStorage.getItem(consentKey)!=="granted")return;
+      if(!hasConsent())return;
+      attribution();
       if(!observer)observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
-        if(!entry.isIntersecting)return;const target=entry.target;
-        if(target.matches("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"))showCta(target);
-        else if(target.matches('[data-server-template-step="result"]'))showResult(target)
-      }),{threshold:.25});
+        const target=entry.target;
+        if(target.matches("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"))observeCta(target,entry);
+        else if(entry.isIntersecting&&target.matches('[data-server-template-step="result"]'))showResult(target)
+      }),{threshold:.5});
       document.querySelectorAll("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]").forEach(target=>observer.observe(target));
       document.querySelectorAll('[data-server-template-step="result"]').forEach(target=>observer.observe(target));
       if(!clickBound){
         document.addEventListener("click",event=>{
-          if(localStorage.getItem(consentKey)!=="granted")return;
+          if(!hasConsent())return;
           const link=event.target instanceof Element?event.target.closest("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"):null;
           if(link instanceof HTMLAnchorElement){
             const destination=new URL(link.href,location.href),now=Date.now(),last=recentClicks.get(link)||0;
             if(destination.origin===location.origin||!allowedHosts.has(destination.hostname.toLowerCase())||now-last<750)return;
             recentClicks.set(link,now);
+            showCta(link);
             const detail={vendor_id:vendor(link),cta_position:position(link),cta_type:ctaType(link)};
-            try{
-              const current=dimensions();
-              const key=["saas_tco_lab_outbound_session_v1",current.article_id,current.revenue_cell_id,current.revenue_cell_version,detail.vendor_id,detail.cta_position].join(":");
-              if(sessionStorage.getItem(key)==="1")return;
-              sessionStorage.setItem(key,"1");
-            }catch{}
+            const current=dimensions();
+            const key=["saas_tco_lab_outbound_session_v1",current.article_id,current.revenue_cell_id,current.revenue_cell_version,detail.vendor_id,detail.cta_position].join(":");
+            if(!markSessionOnce(key))return;
             emit("outbound_click",detail);return;
           }
           const internal=event.target instanceof Element?event.target.closest('a[data-analytics-event="server_internal_funnel"]'):null;
@@ -574,21 +597,29 @@ function validatedServerAffiliateDestination(
       || destination.hash !== ""
       || destination.search === ""
     ) return null;
+    const queryKeys = [...destination.searchParams.keys()];
+    const hasExactQueryKeys = (expected: readonly string[]) => (
+      queryKeys.length === expected.length
+      && new Set(queryKeys).size === queryKeys.length
+      && expected.every((key) => Boolean(destination.searchParams.get(key)))
+    );
     if (
       partnerId === "a8net-xserver-business"
       && destination.hostname.toLowerCase() === "px.a8.net"
       && destination.pathname === "/svt/ejp"
+      && hasExactQueryKeys(["a8mat"])
     ) return destination.href;
     if (
       partnerId.startsWith("moshimo-")
       && destination.hostname.toLowerCase() === "af.moshimo.com"
       && destination.pathname === "/af/c/click"
-      && ["a_id", "p_id", "pc_id", "pl_id"].every((key) => Boolean(destination.searchParams.get(key)))
+      && hasExactQueryKeys(["a_id", "p_id", "pc_id", "pl_id"])
     ) return destination.href;
     if (
       partnerId === "valuecommerce-ablenet-shared-server"
       && destination.hostname.toLowerCase() === "ck.jp.ap.valuecommerce.com"
       && destination.pathname === "/servlet/referral"
+      && hasExactQueryKeys(["sid", "pid"])
     ) return destination.href;
     return null;
   } catch {
