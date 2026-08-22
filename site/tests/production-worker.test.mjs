@@ -5,6 +5,7 @@ import { readFile, readdir } from "node:fs/promises";
 import { createServer } from "node:net";
 import { fileURLToPath } from "node:url";
 import test, { after, before } from "node:test";
+import vm from "node:vm";
 
 const siteRoot = fileURLToPath(new URL("../", import.meta.url));
 const verifyProductionBuild = fileURLToPath(
@@ -287,6 +288,7 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
       `${path}: Impact verification must stay before GSC verification`,
     );
     assert.doesNotMatch(body, /href=["']\/(?:comparison|learning|readiness|operator|pilot)\/?["']/i, path);
+    assert.doesNotMatch(body, /href=["']\/operator(?:\/|["'])/i, path);
     const approvedArticlePaths = new Set([
       "/pilot/pricing-calculator",
       "/pilot/plan-comparison",
@@ -451,6 +453,23 @@ test("built production config exposes only the public-prelaunch allowlist", asyn
     assert.doesNotMatch(body, /google-site-verification|googletagmanager|G-TEST123456/i, path);
     assert.equal(response.headers.get("cache-control"), "no-store", path);
   }
+});
+
+test("public RSC navigation payloads remain available without widening private routes", async () => {
+  for (const path of [
+    "/.rsc",
+    "/servers/business-server-pricing.rsc",
+    "/servers/server-first-year-total.rsc",
+    "/pilot/pricing-calculator.rsc",
+    "/pilot/break-even.rsc",
+  ]) {
+    const response = await fetch(`${baseUrl}${path}`);
+    assert.equal(response.status, 200, path);
+    assert.match(response.headers.get("content-type") ?? "", /text\/x-component|text\/plain/i, path);
+    assert.equal(response.headers.get("x-robots-tag"), "noindex, nofollow, noarchive, nosnippet", path);
+  }
+  const privateResponse = await fetch(`${baseUrl}/operator.rsc`);
+  assert.equal(privateResponse.status, 503);
 });
 
 test("public trust pages derive their article and CTA state from runtime gates", async () => {
@@ -955,6 +974,32 @@ test("approved P09 widens the release to exactly eleven articles while P11 stays
   assert.ok(!locations.includes("https://saastcolab.jp/pilot/break-even"));
 });
 
+test("runtime approval cannot promote source-unreviewed P11", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("p11-source-fail-closed", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P11",
+    CTA_GO: "GO",
+    CTA_APPROVED_PARTNER: "mangools",
+    MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "true",
+    MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/#a1234567890bcdef123456789",
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+  const path = "/pilot/break-even";
+  const response = await worker.fetch(new Request(`https://saastcolab.jp${path}`), env, ctx);
+  const body = await response.text();
+  assert.equal(response.headers.get("x-robots-tag"), "noindex, follow, noarchive, nosnippet");
+  assert.doesNotMatch(body, /<link\s+rel=["']canonical["']/i);
+  assert.doesNotMatch(body, /data-affiliate-cta-partner|rel=["'][^"']*sponsored/i);
+  const robots = await worker.fetch(new Request("https://saastcolab.jp/robots.txt"), env, ctx);
+  assert.doesNotMatch(await robots.text(), /Allow: \/pilot\/break-even\$/);
+  const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
+  assert.doesNotMatch(await sitemap.text(), /\/pilot\/break-even/);
+});
+
 test("missing or invalid index approval stays fail-closed while public navigation remains crawlable", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("fail-closed-index", `${process.pid}-${Date.now()}`);
@@ -1116,6 +1161,7 @@ test("approved SVR01 can expose only runtime-validated server partners", async (
   assert.match(bootstrap, /d\.textContent!==dt/);
   assert.match(bootstrap, /s\.textContent!==st/);
   assert.match(bootstrap, /c\.dataset\.serverCtaMode!==m/);
+  assert.match(bootstrap, /h=\(\)=>setTimeout\(i,500\)/);
   assert.doesNotMatch(bootstrap, /"id":"(?:moshimo-lolipop-rental-server|moshimo-onamae-rental-server|moshimo-shin-rental-server|valuecommerce-ablenet-shared-server)"/);
   assert.doesNotMatch(visible, /data-server-affiliate-cta-partner|rel="sponsored noopener noreferrer"/);
   assert.doesNotMatch(visible, /data-affiliate-cta-partner="mangools"/);
@@ -1176,20 +1222,165 @@ test("revenue analytics owns affiliate outbound events and keeps safe bounded di
   assert.ok(funnel);
   assert.doesNotMatch(consent, /"outbound_click"/);
   assert.match(consent, /"external_link_click"/);
+  assert.match(consent, /analytics_storage:"denied"/);
+  assert.match(consent, /if\(a\(\)\)g\("event"/);
   assert.equal((funnel.match(/"outbound_click"/g) ?? []).length, 1);
   for (const dimension of [
-    "article_id", "revenue_cell_id", "vendor_id", "cta_position", "cta_type",
-    "channel", "campaign_id", "environment", "traffic_scope", "test_flag",
+    "article_id", "revenue_cell_id", "revenue_cell_version", "vendor_id", "cta_position", "cta_type",
+    "channel", "source_class", "medium_class", "campaign_id", "environment", "traffic_scope", "test_flag",
   ]) assert.match(funnel, new RegExp(dimension), dimension);
-  assert.match(funnel, /saas_tco_lab_cta_eligible_v2/);
-  assert.match(funnel, /new URLSearchParams\(u\.hash\.startsWith\("#"\)/);
-  assert.doesNotMatch(funnel, /u\.searchParams\.get\("(?:ch|cid)"\)/);
-  assert.doesNotMatch(funnel, /saas_tco_lab_cta_eligible_v2:["']?\+?p/);
+  assert.match(funnel, /saas_tco_lab_cta_eligible_v3/);
+  assert.match(funnel, /current\.article_id,current\.revenue_cell_id,current\.revenue_cell_version/);
+  assert.match(funnel, /saas_tco_lab_outbound_session_v1/);
+  assert.match(funnel, /"referral"/);
+  assert.match(funnel, /new URLSearchParams\(current\.hash\.startsWith\("#"\)/);
+  assert.doesNotMatch(funnel, /current\.searchParams\.get\("(?:ch|cid)"\)/);
+  assert.doesNotMatch(funnel, /saas_tco_lab_cta_eligible_v2/);
   assert.match(funnel, /new WeakSet\(\)/);
   assert.match(funnel, /new WeakMap\(\)/);
-  assert.match(funnel, /n-last<750/);
+  assert.match(funnel, /now-last<750/);
+  assert.match(funnel, /threshold:\.5/);
+  assert.match(funnel, /setTimeout\(\(\)=>\{pendingCtaViews\.delete\(target\);showCta\(target\)\},1000\)/);
+  assert.ok(funnel.indexOf("showCta(link)") < funnel.indexOf('emit("outbound_click"'));
+  assert.match(funnel, /const markSessionOnce=.*catch\{return false\}/s);
   assert.match(funnel, /new Set\(\["mangools\.com","px\.a8\.net","af\.moshimo\.com","ck\.jp\.ap\.valuecommerce\.com"\]\)/);
   assert.doesNotMatch(funnel, /raw_referrer_query|raw_search_query|affiliate_url|tracking_parameters/);
+});
+
+test("revenue funnel runtime records view and cell eligibility before one outbound session", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("revenue-runtime-semantics", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const response = await worker.fetch(
+    new Request("https://saastcolab.jp/servers/business-server-pricing"),
+    {
+      ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+      GA4_ANALYTICS_ENABLED: "true",
+      GA4_MEASUREMENT_ID: "G-TEST123456",
+      INDEX_GO: "GO",
+      INDEX_APPROVED_ARTICLES: "P01",
+      INDEX_APPROVED_SERVER_ARTICLES: "SVR01,SVR04",
+      CTA_GO: "GO",
+      SERVER_CTA_APPROVED_SERVER_ARTICLES: "SVR01,SVR04",
+      SERVER_CTA_GO: "a8net-xserver-business,moshimo-conoha-wing",
+      A8NET_XSERVER_BUSINESS_AFFILIATE_APPROVAL_CURRENT: "true",
+      A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION: "https://px.a8.net/svt/ejp?a8mat=synthetic",
+      MOSHIMO_CONOHA_WING_AFFILIATE_APPROVAL_CURRENT: "true",
+      MOSHIMO_CONOHA_WING_AFFILIATE_DESTINATION: "https://af.moshimo.com/af/c/click?a_id=synthetic-conoha&p_id=synthetic&pc_id=synthetic&pl_id=synthetic",
+    },
+    { waitUntil() {}, passThroughOnException() {} },
+  );
+  const body = await response.text();
+  const source = body
+    .match(/<script data-saastco-funnel-measurement>([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(source);
+
+  const listeners = new Map();
+  const local = new Map([["saas_tco_lab_analytics_consent_v1", "granted"]]);
+  const session = new Map();
+  let article = { article: "SVR01", cell: "server-comparison-a", version: "v2" };
+  class FakeElement {
+    constructor(attributes = {}) { this.attributes = attributes; }
+    getAttribute(name) { return this.attributes[name] ?? null; }
+    hasAttribute(name) { return Object.hasOwn(this.attributes, name); }
+    matches(selector) { return selector.includes("data-server-affiliate-cta-partner"); }
+    closest(selector) { return selector.includes("data-server-affiliate-cta-partner") ? this : null; }
+  }
+  class FakeAnchor extends FakeElement {
+    constructor(href, attributes) { super(attributes); this.href = href; }
+  }
+  const makeLink = (position) => new FakeAnchor(
+    "https://px.a8.net/svt/ejp?a8mat=synthetic",
+    {
+      "data-server-affiliate-cta-partner": "a8net-xserver-business",
+      "data-vendor-id": "xserver-business",
+      "data-server-cta-position": position,
+      "data-server-cta-type": position === "single" ? "affiliate_single" : "affiliate_comparison",
+    },
+  );
+  const firstLink = makeLink("primary");
+  const context = {
+    URL,
+    URLSearchParams,
+    Element: FakeElement,
+    HTMLAnchorElement: FakeAnchor,
+    MutationObserver: class { observe() {} },
+    IntersectionObserver: class { observe() {} },
+    navigator: { webdriver: false },
+    location: {
+      href: "https://saastcolab.jp/servers/business-server-pricing",
+      origin: "https://saastcolab.jp",
+      hostname: "saastcolab.jp",
+      pathname: "/servers/business-server-pricing",
+    },
+    localStorage: {
+      getItem: (key) => local.get(key) ?? null,
+      setItem: (key, value) => local.set(key, value),
+    },
+    sessionStorage: {
+      getItem: (key) => session.get(key) ?? null,
+      setItem: (key, value) => session.set(key, value),
+    },
+    document: {
+      referrer: "https://www.google.com/",
+      documentElement: {},
+      querySelector: (selector) => selector === "main[data-article-id]" ? {
+        getAttribute(name) {
+          return {
+            "data-article-id": article.article,
+            "data-revenue-cell-id": article.cell,
+            "data-revenue-cell-version": article.version,
+          }[name] ?? null;
+        },
+      } : null,
+      querySelectorAll: (selector) => selector.startsWith("a[data-affiliate") ? [firstLink] : [],
+      addEventListener: (name, handler) => listeners.set(name, handler),
+    },
+    window: { dataLayer: [] },
+    addEventListener() {},
+    queueMicrotask: (callback) => callback(),
+    setTimeout,
+    clearTimeout,
+    Date,
+  };
+  vm.runInNewContext(source, context);
+  const click = listeners.get("click");
+  assert.equal(typeof click, "function");
+  click({ target: firstLink });
+  click({ target: firstLink });
+
+  article = { article: "SVR04", cell: "server-high-intent-b", version: "v3" };
+  const secondLink = makeLink("single");
+  click({ target: secondLink });
+
+  const events = context.window.dataLayer
+    .map((entry) => Array.from(entry))
+    .filter(([kind]) => kind === "event");
+  assert.deepEqual(
+    events.map(([, name]) => name),
+    [
+      "cta_view", "cta_eligible_session", "outbound_click",
+      "cta_view", "cta_eligible_session", "outbound_click",
+    ],
+  );
+  assert.deepEqual(events.map(([, , value]) => value.revenue_cell_id), [
+    "server-comparison-a", "server-comparison-a", "server-comparison-a",
+    "server-high-intent-b", "server-high-intent-b", "server-high-intent-b",
+  ]);
+  assert.ok(events.every(([, , value]) => value.channel === "organic"));
+
+  context.sessionStorage.getItem = () => { throw new Error("storage unavailable"); };
+  context.sessionStorage.setItem = () => { throw new Error("storage unavailable"); };
+  click({ target: makeLink("alternative") });
+  const afterStorageFailure = context.window.dataLayer
+    .map((entry) => Array.from(entry))
+    .filter(([kind]) => kind === "event");
+  assert.equal(afterStorageFailure.length, 7);
+  assert.equal(afterStorageFailure.at(-1)?.[1], "cta_view");
+
+  local.set("saas_tco_lab_analytics_consent_v1", "denied");
+  click({ target: makeLink("alternative") });
+  assert.equal(context.window.dataLayer.length, 7);
 });
 
 test("server index release cannot widen CTA beyond the exact article allowlist", async () => {
@@ -1283,8 +1474,14 @@ test("SVR04 Cell B activates only the Human-selected XServer single CTA", async 
   );
   const body = await response.text();
   const disclosurePosition = body.indexOf('id="article-pr-disclosure"');
+  const decisionPosition = body.indexOf('data-server-cell-b-decision="SVR04"');
+  const calculatorPosition = body.indexOf('data-server-template-step="calculator"');
   const placeholderPosition = body.indexOf('data-server-affiliate-cta-placeholder="a8net-xserver-business"');
   assert.ok(disclosurePosition >= 0 && disclosurePosition < placeholderPosition);
+  assert.ok(disclosurePosition < decisionPosition && decisionPosition < calculatorPosition);
+  assert.match(body, /確認済み初年度請求総額は[\s\S]{0,80}JPY[\s\S]{0,20}66660/);
+  assert.match(body, /data-revenue-cell-version="v3"/);
+  assert.doesNotMatch(body, /ConoHa WING Standard|さくらのレンタルサーバ Business|KAGOYA Light/);
   assert.match(body, /<script data-saastco-server-affiliate-cta>/);
   assert.match(body, /"id":"a8net-xserver-business"/);
   assert.match(body, /"position":"single"/);
@@ -1309,6 +1506,19 @@ test("SVR04 Cell B activates only the Human-selected XServer single CTA", async 
   const unrelatedBody = await unrelatedArticle.text();
   assert.match(unrelatedBody, /data-server-affiliate-cta-state="disabled"/);
   assert.doesNotMatch(unrelatedBody, /data-saastco-server-affiliate-cta/);
+
+  const unapprovedTrackingExtension = await worker.fetch(
+    new Request("https://saastcolab.jp/servers/server-first-year-total"),
+    {
+      ...baseEnv,
+      A8NET_XSERVER_BUSINESS_AFFILIATE_DESTINATION:
+        "https://px.a8.net/svt/ejp?a8mat=synthetic&subid=not-approved",
+    },
+    ctx,
+  );
+  const unapprovedTrackingExtensionBody = await unapprovedTrackingExtension.text();
+  assert.match(unapprovedTrackingExtensionBody, /data-server-affiliate-cta-state="disabled"/);
+  assert.doesNotMatch(unapprovedTrackingExtensionBody, /data-saastco-server-affiliate-cta/);
 });
 
 test("SVR01 approved source exposes gross contract charge while index and CTA stay runtime-held", async () => {

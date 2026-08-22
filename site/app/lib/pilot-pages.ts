@@ -241,8 +241,8 @@ const serverArticleSeeds = [
   },
   {
     id: "SVR04", slug: "server-first-year-total", topic: "初期費用込み総額", sourceQuery: "サーバー 初期費用", queryMatch: "exact",
-    titleTemplate: "サーバー初期費用込み総額: 契約初年度に払う金額",
-    readerQuestion: "契約時支払と12か月の継続費を合わせるといくらか",
+    titleTemplate: "XServerビジネス初年度費用: 初期費用込み総額",
+    readerQuestion: "共有スタンダード12か月契約で、確認できた初年度費用と未確認条件は何か",
     state: "candidate_only", reviewVoices: serverReviewVoices,
     sections: [
       { title: "結論", focus: "初期費用を含む確認済み初年度総額" },
@@ -361,6 +361,7 @@ export type ServerInternalRevenueFunnel = {
 
 export type ServerRevenueCell = {
   id: "cell-a-comparison" | "cell-b-single";
+  version: "v2" | "v3";
   ctaType: "affiliate_comparison" | "affiliate_single";
   state: "human_selected" | "hold_vendor_selection";
   primaryPartnerId: "a8net-xserver-business" | null;
@@ -375,6 +376,7 @@ export type ServerRevenueCell = {
 const serverRevenueCells = {
   SVR01: {
     id: "cell-a-comparison",
+    version: "v2",
     ctaType: "affiliate_comparison",
     state: "human_selected",
     primaryPartnerId: "a8net-xserver-business",
@@ -382,6 +384,7 @@ const serverRevenueCells = {
   },
   SVR04: {
     id: "cell-b-single",
+    version: "v3",
     ctaType: "affiliate_single",
     state: "human_selected",
     primaryPartnerId: "a8net-xserver-business",

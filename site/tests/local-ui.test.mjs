@@ -36,7 +36,7 @@ const APPROVED_SERVER_LAUNCH_PATHS = new Set([
 ]);
 const SERVER_OFFER_COUNTS = new Map([
   ["/servers/small-business-server", 3],
-  ["/servers/server-first-year-total", 3],
+  ["/servers/server-first-year-total", 1],
   ["/servers/business-rental-server", 2],
 ]);
 
@@ -423,23 +423,34 @@ test("servers operator and twenty article routes preserve approval, ranking, and
       assert.match(article, /data-server-candidate-batch="M3"/, path);
       assert.match(article, /"@type":"FAQPage"/, path);
       assert.match(article, /"@type":"BreadcrumbList"/, path);
-      assert.match(article, /4(?:<!-- -->)?社・(?:<!-- -->)?44(?:<!-- -->)?項目/, path);
-      assert.match(article, /確認済み(?:<!-- -->)?17(?:<!-- -->)?項目、未確認(?:<!-- -->)?19(?:<!-- -->)?項目、該当なし(?:<!-- -->)?8(?:<!-- -->)?項目/, path);
       assert.match(article, /XServerビジネス 共有スタンダード（12か月）/, path);
-      assert.match(article, /ConoHa WING Standard（WINGパック12か月）/, path);
-      assert.match(article, /さくらのレンタルサーバ Business（12か月）/, path);
-      assert.match(article, /KAGOYA Light（1コア\/4GB・12か月）/, path);
-      assert.match(article, /JPY 29040 \/ yr/, path);
-      assert.match(article, /JPY 17820 \/ yr/, path);
-      assert.match(article, /通常表示31,680円はcheckoutの実請求額ではなく/, path);
-      assert.match(article, /checkout未確認価格|checkoutの実請求額/, path);
+      if (path === "/servers/server-first-year-total") {
+        assert.match(article, /1(?:<!-- -->)?社・(?:<!-- -->)?11(?:<!-- -->)?項目/, path);
+        assert.match(article, /確認済み(?:<!-- -->)?4(?:<!-- -->)?項目、未確認(?:<!-- -->)?6(?:<!-- -->)?項目、該当なし(?:<!-- -->)?1(?:<!-- -->)?項目/, path);
+        assert.doesNotMatch(article, /ConoHa WING|さくらのレンタルサーバ|KAGOYA/, path);
+      } else {
+        assert.match(article, /4(?:<!-- -->)?社・(?:<!-- -->)?44(?:<!-- -->)?項目/, path);
+        assert.match(article, /確認済み(?:<!-- -->)?17(?:<!-- -->)?項目、未確認(?:<!-- -->)?19(?:<!-- -->)?項目、該当なし(?:<!-- -->)?8(?:<!-- -->)?項目/, path);
+        assert.match(article, /ConoHa WING Standard（WINGパック12か月）/, path);
+        assert.match(article, /さくらのレンタルサーバ Business（12か月）/, path);
+        assert.match(article, /KAGOYA Light（1コア\/4GB・12か月）/, path);
+        assert.match(article, /JPY 29040 \/ yr/, path);
+        assert.match(article, /JPY 17820 \/ yr/, path);
+        assert.match(article, /通常表示31,680円はcheckoutの実請求額ではなく/, path);
+        assert.match(article, /checkout未確認価格|checkoutの実請求額/, path);
+      }
       if (APPROVED_SERVER_LAUNCH_PATHS.has(path)) {
         assert.match(article, /data-server-article-review="approved"/, path);
         assert.match(article, /内容確認済みです/, path);
-        assert.match(article, /data-comparison-mode="ranked_comparison"/, path);
-        assert.equal((article.match(/data-ranking-eligible="true"/g) ?? []).length, 3, path);
-        assert.match(article, /JPY 48840/, path);
-        assert.match(article, /JPY 11220/, path);
+        if (path === "/servers/server-first-year-total") {
+          assert.match(article, /data-comparison-mode="confirmed_list"/, path);
+          assert.equal((article.match(/data-ranking-eligible="true"/g) ?? []).length, 0, path);
+        } else {
+          assert.match(article, /data-comparison-mode="ranked_comparison"/, path);
+          assert.equal((article.match(/data-ranking-eligible="true"/g) ?? []).length, 3, path);
+          assert.match(article, /JPY 48840/, path);
+          assert.match(article, /JPY 11220/, path);
+        }
         const offerCount = SERVER_OFFER_COUNTS.get(path) ?? 0;
         assert.equal((article.match(/"@type":"Offer"/g) ?? []).length, offerCount, path);
         if (offerCount > 0) assert.match(article, /"@type":"Product"/, path);
@@ -472,7 +483,12 @@ test("servers operator and twenty article routes preserve approval, ranking, and
         assert.match(article, /data-analytics-event="server_internal_funnel"/, path);
       }
       if (path === "/servers/server-first-year-total") {
+        assert.match(article, /data-server-cell-b-decision="SVR04"/, path);
+        assert.match(article, /確認済み初年度請求総額は[\s\S]{0,80}JPY[\s\S]{0,20}66660/, path);
+        assert.match(article, /向いている人[\s\S]{0,400}向いていない人[\s\S]{0,400}契約前チェック/, path);
+        assert.ok(article.indexOf("data-server-cell-b-decision") < article.indexOf("data-server-template-step=\"calculator\""), path);
         assert.match(article, /data-revenue-cell-id="cell-b-single"/, path);
+        assert.match(article, /data-revenue-cell-version="v3"/, path);
         assert.match(article, /data-revenue-cell-state="human_selected"/, path);
         assert.match(article, /data-revenue-cell-selection="xserver-business"/, path);
         assert.match(article, /data-server-affiliate-cta-placeholder="a8net-xserver-business"/, path);

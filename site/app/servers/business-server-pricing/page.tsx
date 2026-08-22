@@ -1,6 +1,5 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import Link from "next/link";
 
 import { ServerArticleTemplate } from "../../components/PilotArticle";
 import {
@@ -252,9 +251,8 @@ export default async function BusinessServerPricingPage({ searchParams }: Server
           </article> : null}
           <article>
             <span>{evidence ? "08" : "07"}</span>
-            <h2>価格観測の入口</h2>
+            <h2>価格観測の方法</h2>
             <p>公式料金ページで、初期費用・通常料金・更新時請求額・キャンペーン・ドメイン特典を別々に確認します。</p>
-            <Link className="text-link" href="/operator/servers/">servers価格観測Operatorを開く</Link>
           </article>
         </div>
       )}

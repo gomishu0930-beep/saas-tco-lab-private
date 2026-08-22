@@ -14,7 +14,7 @@
 |Cell|記事|型|現在のlocal状態|production状態|
 |---|---|---|---|---|
 |A|SVR01|比較型|XServer primary + ConoHa alternativeの最大2枠|Sites v38 / commit `af95bdb`。主1・代替1、開示先行、mobile overflowなしを外部read-back済み|
-|B|SVR04|初期費用込み総額の単独型|2026-08-22にXServerビジネスをHuman選定。owned-site限定の単独CTA|release前。source approvalとruntime article allowlistの両方が揃うまで無効|
+|B|SVR04|初期費用込み総額の単独型|Cell B v3。XServerビジネスだけの確認値・判断要約・owned-site限定の単独CTA|v2の単独CTA 1件を外部read-back済み。v3はlocal/PRのみで未deploy。外部媒体・deep-link・sub-IDはHOLD|
 
 Cell Bはpage別GSC値を取得していないため、検索表示の多寡を推測して選んでいない。Human指示のfallbackである「初期費用込み総額」とrepository内intentが一致するSVR04を採用し、`cell_b: GO SVR04 xserver-business`によりXServerビジネスを単独vendorとして確定した。更新時請求額、解約条件、キャンペーン条件、A8.netのprogram別外部channel条件はunknownのまま保持する。
 
@@ -24,10 +24,10 @@ Cell Bはpage別GSC値を取得していないため、検索表示の多寡を�
 
 |Event|発火条件|dedupe|主なdimension|
 |---|---|---|---|
-|`calculator_result_view`|server計算結果がviewportへ25%以上表示|同一DOM elementは1回|article / cell / channel / campaign / environment / traffic scope / test|
-|`cta_view`|active affiliate CTAがviewportへ25%以上表示|同一DOM elementは1回|上記 + vendor / position / type|
-|`cta_eligible_session`|session内で最初のactive CTA表示|sessionStorageのglobal keyで1回|最初にeligibilityを作ったarticle / cell / vendor|
-|`outbound_click`|active CTAかつ許可hostへのclick|同一elementの750ms以内重複を抑止|article / cell / vendor / position / type / channel / campaign|
+|`calculator_result_view`|server計算結果がviewportへ25%以上表示|同一DOM elementは1回|article / cell / version / channel / safe source・medium class / campaign / environment / traffic scope / test|
+|`cta_view`|active affiliate CTAがviewportへ50%以上で1秒継続、または許可済みCTAを実click|同一DOM elementは1回|上記 + vendor / position / type|
+|`cta_eligible_session`|上記のCTA view成立|sessionStorageでarticle + cell + versionごとに1回|article / cell / version / channel / safe source・medium class|
+|`outbound_click`|active CTAかつ許可hostへのclick|sessionStorageでarticle + cell + version + vendor + positionごとに1回。GA4集計ではevent数でなくsessions-with-eventを使う|article / cell / version / vendor / position / type / channel / campaign|
 
 一般の外部リンクは`external_link_click`とし、affiliate用`outbound_click`へ混ぜない。disabled CTAはanchorへ変換されないため、view/clickのselectorに一致しない。
 
@@ -39,17 +39,35 @@ query stringは使用しない。site URLのfragmentだけに、列挙済みchan
 https://saastcolab.jp/servers/business-server-pricing#ch=note&cid=svr01-note-audit-01
 ```
 
-fragmentはHTTP request、canonical、page_locationへ送られない。受理channelは`direct / organic / note / x / partner / internal / unknown`だけ、campaignは英小文字・数字・hyphenの最大64文字だけである。
+fragmentはHTTP request、canonical、page_locationへ送られない。受理channelは`direct / organic / referral / note / x / partner / internal / unknown`だけ、campaignは英小文字・数字・hyphenの最大64文字だけである。外部referrerのhost名やqueryは保存せず、`referral` classへ丸める。最初に確認できたsafe acquisition classはsession内で保持し、同一site内の遷移で`internal`へ上書きしない。
 
 ## CTA eligible sessionとsafe aggregate
 
-`page_view`をCTRの分母にしない。GA4から日次・article・cell・vendor・position・channel別のsafe aggregateだけを転記し、`examples/revenue_cell_daily_aggregate.json`の形にする。
+`page_view`をCTRの分母にしない。GA4から日次・article・cell・version・CTA・channel・safe source/medium class・campaignが同一のsafe aggregateだけを転記し、`examples/revenue_cell_daily_aggregate.json`の形にする。異なるcell/version/sourceを同じ入力へ混ぜるとvalidatorは停止する。
+
+市場証拠からはinternal traffic、test、local/preview、debug、automated test、P11、自己クリック、運営者確認、研究募集による流入、ASP側で照合できないクリックを除外する。除外できない行は`traffic_scope=unknown`としてclean集計へ入れない。
 
 ```sh
 uv run python scripts/summarize_revenue_cells.py --input <safe-aggregate.json>
 ```
 
-集計はproduction・external・test=falseだけを含める。internal、bot、test、local/previewは除外する。maturityまたはcommissionが未取得なら、confirmed RPESは`null`のままにする。
+集計はproduction・external・test=falseだけを含める。internal、bot、test、local/previewは除外する。CTRの分子はGA4のevent countではなく、`outbound_click`を含むunique session数である。clean対象行が1件もないsummaryは`decision_ready=false`であり、0 outboundのSTOP判定へ使わない。maturityまたはcommissionが未取得なら、confirmed RPESは`null`のままにする。
+
+Cell全体のCTRはGA4でarticle + cell + version + acquisition groupを固定し、`outbound_click`を1回以上含むsessionを数える。vendor/position別のevent表を合算してCell全体を作ると同一sessionが重複し得るため禁止する。Cell全体のsafe aggregateではvendor/positionを`none`として転記し、CTA別内訳は診断表として分ける。
+
+### 日次最小レポート（未取得値は空欄）
+
+この表へ仮値や0埋めをしない。GA4 Internal Trafficが`テスト`の間は、自己アクセス除外を確認できた行だけをcleanとして算入する。
+
+|観測日|article|cell|version|channel|source class|medium class|campaign|clean eligible sessions|CTA view sessions|unique outbound sessions|outbound CTR|ASP clicks|pending件数|pending金額|confirmed件数|confirmed金額|
+|---|---|---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|---:|
+| | | | | | | | | | | | | | | | |
+
+|GSC観測日|SVR01 impressions|SVR01 clicks|SVR04 impressions|SVR04 clicks|server cluster impressions|server cluster clicks|
+|---|---:|---:|---:|---:|---:|---:|
+| | | | | | | |
+
+ASP側に許可済みsub-IDがない間、ASP click以降はdate / network / vendor単位までとし、Cell A/Bへ推測配賦しない。
 
 ## Production read-back
 
@@ -62,7 +80,10 @@ uv run python scripts/summarize_revenue_cells.py --input <safe-aggregate.json>
 5. SVR02〜SVR09からSVR01へのintent別内部リンクを確認する。
 6. P11はnoindex, follow、affiliate anchor 0件である。
 7. consent前はGA通信がない。consent後にDebugViewでresult → CTA view → outboundの順を確認する。
-8. 同じCTAを750ms以内に二度押しても`outbound_click`が1回であることを確認する。
+8. 同じsessionで同じCTAを二度押しても`outbound_click`が1回であり、Cell Aを見た後でもCell Bの`cta_eligible_session`が別に1回発火することを確認する。
+9. CTAを50%以上表示して1秒未満で離脱した場合は`cta_view`が発火せず、許可済みCTAを先にclickした場合は`cta_view`→`cta_eligible_session`→`outbound_click`の順で1回ずつ発火する。
+10. 同意を撤回した後のtimer・clickでは追加eventが発火しない。
+11. 公開routeのclient navigation用RSC payloadは200、private OperatorのRSC payloadは503である。
 
 ## Internal/test traffic
 
@@ -71,6 +92,7 @@ uv run python scripts/summarize_revenue_cells.py --input <safe-aggregate.json>
 - production / local / previewをaggregate contractで分離する。
 - browser自動化を`bot`、明示flagを`internal`、test flagを`test_flag=true`として送る。
 - query/referrer本文、IP、Cookie、affiliate URLは送らない。
+- sessionStorageが利用できない場合、clean eligible/outboundのsession eventはfail-closedで送らない。
 
 テスト端末ではDevTools Consoleで一時的に次を設定し、検証後に削除する。
 
@@ -108,9 +130,50 @@ localStorage.removeItem("saas_tco_lab_test_traffic_v1")
 
 ## STOP conditions
 
-- 30 eligible sessionsでoutbound 0: 新規記事を止め、Cell Aのintent/offer/CTAを再確認する。
-- 100 eligible sessionsでoutbound 5未満: 該当記事とofferの組合せを停止候補にする。
+- V=30かつO=0: CTA表示、検索意図、コピーを診断する。これはCell全体の撤退判定ではない。
+- V=50かつO=0: 当該表示versionをHOLDし、一度に一要素だけ変更する。
+- V=100かつO=0: 当該収益Cellを停止候補にする。
+- O>0かつASP click=0: link、計測、帰属障害を優先調査する。
+- ASP click>0かつPending=0: merchant CVRまたは流入品質を調査する。
+- Pending>0かつConfirmed=0: 否認理由と成果条件を調査する。
+- 30 eligible sessionsでoutbound 0: 現cell/version × 現流入をHOLDし、CTR 15%仮説を強く疑う。事業全体の失敗判定にはしない。
+- 50 eligible sessionsでoutbound 0: 現versionを継続しない。1〜4件なら拡張しない。
+- 100 eligible sessionsでoutbound 0〜2: 現cellを失敗扱い。3〜7件は再設計、8〜14件はcommission検証継続、15件以上は点推定上15%以上だがASP/EPCは未証明。
 - 確認期間後outbound 100でconfirmed 0: program / merchant / intentの組合せを停止候補にする。
 - productionとrepositoryが再び対応不能: deployをHOLDしrelease基線を復旧する。
 
 100 eligible sessions未満だけを理由にCTA失敗とは判定しない。
+
+## Revenue validation v1 監査（2026-08-23）
+
+判定は**条件付きGO**。これは収益性の証明ではなく、Cell・version・safe acquisition単位の分母とunique outbound sessionを誤判定しにくくするための計測・公開境界の修正である。GSC再処理結果、clean eligible、ASP click、Pending、Confirmedは未取得であり、0として扱わない。
+
+|ID|重大度|失敗モード|処置|
+|---|---|---|---|
+|R01|Critical|P11をruntime一覧へ誤登録するとsource未承認でも公開対象になり得る|source decision recordとの交差を強制し回帰test|
+|R02|High|Cell A閲覧後のCell Bでeligible分母が欠落する|article + cell + version単位でsession dedupe|
+|R03|High|variant前後を分離できない|固定versionをDOM・event・aggregateへ追加|
+|R04|High|event countをoutbound sessionとしてCTR計算する|GA4 sessions-with-eventを正本にする|
+|R05|High|Cell・source・CTAの異なる行が合算される|group不一致をvalidation error|
+|R06|High|clickがobserverより先だとoutboundだけ発火する|許可clickを強いview証拠としてV→E→O順で記録|
+|R07|High|内部遷移後にorganic/referralがinternalへ変わる|最初のsafe acquisition classをsession保持|
+|R08|High|未承認deep-link/sub-ID queryでもCTAが有効化される|network別の既知query key集合以外を拒否|
+|R09|High|SVR01から本番503のOperatorへ遷移する|公開記事からOperator linkを削除|
+|R10|Medium|SVR04がactive CTAの下で外部linkなしと表示する|根拠表だけに限定した表現へ修正|
+|R11|Medium|同意撤回後もtimer/click eventが続く|全eventでconsentを再確認|
+|R12|Medium|storage利用不可時にsession eventが重複する|eligible/outboundをfail-closed|
+|R13|Medium|瞬間表示をCTA viewとする|50%以上1秒、実clickは同等以上の証拠|
+|R14|Medium|clean対象0行が0 outboundの証拠に見える|`decision_ready=false`を必須化|
+|R15|Medium|不可能なsession数・金額関係を受理する|単調性とpositive conversionを検証|
+|R16|External|server impressionsの未発生原因が再処理待ちか品質か未確定|コードで補完せずURL Inspectionで再分類|
+|R17|Operational|GA4 Internal TrafficがTEST中でもself visitをclean扱いし得る|Human確認までclean KPIをHOLD|
+|R18|High|公開routeのRSC payloadが503となり、client navigationが壊れる|公開routeへ対応するRSCだけを200にし、index/CTA対象から除外。private RSCは503を維持|
+|R19|High|SVR04の4社比較表示と単独CTAの問いが一致せず、v2/v3の実績が混ざる|SVR04をXServer 1社の確認値へ限定し、Cell Bだけv3へ更新|
+
+### 週次review template
+
+|週|article|cell|version|channel|source class|medium class|campaign|clean E sessions|V sessions|unique O sessions|ASP clicks|Pending件数|Pending金額|Confirmed件数|Confirmed金額|
+|---|---|---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| | | | | | | | | | | | | | | | |
+
+同一group内だけでE→V、V→O、E→Oを計算する。ASP側はnetwork・vendor・日付単位でGA4 unique Oとの差分を記録し、sub-IDが未承認の間はCell単位の成果帰属を主張しない。

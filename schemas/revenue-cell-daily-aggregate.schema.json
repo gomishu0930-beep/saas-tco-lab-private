@@ -13,6 +13,7 @@
       "enum": [
         "direct",
         "organic",
+        "referral",
         "note",
         "x",
         "partner",
@@ -29,6 +30,31 @@
         "local"
       ],
       "title": "RevenueEnvironment",
+      "type": "string"
+    },
+    "RevenueMediumClass": {
+      "enum": [
+        "none",
+        "organic",
+        "referral",
+        "internal",
+        "unknown"
+      ],
+      "title": "RevenueMediumClass",
+      "type": "string"
+    },
+    "RevenueSourceClass": {
+      "enum": [
+        "direct",
+        "search",
+        "referral",
+        "note",
+        "x",
+        "partner",
+        "internal",
+        "unknown"
+      ],
+      "title": "RevenueSourceClass",
       "type": "string"
     },
     "RevenueTrafficScope": {
@@ -124,6 +150,11 @@
       "title": "Cta Type",
       "type": "string"
     },
+    "cta_view_sessions": {
+      "minimum": 0,
+      "title": "Cta View Sessions",
+      "type": "integer"
+    },
     "cta_views": {
       "minimum": 0,
       "title": "Cta Views",
@@ -150,6 +181,9 @@
       "default": null,
       "title": "Matured Eligible Sessions"
     },
+    "medium_class": {
+      "$ref": "#/$defs/RevenueMediumClass"
+    },
     "observed_on": {
       "format": "date",
       "title": "Observed On",
@@ -159,6 +193,23 @@
       "minimum": 0,
       "title": "Outbound Clicks",
       "type": "integer"
+    },
+    "pending_commission_minor": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "pattern": "^(?!^[-+.]*$)[+-]?0*\\d*\\.?\\d{0,8}0*$",
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Pending Commission Minor"
     },
     "pending_conversions": {
       "anyOf": [
@@ -189,11 +240,22 @@
     "revenue_cell_id": {
       "$ref": "#/$defs/RevenueCellId"
     },
+    "revenue_cell_version": {
+      "enum": [
+        "v2",
+        "v3"
+      ],
+      "title": "Revenue Cell Version",
+      "type": "string"
+    },
     "schema_version": {
-      "const": "1.0",
-      "default": "1.0",
+      "const": "1.1",
+      "default": "1.1",
       "title": "Schema Version",
       "type": "string"
+    },
+    "source_class": {
+      "$ref": "#/$defs/RevenueSourceClass"
     },
     "test_flag": {
       "title": "Test Flag",
@@ -201,6 +263,11 @@
     },
     "traffic_scope": {
       "$ref": "#/$defs/RevenueTrafficScope"
+    },
+    "unique_outbound_sessions": {
+      "minimum": 0,
+      "title": "Unique Outbound Sessions",
+      "type": "integer"
     },
     "vendor_id": {
       "anyOf": [
@@ -222,18 +289,23 @@
     "observed_on",
     "article_id",
     "revenue_cell_id",
+    "revenue_cell_version",
     "vendor_id",
     "cta_position",
     "cta_type",
     "channel",
+    "source_class",
+    "medium_class",
     "campaign_id",
     "environment",
     "traffic_scope",
     "test_flag",
     "calculator_result_views",
     "cta_views",
+    "cta_view_sessions",
     "eligible_sessions",
-    "outbound_clicks"
+    "outbound_clicks",
+    "unique_outbound_sessions"
   ],
   "title": "RevenueCellDailyAggregate",
   "type": "object"
