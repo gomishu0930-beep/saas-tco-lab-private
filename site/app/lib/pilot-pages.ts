@@ -361,6 +361,7 @@ export type ServerInternalRevenueFunnel = {
 
 export type ServerRevenueCell = {
   id: "cell-a-comparison" | "cell-b-single";
+  version: "v2";
   ctaType: "affiliate_comparison" | "affiliate_single";
   state: "human_selected" | "hold_vendor_selection";
   primaryPartnerId: "a8net-xserver-business" | null;
@@ -375,6 +376,7 @@ export type ServerRevenueCell = {
 const serverRevenueCells = {
   SVR01: {
     id: "cell-a-comparison",
+    version: "v2",
     ctaType: "affiliate_comparison",
     state: "human_selected",
     primaryPartnerId: "a8net-xserver-business",
@@ -382,6 +384,7 @@ const serverRevenueCells = {
   },
   SVR04: {
     id: "cell-b-single",
+    version: "v2",
     ctaType: "affiliate_single",
     state: "human_selected",
     primaryPartnerId: "a8net-xserver-business",

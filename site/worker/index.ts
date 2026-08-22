@@ -399,7 +399,100 @@ function consentGatedAnalyticsBootstrap(measurementId: string): string {
 }
 
 function revenueFunnelMeasurementBootstrap(): string {
-  return `<script data-saastco-funnel-measurement>(()=>{const k="saas_tco_lab_analytics_consent_v1",p=location.pathname,w=new WeakSet(),x=new WeakSet(),j=new WeakMap(),h=new Set(["mangools.com","px.a8.net","af.moshimo.com","ck.jp.ap.valuecommerce.com"]),z=new Set(["direct","organic","note","x","partner","internal","unknown"]);let i=null,r=false,q=false;const g=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)},a=()=>document.querySelector("main[data-article-id]"),d=()=>{let c="direct",m="baseline";try{const u=new URL(location.href),hp=new URLSearchParams(u.hash.startsWith("#")?u.hash.slice(1):""),rc=hp.get("ch"),rm=hp.get("cid"),sc=sessionStorage.getItem("saas_tco_lab_channel_v1"),sm=sessionStorage.getItem("saas_tco_lab_campaign_v1");if(rc&&z.has(rc)){c=rc;sessionStorage.setItem("saas_tco_lab_channel_v1",c)}else if(sc&&z.has(sc))c=sc;else if(document.referrer){const rh=new URL(document.referrer).hostname.toLowerCase();c=rh===location.hostname?"internal":/(?:^|\\.)(?:google\\.|bing\\.com$|search\\.yahoo\\.)/.test(rh)?"organic":"unknown"}if(rm&&/^[a-z0-9]+(?:[a-z0-9-]{0,62}[a-z0-9])?$/.test(rm)){m=rm;sessionStorage.setItem("saas_tco_lab_campaign_v1",m)}else if(sm&&/^[a-z0-9]+(?:[a-z0-9-]{0,62}[a-z0-9])?$/.test(sm))m=sm}catch{}let ts="external";try{if(navigator.webdriver)ts="bot";else if(localStorage.getItem("saas_tco_lab_traffic_scope_v1")==="internal")ts="internal"}catch{}let tf=false;try{tf=localStorage.getItem("saas_tco_lab_test_traffic_v1")==="1"}catch{}const root=a();return{article_id:root?.getAttribute("data-article-id")||"unknown",revenue_cell_id:root?.getAttribute("data-revenue-cell-id")||"none",channel:c,campaign_id:m,environment:"production",traffic_scope:ts,test_flag:tf}},e=(n,v={})=>g("event",n,{content_path:p,...d(),...v}),c=t=>t.getAttribute("data-server-cta-position")||t.getAttribute("data-cta-position")||"article_action",y=t=>t.getAttribute("data-vendor-id")||(t.getAttribute("data-affiliate-cta-partner")==="mangools"?"mangools":"unknown"),o=t=>t.getAttribute("data-server-cta-type")||t.getAttribute("data-cta-type")||(t.hasAttribute("data-server-affiliate-cta-partner")?"affiliate_comparison":"saas_affiliate"),v=t=>{if(w.has(t))return;w.add(t);const n={vendor_id:y(t),cta_position:c(t),cta_type:o(t)};e("cta_view",n);try{const s="saas_tco_lab_cta_eligible_v2";if(sessionStorage.getItem(s)!=="1"){sessionStorage.setItem(s,"1");e("cta_eligible_session",{...n,eligibility_rule:"active_cta_view"})}}catch{}},f=t=>{if(x.has(t))return;x.add(t);e("calculator_result_view",{vendor_id:"none",cta_position:"none",cta_type:"none",calculator_kind:"server_zero_input"})},b=()=>{if(localStorage.getItem(k)!=="granted")return;if(!i)i=new IntersectionObserver(es=>es.forEach(en=>{if(!en.isIntersecting)return;const t=en.target;if(t.matches("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"))v(t);else if(t.matches('[data-server-template-step="result"]'))f(t)}),{threshold:.25});document.querySelectorAll("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]").forEach(t=>i.observe(t));document.querySelectorAll('[data-server-template-step="result"]').forEach(t=>i.observe(t));if(!r){document.addEventListener("click",t=>{if(localStorage.getItem(k)!=="granted")return;const l=t.target instanceof Element?t.target.closest("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"):null;if(l instanceof HTMLAnchorElement){const u=new URL(l.href,location.href),n=Date.now(),last=j.get(l)||0;if(u.origin===location.origin||!h.has(u.hostname.toLowerCase())||n-last<750)return;j.set(l,n);e("outbound_click",{vendor_id:y(l),cta_position:c(l),cta_type:o(l)});return}const it=t.target instanceof Element?t.target.closest('a[data-analytics-event="server_internal_funnel"]'):null;if(it instanceof HTMLAnchorElement){const u=new URL(it.href,location.href);if(u.origin===location.origin)e("server_internal_funnel",{destination_path:u.pathname})}},{passive:true});r=true}},s=()=>{if(q)return;q=true;queueMicrotask(()=>{q=false;b()})};new MutationObserver(s).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["data-affiliate-cta-partner","data-server-affiliate-cta-partner"]});addEventListener("DOMContentLoaded",b,{once:true});b()})();</script>`;
+  return `<script data-saastco-funnel-measurement>(()=>{
+    const consentKey="saas_tco_lab_analytics_consent_v1",path=location.pathname;
+    const viewedCtas=new WeakSet(),viewedResults=new WeakSet(),recentClicks=new WeakMap();
+    const allowedHosts=new Set(["mangools.com","px.a8.net","af.moshimo.com","ck.jp.ap.valuecommerce.com"]);
+    const allowedChannels=new Set(["direct","organic","referral","note","x","partner","internal","unknown"]);
+    let observer=null,clickBound=false,mutationQueued=false;
+    const gtag=function(){window.dataLayer=window.dataLayer||[];window.dataLayer.push(arguments)};
+    const root=()=>document.querySelector("main[data-article-id]");
+    const safeSlug=value=>/^(?=.{1,64}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/.test(value||"")?value:null;
+    const attribution=()=>{
+      let channel="direct",campaign="baseline";
+      try{
+        const current=new URL(location.href);
+        const fragment=new URLSearchParams(current.hash.startsWith("#")?current.hash.slice(1):"");
+        const requestedChannel=fragment.get("ch"),requestedCampaign=safeSlug(fragment.get("cid"));
+        const storedChannel=sessionStorage.getItem("saas_tco_lab_channel_v1");
+        const storedCampaign=safeSlug(sessionStorage.getItem("saas_tco_lab_campaign_v1"));
+        if(requestedChannel&&allowedChannels.has(requestedChannel)){channel=requestedChannel;sessionStorage.setItem("saas_tco_lab_channel_v1",channel)}
+        else if(storedChannel&&allowedChannels.has(storedChannel))channel=storedChannel;
+        else if(document.referrer){
+          const referrerHost=new URL(document.referrer).hostname.toLowerCase();
+          channel=referrerHost===location.hostname?"internal":/(?:^|\\.)(?:google\\.|bing\\.com$|search\\.yahoo\\.)/.test(referrerHost)?"organic":"referral";
+        }
+        if(requestedCampaign){campaign=requestedCampaign;sessionStorage.setItem("saas_tco_lab_campaign_v1",campaign)}
+        else if(storedCampaign)campaign=storedCampaign;
+      }catch{}
+      const sourceClass=channel==="organic"?"search":channel;
+      const mediumClass=channel==="organic"?"organic":["note","x","partner","referral"].includes(channel)?"referral":channel==="internal"?"internal":channel==="direct"?"none":"unknown";
+      return{channel,source_class:sourceClass,medium_class:mediumClass,campaign_id:campaign};
+    };
+    const dimensions=()=>{
+      let trafficScope="external";
+      try{if(navigator.webdriver)trafficScope="bot";else if(localStorage.getItem("saas_tco_lab_traffic_scope_v1")==="internal")trafficScope="internal"}catch{}
+      let testFlag=false;try{testFlag=localStorage.getItem("saas_tco_lab_test_traffic_v1")==="1"}catch{}
+      const articleRoot=root();
+      return{
+        article_id:articleRoot?.getAttribute("data-article-id")||"unknown",
+        revenue_cell_id:articleRoot?.getAttribute("data-revenue-cell-id")||"none",
+        revenue_cell_version:articleRoot?.getAttribute("data-revenue-cell-version")||"none",
+        ...attribution(),environment:"production",traffic_scope:trafficScope,test_flag:testFlag
+      };
+    };
+    const emit=(name,value={})=>gtag("event",name,{content_path:path,...dimensions(),...value});
+    const position=target=>target.getAttribute("data-server-cta-position")||target.getAttribute("data-cta-position")||"article_action";
+    const vendor=target=>target.getAttribute("data-vendor-id")||(target.getAttribute("data-affiliate-cta-partner")==="mangools"?"mangools":"unknown");
+    const ctaType=target=>target.getAttribute("data-server-cta-type")||target.getAttribute("data-cta-type")||(target.hasAttribute("data-server-affiliate-cta-partner")?"affiliate_comparison":"saas_affiliate");
+    const showCta=target=>{
+      if(viewedCtas.has(target))return;viewedCtas.add(target);
+      const detail={vendor_id:vendor(target),cta_position:position(target),cta_type:ctaType(target)};
+      emit("cta_view",detail);
+      let emitEligibility=true;
+      try{
+        const current=dimensions();
+        const key=["saas_tco_lab_cta_eligible_v3",current.article_id,current.revenue_cell_id,current.revenue_cell_version].join(":");
+        if(sessionStorage.getItem(key)==="1")emitEligibility=false;else sessionStorage.setItem(key,"1");
+      }catch{}
+      if(emitEligibility)emit("cta_eligible_session",{...detail,eligibility_rule:"active_cta_view"});
+    };
+    const showResult=target=>{if(viewedResults.has(target))return;viewedResults.add(target);emit("calculator_result_view",{vendor_id:"none",cta_position:"none",cta_type:"none",calculator_kind:"server_zero_input"})};
+    const bind=()=>{
+      if(localStorage.getItem(consentKey)!=="granted")return;
+      if(!observer)observer=new IntersectionObserver(entries=>entries.forEach(entry=>{
+        if(!entry.isIntersecting)return;const target=entry.target;
+        if(target.matches("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"))showCta(target);
+        else if(target.matches('[data-server-template-step="result"]'))showResult(target)
+      }),{threshold:.25});
+      document.querySelectorAll("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]").forEach(target=>observer.observe(target));
+      document.querySelectorAll('[data-server-template-step="result"]').forEach(target=>observer.observe(target));
+      if(!clickBound){
+        document.addEventListener("click",event=>{
+          if(localStorage.getItem(consentKey)!=="granted")return;
+          const link=event.target instanceof Element?event.target.closest("a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]"):null;
+          if(link instanceof HTMLAnchorElement){
+            const destination=new URL(link.href,location.href),now=Date.now(),last=recentClicks.get(link)||0;
+            if(destination.origin===location.origin||!allowedHosts.has(destination.hostname.toLowerCase())||now-last<750)return;
+            recentClicks.set(link,now);
+            const detail={vendor_id:vendor(link),cta_position:position(link),cta_type:ctaType(link)};
+            try{
+              const current=dimensions();
+              const key=["saas_tco_lab_outbound_session_v1",current.article_id,current.revenue_cell_id,current.revenue_cell_version,detail.vendor_id,detail.cta_position].join(":");
+              if(sessionStorage.getItem(key)==="1")return;
+              sessionStorage.setItem(key,"1");
+            }catch{}
+            emit("outbound_click",detail);return;
+          }
+          const internal=event.target instanceof Element?event.target.closest('a[data-analytics-event="server_internal_funnel"]'):null;
+          if(internal instanceof HTMLAnchorElement){const destination=new URL(internal.href,location.href);if(destination.origin===location.origin)emit("server_internal_funnel",{destination_path:destination.pathname})}
+        },{passive:true});clickBound=true;
+      }
+    };
+    const schedule=()=>{if(mutationQueued)return;mutationQueued=true;queueMicrotask(()=>{mutationQueued=false;bind()})};
+    new MutationObserver(schedule).observe(document.documentElement,{subtree:true,childList:true,attributes:true,attributeFilter:["data-affiliate-cta-partner","data-server-affiliate-cta-partner"]});
+    addEventListener("DOMContentLoaded",bind,{once:true});bind();
+  })();</script>`;
 }
 
 function runtimeHeadControls(env: ProductionEnv): RuntimeHeadControls {

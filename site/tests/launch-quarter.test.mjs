@@ -323,6 +323,7 @@ test("the eight server launch articles route to the single SVR01 revenue experim
 test("revenue cells keep Cell A bounded and Cell B single-vendor selected", () => {
   assert.deepEqual(serverRevenueCellFor("SVR01"), {
     id: "cell-a-comparison",
+    version: "v2",
     ctaType: "affiliate_comparison",
     state: "human_selected",
     primaryPartnerId: "a8net-xserver-business",
@@ -330,6 +331,7 @@ test("revenue cells keep Cell A bounded and Cell B single-vendor selected", () =
   });
   assert.deepEqual(serverRevenueCellFor("SVR04"), {
     id: "cell-b-single",
+    version: "v2",
     ctaType: "affiliate_single",
     state: "human_selected",
     primaryPartnerId: "a8net-xserver-business",

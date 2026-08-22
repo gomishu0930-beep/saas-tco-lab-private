@@ -23,7 +23,7 @@ _SAFE_TEXT = re.compile(
     re.I,
 )
 _ARTICLE_ID = re.compile(r"^(?:P(?:0[1-9]|1[0-2])|SVR(?:0[1-9]|1[0-9]|20))$")
-_CAMPAIGN_ID = re.compile(r"^[a-z0-9]+(?:[a-z0-9-]{0,62}[a-z0-9])?$")
+_CAMPAIGN_ID = re.compile(r"^(?=.{1,64}$)[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$")
 
 
 class EvidenceStatus(str, Enum):
@@ -275,9 +275,29 @@ class RevenueCellId(str, Enum):
 class RevenueChannel(str, Enum):
     DIRECT = "direct"
     ORGANIC = "organic"
+    REFERRAL = "referral"
     NOTE = "note"
     X = "x"
     PARTNER = "partner"
+    INTERNAL = "internal"
+    UNKNOWN = "unknown"
+
+
+class RevenueSourceClass(str, Enum):
+    DIRECT = "direct"
+    SEARCH = "search"
+    REFERRAL = "referral"
+    NOTE = "note"
+    X = "x"
+    PARTNER = "partner"
+    INTERNAL = "internal"
+    UNKNOWN = "unknown"
+
+
+class RevenueMediumClass(str, Enum):
+    NONE = "none"
+    ORGANIC = "organic"
+    REFERRAL = "referral"
     INTERNAL = "internal"
     UNKNOWN = "unknown"
 
@@ -296,15 +316,18 @@ class RevenueEnvironment(str, Enum):
 
 
 class RevenueAnalyticsContract(StrictModel):
-    schema_version: Literal["1.0"] = "1.0"
+    schema_version: Literal["1.1"] = "1.1"
     event_names: tuple[RevenueEventName, ...]
     allowed_dimensions: tuple[Literal[
         "article_id",
         "revenue_cell_id",
+        "revenue_cell_version",
         "vendor_id",
         "cta_position",
         "cta_type",
         "channel",
+        "source_class",
+        "medium_class",
         "campaign_id",
         "environment",
         "traffic_scope",
@@ -336,24 +359,30 @@ class RevenueAnalyticsContract(StrictModel):
 
 
 class RevenueCellDailyAggregate(StrictModel):
-    schema_version: Literal["1.0"] = "1.0"
+    schema_version: Literal["1.1"] = "1.1"
     observed_on: date
     article_id: str
     revenue_cell_id: RevenueCellId
+    revenue_cell_version: Literal["v2"]
     vendor_id: Slug | Literal["none"]
     cta_position: Literal["primary", "alternative", "single", "article_action", "none"]
     cta_type: Literal["affiliate_comparison", "affiliate_single", "saas_affiliate", "none"]
     channel: RevenueChannel
+    source_class: RevenueSourceClass
+    medium_class: RevenueMediumClass
     campaign_id: str
     environment: RevenueEnvironment
     traffic_scope: RevenueTrafficScope
     test_flag: bool
     calculator_result_views: int = Field(ge=0)
     cta_views: int = Field(ge=0)
+    cta_view_sessions: int = Field(ge=0)
     eligible_sessions: int = Field(ge=0)
     outbound_clicks: int = Field(ge=0)
+    unique_outbound_sessions: int = Field(ge=0)
     asp_clicks: int | None = Field(default=None, ge=0)
     pending_conversions: int | None = Field(default=None, ge=0)
+    pending_commission_minor: Decimal | None = Field(default=None, ge=0, decimal_places=8)
     confirmed_conversions: int | None = Field(default=None, ge=0)
     rejected_conversions: int | None = Field(default=None, ge=0)
     matured_eligible_sessions: int | None = Field(default=None, ge=0)
@@ -377,20 +406,43 @@ class RevenueCellDailyAggregate(StrictModel):
     def require_consistent_counts(self) -> Self:
         if self.outbound_clicks > self.cta_views:
             raise ValueError("outbound clicks cannot exceed observed CTA views")
+        if self.unique_outbound_sessions > self.eligible_sessions:
+            raise ValueError("unique outbound sessions cannot exceed eligible sessions")
+        if self.unique_outbound_sessions > self.outbound_clicks:
+            raise ValueError("unique outbound sessions cannot exceed outbound click events")
         if self.matured_eligible_sessions is not None and self.matured_eligible_sessions > self.eligible_sessions:
             raise ValueError("matured eligible sessions cannot exceed eligible sessions")
+        if self.pending_commission_minor is not None and self.pending_conversions is None:
+            raise ValueError("pending commission requires a pending conversion count")
         if self.confirmed_commission_minor is not None and self.confirmed_conversions is None:
             raise ValueError("confirmed commission requires a confirmed conversion count")
         return self
 
 
 class RevenueCellAggregateSummary(StrictModel):
+    article_id: str | None = None
+    revenue_cell_id: RevenueCellId | None = None
+    revenue_cell_version: Literal["v2"] | None = None
+    vendor_id: Slug | Literal["none"] | None = None
+    cta_position: Literal["primary", "alternative", "single", "article_action", "none"] | None = None
+    cta_type: Literal["affiliate_comparison", "affiliate_single", "saas_affiliate", "none"] | None = None
+    channel: RevenueChannel | None = None
+    source_class: RevenueSourceClass | None = None
+    medium_class: RevenueMediumClass | None = None
+    campaign_id: str | None = None
     included_rows: int = Field(ge=0)
     excluded_rows: int = Field(ge=0)
     calculator_result_views: int = Field(ge=0)
     cta_views: int = Field(ge=0)
+    cta_view_sessions: int = Field(ge=0)
     eligible_sessions: int = Field(ge=0)
     outbound_clicks: int = Field(ge=0)
+    unique_outbound_sessions: int = Field(ge=0)
+    asp_clicks: int | None = Field(default=None, ge=0)
+    pending_conversions: int | None = Field(default=None, ge=0)
+    pending_commission_minor: Decimal | None = Field(default=None, ge=0)
+    confirmed_conversions: int | None = Field(default=None, ge=0)
+    rejected_conversions: int | None = Field(default=None, ge=0)
     matured_eligible_sessions: int | None = Field(default=None, ge=0)
     confirmed_commission_minor: Decimal | None = Field(default=None, ge=0)
     outbound_ctr_percent: Decimal | None = Field(default=None, ge=0)
@@ -412,10 +464,36 @@ def summarize_revenue_cell(
         and row.traffic_scope is RevenueTrafficScope.EXTERNAL
         and not row.test_flag
     )
+    grouping_keys = {
+        (
+            row.article_id,
+            row.revenue_cell_id,
+            row.revenue_cell_version,
+            row.vendor_id,
+            row.cta_position,
+            row.cta_type,
+            row.channel,
+            row.source_class,
+            row.medium_class,
+            row.campaign_id,
+        )
+        for row in included
+    }
+    if len(grouping_keys) > 1:
+        raise ValueError(
+            "safe aggregate rows must share article, cell/version, CTA, channel/source/medium, and campaign"
+        )
+    grouping_key = next(iter(grouping_keys), None)
     eligible = sum(row.eligible_sessions for row in included)
-    clicks = sum(row.outbound_clicks for row in included)
+    outbound_sessions = sum(row.unique_outbound_sessions for row in included)
     matured_values = [row.matured_eligible_sessions for row in included]
     commission_values = [row.confirmed_commission_minor for row in included]
+    def complete_sum(field_name: str) -> int | Decimal | None:
+        values = [getattr(row, field_name) for row in included]
+        if not included or not all(value is not None for value in values):
+            return None
+        return sum((value for value in values if value is not None), 0)
+
     matured = (
         sum(value for value in matured_values if value is not None)
         if included and all(value is not None for value in matured_values)
@@ -427,7 +505,7 @@ def summarize_revenue_cell(
         else None
     )
     outbound_ctr = (
-        (Decimal(clicks) / Decimal(eligible) * Decimal(100)).quantize(
+        (Decimal(outbound_sessions) / Decimal(eligible) * Decimal(100)).quantize(
             Decimal("0.01"), rounding=ROUND_HALF_UP
         )
         if eligible > 0
@@ -439,12 +517,29 @@ def summarize_revenue_cell(
         else None
     )
     return RevenueCellAggregateSummary(
+        article_id=grouping_key[0] if grouping_key else None,
+        revenue_cell_id=grouping_key[1] if grouping_key else None,
+        revenue_cell_version=grouping_key[2] if grouping_key else None,
+        vendor_id=grouping_key[3] if grouping_key else None,
+        cta_position=grouping_key[4] if grouping_key else None,
+        cta_type=grouping_key[5] if grouping_key else None,
+        channel=grouping_key[6] if grouping_key else None,
+        source_class=grouping_key[7] if grouping_key else None,
+        medium_class=grouping_key[8] if grouping_key else None,
+        campaign_id=grouping_key[9] if grouping_key else None,
         included_rows=len(included),
         excluded_rows=len(rows) - len(included),
         calculator_result_views=sum(row.calculator_result_views for row in included),
         cta_views=sum(row.cta_views for row in included),
+        cta_view_sessions=sum(row.cta_view_sessions for row in included),
         eligible_sessions=eligible,
-        outbound_clicks=clicks,
+        outbound_clicks=sum(row.outbound_clicks for row in included),
+        unique_outbound_sessions=outbound_sessions,
+        asp_clicks=complete_sum("asp_clicks"),
+        pending_conversions=complete_sum("pending_conversions"),
+        pending_commission_minor=complete_sum("pending_commission_minor"),
+        confirmed_conversions=complete_sum("confirmed_conversions"),
+        rejected_conversions=complete_sum("rejected_conversions"),
         matured_eligible_sessions=matured,
         confirmed_commission_minor=commission,
         outbound_ctr_percent=outbound_ctr,

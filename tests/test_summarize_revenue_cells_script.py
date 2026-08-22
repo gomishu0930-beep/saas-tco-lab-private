@@ -14,8 +14,10 @@ def test_safe_aggregate_script_keeps_unknown_revenue_null(tmp_path: Path) -> Non
         "traffic_scope": "external",
         "calculator_result_views": 3,
         "cta_views": 2,
+        "cta_view_sessions": 2,
         "eligible_sessions": 2,
         "outbound_clicks": 1,
+        "unique_outbound_sessions": 1,
     })
     source = tmp_path / "aggregate.json"
     source.write_text(json.dumps([row]), encoding="utf-8")
@@ -29,5 +31,6 @@ def test_safe_aggregate_script_keeps_unknown_revenue_null(tmp_path: Path) -> Non
     output = json.loads(result.stdout)
     assert output["included_rows"] == 1
     assert output["outbound_ctr_percent"] == "50.00"
+    assert output["revenue_cell_version"] == "v2"
     assert output["confirmed_commission_minor"] is None
     assert output["confirmed_rpes_minor"] is None

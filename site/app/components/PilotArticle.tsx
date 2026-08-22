@@ -256,6 +256,7 @@ export function PilotArticle({
       className="page-main"
       data-article-id={page.id}
       data-revenue-cell-id="none"
+      data-revenue-cell-version="none"
     >
       <AdvertisingDisclosure />
       <ArticleStructuredData page={page} contract={contract} />
@@ -471,6 +472,7 @@ export function ServerArticleTemplate({
       data-server-article-review={articleReviewStatus}
       data-article-id={article.id}
       data-revenue-cell-id={revenueCell?.id ?? "none"}
+      data-revenue-cell-version={revenueCell?.version ?? "none"}
       data-revenue-cell-state={revenueCell?.state ?? "not_assigned"}
     >
       <AdvertisingDisclosure />

@@ -131,7 +131,16 @@ _SCOPE_ROOT_DIRECTORIES = (
     "tests",
 )
 _IGNORED_TOP_LEVEL = frozenset(
-    {".git", ".hypothesis", ".pytest_cache", ".venv", "outputs", "work"}
+    {
+        ".codex",
+        ".devspace",
+        ".git",
+        ".hypothesis",
+        ".pytest_cache",
+        ".venv",
+        "outputs",
+        "work",
+    }
 )
 _IGNORED_DIRECTORY_NAMES = frozenset({"__pycache__", ".pytest_cache"})
 _IGNORED_SITE_DIRECTORY_NAMES = frozenset(
