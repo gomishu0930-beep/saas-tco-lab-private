@@ -14,9 +14,9 @@
 |Cell|記事|型|現在のlocal状態|production状態|
 |---|---|---|---|---|
 |A|SVR01|比較型|XServer primary + ConoHa alternativeの最大2枠|Sites v38 / commit `af95bdb`。主1・代替1、開示先行、mobile overflowなしを外部read-back済み|
-|B|SVR04|初期費用込み総額の単独型|XServerビジネスをHuman選定。owned-site限定の単独CTA|単独CTA 1件を外部read-back済み。外部媒体・deep-link・sub-IDはHOLD|
+|B|SVR04|初期費用込み総額の単独型|XServerビジネスをHuman選定。owned-site限定の単独CTA|単独CTA 1件を外部read-back済み。登録外媒体への広告掲載・deep-link・sub-IDはHOLD|
 
-Cell Bはpage別GSC値を取得していないため、検索表示の多寡を推測して選んでいない。Human指示のfallbackである「初期費用込み総額」とrepository内intentが一致するSVR04を採用し、`cell_b: GO SVR04 xserver-business`によりXServerビジネスを単独vendorとして確定した。更新時請求額、解約条件、キャンペーン条件、A8.netのprogram別外部channel条件はunknownのまま保持する。
+Cell Bはpage別GSC値を取得していないため、検索表示の多寡を推測して選んでいない。Human指示のfallbackである「初期費用込み総額」とrepository内intentが一致するSVR04を採用し、`cell_b: GO SVR04 xserver-business`によりXServerビジネスを単独vendorとして確定した。更新時請求額、解約条件、キャンペーン条件はunknownのまま保持する。2026-08-22にA8.netのprogram詳細とメディア会員利用規約をHuman sessionでread-only確認した。program詳細には外部channel・deep-link・sub-IDの個別許可がなく、一般規約は登録外サイト・Twitterアカウント・PDF等への広告掲載を禁止している。したがってowned-site CTAだけをGOとし、note・X・partnerへのaffiliate広告・affiliate URL掲載、deep-link、sub-IDは各媒体登録と個別条件の確認までHOLDする。
 
 ## Event contract
 
@@ -40,6 +40,8 @@ https://saastcolab.jp/servers/business-server-pricing#ch=note&cid=svr01-note-aud
 ```
 
 fragmentはHTTP request、canonical、page_locationへ送られない。受理channelは`direct / organic / referral / note / x / partner / internal / unknown`だけ、campaignは英小文字・数字・hyphenの最大64文字だけである。外部referrerのhost名やqueryは保存せず、`referral` classへ丸める。
+
+`note / x / partner`は安全な計測形式の列挙値であり、媒体利用許可を表さない。2026-08-22時点ではA8.netのaffiliate広告を登録外媒体へ掲載しない。外部配信素材はDRAFT_ONLYを維持し、媒体登録・program条件・Human公開GOが揃うまで公開しない。
 
 ## CTA eligible sessionとsafe aggregate
 

@@ -1,5 +1,15 @@
 # Index audit V2 — 20 approved articles
 
+## 2026-08-22 後続GSC read-back — 再処理待ち
+
+GSC domain propertyではsitemapが2026-08-22に再読込され、`成功しました`・検出22 URLを維持した。集計はindex済み6、未index 9、検索clicks 0のままである。
+
+- SVR01とSVR04の保存済みURL検査は、いずれも`URL が Google に認識されていません`、参照元sitemapなし、前回crawlなしを表示した。
+- repositoryとproductionは両URLともHTTP 200、robots meta 1件の`index, follow`、self-canonical、sitemap収録、内部linkありを維持する。
+- sitemap集計と個別検査の反映時点が一致していないため、残URLの状態を補完しない。連続live test、登録要求、sitemap再送信は行わず、Googleの次回crawl・集計更新を待つ。
+
+この後続read-backは、下記のregional delivery差異候補を否定せず、現時点の保存済みURL検査状態を更新するものである。
+
 ## 2026-08-22 GSC再確認 — regional delivery差異
 
 GSC domain propertyの現在集計はindex済み6、未index 9、sitemapは成功・検出22 URL（公開20記事 + Human承認済み2 hub）である。集計外URLの状態を推測しない。
@@ -34,10 +44,10 @@ SVR01〜SVR09は全件、productionでHTTP 200、robots meta 1件の`index, foll
 |P09|`/pilot/migration-cost`|移行コスト|approved|index,follow / self|yes|Mangools active|home・P関連記事|200 / header index / self canonical|indexed / reasonなし / last crawl未記録|監視|
 |P10|`/pilot/japan-tax`|日本向け税・通貨|approved|index,follow / self|yes|Mangools active|home・P関連記事|200 / header index / self canonical|URLがGoogleに認識されていない / crawlなし|重複robots修正後に検出待ち|
 |P12|`/pilot/evidence-method`|根拠の検証|approved|index,follow / self|yes|Mangools active|home・P関連記事|200 / header index / self canonical|indexed / reasonなし / last crawl未記録|監視|
-|SVR01|`/servers/business-server-pricing`|法人向けサーバー料金|approved|index,follow / self|yes|Cell A primary 1 + alternative 1|home・SVR02〜09|200 / header index / self canonical|indexed / reasonなし / last crawl未記録|監視|
+|SVR01|`/servers/business-server-pricing`|法人向けサーバー料金|approved|index,follow / self|yes|Cell A primary 1 + alternative 1|home・SVR02〜09|200 / header index / self canonical|2026-08-22保存済み検査: Google未認識 / crawlなし|再要求せずGoogle再処理待ち|
 |SVR02|`/servers/small-business-server`|中小企業向けサーバー料金|approved|index,follow / self|yes|affiliate off|home|200 / header index / self canonical|discovered-not-indexed / crawlなし|重複robots修正後に処理待ち|
 |SVR03|`/servers/ec-server-cost`|ECサイト用サーバー費用|approved|index,follow / self|yes|affiliate off|home|200 / header index / self canonical|noindex除外 / 2026-08-19 23:23:21|重複robots修正を外部・GSCで再確認|
-|SVR04|`/servers/server-first-year-total`|サーバー初期費用込み総額|approved|index,follow / self|yes|Cell B XServer単独CTA active|home|200 / robots meta 1件 / self canonical|noindex除外 / 2026-08-19 16:28:04。2026-08-21 liveは修正前の重複noindex検出|修正後live test。合格時のみ登録要求1回|
+|SVR04|`/servers/server-first-year-total`|サーバー初期費用込み総額|approved|index,follow / self|yes|Cell B XServer単独CTA active|home|200 / robots meta 1件 / self canonical|2026-08-22保存済み検査: Google未認識 / crawlなし|再要求せずGoogle再処理待ち|
 |SVR05|`/servers/server-renewal-cost`|サーバー2年目料金|approved|index,follow / self|yes|affiliate off|home|200 / header index / self canonical|noindex除外 / 2026-08-20 00:16:53|重複robots修正を外部・GSCで再確認|
 |SVR06|`/servers/server-migration-cost`|サーバー乗り換え費用|approved|index,follow / self|yes|affiliate off|home|200 / header index / self canonical|noindex除外 / 2026-08-19 17:04:13|同上|
 |SVR07|`/servers/business-rental-server`|法人向けレンタルサーバー|approved|index,follow / self|yes|affiliate off|home|200 / header index / self canonical|noindex除外 / 2026-08-19 23:42:54|同上|
