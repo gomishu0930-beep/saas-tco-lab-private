@@ -66,6 +66,8 @@ const NOINDEX_FOLLOW_ROBOTS = "noindex, follow, noarchive, nosnippet";
 const LEGACY_PUBLIC_HOST = "saas-tco-lab-jp.shukun0930.chatgpt.site";
 const CANONICAL_PUBLIC_HOST = "saastcolab.jp";
 const CANONICAL_PUBLIC_ORIGIN = `https://${CANONICAL_PUBLIC_HOST}`;
+const INTERNAL_SEO_POLICY_HEADER = "x-saastco-internal-seo-policy";
+const INTERNAL_CANONICAL_PATH_HEADER = "x-saastco-internal-canonical-path";
 
 const RESTRICTED_CONTENT_SECURITY_POLICY =
   "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
@@ -166,6 +168,15 @@ const SOURCE_APPROVED_HUB_IDS = new Set(
     .filter((hubId) => /^(?:HOME|SEO_TOOLS)$/.test(hubId)),
 );
 
+// Runtime INDEX_GO is only a deployment selector. It cannot promote a P article
+// that the Human-owned editorial decision record still marks as unreviewed.
+const SOURCE_APPROVED_ARTICLE_IDS = new Set(
+  Object.entries(editorialLaunchState.articles ?? {})
+    .filter(([, state]) => state === "approved")
+    .map(([articleId]) => articleId)
+    .filter((articleId) => /^P(?:0[1-9]|1[0-2])$/.test(articleId)),
+);
+
 // Source-level Human editorial approval. Runtime INDEX_GO alone must never
 // promote an unreviewed server candidate into the public index. The local
 // decision record is the sole source; invalid values fail closed.
@@ -225,7 +236,11 @@ function indexApprovalState(env: ProductionEnv): IndexApprovalState {
     };
   }
   const approved = new Set(values);
-  const paths = new Set([...ARTICLE_PATH_TO_ID].filter(([, id]) => approved.has(id)).map(([path]) => path));
+  const paths = new Set(
+    [...ARTICLE_PATH_TO_ID]
+      .filter(([, id]) => approved.has(id) && SOURCE_APPROVED_ARTICLE_IDS.has(id))
+      .map(([path]) => path),
+  );
   if (!approvedServerArticlesValid) {
     return {
       approvedArticlesValid,
@@ -1040,6 +1055,14 @@ async function withRuntimeHeadControls(
       "",
     );
   }
+  // The App metadata now receives the same runtime decision so hydration and
+  // client navigation stay aligned. Collapse its canonical before inserting
+  // the Worker-owned final tag; held routes must never retain a stale parent
+  // or previous-route canonical.
+  body = body.replace(
+    /<link\b(?=[^>]*\brel\s*=\s*["']canonical["'])[^>]*>/gi,
+    "",
+  );
   const openingHead = body.match(/<head(?:\s[^>]*)?>/i);
   if (openingHead?.index === undefined) return response;
 
@@ -1180,7 +1203,19 @@ const worker = {
       return withSecurityHeaders(response);
     }
     if (PUBLIC_ROUTES.has(normalizedPath)) {
-      let response = await handler.fetch(request, env, ctx);
+      const appHeaders = new Headers(request.headers);
+      // External callers never control publication metadata. The Worker owns
+      // these values and overwrites any same-named request header before the
+      // Vinext app renders its metadata/RSC payload.
+      appHeaders.delete(INTERNAL_SEO_POLICY_HEADER);
+      appHeaders.delete(INTERNAL_CANONICAL_PATH_HEADER);
+      appHeaders.set(
+        INTERNAL_SEO_POLICY_HEADER,
+        indexable ? "index" : followableNoindex ? "public-noindex" : "restricted",
+      );
+      if (indexable) appHeaders.set(INTERNAL_CANONICAL_PATH_HEADER, normalizedPath);
+      const appRequest = new Request(request, { headers: appHeaders });
+      let response = await handler.fetch(appRequest, env, ctx);
       const embeddable = normalizedPath === "/embed/tco-calculator";
       if (normalizedPath === "/") {
         response = await withPublicHomeState(response, env, articleIndexPaths);

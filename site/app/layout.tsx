@@ -1,11 +1,15 @@
 import type { Metadata } from "next";
+import { headers } from "next/headers";
 import Link from "next/link";
 
 import "./globals.css";
 
 const productionRuntime = process.env.SAAS_RUNTIME_MODE === "production";
 
-export const metadata: Metadata = {
+const INTERNAL_SEO_POLICY_HEADER = "x-saastco-internal-seo-policy";
+const INTERNAL_CANONICAL_PATH_HEADER = "x-saastco-internal-canonical-path";
+
+const baseMetadata: Metadata = {
   metadataBase: new URL("https://saastcolab.jp"),
   title: {
     default: "SaaS TCO Lab",
@@ -13,17 +17,39 @@ export const metadata: Metadata = {
   },
   description:
     "Human確認済みの価格、契約条件、利用上限を根拠付き12か月TCOで比較するSaaS選定メディア。",
-  robots: {
-    index: false,
-    follow: productionRuntime,
-    noarchive: true,
-    nosnippet: true,
-  },
   icons: {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
 };
+
+function safeCanonicalPath(value: string | null): string | null {
+  if (!value || !/^\/(?:[a-z0-9-]+(?:\/[a-z0-9-]+)*)?$/.test(value)) return null;
+  return value;
+}
+
+export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers();
+  const policy = requestHeaders.get(INTERNAL_SEO_POLICY_HEADER);
+  const canonicalPath = safeCanonicalPath(
+    requestHeaders.get(INTERNAL_CANONICAL_PATH_HEADER),
+  );
+  const indexable = productionRuntime && policy === "index" && canonicalPath !== null;
+  const followableNoindex = productionRuntime && policy === "public-noindex";
+
+  return {
+    ...baseMetadata,
+    alternates: indexable ? { canonical: canonicalPath } : undefined,
+    robots: indexable
+      ? { index: true, follow: true }
+      : {
+          index: false,
+          follow: followableNoindex,
+          noarchive: true,
+          nosnippet: true,
+        },
+  };
+}
 
 export default function RootLayout({
   children,

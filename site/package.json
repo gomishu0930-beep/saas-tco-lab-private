@@ -14,7 +14,7 @@
     "test": "npm run test:local && npm run test:startup-boundary && npm run test:production",
     "test:local": "npm run build:local && node --experimental-strip-types --test tests/tco-golden.test.mjs tests/publication-gate.test.mjs tests/editorial-input-contract.test.mjs tests/article-drafts.test.mjs tests/editorial-presentation.test.mjs tests/launch-quarter.test.mjs && node --test tests/local-ui.test.mjs tests/prepublication-assurance.test.mjs",
     "test:startup-boundary": "node --test tests/startup-boundary.test.mjs",
-    "test:production": "npm run build && node --test tests/production-worker.test.mjs",
+    "test:production": "npm run build && node --test --test-concurrency=1 tests/production-worker.test.mjs tests/production-browser.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next"
   },
   "dependencies": {
@@ -34,6 +34,7 @@
     "eslint": "10.8.0",
     "eslint-plugin-react-hooks": "7.1.1",
     "globals": "17.7.0",
+    "playwright-core": "1.51.1",
     "react-server-dom-webpack": "19.2.8",
     "tailwindcss": "4.3.3",
     "typescript": "5.9.3",

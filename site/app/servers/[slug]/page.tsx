@@ -55,7 +55,6 @@ export async function generateMetadata({ params }: ServerCandidatePageProps): Pr
   return {
     title,
     description,
-    robots: { index: false, follow: false, noarchive: true, nosnippet: true },
     openGraph: { title, description, type: "article", siteName: "SaaS TCO Lab" },
     twitter: { card: "summary", title, description },
   };

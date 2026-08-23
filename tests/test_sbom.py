@@ -153,13 +153,13 @@ def test_real_lockfiles_produce_complete_unique_graph() -> None:
     dependencies = document["dependencies"]
     refs = [component["bom-ref"] for component in components]
 
-    assert len(components) == 448
+    assert len(components) == 449
     assert len(dependencies) == len(components)
     assert len(refs) == len(set(refs))
     assert {dependency["ref"] for dependency in dependencies} == set(refs)
     assert all(set(dependency["dependsOn"]) <= set(refs) for dependency in dependencies)
     assert sum(component["purl"].startswith("pkg:pypi/") for component in components) == 24
-    assert sum(component["purl"].startswith("pkg:npm/") for component in components) == 424
+    assert sum(component["purl"].startswith("pkg:npm/") for component in components) == 425
 
 
 def test_semantic_collections_resist_lockfile_permutation(tmp_path: Path) -> None:
