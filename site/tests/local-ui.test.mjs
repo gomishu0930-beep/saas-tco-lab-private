@@ -473,6 +473,7 @@ test("servers operator and twenty article routes preserve approval, ranking, and
       }
       if (path === "/servers/server-first-year-total") {
         assert.match(article, /data-revenue-cell-id="cell-b-single"/, path);
+        assert.match(article, /data-revenue-cell-version="v2"/, path);
         assert.match(article, /data-revenue-cell-state="human_selected"/, path);
         assert.match(article, /data-revenue-cell-selection="xserver-business"/, path);
         assert.match(article, /data-server-affiliate-cta-placeholder="a8net-xserver-business"/, path);

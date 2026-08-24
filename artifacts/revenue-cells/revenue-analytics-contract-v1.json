@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0",
+  "schema_version": "1.1",
   "event_names": [
     "calculator_result_view",
     "cta_view",
@@ -9,10 +9,13 @@
   "allowed_dimensions": [
     "article_id",
     "revenue_cell_id",
+    "revenue_cell_version",
     "vendor_id",
     "cta_position",
     "cta_type",
     "channel",
+    "source_class",
+    "medium_class",
     "campaign_id",
     "environment",
     "traffic_scope",

@@ -26,9 +26,12 @@ run_check() {
 cd "$repo_dir" || exit 1
 
 run_check "Python tests" uv run pytest
+run_check "Python lock" uv lock --check
 run_check "Schema export" uv run python scripts/export_schemas.py --output-dir "$schema_temp_dir"
 run_check "Schema diff" diff -ru schemas "$schema_temp_dir"
 run_check "Site tests" sh -c 'cd site && npm test'
+run_check "Site lint" sh -c 'cd site && npm run lint'
+run_check "Dependency audit" sh -c 'cd site && npm audit --audit-level=moderate'
 run_check "Secret scan" gitleaks dir . --redact --no-banner --no-color
 
 if [ "$result" -eq 0 ]; then

@@ -103,7 +103,7 @@ _SCOPE_PATHS_BY_PROFILE = {
         "a078f9b367a21890879f0b24445f84d2e95994d32489f9d939964107f2390175"
     ),
     SCOPE_PROFILE: (
-        "ac7c4dd0560e23047d22d8c4d01710ce510ebc1e7e72289e888e8583a4ffc75e"
+        "209ae1c72a47d58f57a9ba59a846891f24a079fa764160c7213ba68feaf88e58"
     ),
 }
 
@@ -131,7 +131,16 @@ _SCOPE_ROOT_DIRECTORIES = (
     "tests",
 )
 _IGNORED_TOP_LEVEL = frozenset(
-    {".git", ".hypothesis", ".pytest_cache", ".venv", "outputs", "work"}
+    {
+        ".codex",
+        ".devspace",
+        ".git",
+        ".hypothesis",
+        ".pytest_cache",
+        ".venv",
+        "outputs",
+        "work",
+    }
 )
 _IGNORED_DIRECTORY_NAMES = frozenset({"__pycache__", ".pytest_cache"})
 _IGNORED_SITE_DIRECTORY_NAMES = frozenset(

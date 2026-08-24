@@ -39,6 +39,12 @@ function robotsMetaCount(html) {
   ).length;
 }
 
+function canonicalLinkCount(html) {
+  return (
+    html.match(/<link\b(?=[^>]*\brel\s*=\s*["']canonical["'])[^>]*>/gi) ?? []
+  ).length;
+}
+
 function robotsAllows(robotsText, targetPath) {
   const rules = robotsText
     .split("\n")
@@ -1178,16 +1184,19 @@ test("revenue analytics owns affiliate outbound events and keeps safe bounded di
   assert.match(consent, /"external_link_click"/);
   assert.equal((funnel.match(/"outbound_click"/g) ?? []).length, 1);
   for (const dimension of [
-    "article_id", "revenue_cell_id", "vendor_id", "cta_position", "cta_type",
-    "channel", "campaign_id", "environment", "traffic_scope", "test_flag",
+    "article_id", "revenue_cell_id", "revenue_cell_version", "vendor_id", "cta_position", "cta_type",
+    "channel", "source_class", "medium_class", "campaign_id", "environment", "traffic_scope", "test_flag",
   ]) assert.match(funnel, new RegExp(dimension), dimension);
-  assert.match(funnel, /saas_tco_lab_cta_eligible_v2/);
-  assert.match(funnel, /new URLSearchParams\(u\.hash\.startsWith\("#"\)/);
-  assert.doesNotMatch(funnel, /u\.searchParams\.get\("(?:ch|cid)"\)/);
-  assert.doesNotMatch(funnel, /saas_tco_lab_cta_eligible_v2:["']?\+?p/);
+  assert.match(funnel, /saas_tco_lab_cta_eligible_v3/);
+  assert.match(funnel, /current\.article_id,current\.revenue_cell_id,current\.revenue_cell_version/);
+  assert.match(funnel, /saas_tco_lab_outbound_session_v1/);
+  assert.match(funnel, /"referral"/);
+  assert.match(funnel, /new URLSearchParams\(current\.hash\.startsWith\("#"\)/);
+  assert.doesNotMatch(funnel, /current\.searchParams\.get\("(?:ch|cid)"\)/);
+  assert.doesNotMatch(funnel, /saas_tco_lab_cta_eligible_v2/);
   assert.match(funnel, /new WeakSet\(\)/);
   assert.match(funnel, /new WeakMap\(\)/);
-  assert.match(funnel, /n-last<750/);
+  assert.match(funnel, /now-last<750/);
   assert.match(funnel, /new Set\(\["mangools\.com","px\.a8\.net","af\.moshimo\.com","ck\.jp\.ap\.valuecommerce\.com"\]\)/);
   assert.doesNotMatch(funnel, /raw_referrer_query|raw_search_query|affiliate_url|tracking_parameters/);
 });
@@ -1454,6 +1463,7 @@ test("Human-approved home and SEO tools hub index only behind exact runtime gate
       new RegExp(`<link rel="canonical" href="https://saastcolab\\.jp${path === "/" ? "/" : path}">`, "i"),
       path,
     );
+    assert.equal(canonicalLinkCount(body), 1, `${path}: one canonical link`);
     assert.doesNotMatch(body, /href=["']\/pilot\/break-even["']/i, path);
   }
 
@@ -1482,4 +1492,38 @@ test("Human-approved home and SEO tools hub index only behind exact runtime gate
       "noindex, follow, noarchive, nosnippet",
     );
   }
+});
+
+test("runtime article configuration and caller headers cannot promote held P11", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("held-p11-source-gate", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const env = {
+    ASSETS: { fetch: async () => new Response("Not found", { status: 404 }) },
+    INDEX_GO: "GO",
+    INDEX_APPROVED_ARTICLES: "P01,P11",
+    CTA_GO: "GO",
+    CTA_APPROVED_PARTNER: "mangools",
+    MANGOOLS_AFFILIATE_APPROVAL_CURRENT: "true",
+    MANGOOLS_AFFILIATE_DESTINATION: "https://mangools.com/#a1234567890bcdef123456789",
+  };
+  const ctx = { waitUntil() {}, passThroughOnException() {} };
+  const request = new Request("https://saastcolab.jp/pilot/break-even", {
+    headers: {
+      "x-saastco-internal-seo-policy": "index",
+      "x-saastco-internal-canonical-path": "/pilot/break-even",
+    },
+  });
+  const response = await worker.fetch(request, env, ctx);
+  const body = await response.text();
+  assert.equal(response.headers.get("x-robots-tag"), "noindex, follow, noarchive, nosnippet");
+  assert.match(body, /<meta name="robots" content="noindex, follow, noarchive, nosnippet">/i);
+  assert.equal(robotsMetaCount(body), 1);
+  assert.equal(canonicalLinkCount(body), 0);
+  assert.doesNotMatch(body, /data-affiliate-cta-partner|data-server-affiliate-cta-partner/);
+
+  const sitemap = await worker.fetch(new Request("https://saastcolab.jp/sitemap.xml"), env, ctx);
+  const sitemapBody = await sitemap.text();
+  assert.doesNotMatch(sitemapBody, /\/pilot\/break-even/);
+  assert.match(sitemapBody, /\/pilot\/pricing-calculator/);
 });

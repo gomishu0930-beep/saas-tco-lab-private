@@ -17,6 +17,8 @@ from saas_preflight.revenue_cells import (
     RevenueCellId,
     RevenueChannel,
     RevenueEnvironment,
+    RevenueMediumClass,
+    RevenueSourceClass,
     RevenueTrafficScope,
     summarize_revenue_cell,
 )
@@ -27,22 +29,27 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def row(**changes: object) -> RevenueCellDailyAggregate:
     values: dict[str, object] = {
-        "schema_version": "1.0",
+        "schema_version": "1.1",
         "observed_on": date(2026, 8, 20),
         "article_id": "SVR01",
         "revenue_cell_id": RevenueCellId.CELL_A,
+        "revenue_cell_version": "v2",
         "vendor_id": "xserver-business",
         "cta_position": "primary",
         "cta_type": "affiliate_comparison",
         "channel": RevenueChannel.NOTE,
+        "source_class": RevenueSourceClass.NOTE,
+        "medium_class": RevenueMediumClass.REFERRAL,
         "campaign_id": "svr01-audit-v2",
         "environment": RevenueEnvironment.PRODUCTION,
         "traffic_scope": RevenueTrafficScope.EXTERNAL,
         "test_flag": False,
         "calculator_result_views": 10,
         "cta_views": 8,
+        "cta_view_sessions": 6,
         "eligible_sessions": 6,
         "outbound_clicks": 2,
+        "unique_outbound_sessions": 2,
         "asp_clicks": None,
         "pending_conversions": None,
         "confirmed_conversions": None,
@@ -88,6 +95,7 @@ def test_revenue_aggregate_excludes_internal_test_and_non_production() -> None:
     assert summary.excluded_rows == 3
     assert summary.eligible_sessions == 6
     assert summary.outbound_clicks == 2
+    assert summary.unique_outbound_sessions == 2
     assert summary.outbound_ctr_percent == Decimal("33.33")
     assert summary.confirmed_rpes_minor is None
 
@@ -110,7 +118,42 @@ def test_revenue_row_rejects_unsafe_campaign_and_impossible_click_count() -> Non
     with pytest.raises(ValidationError):
         row(campaign_id="raw query=value")
     with pytest.raises(ValidationError):
+        row(campaign_id="a" * 65)
+    with pytest.raises(ValidationError):
         row(cta_views=1, outbound_clicks=2)
+    with pytest.raises(ValidationError):
+        row(unique_outbound_sessions=7)
+
+
+def test_revenue_summary_uses_unique_outbound_sessions_not_event_count() -> None:
+    summary = summarize_revenue_cell((
+        row(outbound_clicks=5, unique_outbound_sessions=2),
+    ))
+    assert summary.outbound_clicks == 5
+    assert summary.unique_outbound_sessions == 2
+    assert summary.outbound_ctr_percent == Decimal("33.33")
+
+
+def test_revenue_summary_rejects_mixed_cell_or_acquisition_groups() -> None:
+    with pytest.raises(ValueError, match="must share article"):
+        summarize_revenue_cell((
+            row(),
+            row(
+                article_id="SVR04",
+                revenue_cell_id=RevenueCellId.CELL_B,
+                cta_position="single",
+                cta_type="affiliate_single",
+            ),
+        ))
+    with pytest.raises(ValueError, match="must share article"):
+        summarize_revenue_cell((
+            row(),
+            row(
+                channel=RevenueChannel.ORGANIC,
+                source_class=RevenueSourceClass.SEARCH,
+                medium_class=RevenueMediumClass.ORGANIC,
+            ),
+        ))
 
 
 def test_repository_revenue_contracts_validate_and_keep_unknowns_explicit() -> None:
@@ -138,3 +181,6 @@ def test_repository_revenue_contracts_validate_and_keep_unknowns_explicit() -> N
     )
     assert "affiliate_url" in analytics.prohibited_dimensions
     assert "campaign_id" in analytics.allowed_dimensions
+    assert "revenue_cell_version" in analytics.allowed_dimensions
+    assert "source_class" in analytics.allowed_dimensions
+    assert "medium_class" in analytics.allowed_dimensions

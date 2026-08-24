@@ -923,9 +923,11 @@ raw契約全文、個人情報、credential、tracking IDは置かず、承認�
 - Human Approverから`cell_b: GO SVR04 xserver-business`を受領した。Cell BはSVR04の初期費用込み総額記事、
   単独vendorはXServerビジネスとする。source-level CTA allowlistへSVR04を追加するが、runtime article allowlist、
   A8.net承認、destination検証、global CTA GOの全条件が揃わない場合は引き続き無効とする。
-- `channel_terms: GO a8net`はA8.net規約確認の実行権限として受領した。一般公開案内ではsite・note・SNSの
-  掲載例を確認したが、XServerビジネスprogram固有の外部channel、deep link、sub ID条件はlogin session失効で
-  確認できていない。Cell Bは既存の`owned_site`だけをGOとし、note・X・partner直配信とtracking拡張はHOLDする。
+- `channel_terms: GO a8net`はA8.net規約確認の実行権限として受領した。2026-08-22にHumanのlogin済みSafariで
+  XServerビジネスprogram詳細とA8.netメディア会員利用規約をread-only確認した。program詳細には外部channel、
+  deep link、sub IDの個別許可がなく、一般規約は登録外サイト・Twitterアカウント・PDF等への広告掲載を禁止する。
+  Cell Bは既存の`owned_site`だけをGOとし、note・X・partnerへのaffiliate広告・affiliate URL掲載、deep link、
+  sub IDは各媒体登録と個別条件の確認までHOLDする。公開前素材はDRAFT_ONLYを維持する。
 - `ga4_internal_ip_transmit: GO`に基づき、現回線を`traffic_type=internal`のdefinition ruleへ登録した。
   IP値はrepo・docs・報告へ保存していない。Internal Trafficデータフィルタは`テスト`を維持し、別回線read-back前に
   `active`へ変更しない。
