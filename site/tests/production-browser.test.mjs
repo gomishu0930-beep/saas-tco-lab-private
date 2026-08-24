@@ -160,7 +160,8 @@ before(async () => {
       "--config", "dist/server/wrangler.json",
       "--port", String(port),
       "--ip", "127.0.0.1",
-      "--var", "GA4_ANALYTICS_ENABLED:false",
+      "--var", "GA4_ANALYTICS_ENABLED:true",
+      "--var", "GA4_MEASUREMENT_ID:G-TEST123456",
       "--var", "INDEX_GO:GO",
       "--var", "INDEX_APPROVED_ARTICLES:P01,P02,P03,P04,P05,P06,P07,P08,P09,P10,P12",
       "--var", "INDEX_APPROVED_SERVER_ARTICLES:SVR01,SVR02,SVR03,SVR04,SVR05,SVR06,SVR07,SVR08,SVR09",
@@ -254,6 +255,36 @@ test("hydration preserves the exact 22-route index policy and held P11 boundary"
   assert.equal(await page.locator(
     'a[data-affiliate-cta-partner],a[data-server-affiliate-cta-partner]',
   ).count(), 0);
+  await context.close();
+});
+
+test("hydration cannot remove the analytics consent controls", { timeout: 60_000 }, async () => {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 } });
+  const page = await context.newPage();
+  await page.route("https://www.googletagmanager.com/**", (route) => route.abort());
+  await page.route("https://www.google-analytics.com/**", (route) => route.abort());
+  await page.route("https://region1.google-analytics.com/**", (route) => route.abort());
+
+  const response = await page.goto(`${baseUrl}/servers/server-first-year-total`, { waitUntil: "load" });
+  assert.equal(response?.status(), 200);
+  await page.waitForTimeout(1_000);
+  const analyticsState = await page.evaluate(() => ({
+    consentScript: document.querySelectorAll("script[data-saastco-analytics-consent]").length,
+    readyState: document.readyState,
+    settings: document.querySelectorAll("button[data-analytics-settings]").length,
+  }));
+  const settings = page.locator("button[data-analytics-settings]");
+  assert.equal(analyticsState.consentScript, 1, JSON.stringify(analyticsState));
+  assert.equal(analyticsState.settings, 1, JSON.stringify(analyticsState));
+  await settings.waitFor({ state: "visible" });
+  await settings.click();
+  const banner = page.locator('[role="dialog"][aria-label="アクセス解析の同意"]');
+  await banner.waitFor({ state: "visible" });
+  assert.equal(await banner.count(), 1);
+  assert.equal(await page.locator('button[data-consent="granted"]').count(), 1);
+  assert.equal(await page.locator('button[data-consent="denied"]').count(), 1);
+  assert.equal(await page.evaluate(() => Array.isArray(window.dataLayer)), false);
+
   await context.close();
 });
 
