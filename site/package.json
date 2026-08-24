@@ -37,7 +37,7 @@
     "playwright-core": "1.51.1",
     "react-server-dom-webpack": "19.2.8",
     "tailwindcss": "4.3.3",
-    "typescript": "5.9.3",
+    "typescript": "7.0.2",
     "typescript-eslint": "8.59.3",
     "vinext": "0.0.45",
     "vite": "8.1.5",
